@@ -1,7 +1,5 @@
 #generators.py
 
-gen = [[2,3,4,5,6,7,0,1],[2,3,0,1,4,5,6,7],[6,7,0,1,2,3,4,5],[2,3,0,1,4,5,6,7]]
-#gen = [[0,1,2,3,4,5,6,7],[1,2,3,4,5,6,7,0]]
 #group takes a list of generators and applies them to generate the group. For
 #arguments it takes gen, the list of generators as an array. It then applies
 #the generaters to each other to make the element c, if c is unique it is saved
@@ -23,22 +21,14 @@ def group(gen):
             if d not in groupi:
                 groupi.append(d)
             while d != c:
-#                print(i)
-#                print(d)
                 d = [d[i[l]] for l in range(0,len(i))]
                 q += 1
-#                print(q)
                 if d not in groupi:
                     groupi.append(d)
-#            exit()
     new = 0
-#    print(groupi)
-#    print(len(groupi), 'first')
-##Stopped here
 
 #Here each generator is appnied to the group over and over until no new group
 #elements are found
-#    print(groupi)
     while new == 0:
         group2 = []
         for i in gen:
@@ -48,16 +38,10 @@ def group(gen):
                     if d not in group2:
                         group2.append(d)
 
-#        print(len(group2))
         if len(group2) > 0:
             groupi.extend(group2)
         else:
             new = 1
-#        print(len(groupi))
         
     return(groupi)
 
-#print(end)
-#c = group(gen)
-#print(len(c))
-#print(c)
