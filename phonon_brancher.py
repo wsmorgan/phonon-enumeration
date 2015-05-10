@@ -5,7 +5,7 @@
 import numpy as np
 import branch_method as bm
 import Inverse_radix_num as irn 
-
+from copy import deepcopy
 #Find concentration takes a 1D array, col, and returns a 1D array, 
 #Concs, containing the number of times each element in col appears 
 #in the array.
@@ -33,7 +33,8 @@ def how_many_arrows(col):
             arrows += 1
     return(arrows)
 
-
+#color_list takes the configuration and returns a unique list of the
+#colors used without duplicating any duplicates.
 def color_list(col):
     colors=[]
 
@@ -46,8 +47,15 @@ def color_list(col):
                     tcol[j] =0
             tcol[i] =0
     return(colors)
-    
 
+#advance_arrows takes one of the arrows as input and advances it to
+#the next possible arrow.
+def advance_arrows(arrow):
+    if arrow in(range(1,5)):
+        arrow = arrow%4 + 1
+    else:
+        print("Error, arrow not in expected range. Please ensure that the arrows range between 1 and 4.")
+    return(arrow)
 #initialize the neede inputs generators is a 2D array that contains
 #the generators for the group to be used.  col is a 1D array thot
 #contians the colors to be used in the enumeration: a singe letter
@@ -68,7 +76,6 @@ Concs = find_concentrations(col)
 #arrow tag then it is it's own color distinct from those without
 #colors.
 colors = color_list(col)
-print(colors)
 
 #Find out how many arrows there are in the col array
 narrows = how_many_arrows(col)
@@ -88,7 +95,6 @@ for i in range(len(configs)):
 for i in range(len(configs)):
     for j in range(len(configs[i])):
         configs[i][j] = colors[configs[i][j]-1]
-print(configs)
 
 #survivors is the array that contains the end result of the permutations
 survivor = []
@@ -107,13 +113,13 @@ for col in configs:
     #handed.
     branch=[]
     for i in col:
-        branch.append(i[0])
+        branch.append(i)
 
     #If there are no arrows on the lattice then append it to the survivors
     #list and be done.
     i=0
     if narrows == 0:
-        survivor.append(branch)
+        survivor.append(branch[:])
     else:
         visited = 0
         #while there are arrows that still need to be rotated keep doing
@@ -123,7 +129,7 @@ for col in configs:
             if len(col[i]) == 1:
                 branch[i]=branch[i]
             elif len(col[i])==2:
-                branch[i] = branch[i]*1j
+                branch[i][1] = advance_arrows(branch[i][1])
                 function[i] -= 1
             else:
                 print("ERROR: cannot have an entry with more than two components.")
@@ -131,7 +137,7 @@ for col in configs:
             #If we reached the last element in our configuration save it
             #to the survivors.
             if i == len(col)-1:
-                survivor.append(branch[:])
+                survivor.append(deepcopy(branch))
                 visited = 1
             #if we aren't on the last element of the configuration then
             #move to the next element

@@ -98,7 +98,6 @@ def brancher(col,generators):
         b0 = 0
 #for the first color look at each value of it while the rest of the branches are zero
         while branch[0] < C[0]:
-                print(branch)
 # sum(branch) != sum(C) - len(C) and branch[0] < C[0]-1:
 #uses perm to determine if the new array is unique, if yes unique = 0, if no then unique = 1
                 (unique,stabalizer[i+1],order) = perm(branch,col,n,i,groups,stabalizer[i],order)
@@ -131,39 +130,5 @@ def brancher(col,generators):
                                 branch[i] += 1
                         else:
                                 test = 1
-                print(branch)
         t = time.clock()-start
-        return(groups,survivors,t)
-
-
-
-# col = [2,1,1]
-# #generators = [[1,2,3,4,0,6,7,8,9,5],[1,0,2,3,4,6,5,7,8,9]]
-# # [[2,3,4,5,6,7,8,9,0,1],[2,3,0,1,4,5,6,7,8,9]]
-# #generators =[[2,3,4,5,6,7,0,1],[2,3,0,1,4,5,6,7]]
-# generators=[[0,1,2,3],[1,2,3,0]]
-# #[[2,3,4,5,6,7,0,1],[2,3,0,1,4,5,6,7]]
-# # generators= [[j -1 for j in i] for i in
-# #              [[2,3,4,1,5,6,7,8,9,10,11,12,13,14,15,16],[1,2,3,4,6,7,8,5,9,10,11,12,13,14,15,16],[1,2,3,4,5,6,7,8,10,11,12,9,13,14,15,16],[1,2,3,4,5,6,7,8,9,10,11,12,14,15,16,13]]]
-# # [[2,3,4,1,5,6,7,8,9,10,11,12,13,14,15,16],[1,2,3,4,6,7,8,5,9,10, 11,12,13,14,15,16],[1,2,3,4,5,6,7,8,10,11,12,9,13,14,15,16],[1,2,3, 4,5,6,7,8,9,10,11,12,14,15,16,13]]]
-# # [[2,3,4,1,5,6,7,8],[2,1,3,4,5,6,7,8],[1,2,3,4,6,5,8,7],[1,2,3,4,6,7,5,8]]]
-# # [[2,3,4,5,6,7,0,1],[2,3,0,1,4,5,6,7]]#,[6,7,0,1,2,3,4,5],[2,3,0,1,4,5,6,7]]
-
-# (groups,survivors,t) = brancher(col,generators)
-
-# f = open('string_odometer2.txt', 'w+')
-
-# for h in survivors:
-#         del h[-1]
-#         for j in range(len(h)):
-#                 h[j] = '{0:g}'.format(h[j])
-#                 f.write(str(h[j]) + ' ')
-#         f.write('\n')
-# #        f.write(str(h[0]) + '\n')
-# f.close()
-
-# #print(survivors)
-# print(len(groups))
-# print(len(survivors))
-# #print(t)
-   
+        return(groups,survivors,t)   
