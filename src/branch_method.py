@@ -1,16 +1,17 @@
 #binomial_unique_permutations.py
 #import needed modules
 import numpy as np
-import radix_num_generator2 as rng
+import radix_num_generator as rng
 import Inverse_radix_num as irn 
 import time
-import generator as gn
 import binomial_calculator as bc
-
-#this method applies a cyclical permutation to an array and removes duplicates from a list if found
-#It calls for casi, the idnumber for the case to be permuted, survivors, a list of id numbers to
-#be compared to and added to, Coefficient as an array of integers represendting mixed radix numbers
-#for the systm and colors is an array of integers of equal length that represents the number of each
+import phonon_brancher as pb
+#this method applies a cyclical permutation to an array and removes
+#duplicates from a list if found It calls for casi, the idnumber for
+#the case to be permuted, survivors, a list of id numbers to be
+#compared to and added to, Coefficient as an array of integers
+#represendting mixed radix numbers for the systm and colors is an
+#array of integers of equal length that represents the number of each
 #color found in our array
 def perm(casei,colors,length,index,gen,stab,order):
         #sets a test value, finds the length of the array using colors
@@ -18,14 +19,18 @@ def perm(casei,colors,length,index,gen,stab,order):
         if stab == 0:
                 stab = []
         st = []
-        #uses the invid method from Inverse_radix_num to turn the id number, casei, into an array
+        #uses the invid method from Inverse_radix_num to turn the id
+        #number, casei, into an array
 	li = list(irn.invhash(casei,colors,length))
 	if index == 0:
-                for i in gen:
+                for a in gen:
+                        i = a[0]
                         lnew = []
                         for j in i:
                                 lnew.append(li[j])
-                                #uses idnum and hash from radix_num_generator to turn out array back into a number
+                                #uses idnum and hash from
+                                #radix_num_generator to turn out array
+                                #back into a number
                         lnewb = list(lnew)
                         for y in range(0,len(lnew)):
                                 if lnew[y] != index + 1:
@@ -36,16 +41,19 @@ def perm(casei,colors,length,index,gen,stab,order):
                         if casei[0] < rtest:
                                 order[rtest] = -1
 			elif casei[0] > rtest:
-                                #if the shifted array's number is found in the list of survivors then set unique to 1 of false
+                                #if the shifted array's number is
+                                #found in the list of survivors then
+                                #set unique to 1 of false
 				unique += 1
                                 st = []
 				break
                         elif casei[0] == rtest:
-                                st.append(i)
+                                st.append(a)
         elif len(stab) == 1:
                 st = stab
         elif len(stab) > 1:
-                for i in stab:
+                for a in stab:
+                        i = a[0]
                         lnew = []
                         for j in i:
                                 lnew.append(li[j])
@@ -64,7 +72,7 @@ def perm(casei,colors,length,index,gen,stab,order):
                                 elif lnewb[y] == index + 1:
                                         lnewb2.append(1)
                         if lnewb == lib:
-                                st.append(i)
+                                st.append(a)
                         rtest = rng.hash(list(lnewb2),colors)
                         if casei[index] > rtest:
                                 unique = 1
@@ -77,34 +85,53 @@ def perm(casei,colors,length,index,gen,stab,order):
                 unique = 1
 	return(unique,st,order)
 
-#uses the Coefficients method from rdix_num_generator to find the radix numbers for the system
-def brancher(col,generators):
-        n = sum(col)
-        C = rng.Coefficients(col,n)
-        stabalizer = [0]*len(col)
+#uses the Coefficients method from rdix_num_generator to find the
+#radix numbers for the system
+def brancher(concs,group,colors_w_arrows):
+        colors = pb.color_list(colors_w_arrows)
+        n = sum(concs)
+        C = rng.Coefficients(concs,n)
+        narrows = pb.how_many_arrows(colors_w_arrows)
+        stabalizer = [0]*len(concs)
         cyclicgen = []
         coluse = 1
-        groups = gn.group(generators)
+        groups = []
+        for i in group:
+                groups.append(i[0])
         order = {}
-        for i in range(0,bc.binomial_coefficient(sum(col),col[0])+1):
+        for i in range(0,bc.binomial_coefficient(sum(concs),concs[0])+1):
                 order[i] = i
 
-#create the all zero branch of lables and use idnum from radix_num_generator to 
-#turnit into a number and store it in survivors
+        #create the all zero branch of lables and use idnum from
+        #radix_num_generator to turnit into a number and store it in
+        #survivors
         start = time.clock()
         branch = np.zeros(len(C))
         survivors = []
         i = 0
         b0 = 0
-#for the first color look at each value of it while the rest of the branches are zero
+        #for the first color look at each value of it while the rest
+        #of the branches are zero
         while branch[0] < C[0]:
-# sum(branch) != sum(C) - len(C) and branch[0] < C[0]-1:
-#uses perm to determine if the new array is unique, if yes unique = 0, if no then unique = 1
-                (unique,stabalizer[i+1],order) = perm(branch,col,n,i,groups,stabalizer[i],order)
-#if this array is unique append it to the list of survivors
+        # sum(branch) != sum(C) - len(C) and branch[0] < C[0]-1: uses
+        #perm to determine if the new array is unique, if yes unique =
+        #0, if no then unique = 1
+                (unique,stabalizer[i+1],order) = perm(branch,concs,n,i,group,stabalizer[i],order)
+                #if this array is unique append it to the list of
+                #survivors
                 if unique == 0:
                         if b0 == 1 or i == 0:
-                                survivors.append(list(branch))
+                                if narrows > 0:
+                                        brancht = list(irn.invhash(branch, concs, len(colors_w_arrows)))
+                                        for z in range(len(brancht)):
+                                                brancht[z] = colors[brancht[z] -1]
+                                                
+                                        arsurvivors = pb.add_arrows(brancht,stabalizer[i+1])
+                                        for z in arsurvivors:
+                                                if z not in survivors:
+                                                        survivors.append(z)
+                                else:
+                                        survivors.append(list(irn.invhash(branch, concs, len(colors_w_arrows))))
                         if i < len(branch) - 2:
                                 b0 = 0
                 if b0 == 0:
@@ -117,7 +144,7 @@ def brancher(col,generators):
                                 branch[i] = 0
                                 i -= 1
                                 if i == 0:
-                                        stabalizer = [0]*len(col)
+                                        stabalizer = [0]*len(concs)
                                         b0 = 0
                                         branch[i] += 1
                         else:
@@ -131,4 +158,4 @@ def brancher(col,generators):
                         else:
                                 test = 1
         t = time.clock()-start
-        return(groups,survivors,t)   
+        return(survivors,t)   
