@@ -83,7 +83,6 @@ def advance_arrows(arrow):
 #col is the initial configuration.
 #agroup is the group operations with their effects on the arrows.
 def add_arrows(col,agroup):
-    
     #survivors is the array that contains the end result of the permutations
     survivor = []
 
@@ -110,6 +109,7 @@ def add_arrows(col,agroup):
     i=0
     if narrows == 0:
         survivor.append(branch[:])
+        visited = 1
     else:
         visited = 0
     #while there are arrows that still need to be rotated keep doing
@@ -118,7 +118,7 @@ def add_arrows(col,agroup):
         visited = 0
         if col[i][1] < 0:
             branch[i]=branch[i]
-        elif col[i] >= 0:
+        elif col[i][1] >= 0:
             branch[i][1] = advance_arrows(branch[i][1])
             function[i] -= 1
         else:
@@ -182,5 +182,5 @@ def add_arrows(col,agroup):
         #the list of arrow survivors add it to the list.
         if x not in tempsurv and x not in arsurvivors:
             arsurvivors.append(x)
-
+            
     return(arsurvivors)

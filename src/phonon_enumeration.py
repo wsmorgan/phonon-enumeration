@@ -3,10 +3,10 @@
 import branch_method as bm
 import phonon_brancher as pb
 import arrow_group as ar
-
+import time
 
 print("Performing initial setup:")
-
+start = time.clock()
 #initialize the needed inputs generators is a 2D array that contains
 #the generators for the group to be used.  col is a 1D array thot
 #contians the colors to be used in the enumeration: a number combined
@@ -16,9 +16,13 @@ print("Performing initial setup:")
 #trans is the quotient group, or translations of the lattice
 #rots is the group of rotations on the lattice paired with their
 #effects on the arrows.
-col=[[1,-1],[1,-1],[1,-1],[2,1],[1,-1],[1,-1],[1,-1],[1,-1],[1,-1]]
-trans=[[0,1,2,3,4,5,6,7,8],[1,2,0,4,5,3,7,8,6],[2,0,1,5,3,4,8,6,7],[3,4,5,6,7,8,0,1,2],[4,5,3,7,8,6,1,2,0],[5,3,4,8,6,7,2,0,1],[6,7,8,0,1,2,3,4,5],[7,8,6,1,2,0,4,5,3],[8,6,7,2,0,1,5,3,4]]
-rots=[[[0,1,2,3,4,5,6,7,8],[0,1,2,3]],[[2,5,8,1,4,7,0,3,6],[1,2,3,0]],[[8,7,6,5,4,3,2,1,0],[2,3,0,1]],[[6,3,0,7,4,1,8,5,2],[3,0,1,2]],[[8,5,2,7,4,1,6,3,0],[1,0,3,2]],[[0,3,6,1,4,7,2,5,8],[3,2,1,0]],[[2,1,0,5,4,3,8,7,6],[0,3,2,1]],[[6,7,8,3,4,5,0,1,2],[2,1,0,3]]]
+col = [[1,-1],[2,1],[1,-1],[2,-1]]
+trans=[[0,1,2,3],[2,3,0,1],[1,0,3,2],[3,2,1,0]]
+rots = [[[0,1,2,3],[0,1,2,3]],[[1,2,3,0],[1,2,3,0]],[[2,3,0,1],[2,3,0,1]],[[3,0,1,2],[3,0,1,2]],[[1,0,3,2],[0,3,2,1]],[[3,2,1,0],[2,1,0,3]],[[2,1,0,3],[1,0,3,2]],[[0,3,2,1],[3,2,1,0]]]
+
+# col=[[1,-1],[1,-1],[1,-1],[2,1],[1,-1],[1,-1],[1,-1],[1,-1],[1,-1]]
+# trans=[[0,1,2,3,4,5,6,7,8],[1,2,0,4,5,3,7,8,6],[2,0,1,5,3,4,8,6,7],[3,4,5,6,7,8,0,1,2],[4,5,3,7,8,6,1,2,0],[5,3,4,8,6,7,2,0,1],[6,7,8,0,1,2,3,4,5],[7,8,6,1,2,0,4,5,3],[8,6,7,2,0,1,5,3,4]]
+# rots=[[[0,1,2,3,4,5,6,7,8],[0,1,2,3]],[[2,5,8,1,4,7,0,3,6],[1,2,3,0]],[[8,7,6,5,4,3,2,1,0],[2,3,0,1]],[[6,3,0,7,4,1,8,5,2],[3,0,1,2]],[[8,5,2,7,4,1,6,3,0],[1,0,3,2]],[[0,3,6,1,4,7,2,5,8],[3,2,1,0]],[[2,1,0,5,4,3,8,7,6],[0,3,2,1]],[[6,7,8,3,4,5,0,1,2],[2,1,0,3]]]
 
 # trans = [[0,1,2,3,4,5],[1,2,0,5,4,3],[2,0,1,4,5,3],[5,4,3,2,1,0],[4,3,5,0,2,1],[3,5,4,1,0,2]]
 # rots = [[[0,1,2,3,4,5],[0,1,2,3]],[[3,4,5,0,1,2],[2,3,0,1]],[[5,4,3,2,1,0],[2,1,0,3]],[[2,1,0,5,4,3],[0,3,2,1]]]
@@ -48,7 +52,10 @@ Concs = pb.find_concentrations(col)
 # configs contains the list of unique configurations.
 # t contains the time it took to generate the configurations.
 print("Finding unique configurations of colors and arraws.")
-(configs,t) = bm.brancher(Concs,agroup,col)
+if len(Concs) == 1:
+    configs = pb.add_arrows(col,agroup)
+else:
+    configs = bm.brancher(Concs,agroup,col)
 
 print("Found all unique configurations")
 print("They are:")
@@ -57,5 +64,7 @@ print("They are:")
 for i in configs:
     print(i)
 print(len(configs))
+
+t = time.clock() - start
 
 print("And it took", t, "seconds.")

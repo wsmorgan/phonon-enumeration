@@ -3,9 +3,9 @@
 import numpy as np
 import radix_num_generator as rng
 import Inverse_radix_num as irn 
-import time
 import binomial_calculator as bc
 import phonon_brancher as pb
+from copy import deepcopy
 #this method applies a cyclical permutation to an array and removes
 #duplicates from a list if found It calls for casi, the idnumber for
 #the case to be permuted, survivors, a list of id numbers to be
@@ -105,7 +105,6 @@ def brancher(concs,group,colors_w_arrows):
         #create the all zero branch of lables and use idnum from
         #radix_num_generator to turnit into a number and store it in
         #survivors
-        start = time.clock()
         branch = np.zeros(len(C))
         survivors = []
         i = 0
@@ -120,12 +119,11 @@ def brancher(concs,group,colors_w_arrows):
                 #if this array is unique append it to the list of
                 #survivors
                 if unique == 0:
-                        if b0 == 1 or i == 0:
+                        if b0 == 1 or i == 0:                                
                                 if narrows > 0:
                                         brancht = list(irn.invhash(branch, concs, len(colors_w_arrows)))
                                         for z in range(len(brancht)):
-                                                brancht[z] = colors[brancht[z] -1]
-                                                
+                                                brancht[z] = deepcopy(colors[brancht[z] -1])
                                         arsurvivors = pb.add_arrows(brancht,stabalizer[i+1])
                                         for z in arsurvivors:
                                                 if z not in survivors:
@@ -157,5 +155,4 @@ def brancher(concs,group,colors_w_arrows):
                                 branch[i] += 1
                         else:
                                 test = 1
-        t = time.clock()-start
-        return(survivors,t)   
+        return(survivors)   
