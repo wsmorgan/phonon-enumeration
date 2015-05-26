@@ -1,6 +1,8 @@
 #radix_num_generator.py
 #import needed modules
 import binomial_calculator as bc
+import phonon_brancher as pb
+from copy import deepcopy
 
 #This method generates the radix numbers for a given aray. It calls
 #for number_of_each_color and number_of_slots.
@@ -23,7 +25,7 @@ def Coefficients(number_of_each_color,number_of_slots):
 #array of integers.
 #listi is an array of integers it is the array that will be used to
 #generate the labels.
-#number_of_each_color is and array of integers that indicates how many
+#color is and array of integers that indicates how many
 #times each color is found in the array
 def hash(listi,color):
         m = len(listi)

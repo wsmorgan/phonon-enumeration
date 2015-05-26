@@ -13,12 +13,13 @@ from copy import deepcopy
 #represendting mixed radix numbers for the systm and colors is an
 #array of integers of equal length that represents the number of each
 #color found in our array
-def perm(casei,colors,length,index,gen,stab,order):
+def perm(casei,colors,length,index,gen,stab,order,ast):
         #sets a test value, finds the length of the array using colors
 	unique = 0
         if stab == 0:
                 stab = []
         st = []
+        ast = []
         #uses the invid method from Inverse_radix_num to turn the id
         #number, casei, into an array
 	li = list(irn.invhash(casei,colors,length))
@@ -46,12 +47,17 @@ def perm(casei,colors,length,index,gen,stab,order):
                                 #set unique to 1 of false
 				unique += 1
                                 st = []
+                                ast = []
 				break
                         elif casei[0] == rtest:
                                 st.append(a)
+                        if li == lnew:
+                                ast.append(a)
         elif len(stab) == 1:
                 st = stab
+                ast = ast
         elif len(stab) > 1:
+                ast = []
                 for a in stab:
                         i = a[0]
                         lnew = []
@@ -73,17 +79,22 @@ def perm(casei,colors,length,index,gen,stab,order):
                                         lnewb2.append(1)
                         if lnewb == lib:
                                 st.append(a)
+                        if li == lnew:
+                                ast.append(a)
+
                         rtest = rng.hash(list(lnewb2),colors)
                         if casei[index] > rtest:
                                 unique = 1
                                 st = []
+                                ast = []
                                 break
                         if unique == 1:
+                                ast = []
                                 st = []
                                 break
         else:
                 unique = 1
-	return(unique,st,order)
+	return(unique,st,order,ast)
 
 #uses the Coefficients method from rdix_num_generator to find the
 #radix numbers for the system
@@ -96,6 +107,7 @@ def brancher(concs,group,colors_w_arrows):
         cyclicgen = []
         coluse = 1
         groups = []
+        ast = []
         for i in group:
                 groups.append(i[0])
         order = {}
@@ -115,7 +127,7 @@ def brancher(concs,group,colors_w_arrows):
         # sum(branch) != sum(C) - len(C) and branch[0] < C[0]-1: uses
         #perm to determine if the new array is unique, if yes unique =
         #0, if no then unique = 1
-                (unique,stabalizer[i+1],order) = perm(branch,concs,n,i,group,stabalizer[i],order)
+                (unique,stabalizer[i+1],order,ast) = perm(branch,concs,n,i,group,stabalizer[i],order,ast)
                 #if this array is unique append it to the list of
                 #survivors
                 if unique == 0:
@@ -124,10 +136,9 @@ def brancher(concs,group,colors_w_arrows):
                                         brancht = list(irn.invhash(branch, concs, len(colors_w_arrows)))
                                         for z in range(len(brancht)):
                                                 brancht[z] = deepcopy(colors[brancht[z] -1])
-                                        arsurvivors = pb.add_arrows(brancht,stabalizer[i+1])
+                                        arsurvivors = pb.add_arrows(brancht,ast)#stabalizer[i+1]A)
                                         for z in arsurvivors:
-                                                if z not in survivors:
-                                                        survivors.append(z)
+                                                survivors.append(z)
                                 else:
                                         survivors.append(list(irn.invhash(branch, concs, len(colors_w_arrows))))
                         if i < len(branch) - 2:

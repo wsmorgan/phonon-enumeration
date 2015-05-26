@@ -1,5 +1,17 @@
 # Revision History for "phonon-enumeration"
 
+## Revision 0.2.1
+
+Changed how the code determines duplicate arrows. It now does it using
+a python function int(str(),n) where string is a string of the arrows
+and n is the number of cardinal directions used. This number is then
+compared between permuted arrows, if the permuted arrows have a
+smaller numeral then the current string is not unique and won't be
+saved.
+
+The code is hard-coded for 4 cardinal directions at the moment but will
+soon be switched to handle 2, 4, or 6 directions for more general use.
+
 ## Revision 0.1.1
 
 Found two bugs in the code. The first was, if the code was handed only

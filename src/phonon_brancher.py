@@ -5,6 +5,18 @@
 import numpy as np
 from copy import deepcopy
 
+def ahash(coloring):
+
+    tarrows = ''
+
+    for i in range(len(coloring)):
+        if coloring[i][1] >= 0:
+            tarrows += str(coloring[i][1])
+
+    arrows = int(tarrows,4)
+            
+    return(arrows)
+
 #Find concentration takes a 1D array, col, and returns a 1D array, 
 #Concs, containing the number of times each element in col appears 
 #in the array.
@@ -159,6 +171,8 @@ def add_arrows(col,agroup):
     arsurvivors = []
     tempsurv = []
     for x in survivor:
+        salist = ahash(x)
+        unique = True
         #apply each of the group operations to the lattice.
         for i in agroup:
             lnew=[]
@@ -176,11 +190,20 @@ def add_arrows(col,agroup):
             #if the new configuration is not already in the list of
             #permutations and is not the initial configuration add it
             #to tmpsurv
-            if lnew not in tempsurv and lnew != x:
-                tempsurv.append(deepcopy(lnew))
+            calsit = ahash(lnew)
+            if calsit < salist:
+                unique = False
+                break
+            # if lnew not in tempsurv and lnew != x:
+            #     tempsurv.append(deepcopy(lnew))
         #if the original configuration isn't in the tempsurv list or
         #the list of arrow survivors add it to the list.
-        if x not in tempsurv and x not in arsurvivors:
+        if unique == True:
             arsurvivors.append(x)
+
+        # if x not in tempsurv and x not in arsurvivors:
+        #     arsurvivors.append(x)
             
     return(arsurvivors)
+
+
