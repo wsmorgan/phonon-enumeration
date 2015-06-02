@@ -98,7 +98,7 @@ def perm(casei,colors,length,index,gen,stab,order,ast):
 
 #uses the Coefficients method from rdix_num_generator to find the
 #radix numbers for the system
-def brancher(concs,group,colors_w_arrows):
+def brancher(concs,group,colors_w_arrows, dim):
         colors = pb.color_list(colors_w_arrows)
         n = sum(concs)
         C = rng.Coefficients(concs,n)
@@ -134,11 +134,13 @@ def brancher(concs,group,colors_w_arrows):
                         if b0 == 1 or i == 0:                                
                                 if narrows > 0:
                                         brancht = list(irn.invhash(branch, concs, len(colors_w_arrows)))
+                                        print(list(branch), brancht)
                                         for z in range(len(brancht)):
                                                 brancht[z] = deepcopy(colors[brancht[z] -1])
-                                        arsurvivors = pb.add_arrows(brancht,ast)#stabalizer[i+1]A)
+                                        arsurvivors = pb.add_arrows(brancht,ast, dim)#stabalizer[i+1]A)
                                         for z in arsurvivors:
                                                 survivors.append(z)
+                                                print(z)
                                 else:
                                         survivors.append(list(irn.invhash(branch, concs, len(colors_w_arrows))))
                         if i < len(branch) - 2:

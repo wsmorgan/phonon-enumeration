@@ -40,3 +40,43 @@ def hash(listi,color):
                 li = li[p0+1:]
                 y += bc.binomial_coefficient(len(li),k-1)
         return y
+
+#ahash produces a unique number for each possible configuration. This
+#number is used to compare the order that the arrows occure in.
+#coloring is the full coloring with colors and arrows that get passed
+#in
+#arrows is the unique number that is returned by the program.
+def ahash(coloring,dim):
+
+    tarrows = []
+
+    for i in range(len(coloring)):
+        if coloring[i][1] >= 0:
+            tarrows.append(coloring[i][1])
+
+    narrow = 0
+    for i in range(len(tarrows)):
+        narrow = narrow + tarrows[i]*dim**i  
+            
+    return(narrow)
+
+#ainvhash takes a number and the number of arrows and returns the
+#arrow array associated with it.
+#anum is a unique number that is associated with an array of arrows.
+#num_of_arrows in the number of arrows that are in the array.
+def ainvhash(anum,num_of_arrrows,dim):
+        arrows = [0]*num_of_arrrows
+        for i in range(num_of_arrrows):
+                base = dim**(num_of_arrrows-1-i)
+                arrows[num_of_arrrows-1-i] = anum//base
+                anum = anum -base*(anum//base)
+        return(arrows)
+
+# arrows = [[[1,0],[1,0],[1,0],[1,0]],[[1,1],[1,0],[1,0],[1,0]],[[1,2],[1,0],[1,0],[1,0]],[[1,3],[1,0],[1,0],[1,0]],[[1,0],[1,1],[1,0],[1,0]],[[1,1],[1,1],[1,0],[1,0]],[[1,2],[1,1],[1,0],[1,0]],[[1,3],[1,1],[1,0],[1,0]],[[1,0],[1,2],[1,0],[1,0]],[[1,1],[1,2],[1,0],[1,0]],[[1,2],[1,2],[1,0],[1,0]],[[1,3],[1,2],[1,0],[1,0]]]
+
+# print(ahash(arrows))
+# print(ainvhash(ahash(arrows),4))
+# for z in arrows:
+#         print(z)
+#         print(ahash(z))
+#         print(ainvhash(ahash(z),4))
