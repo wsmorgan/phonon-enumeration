@@ -27,7 +27,7 @@ def how_many_arrows(tcol):
     arrows=0
 
     for i in tcol:
-        if i[1] >= 0:
+        if i[0] >= 0:
             arrows += 1
     return(arrows)
 
@@ -55,9 +55,9 @@ def col_sort(col_list):
     col2 = []
     colt=[]
     for i in col_list:
-        if i[1] < 0:
+        if i[0] < 0:
             col1.append(i)
-        elif i[1] >= 0:
+        elif i[0] >= 0:
             col2.append(i)
     col1 = sorted(col1, key = col1.count, reverse=True)
     col2 = sorted(col2, key = col2.count, reverse=True)
@@ -89,69 +89,67 @@ def add_arrows(col,agroup,dim):
     #Find out how many arrows there are in the col array
     narrows = how_many_arrows(col)
 
-    # largest_arrow = [dim-1]*narrows
-    
+    largest_arrow = [dim-1]*narrows
     #This array tells us when we've applied all the possible arrow
     #directions to the colors that will take arrows
-    function = np.zeros(len(col))
-    for i in range(len(col)):
-        if col[i][1] < 0:
-            function[i] = -1
-        else:
-            function[i] = dim
+    # function = np.zeros(len(col))
+    # for i in range(len(col)):
+    #     if col[i][0] < 0:
+    #         function[i] = -1
+    #     else:
+    #         function[i] = dim
 
-    #Set the branch to match the configuration of the colors that we are
-    #handed.
-    branch=[]
-    for i in col:
-        branch.append(i)
+    # #Set the branch to match the configuration of the colors that we are
+    # #handed.
+    # branch=[]
+    # for i in col:
+    #     branch.append(i)
 
-    #If there are no arrows on the lattice then append it to the survivors
-    #list and be done.
-    print('narrows', narrows)
-    i=0
-    if narrows == 0:
-        survivor.append(branch[:])
-        visited = 1
-    else:
-        visited = 0
-    #while there are arrows that still need to be rotated keep doing
-    #this. When all the elements of funtcion are zero we are done.
-    while (any(function > 0) or visited != 1):
-        visited = 0
-        if col[i][1] < 0:
-            branch[i]=branch[i]
-        elif col[i][1] >= 0:
-            branch[i][1] = advance_arrows(branch[i][1])
-            function[i] -= 1
-        else:
-            print("ERROR: cannot have an entry with more than two components.")
+    # #If there are no arrows on the lattice then append it to the survivors
+    # #list and be done.
+    # i=0
+    # if narrows == 0:
+    #     survivor.append(branch[:])
+    #     visited = 1
+    # else:
+    #     visited = 0
+    # #while there are arrows that still need to be rotated keep doing
+    # #this. When all the elements of funtcion are zero we are done.
+    # while (any(function > 0) or visited != 1):
+    #     visited = 0
+    #     if col[i][0] < 0:
+    #         branch[i]=branch[i]
+    #     elif col[i][0] >= 0:
+    #         branch[i][0] = advance_arrows(branch[i][1])
+    #         function[i] -= 1
+    #     else:
+    #         print("ERROR: cannot have an entry with more than two components.")
             
-        #If we reached the last element in our configuration save it
-        #to the survivors.
-        if i == len(col)-1:
-            survivor.append(deepcopy(branch))
-            visited = 1
-        #if we aren't on the last element of the configuration then
-        #move to the next element
-        if i != len(col) -1:
-            i += 1
-        #if we are now on an element that takes an arrow check that it
-        #still has more rotations of the arrow that need to be
-        #applied. If it does then don't switch elements. If it doesn't
-        #then move to a previouse element that still has more arrows
-        #that need to be applied and reset the funtion to it's maximum
-        #value.
-        if i >= len(col)-1 and visited==1:
-            if any(function !=0):
-                mv = 0
-                while mv ==0 and i >= 0:
-                    if function[i] <= 0 and any(function > 0):
-                        if function[i] == 0:
-                            function[i] =4
-                        i -= 1
-                    else:
-                        mv = 1
+    #     #If we reached the last element in our configuration save it
+    #     #to the survivors.
+    #     if i == len(col)-1:
+    #         survivor.append(deepcopy(branch))
+    #         visited = 1
+    #     #if we aren't on the last element of the configuration then
+    #     #move to the next element
+    #     if i != len(col) -1:
+    #         i += 1
+    #     #if we are now on an element that takes an arrow check that it
+    #     #still has more rotations of the arrow that need to be
+    #     #applied. If it does then don't switch elements. If it doesn't
+    #     #then move to a previouse element that still has more arrows
+    #     #that need to be applied and reset the funtion to it's maximum
+    #     #value.
+    #     if i >= len(col)-1 and visited==1:
+    #         if any(function !=0):
+    #             mv = 0
+    #             while mv ==0 and i >= 0:
+    #                 if function[i] <= 0 and any(function > 0):
+    #                     if function[i] == 0:
+    #                         function[i] =4
+    #                     i -= 1
+    #                 else:
+    #                     mv = 1
 
     #Now that we have all the possible ways of putting the arrows on
     #the lattice we need to check to see which of them are unique.
@@ -159,86 +157,89 @@ def add_arrows(col,agroup,dim):
     
     #tempsurv is a list of of the effects of the group operations on
     #the configurations
-    arsurvivors = []
-    tempsurv = []
-    print(survivor)
-    for x in survivor:
-        salist = rn.ahash(x,dim)
-        print(salist)
-        unique = True
-        #apply each of the group operations to the lattice.
-        for i in agroup:
-            lnew=[]
-            arrow_perm = i[1]
-            for j in i[0]:
-                nar = []
-                nar.append(x[j][0])
-                #if there is an arrow on any lattice site it needs to
-                #be updated. Otherwise just permute the colors.
-                if x[j][1] >= 0:
-                    nar.append(arrow_perm[x[j][1]])
-                else:
-                    nar.append(x[j][1])
-                lnew.append(nar)
-            #if the new configuration is not already in the list of
-            #permutations and is not the initial configuration add it
-            #to tmpsurv
-            calist = rn.ahash(lnew,dim)
-            print(calist)
-            if calist < salist:
-                unique = False
-                break
-        #if the original configuration isn't in the tempsurv list or
-        #the list of arrow survivors add it to the list.
-        if unique == True:
-            arsurvivors.append(x)
     # arsurvivors = []
     # tempsurv = []
-    # for s in range(rn.ahash(largest_arrow,dim)):
-    #     salist = s # rn.ahash(x)
-    #     x = rn.ainvhash(s,narrows,dim)
+    # print(len(survivor))
+    # for v in survivor:
+    #     print(v)
+    # exit()
+    # for x in survivor:
+    #     salist = rn.ahash(x,dim)
     #     unique = True
     #     #apply each of the group operations to the lattice.
     #     for i in agroup:
-    #         print(i)
-    #         print(i[1])
     #         lnew=[]
     #         arrow_perm = i[1]
-    #         print(arrow_perm)
-    #         print(x)
-    #         for j in range(len(x)):
-    #             print(j)
-    #             lnew.append(arrow_perm[x[j]])
-    #             # nar = []
-    #             # nar.append(x[j][0])
+    #         for j in i[0]:
+    #             nar = []
+    #             nar.append(x[j][0])
     #             #if there is an arrow on any lattice site it needs to
     #             #be updated. Otherwise just permute the colors.
-    #             # if x[j][1] >= 0:
-    #             #     nar.append(arrow_perm[x[j][1]])
-    #             # else:
-    #             #     nar.append(x[j][1])
-    #             # lnew.append(nar)
+    #             if x[j][1] >= 0:
+    #                 nar.append(arrow_perm[x[j][1]])
+    #             else:
+    #                 nar.append(x[j][1])
+    #             lnew.append(nar)
     #         #if the new configuration is not already in the list of
     #         #permutations and is not the initial configuration add it
     #         #to tmpsurv
-    #         calsit = rn.ahash(lnew,dim)
-    #         if calsit < salist:
+    #         calist = rn.ahash(lnew,dim)
+    #         if calist < salist:
     #             unique = False
     #             break
     #     #if the original configuration isn't in the tempsurv list or
     #     #the list of arrow survivors add it to the list.
     #     if unique == True:
-    #         nbranch = [0]*len(col)
-    #         i = 0
-    #         for z in range(len(col)):
-    #             if col[z][1] < 0:
-    #                 nbranch[z] = deepcopy(col[z])
-    #             elif col[z][1] >= 0:
-    #                 nbranch[z] = deepcopy(col[z])
-    #                 nbranch[z][1] = x[i]
-    #                 i += 1
+    #         arsurvivors.append(x)
+
+
+    arsurvivors = []
+    tempsurv = []
+    for s in range(rn.ahash(largest_arrow,dim)+1):
+        salist = s # rn.ahash(x)
+        x = rn.ainvhash(s,narrows,dim)
+        unique = True
+        #apply each of the group operations to the lattice.
+        for i in agroup:
+            # print(i)
+            # print(i[1])
+            lnew=[]
+            arrow_perm = i[1]
+            # print(arrow_perm)
+            # print(x)
+            for j in range(len(x)):
+                # print(j)
+                lnew.append(arrow_perm[x[j]])
+                # nar = []
+                # nar.append(x[j][0])
+                #if there is an arrow on any lattice site it needs to
+                #be updated. Otherwise just permute the colors.
+                # if x[j][1] >= 0:
+                #     nar.append(arrow_perm[x[j][1]])
+                # else:
+                #     nar.append(x[j][1])
+                # lnew.append(nar)
+            #if the new configuration is not already in the list of
+            #permutations and is not the initial configuration add it
+            #to tmpsurv
+            calsit = rn.ahash(lnew,dim)
+            if calsit < salist:
+                unique = False
+                break
+        #if the original configuration isn't in the tempsurv list or
+        #the list of arrow survivors add it to the list.
+        if unique == True:
+            nbranch = [0]*len(col)
+            i = 0
+            for z in range(len(col)):
+                if col[z][0] < 0:
+                    nbranch[z] = deepcopy(col[z])
+                elif col[z][0] >= 0:
+                    nbranch[z] = deepcopy(col[z])
+                    nbranch[z][0] = x[i]
+                    i += 1
                     
-    #         arsurvivors.append(nbranch)
+            arsurvivors.append(nbranch)
             
     return(arsurvivors)
 

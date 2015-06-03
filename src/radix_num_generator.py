@@ -48,16 +48,22 @@ def hash(listi,color):
 #arrows is the unique number that is returned by the program.
 def ahash(coloring,dim):
 
-    tarrows = []
+    # tarrows = []
 
-    for i in range(len(coloring)):
-        if coloring[i][1] >= 0:
-            tarrows.append(coloring[i][1])
+    # for i in range(len(coloring)):
+    #     if coloring[i][1] >= 0:
+    #         tarrows.append(coloring[i][1])
+
+    # narrow = 0
+    # for i in range(len(tarrows)):
+    #     narrow = narrow + tarrows[i]*dim**i  
 
     narrow = 0
-    for i in range(len(tarrows)):
-        narrow = narrow + tarrows[i]*dim**i  
-            
+    for i in range(len(coloring)):
+        narrow = narrow + coloring[i]*dim**i  
+    #     print('i',i,narrow)
+
+    # exit()
     return(narrow)
 
 #ainvhash takes a number and the number of arrows and returns the
