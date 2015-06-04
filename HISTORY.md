@@ -11,6 +11,9 @@ hash numbers.
 
 The output is now also saved to file for comparison to test cases.
 
+I also fixed a bug that occured because of the change to hash
+functions where the arrows weren't being permuted properly.
+
 ## Revision 0.2.1
 
 Changed how the code determines duplicate arrows. It now does it using
