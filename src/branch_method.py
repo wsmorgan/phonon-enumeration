@@ -13,6 +13,8 @@ from copy import deepcopy
 #represendting mixed radix numbers for the systm and colors is an
 #array of integers of equal length that represents the number of each
 #color found in our array
+#ast is the stabalizer for the final configuration that will be passed
+#to the arrow permutation routine.
 def perm(casei,colors,length,index,gen,stab,order,ast):
         #sets a test value, finds the length of the array using colors
 	unique = 0
@@ -98,6 +100,7 @@ def perm(casei,colors,length,index,gen,stab,order,ast):
 
 #uses the Coefficients method from rdix_num_generator to find the
 #radix numbers for the system
+#dim is the number of directions the arrows can point.
 def brancher(concs,group,colors_w_arrows, dim):
         colors = pb.color_list(colors_w_arrows)
         n = sum(concs)
@@ -134,13 +137,23 @@ def brancher(concs,group,colors_w_arrows, dim):
                         if b0 == 1 or i == 0:                                
                                 if narrows > 0:
                                         brancht = list(irn.invhash(branch, concs, len(colors_w_arrows)))
-                                        print(list(branch), brancht)
+                                        #stuff to be saved to file.
+                                        f = open('phonon_out.txt', 'a')
+                                        ttbranch = []
+                                        for tt in range(len(branch)-1):
+                                                ttbranch.append(int(branch[tt]))
+                                        f.write(str(ttbranch)+', ')
+                                        f.write(str(brancht)+'\n')
+                                        #make a coloring with arrows
+                                        #to be passed to the arrow
+                                        #permutiation code.
                                         for z in range(len(brancht)):
                                                 brancht[z] = deepcopy(colors[brancht[z] -1])
-                                        arsurvivors = pb.add_arrows(brancht,ast, dim)#stabalizer[i+1]A)
+                                        arsurvivors = pb.add_arrows(brancht,ast, dim)
+                                        #write the unique confgurations to file.
                                         for z in arsurvivors:
                                                 survivors.append(z)
-                                                print(z)
+                                                f.write(str(z) + '\n')
                                 else:
                                         survivors.append(list(irn.invhash(branch, concs, len(colors_w_arrows))))
                         if i < len(branch) - 2:

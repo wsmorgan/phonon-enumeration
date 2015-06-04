@@ -10,13 +10,12 @@ be the translation group of the lattice you are using. At line 21 you
 will need to change the elements of rots to be [[group operation on
 lattice],[effect on arrows]]. At present the code is only 2D so the
 effect on the arrows should be a list permutation of numbers 0 to 3
-(where 0 is up, 1 in left, 2 is down, and 3 is right) that map the
-arrows to their new orientation. At line 19 you will need to change
-the col to match your system, this is a fixed concentration code so
-the values you enter will be the values used the first number is the
-color to be used, the second number indicates if it is displaced (-1
-indicates no displacement and 0-3 indicates displacement in one of the
-directions used for the arrows).
+that map the arrows to their new orientation. At line 19 you will need
+to change the col to match your system, this is a fixed concentration
+code so the values you enter will be the values used the first
+indicates if the atom has been displaced (negative numbers indicate no
+displacement and indicate displacement in one of the directions used
+for the arrows), the second number is the color to be used.
 
 Good luck.
 

@@ -1,5 +1,16 @@
 # Revision History for "phonon-enumeration"
 
+## Revision 0.3.0
+
+Changed from the python function to a hash function of my making so
+that we could compare results easily with MatLab. Also added on
+inverse hash function for the arrows. These two changes enabled a
+major shift in how duplicates are found. Now instead of finding each
+configuration by permuting the arrows we simply loop over the possible
+hash numbers.
+
+The output is now also saved to file for comparison to test cases.
+
 ## Revision 0.2.1
 
 Changed how the code determines duplicate arrows. It now does it using
