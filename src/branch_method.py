@@ -57,7 +57,7 @@ def perm(casei,colors,length,index,gen,stab,order,ast):
                                 ast.append(a)
         elif len(stab) == 1:
                 st = stab
-                ast = ast
+                ast = stab
         elif len(stab) > 1:
                 ast = []
                 for a in stab:
@@ -142,8 +142,8 @@ def brancher(concs,group,colors_w_arrows, dim):
                                         ttbranch = []
                                         for tt in range(len(branch)-1):
                                                 ttbranch.append(int(branch[tt]))
-                                        f.write(str(ttbranch)+', ')
-                                        f.write(str(brancht)+'\n')
+                                        # f.write(str(ttbranch)+', ')
+                                        # f.write(str(brancht)+'\n')
                                         #make a coloring with arrows
                                         #to be passed to the arrow
                                         #permutiation code.

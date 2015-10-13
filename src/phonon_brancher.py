@@ -24,12 +24,16 @@ def find_concentrations(col):
 #Takes an array of colors and arrows and tells us how many different
 #colors have arrows on them.
 def how_many_arrows(tcol):
-    arrows=0
-
+    arrows = 0
+    
+    species = []
     for i in tcol:
         if i[0] >= 0:
             arrows += 1
-    return(arrows)
+            if i[1] not in species:
+                species.append(i[1])
+                      
+    return(arrows,len(species))
 
 # #color_list takes the configuration and returns a unique list of the
 # #colors used without duplicating any duplicates.
@@ -78,7 +82,7 @@ def add_arrows(col,agroup,dim):
     survivor = []
 
     #Find out how many arrows there are in the col array
-    narrows = how_many_arrows(col)
+    (narrows,arrow_types) = how_many_arrows(col)
     #largest_arrow is largest value any arrow could have.
     largest_arrow = [dim-1]*narrows
     #this is an array for storing the unique arrangements.

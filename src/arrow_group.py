@@ -6,7 +6,6 @@
 #rotations and pairs them with the combination of th arraws. If the
 #resultant operation is not in the group it then adds it to the group.
 def a_group(trans,rots):
-    q = 1
     groupi = []
     for i in trans:
         for j in rots:
