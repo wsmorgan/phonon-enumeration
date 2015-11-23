@@ -142,8 +142,14 @@ def brancher(concs,group,colors_w_arrows, dim):
                                         ttbranch = []
                                         for tt in range(len(branch)-1):
                                                 ttbranch.append(int(branch[tt]))
-                                        # f.write(str(ttbranch)+', ')
-                                        # f.write(str(brancht)+'\n')
+                                        if narrows[0] == len(brancht):
+                                                f.write('[0, '+str(ttbranch)[1:]+', ')
+                                        else:
+                                                f.write(str(ttbranch)+', ')
+                                        tbrancht = []
+                                        for tt in range(len(brancht)):
+                                                tbrancht.append(colors[brancht[tt]-1][1])
+                                        f.write(str(tbrancht)+'\n')
                                         #make a coloring with arrows
                                         #to be passed to the arrow
                                         #permutiation code.
