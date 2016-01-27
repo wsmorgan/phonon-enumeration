@@ -5,6 +5,7 @@ import phonon_brancher as pb
 import arrow_group as ar
 import polyaburnside as burn
 import time
+import random
 # import make_poster_of_arrangements as mp
 
 print("Performing initial setup:")
@@ -214,10 +215,36 @@ Concs = pb.find_concentrations(col)
 # t contains the time it took to generate the configurations.
 print("Finding unique configurations of colors and arrows.")
 if arrow_types != 0:
-    print(burn.polya(Concs,agroup,arrowings=arrow_types))
+    total_num = burn.polya(Concs,agroup,arrowings=arrow_types)
 else:
-    print(burn.polya(Concs,agroup))
-    
+    total_num = burn.polya(Concs,agroup)
+
+# Here we want to see how many of the unique configurations the use
+# actually wants. This is important because often the code will often
+# produce more configurations than are actually usefull even though
+# they are all unique. So we give the user a chance to select a random
+# subset of the data.
+print("The total number of unique configurations is: ", total_num)
+print("Do you want a list of them all or a random subset: ")
+amount_wanted = raw_input("Type 'all' to use them all or 'subset' to use a subset: ")
+
+num_wanted = 0
+
+while num_wanted == 0:
+    if amount_wanted.lower() == 'all':
+        num_wanted = total_num
+    elif amount_wanted.lower() == 'subset':
+        num_wanted = int(raw_input("Please enter the integer number you would like to use: "))
+        while num_wanted > amount_wanted:
+            print("I'm sorry but you've asked for a subset that is larger than the ")
+            print("total number of configurations.")
+            num_wanted = int(raw_input("Please inter a integer number less than " + str(total_num) + ": "))
+    else:
+        print("I'm sorry but " + amount_wanted + " is not a valid response.")
+        amount_wanted = raw_input("Please enter 'all' to use them all or 'subset' to use a subset: ")
+
+        
+
 if len(Concs) == 1 and all(col) >= 0:
     f = open('phonon_out.txt', 'a')
     f.write('[0], [')
@@ -227,13 +254,38 @@ if len(Concs) == 1 and all(col) >= 0:
     temp = temp[:-2]
     f.write(temp + ']\n')
     configs = pb.add_arrows(col,agroup,dim)
-    for z in configs:
-        f.write(str(z) + '\n')
+
+    # if no subset is wonted write the entire set of configurations to
+    # file.
+    if amount_wanted == total_num:
+        for z in configs:
+            f.write(str(z) + '\n')
+    else:
+        # if a subset is wanted then generate a list of random numbers
+        # between 1 and the total number. These are the subset that
+        # will be written to file.
+        subset = []
+        while len(subset) > amount_wanted:
+            random_num = random.randint(1,total_num)
+            if random_num  not in subset:
+                subset.append(random_num)
+        # A counter to keep track of which element of the set we're
+        # on.
+        count = 1
+        # Find the elements of z 
+        for z in config:
+            if count in subset:
+                f.write(str(z) + '\n')
+            count += 1
     f.close()
 else:
-    configs = bm.brancher(Concs,agroup,col,dim)
+    if num_wanted == total_num:
+        configs = bm.brancher(Concs,agroup,col,dim)
+    else:
+        configs = bm.brancher(Concs,agroup,col,dim,wanted=num_wanted,total=total_num)
+        
 
-print("Found all unique configurations")
+print("Found all desired unique configurations")
 print("They are can be found in 'phonon_out.txt':")
 
 f = open('phonon_out.txt', 'a')

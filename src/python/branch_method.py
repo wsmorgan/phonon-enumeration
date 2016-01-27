@@ -6,6 +6,7 @@ import Inverse_radix_num as irn
 import binomial_calculator as bc
 import phonon_brancher as pb
 from copy import deepcopy
+import random
 #this method applies a cyclical permutation to an array and removes
 #duplicates from a list if found It calls for casi, the idnumber for
 #the case to be permuted, survivors, a list of id numbers to be
@@ -98,25 +99,64 @@ def perm(casei,colors,length,index,gen,stab,order,ast):
                 unique = 1
 	return(unique,st,order,ast)
 
-#uses the Coefficients method from rdix_num_generator to find the
-#radix numbers for the system
-#dim is the number of directions the arrows can point.
-def brancher(concs,group,colors_w_arrows, dim):
+# uses the Coefficients method from rdix_num_generator to find the
+# radix numbers for the system
+# dim is the number of directions the arrows can point.
+# concs is the concentrations of the atoms
+# group is the set of group operations
+# colors_w_arrows is the colors popelating the lattice with theri
+# displacement directions indicated
+# wanted is an optional integer that indicates of a subset of the
+# total number is wanted.
+# total is an optional integer used to generate the desired subset
+def brancher(concs,group,colors_w_arrows, dim, wanted = 0, total = 0):
+        # redifine the colors so that the arrows are treated like
+        # their own color
         colors = pb.color_list(colors_w_arrows)
+        # find the total number of atoms
         n = sum(concs)
+        # Find the mixed radix number counter for the system
         C = rng.Coefficients(concs,n)
+        # count how many arrows there are
         narrows = pb.how_many_arrows(colors_w_arrows)
+        # prepare the stabalizer array
         stabalizer = [0]*len(concs)
-        cyclicgen = []
-        coluse = 1
+        # variables 
+        # cyclicgen = []
+        # coluse = 1
+        # groups is the space group
         groups = []
+        # ast is the stabalizer for the arrow permutaiton
         ast = []
+        # strip the arrows permutation from the total group action to
+        # get the space group action.
         for i in group:
                 groups.append(i[0])
         order = {}
+        # the order is used to determine which branch layer we are on
+        # so that we can move through the tree as we nee to.
         for i in range(0,bc.binomial_coefficient(sum(concs),concs[0])+1):
                 order[i] = i
 
+        # use_subset tells the code if it's only writting out a subset
+        use_subset = False
+        # generate the random subset to be used
+        if wanted != 0:
+                use_subset = True
+                subset = []
+                if total == 0:
+                        print("ERROR! We cannot find a subset of nothing.")
+                        print("Please enter the total number of unique configurations.")
+                        exit()
+                while len(subset) < wanted:
+                        random_num = random.randint(1,total)
+                        if random_num  not in subset:
+                                subset.append(random_num)
+
+        # count is an integer counter used to keep track of where in
+        # the total number of configurations we are.
+        count = 1
+        print('s',subset)
         #create the all zero branch of lables and use idnum from
         #radix_num_generator to turnit into a number and store it in
         #survivors
@@ -158,10 +198,32 @@ def brancher(concs,group,colors_w_arrows, dim):
                                         arsurvivors = pb.add_arrows(brancht,ast, dim)
                                         #write the unique confgurations to file.
                                         for z in arsurvivors:
-                                                survivors.append(z)
-                                                f.write(str(z) + '\n')
+                                                # if we aren't using a
+                                                # subset write
+                                                # everything to file.
+                                                if not use_subset:
+                                                        survivors.append(z)
+                                                        f.write(str(z) + '\n')
+                                                # if we are then we
+                                                # only want to write
+                                                # the random subset to
+                                                # file.
+                                                else:
+                                                        if count in subset:
+                                                                survivors.append(z)
+                                                                f.write(str(z) + '\n')
+                                                count += 1
                                 else:
-                                        survivors.append(list(irn.invhash(branch, concs, len(colors_w_arrows))))
+                                        # if there are no arrows just
+                                        # write the unique arrangement
+                                        # to file
+                                        if not use_subset:
+                                                survivors.append(list(irn.invhash(branch, concs, len(colors_w_arrows))))
+                                        else:
+                                                if count in subset:
+                                                        survivors.append(list(irn.invhash(branch, concs, len(colors_w_arrows))))
+                                        count += 1
+                                        
                         if i < len(branch) - 2:
                                 b0 = 0
                 if b0 == 0:
