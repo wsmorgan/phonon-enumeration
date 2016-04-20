@@ -1,299 +1,450 @@
-#phonon_enumeration.py
+"""The methods needed to take input from the user and put it in useful
+forms. Also the actual executable for the code."""
+
 #import needed modules
 import branch_method as bm
 import phonon_brancher as pb
 import arrow_group as ar
 import polyaburnside as burn
-import time
+from polya import polya
 import random
-# import make_poster_of_arrangements as mp
+import os
+import math
+import itertools as it
+from structures import enum_data
+from copy import deepcopy
+import io_utils as io
 
-print("Performing initial setup:")
-start = time.clock()
-#initialize the needed inputs generators is a 2D array that contains
-#the generators for the group to be used.  col is a 1D array thot
-#contians the colors to be used in the enumeration: a number combined
-#with a negative number, i.e. [-1,1], means the atom is not being
-#displaced, a number combined with a positive number between 0 and 3,
-#i.e. [1,1] means that the atom is being displaced.
-#trans is the quotient group, or translations of the lattice
-#rots is the group of rotations on the lattice paired with their
-#effects on the arrows.
+# hard coded error tolerance. This will need to go away and become
+# part of the input files later.
+eps = 1e-7
 
-# out_toy_2
-dim = 6
-col = [[-1,1],[1,2]]
-trans = [[0,1],[1,0]]
-rots = [[[0,1],[0,1,2,3,4,5]],[[1,0],[2,3,0,1,5,4]],[[1,0],[2,1,0,3,5,4]],[[0,1],[0,3,2,1,5,4]]]
+def get_concs_for_size(size,nspecies,res_concs,nB,concs):
+    """Gets the concentration ranges for the atoms within the cells of
+      certain sizes given the constraints provided such as
+      concentration restrictions and the presence of arrows. Code
+      rewritten from the get_conetration_list subroutine of:
+      https://github.com/msg-byu/enumlib/blob/master/src/derivative_structure_generator.f90  
 
-# out_toy_3
-# dim = 6
-# col = [[-1,1],[1,2]]
-# trans = [[0,1],[1,0]]
-# rots = [[[0,1],[0,1,2,3,4,5]],[[1,0],[2,3,0,1,5,4]],[[1,0],[2,1,0,3,5,4]],[[0,1],[0,3,2,1,5,4]],[[0,1],[0,4,2,5,3,1]],[[0,1],[0,5,2,4,1,3]]]
+      :arg size: the cell size in integer form
+      :arg nspecies: the number of atomic species in the system
+      :arg res_concs: a logical that indicates of the concentrations
+      are being restricted
+      :arg nB: the number of basis vectors being used
+      :arg concs: an 2D integer array that contains the concentration
+      ranges for each atom in the system
 
-# out_toy_1
-# dim = 6
-# col = [[-1,1],[-1,2]]
-# trans = [[0,1],[1,0]]
-# rots = [[[0,1],[0,1,2,3,4,5]],[[1,0],[2,3,0,1,5,4]],[[1,0],[2,1,0,3,5,4]],[[0,1],[0,3,2,1,5,4]]]
+    """
+    if res_concs == True:
+        denom = concs[0][2]
+        volTable = []
+        for atom in concs:
+            minc = min(atom[0:2])
+            maxc = max(atom[0:2])
+            volTable.append([int(math.floor(float(minc)/denom*size*nB)),int(math.ceil(float(maxc)/denom*size*nB)),size*nB])
 
-# out_3g_3
-# dim = 6
-# col = [[1,1],[1,2],[1,3],[1,4]]
-# trans = [[j-1 for j in i] for i in [[1, 2, 3, 4], [2, 1, 4, 3], [3, 4, 1, 2], [4, 3, 2, 1]]]
-# rots = [[[j-1 for j in i] for i in t] for t in [[[1, 2, 3, 4], [1, 2, 3, 4, 5, 6]], [[1, 4, 3, 2], [1, 3, 2, 4, 6, 5]], [[1, 2, 3, 4], [4, 2, 3, 1, 5, 6]], [[1, 4, 3, 2], [4, 3, 2, 1, 6, 5]], [[1, 2, 3, 4], [1, 5, 3, 4, 2, 6]], [[1, 4, 3, 2], [1, 3, 5, 4, 6, 2]], [[1, 2, 3, 4], [4, 5, 3, 1, 2, 6]], [[1, 4, 3, 2], [4, 3, 5, 1, 6, 2]], [[1, 2, 3, 4], [1, 2, 6, 4, 5, 3]], [[1, 4, 3, 2], [1, 6, 2, 4, 3, 5]], [[1, 2, 3, 4], [4, 2, 6, 1, 5, 3]], [[1, 4, 3, 2], [4, 6, 2, 1, 3, 5]], [[1, 2, 3, 4], [1, 5, 6, 4, 2, 3]], [[1, 4, 3, 2], [1, 6, 5, 4, 3, 2]], [[1, 2, 3, 4], [4, 5, 6, 1, 2, 3]], [[1, 4, 3, 2], [4, 6, 5, 1, 3, 2]]]]
+        n = volTable[0][2]
+        digit = [volTable[i][1]-volTable[i][0] for i in range(len(volTable))]
+        digCnt = [0*i for i in range(len(volTable))]
+        k = len(volTable)
 
-# out_3g_2
-# dim = 6
-# col = [[1,1],[1,1],[1,1],[1,1]]
-# trans = [[j-1 for j in i] for i in [[1, 2, 3, 4], [2, 1, 4, 3], [3, 4, 1, 2], [4, 3, 2, 1]]]
-# rots = [[[j-1 for j in i] for i in t] for t in [[[1, 2, 3, 4], [1, 2, 3, 4, 5, 6]], [[1, 4, 3, 2], [1, 3, 2, 4, 6, 5]], [[1, 2, 3, 4], [4, 2, 3, 1, 5, 6]], [[1, 4, 3, 2], [4, 3, 2, 1, 6, 5]], [[1, 2, 3, 4], [1, 5, 3, 4, 2, 6]], [[1, 4, 3, 2], [1, 3, 5, 4, 6, 2]], [[1, 2, 3, 4], [4, 5, 3, 1, 2, 6]], [[1, 4, 3, 2], [4, 3, 5, 1, 6, 2]], [[1, 2, 3, 4], [1, 2, 6, 4, 5, 3]], [[1, 4, 3, 2], [1, 6, 2, 4, 3, 5]], [[1, 2, 3, 4], [4, 2, 6, 1, 5, 3]], [[1, 4, 3, 2], [4, 6, 2, 1, 3, 5]], [[1, 2, 3, 4], [1, 5, 6, 4, 2, 3]], [[1, 4, 3, 2], [1, 6, 5, 4, 3, 2]], [[1, 2, 3, 4], [4, 5, 6, 1, 2, 3]], [[1, 4, 3, 2], [4, 6, 5, 1, 3, 2]]]]
+        label = []
+        minv = []
+        maxv = []
+        for i in range(k):
+            label.append(range(volTable[i][0],volTable[i][1]+1))
+            minv.append(float(min([concs[i][0],concs[i][1]]))/concs[i][2])
+            maxv.append(float(max([concs[i][0],concs[i][1]]))/concs[i][2])
 
-# out_3g_1
-# dim = 6
-# col = [[1, 2], [1, 3], [1, 4], [1, 4]]
-# trans = [[j-1 for j in i] for i in [[1, 2, 3, 4], [2, 1, 4, 3], [3, 4, 1, 2], [4, 3, 2, 1]]]
-# rots = [[[j-1 for j in i] for i in t] for t in [[[1, 2, 3, 4], [1, 2, 3, 4, 5, 6]], [[1, 4, 3, 2], [1, 3, 2, 4, 6, 5]], [[1, 2, 3, 4], [4, 2, 3, 1, 5, 6]], [[1, 4, 3, 2], [4, 3, 2, 1, 6, 5]], [[1, 2, 3, 4], [1, 5, 3, 4, 2, 6]], [[1, 4, 3, 2], [1, 3, 5, 4, 6, 2]], [[1, 2, 3, 4], [4, 5, 3, 1, 2, 6]], [[1, 4, 3, 2], [4, 3, 5, 1, 6, 2]], [[1, 2, 3, 4], [1, 2, 6, 4, 5, 3]], [[1, 4, 3, 2], [1, 6, 2, 4, 3, 5]], [[1, 2, 3, 4], [4, 2, 6, 1, 5, 3]], [[1, 4, 3, 2], [4, 6, 2, 1, 3, 5]], [[1, 2, 3, 4], [1, 5, 6, 4, 2, 3]], [[1, 4, 3, 2], [1, 6, 5, 4, 3, 2]], [[1, 2, 3, 4], [4, 5, 6, 1, 2, 3]], [[1, 4, 3, 2], [4, 6, 5, 1, 3, 2]]]]
-
-# out_3f_1 12392
-# dim = 6
-# col = [[-1, 1], [1, 2], [1, 2], [1, 3], [1, 3], [1, 3]]
-# trans = [[j-1 for j in i] for i in [[1, 2, 3, 4, 5, 6], [2, 3, 4, 5, 6, 1], [3, 4, 5, 6, 1, 2], [4, 5, 6, 1, 2, 3], [5, 6, 1, 2, 3, 4], [6, 1, 2, 3, 4, 5]]]
-# rots = [[[j-1 for j in i] for i in t] for t in [[[1, 2, 3, 4, 5, 6], [1, 2, 3, 4, 5, 6]], [[1, 2, 3, 4, 5, 6], [4, 2, 3, 1, 5, 6]], [[1, 2, 3, 4, 5, 6], [1, 5, 3, 4, 2, 6]], [[1, 2, 3, 4, 5, 6], [4, 5, 3, 1, 2, 6]], [[1, 6, 5, 4, 3, 2], [1, 2, 6, 4, 5, 3]], [[1, 6, 5, 4, 3, 2], [4, 2, 6, 1, 5, 3]], [[1, 6, 5, 4, 3, 2], [1, 5, 6, 4, 2, 3]], [[1, 6, 5, 4, 3, 2], [4, 5, 6, 1, 2, 3]]]]
-
-# out_3e_1 6876
-# dim = 6
-# col = [[-1, 1], [-1, 2], [1, 3], [1, 3], [1, 4], [1, 4]]
-# trans = [[j-1 for j in i] for i in [[1, 2, 3, 4, 5, 6], [2, 3, 4, 5, 6, 1], [3, 4, 5, 6, 1, 2], [4, 5, 6, 1, 2, 3], [5, 6, 1, 2, 3, 4], [6, 1, 2, 3, 4, 5]]]
-# rots = [[[j-1 for j in i] for i in t] for t in [[[1, 2, 3, 4, 5, 6], [1, 2, 3, 4, 5, 6]], [[1, 2, 3, 4, 5, 6], [4, 2, 3, 1, 5, 6]], [[1, 2, 3, 4, 5, 6], [1, 5, 3, 4, 2, 6]], [[1, 2, 3, 4, 5, 6], [4, 5, 3, 1, 2, 6]], [[1, 6, 5, 4, 3, 2], [1, 2, 6, 4, 5, 3]], [[1, 6, 5, 4, 3, 2], [4, 2, 6, 1, 5, 3]], [[1, 6, 5, 4, 3, 2], [1, 5, 6, 4, 2, 3]], [[1, 6, 5, 4, 3, 2], [4, 5, 6, 1, 2, 3]]]]
-
-# out_3d_2 9348
-# dim = 6
-# col = [[-1, 1], [-1, 1], [-1, 1], [-1, 2], [-1, 2], [1, 3], [1, 4], [1, 4]]
-# trans = [[j-1 for j in i] for i in [[1, 2, 3, 4, 5, 6, 7, 8], [2, 1, 4, 3, 6, 5, 8, 7], [3, 4, 5, 6, 7, 8, 1, 2], [4, 3, 6, 5, 8, 7, 2, 1], [5, 6, 7, 8, 1, 2, 3, 4], [6, 5, 8, 7, 2, 1, 4, 3], [7, 8, 1, 2, 3, 4, 5, 6], [8, 7, 2, 1, 4, 3, 6, 5]]]
-# rots = [[[j-1 for j in i] for i in t] for t in [[[1, 2, 3, 4, 5, 6, 7, 8], [1, 2, 3, 4, 5, 6]], [[1, 2, 3, 4, 5, 6, 7, 8], [4, 2, 3, 1, 5, 6]], [[1, 2, 3, 4, 5, 6, 7, 8], [1, 5, 3, 4, 2, 6]], [[1, 2, 3, 4, 5, 6, 7, 8], [4, 5, 3, 1, 2, 6]], [[1, 2, 7, 8, 5, 6, 3, 4], [1, 2, 6, 4, 5, 3]], [[1, 2, 7, 8, 5, 6, 3, 4], [4, 2, 6, 1, 5, 3]], [[1, 2, 7, 8, 5, 6, 3, 4], [1, 5, 6, 4, 2, 3]], [[1, 2, 7, 8, 5, 6, 3, 4], [4, 5, 6, 1, 2, 3]]]]
-
-# out_3h_1 17538
-# dim = 6
-# col=[[1,2],[1,2],[1,3],[1,3],[1,3],[1,3]]
-# trans = [[j-1 for j in i] for i in[[1, 2, 3, 4, 5, 6],[2, 3, 4, 5, 6, 1], [3, 4, 5, 6, 1, 2], [4, 5, 6, 1, 2, 3], [5, 6, 1, 2, 3, 4], [6, 1, 2, 3, 4, 5]]]
-# rots = [[[j -1 for j in i] for i in t] for t in[[[1, 2, 3, 4, 5, 6], [1, 2, 3, 4, 5, 6]], [[1, 2, 3, 4, 5, 6], [4, 2, 3, 1, 5, 6]], [[1, 2, 3, 4, 5, 6], [1, 5, 3, 4, 2, 6]], [[1, 2, 3, 4, 5, 6], [4, 5, 3, 1, 2, 6]], [[1, 6, 5, 4, 3, 2], [1, 2, 6, 4, 5, 3]], [[1, 6, 5, 4, 3, 2], [4, 2, 6, 1, 5, 3]], [[1, 6, 5, 4, 3, 2], [1, 5, 6, 4, 2, 3]], [[1, 6, 5, 4, 3, 2], [4, 5, 6, 1, 2, 3]]]]
-
-#presentation group
-# dim = 6
-# col = [[1,1],[1,1],[-1,1],[-1,1],[-1,1],[-1,2],[-1,2],[-1,2],[-1,2]]
-# # col = [[-1,1],[-1,1],[-1,1],[-1,2],[-1,2],[-1,2],[-1,2],[1,1],[1,1]]
-# trans = [[j - 1 for j in i] for i in [[1,2,3,4,5,6,7,8,9], [3,1,2,6,4,5,9,7,8], [2,3,1,5,6,4,8,9,7],[7,8,9,1,2,3,4,5,6], [9,7,8,3,1,2,6,4,5], [8,9,7,2,3,1,5,6,4], [4,5,6,7,8,9,1,2,3], [6,4,5,9,7,8,3,1,2], [5,6,4,8,9,7,2,3,1]]]
-# rots = [[[j - 1 for j in i] for i in t] for t in [[[1,2,3,4,5,6,7,8,9],[1,2,3,4,5,6]], [[3,6,9,2,5,8,1,4,7],[3,4,2,1,5,6]], [[9,8,7,6,5,4,3,2,1],[2,1,4,3,5,6]], [[7,4,1,8,5,2,9,6,3],[4,3,1,2,5,6]], [[1,4,7,2,5,8,3,6,9],[3,4,1,2,6,5]], [[9,6,3,8,5,2,7,4,1],[4,3,2,1,6,5]], [[7,8,9,4,5,6,1,2,3],[1,2,4,3,6,5]], [[3,2,1,6,5,4,9,8,7],[2,1,3,4,6,5]]]]
-
-# out_3d_1 9348
-# dim = 6
-# col = [[-1, 1], [-1, 1], [-1, 2], [-1, 2], [-1, 2], [0, 3], [0, 4], [0, 4]]
-# trans =[[j - 1 for j in i] for i in[[1, 2, 3, 4, 5, 6, 7, 8], [2, 1, 4, 3, 6, 5, 8, 7], [3, 4, 5, 6, 7, 8, 1, 2], [4, 3, 6, 5, 8, 7, 2, 1], [5, 6, 7, 8, 1, 2, 3, 4], [6, 5, 8, 7, 2, 1, 4, 3], [7, 8, 1, 2, 3, 4, 5, 6], [8, 7, 2, 1, 4, 3, 6, 5]]]
-# rots = [[[j - 1 for j in i] for i in t] for t in [[[1, 2, 3, 4, 5, 6, 7, 8], [1, 2, 3, 4, 5, 6]], [[1, 2, 3, 4, 5, 6, 7, 8], [4, 2, 3, 1, 5, 6]], [[1, 2, 3, 4, 5, 6, 7, 8], [1, 5, 3, 4, 2, 6]], [[1, 2, 3, 4, 5, 6, 7, 8], [4, 5, 3, 1, 2, 6]], [[1, 2, 7, 8, 5, 6, 3, 4], [1, 2, 6, 4, 5, 3]], [[1, 2, 7, 8, 5, 6, 3, 4], [4, 2, 6, 1, 5, 3]], [[1, 2, 7, 8, 5, 6, 3, 4], [1, 5, 6, 4, 2, 3]], [[1, 2, 7, 8, 5, 6, 3, 4], [4, 5, 6, 1, 2, 3]]]]
-
-#p10 22704
-# dim = 4
-# col = [[-1,1],[-1,1],[-1,2],[-1,2],[0,4],[0,4],[0,5],[0,5]]
-# trans =[[j - 1 for j in i] for i in[[1,2,3,4,5,6,7,8], [2,1,4,3,6,5,8,7], [3,4,5,6,7,8,1,2], [4,3,6,5,8,7,2,1], [5,6,7,8,1,2,3,4], [6,5,8,7,2,1,4,3], [7,8,1,2,3,4,5,6], [8,7,2,1,4,3,6,5]]]
-# rots = [[[0,1,2,3,4,5,6,7],[0,1,2,3]],[[0,1,2,3,4,5,6,7],[2,1,0,3]],[[0,1,6,7,4,5,2,3],[0,3,2,1]],[[0,1,6,7,4,5,2,3],[2,3,0,1]]]
-
-#p9 37
-# dim = 4
-# col = [[-1,1],[-1,1],[-1,1],[0,1],[0,2],[0,2],[0,3],[0,3]]
-# trans =[[j - 1 for j in i] for i in[[1,2,3,4,5,6,7,8], [2,1,4,3,6,5,8,7], [3,4,5,6,7,8,1,2], [4,3,6,5,8,7,2,1], [5,6,7,8,1,2,3,4], [6,5,8,7,2,1,4,3], [7,8,1,2,3,4,5,6], [8,7,2,1,4,3,6,5]]]
-# rots = [[[0,1,2,3,4,5,6,7],[0,1,2,3]],[[0,1,2,3,4,5,6,7],[2,1,0,3]],[[0,1,6,7,4,5,2,3],[0,3,2,1]],[[0,1,6,7,4,5,2,3],[2,3,0,1]]]
-
-#p8 1387
-# dim = 4
-# col = [[-1,1],[-1,1],[-1,1],[-1,1],[-1,1],[-1,1],[-1,1],[-1,1],[-1,1],[-1,2],[-1,2],[-1,2],[-1,2],[-1,2],[-1,2],[-1,2],[-1,2],[-1,2]]
-# trans =[[j - 1 for j in i] for i in[[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18], [2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,1], [3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,1,2], [4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,1,2,3], [5,6,7,8,9,10,11,12,13,14,15,16,17,18,1,2,3,4], [6,7,8,9,10,11,12,13,14,15,16,17,18,1,2,3,4,5], [7,8,9,10,11,12,13,14,15,16,17,18,1,2,3,4,5,6], [8,9,10,11,12,13,14,15,16,17,18,1,2,3,4,5,6,7], [9,10,11,12,13,14,15,16,17,18,1,2,3,4,5,6,7,8], [10,11,12,13,14,15,16,17,18,1,2,3,4,5,6,7,8,9], [11,12,13,14,15,16,17,18,1,2,3,4,5,6,7,8,9,10], [12,13,14,15,16,17,18,1,2,3,4,5,6,7,8,9,10,11], [13,14,15,16,17,18,1,2,3,4,5,6,7,8,9,10,11,12], [14,15,16,17,18,1,2,3,4,5,6,7,8,9,10,11,12,13], [15,16,17,18,1,2,3,4,5,6,7,8,9,10,11,12,13,14], [16,17,18,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15], [17,18,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16], [18,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17]]]
-# rots = [[[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17],[0,1,2,3]],[[0,17,16,15,14,13,12,11,10,9,8,7,6,5,4,3,2,1],[2,3,0,2]]]
-
-#o22 4504
-# dim = 4
-# col = [[-1,1],[-1,1],[-1,1],[-1,2],[-1,2],[-1,2],[3,3],[3,4],[3,4]]
-# trans =[[j - 1 for j in i] for i in [[1, 2, 3, 4, 5, 6, 7, 8, 9], [2, 3, 1, 5, 6, 4, 8, 9, 7], [3, 1, 2, 6, 4, 5, 9, 7, 8], [4, 5, 6, 7, 8, 9, 1, 2, 3], [5, 6, 4, 8, 9, 7, 2, 3, 1], [6, 4, 5, 9, 7, 8, 3, 1, 2], [7, 8, 9, 1, 2, 3, 4, 5, 6], [8, 9, 7, 2, 3, 1, 5, 6, 4], [9, 7, 8, 3, 1, 2, 6, 4, 5]]]
-# rots = [[[0,1,2,3,4,5,6,7,8],[0,1,2,3]],[[0,1,2,8,6,7,4,5,3],[2,1,0,3]],[[0,2,1,4,3,5,8,7,6],[0,3,2,1]],[[0,2,1,6,8,7,3,5,4],[2,3,0,1]],[[0,7,5,6,4,2,3,1,8],[1,0,3,2]],[[0,7,5,8,3,1,4,2,6],[3,0,1,2]],[[0,5,7,4,6,2,8,1,3],[1,2,3,0]],[[0,5,7,3,8,1,6,2,4],[3,2,1,0]]]
-
-#p7 1750320
-# dim = 4
-# col = [[-1,1],[-1,1],[-1,1],[-1,1],[-1,1],[-1,1],[-1,1],[-1,1],[-1,2],[-1,2],[-1,2],[-1,2],[-1,2],[-1,2],[-1,2],[-1,2],[0,3],[0,4]]
-# trans =[[j - 1 for j in i] for i in[[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18], [2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,1], [3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,1,2], [4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,1,2,3], [5,6,7,8,9,10,11,12,13,14,15,16,17,18,1,2,3,4], [6,7,8,9,10,11,12,13,14,15,16,17,18,1,2,3,4,5], [7,8,9,10,11,12,13,14,15,16,17,18,1,2,3,4,5,6], [8,9,10,11,12,13,14,15,16,17,18,1,2,3,4,5,6,7], [9,10,11,12,13,14,15,16,17,18,1,2,3,4,5,6,7,8], [10,11,12,13,14,15,16,17,18,1,2,3,4,5,6,7,8,9], [11,12,13,14,15,16,17,18,1,2,3,4,5,6,7,8,9,10], [12,13,14,15,16,17,18,1,2,3,4,5,6,7,8,9,10,11], [13,14,15,16,17,18,1,2,3,4,5,6,7,8,9,10,11,12], [14,15,16,17,18,1,2,3,4,5,6,7,8,9,10,11,12,13], [15,16,17,18,1,2,3,4,5,6,7,8,9,10,11,12,13,14], [16,17,18,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15], [17,18,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16], [18,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17]]]
-# rots = [[[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17],[0,1,2,3]],[[0,17,16,15,14,13,12,11,10,9,8,7,6,5,4,3,2,1],[2,3,0,2]]]
-
-#o10 13896
-# dim = 4
-# col = [[-1,1],[-1,1],[-1,1],[-1,1],[-1,1],[-1,2],[-1,2],[-1,2],[-1,2],[-1,2],[3,3],[3,4]]
-# trans =[[j - 1 for j in i] for i in[[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12], [2, 1, 4, 3, 6, 5, 8, 7, 10, 9, 12, 11], [3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 1, 2], [4, 3, 6, 5, 8, 7, 10, 9, 12, 11, 2, 1], [5, 6, 7, 8, 9, 10, 11, 12, 1, 2, 3, 4], [6, 5, 8, 7, 10, 9, 12, 11, 2, 1, 4, 3], [7, 8, 9, 10, 11, 12, 1, 2, 3, 4, 5, 6], [8, 7, 10, 9, 12, 11, 2, 1, 4, 3, 6, 5], [9, 10, 11, 12, 1, 2, 3, 4, 5, 6, 7, 8], [10, 9, 12, 11, 2, 1, 4, 3, 6, 5, 8, 7], [11, 12, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10], [12, 11, 2, 1, 4, 3, 6, 5, 8, 7, 10, 9]]]
-# rots = [[[0,1,2,3,4,5,6,7,8,9,10,11],[0,1,2,3]],[[0,1,2,3,4,5,6,7,8,9,10,11],[2,1,0,3]],[[0,1,10,11,8,9,6,7,4,5,2,3],[0,3,2,1]],[[0,1,10,11,8,9,6,7,4,5,2,3],[2,3,0,1]]]
-
-#o25 14344
-# dim = 4
-# col = [[-1,1],[-1,2],[-1,2],[-1,2],[3,3],[3,3],[3,4],[3,4]]
-# trans =[[j - 1 for j in i] for i in[[1, 2, 3, 4, 5, 6, 7, 8], [2, 1, 4, 3, 6, 5, 8, 7], [3, 4, 5, 6, 7, 8, 1, 2], [4, 3, 6, 5, 8, 7, 2, 1], [5, 6, 7, 8, 1, 2, 3, 4], [6, 5, 8, 7, 2, 1, 4, 3], [7, 8, 1, 2, 3, 4, 5, 6], [8, 7, 2, 1, 4, 3, 6, 5]]]
-# rots = [[[0,1,2,3,4,5,6,7],[0,1,2,3]],[[0,1,2,3,4,5,6,7],[2,1,0,3]],[[0,1,6,7,4,5,2,3],[0,3,2,1]],[[0,1,6,7,4,5,2,3],[2,3,0,1]]]
-
-#o21 3803
-# dim = 4
-# col = [[-1,1],[-1,1],[-1,2],[-1,2],[-1,2],[3,3],[3,4],[3,4]]
-# trans =[[j - 1 for j in i] for i in[[1, 2, 3, 4, 5, 6, 7, 8], [2, 1, 4, 3, 6, 5, 8, 7], [3, 4, 5, 6, 7, 8, 1, 2], [4, 3, 6, 5, 8, 7, 2, 1], [5, 6, 7, 8, 1, 2, 3, 4], [6, 5, 8, 7, 2, 1, 4, 3], [7, 8, 1, 2, 3, 4, 5, 6], [8, 7, 2, 1, 4, 3, 6, 5]]]
-# rots = [[[0,1,2,3,4,5,6,7],[0,1,2,3]],[[0,1,2,3,4,5,6,7],[2,1,0,3]],[[0,1,6,7,4,5,2,3],[0,3,2,1]],[[0,1,6,7,4,5,2,3],[2,3,0,1]]]
-
-#p6 1282
-# dim = 4
-# col = [[1,-3],[1,-3],[1,-3],[1,-3],[1,-3],[1,-3],[1,-3],[1,-3],[1,-3],[1,-3],[2,-3],[2,-3],[2,-3],[2,-3],[2,-3],[2,-3],[2,-3],[2,-3]]
-# trans =[[j - 1 for j in i] for i in[[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18], [2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,1], [3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,1,2], [4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,1,2,3], [5,6,7,8,9,10,11,12,13,14,15,16,17,18,1,2,3,4], [6,7,8,9,10,11,12,13,14,15,16,17,18,1,2,3,4,5], [7,8,9,10,11,12,13,14,15,16,17,18,1,2,3,4,5,6], [8,9,10,11,12,13,14,15,16,17,18,1,2,3,4,5,6,7], [9,10,11,12,13,14,15,16,17,18,1,2,3,4,5,6,7,8], [10,11,12,13,14,15,16,17,18,1,2,3,4,5,6,7,8,9], [11,12,13,14,15,16,17,18,1,2,3,4,5,6,7,8,9,10], [12,13,14,15,16,17,18,1,2,3,4,5,6,7,8,9,10,11], [13,14,15,16,17,18,1,2,3,4,5,6,7,8,9,10,11,12], [14,15,16,17,18,1,2,3,4,5,6,7,8,9,10,11,12,13], [15,16,17,18,1,2,3,4,5,6,7,8,9,10,11,12,13,14], [16,17,18,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15], [17,18,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16], [18,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17]]]
-# rots = [[[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17],[0,1,2,3]],[[0,17,16,15,14,13,12,11,10,9,8,7,6,5,4,3,2,1],[2,3,0,2]]]
-
-#p5 392090720
-# dim = 4
-# col = [[1,-3],[1,-3],[1,-3],[1,-3],[1,-3],[1,-3],[1,-3],[1,-3],[2,-3],[2,-3],[2,-3],[2,-3],[2,-3],[2,-3],[3,3],[3,3],[4,3],[4,3]]
-# trans =[[j - 1 for j in i] for i in[[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18], [2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,1], [3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,1,2], [4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,1,2,3], [5,6,7,8,9,10,11,12,13,14,15,16,17,18,1,2,3,4], [6,7,8,9,10,11,12,13,14,15,16,17,18,1,2,3,4,5], [7,8,9,10,11,12,13,14,15,16,17,18,1,2,3,4,5,6], [8,9,10,11,12,13,14,15,16,17,18,1,2,3,4,5,6,7], [9,10,11,12,13,14,15,16,17,18,1,2,3,4,5,6,7,8], [10,11,12,13,14,15,16,17,18,1,2,3,4,5,6,7,8,9], [11,12,13,14,15,16,17,18,1,2,3,4,5,6,7,8,9,10], [12,13,14,15,16,17,18,1,2,3,4,5,6,7,8,9,10,11], [13,14,15,16,17,18,1,2,3,4,5,6,7,8,9,10,11,12], [14,15,16,17,18,1,2,3,4,5,6,7,8,9,10,11,12,13], [15,16,17,18,1,2,3,4,5,6,7,8,9,10,11,12,13,14], [16,17,18,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15], [17,18,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16], [18,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17]]]
-# rots = [[[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17],[0,1,2,3]],[[0,17,16,15,14,13,12,11,10,9,8,7,6,5,4,3,2,1],[2,3,0,2]]]
-
-# dim = 4
-# col = [[1,1],[2,-1],[3,-1],[3,-1]]
-# trans = [[0,1,2,3],[1,2,3,0],[2,3,0,1],[3,0,1,2]]
-# rots = [[[0,1,2,3],[0,1,2,3]],[[0,1,2,3],[2,1,0,3]],[[0,3,2,1],[0,3,2,1]],[[0,3,2,1],[2,3,0,1]]]
-
-# dim = 4
-# col = [[1,-1],[1,0],[2,0],[3,0],[1,0],[2,0]]
-# trans = [[0,1,2,3,4,5],[1,2,3,4,5,0],[2,3,4,5,0,1],[3,4,5,0,1,2],[4,5,0,1,2,3],[5,0,1,2,3,4]]
-# rots = [[[0,1,2,3,4,5],[0,1,2,3]],[[0,1,2,3,4,5],[2,1,0,3]],[[0,5,4,3,2,1],[0,3,2,1]],[[0,5,4,3,2,1],[2,3,0,1]]]
-
-# dim = 4
-# col = [[1,-3],[1,-3],[1,-3],[2,-3],[3,3],[3,3],[3,3],[4,3]]
-# trans = [[0,1,2,3,4,5,6,7],[1,0,3,2,5,4,7,6],[2,3,4,5,6,7,0,1],[3,2,5,4,7,6,1,0],[4,5,6,7,0,1,2,3],[5,4,7,6,1,0,3,2],[6,7,0,1,2,3,4,5],[7,6,1,0,3,2,5,4]]
-# rots = [[[0,1,2,3,4,5,6,7],[0,1,2,3]],[[0,1,2,3,4,5,6,7],[2,1,0,3]],[[0,1,6,7,4,5,2,3],[0,3,2,1]],[[0,1,6,7,4,5,2,3],[2,3,0,1]]]
-
-# p1
-# dim = 4
-# col = [[-1,1],[-1,2],[0,3],[0,4]]
-# trans = [[0,1,2,3],[1,0,3,2],[2,3,0,1],[3,2,1,0]]
-# rots = [[[0,1,2,3],[0,1,2,3]],[[0,1,2,3],[2,1,0,3]],[[0,1,2,3],[0,3,2,1]],[[0,1,2,3],[2,3,0,1]],[[0,3,2,1],[1,0,3,2]],[[0,3,2,1],[3,0,1,2]],[[0,3,2,1],[1,2,3,0]],[[0,3,2,1],[3,2,1,0]]]
-
-# dim = 4
-# col=[[1,-1],[1,-1],[1,-1],[2,1],[1,-1],[1,-1],[1,-1],[1,-1],[1,1]]
-# trans=[[0,1,2,3,4,5,6,7,8],[1,2,0,4,5,3,7,8,6],[2,0,1,5,3,4,8,6,7],[3,4,5,6,7,8,0,1,2],[4,5,3,7,8,6,1,2,0],[5,3,4,8,6,7,2,0,1],[6,7,8,0,1,2,3,4,5],[7,8,6,1,2,0,4,5,3],[8,6,7,2,0,1,5,3,4]]
-# rots=[[[0,1,2,3,4,5,6,7,8],[0,1,2,3]],[[2,5,8,1,4,7,0,3,6],[1,2,3,0]],[[8,7,6,5,4,3,2,1,0],[2,3,0,1]],[[6,3,0,7,4,1,8,5,2],[3,0,1,2]],[[8,5,2,7,4,1,6,3,0],[1,0,3,2]],[[0,3,6,1,4,7,2,5,8],[3,2,1,0]],[[2,1,0,5,4,3,8,7,6],[0,3,2,1]],[[6,7,8,3,4,5,0,1,2],[2,1,0,3]]]
-
-# dim = 4
-# trans = [[0,1,2,3,4,5],[1,2,0,5,4,3],[2,0,1,4,5,3],[5,4,3,2,1,0],[4,3,5,0,2,1],[3,5,4,1,0,2]]
-# rots = [[[0,1,2,3,4,5],[0,1,2,3]],[[3,4,5,0,1,2],[2,3,0,1]],[[5,4,3,2,1,0],[2,1,0,3]],[[2,1,0,5,4,3],[0,3,2,1]]]
-# col = [[3,-1],[1,-1],[2,1],[2,1],[1,-1],[1,-1]]                                  
-
-#we start by sorting the colors to be used so that arraws appear last
-#and the highest concentration of the colors is handled first.
-# col = pb.col_sort(col)
-f = open('phonon_out.txt', 'w+')
-f.write('')
-
-# col = pb.col_sort(col)
-
-print('Now combining the effect of the arrows with the group action.')
-#Find the group using the translations and the rotations of the
-#lattice.
-agroup = ar.a_group(trans,rots)
-
-print('Done!')
-print(agroup)
-
-#We also need to know the concentrations of the atoms as they 
-#occure in the sorted list. This will be stored in concs.
-Concs = pb.find_concentrations(col)
-(n_arrows,arrow_types) = pb.how_many_arrows(col)
-
-# generate the list of symmentrically distinct configurations for the
-# different colors being used. Each if a color has on arrow on it then
-# it is treated as it's own color.
-#Concs is the list of concentrations of each color.
-# group contains the full group from the generators.
-#col is the sorted list of the colors.
-# configs contains the list of unique configurations.
-# t contains the time it took to generate the configurations.
-print("Finding unique configurations of colors and arrows.")
-if arrow_types != 0:
-    total_num = burn.polya(Concs,agroup,arrowings=arrow_types)
-else:
-    total_num = burn.polya(Concs,agroup)
-
-# Here we want to see how many of the unique configurations the use
-# actually wants. This is important because often the code will often
-# produce more configurations than are actually usefull even though
-# they are all unique. So we give the user a chance to select a random
-# subset of the data.
-print("The total number of unique configurations is: ", total_num)
-print("Do you want a list of them all or a random subset: ")
-amount_wanted = raw_input("Type 'all' to use them all or 'subset' to use a subset: ")
-
-num_wanted = 0
-
-while num_wanted == 0:
-    if amount_wanted.lower() == 'all':
-        num_wanted = total_num
-    elif amount_wanted.lower() == 'subset':
-        num_wanted = int(raw_input("Please enter the integer number you would like to use: "))
-        while num_wanted > amount_wanted:
-            print("I'm sorry but you've asked for a subset that is larger than the ")
-            print("total number of configurations.")
-            num_wanted = int(raw_input("Please inter a integer number less than " + str(total_num) + ": "))
-    else:
-        print("I'm sorry but " + amount_wanted + " is not a valid response.")
-        amount_wanted = raw_input("Please enter 'all' to use them all or 'subset' to use a subset: ")
-
+        a = [label[i][0] for i in range(len(label))]
         
-
-if len(Concs) == 1 and all(col) >= 0:
-    f = open('phonon_out.txt', 'a')
-    f.write('[0], [')
-    temp = ''
-    for i in col:
-        temp += str(i[1])+', '
-    temp = temp[:-2]
-    f.write(temp + ']\n')
-    configs = pb.add_arrows(col,agroup,dim)
-
-    # if no subset is wonted write the entire set of configurations to
-    # file.
-    if amount_wanted == total_num:
-        for z in configs:
-            f.write(str(z) + '\n')
+        cc = 0
+        cList = []
+        done = False
+        while done == False:
+            if sum(a) == n:
+                conc = []
+                for i in range(len(a)):
+                    conc.append(a[i]/float(n))
+                if not ((any(conc[i] < (minv[i]-eps) for i in range(len(minv)))) or (any(conc[i] > (maxv[i]+eps) for i in range(len(maxv))))):
+                    cList.append(deepcopy(a))
+            j = k-1
+            done2 = False
+            while done2 == False:
+                if digCnt[j] != digit[j]:
+                    done2 = True
+                    break
+                a[j] = label[j][0]
+                digCnt[j] = 0
+                j -= 1
+                if j < 0:
+                    done2 = True
+                    break
+            if j < 0:
+                done = True
+                break
+            digCnt[j] += 1
+            a[j] = label[j][digCnt[j]]
+            
     else:
-        # if a subset is wanted then generate a list of random numbers
-        # between 1 and the total number. These are the subset that
-        # will be written to file.
+        cList = []
+        crange = range(0,size+1)
+        aranges = []
+        for i in range(nspecies):
+            aranges.append(crange)
+
+        p_ranges = it.product(*aranges)
+        for p in p_ranges:
+            if sum(p) == size:
+#                if not any([list(c) in cList for c in it.permutations(p)]) == True:
+                cList.append(list(p))
+        cList=cList[1:-1]
+                    
+    return(cList)
+
+# arrow_concs is a method that returns the concentration string
+# including the arrows
+def arrow_concs(cList,aconcs):
+    """Uses the concentrations of the atoms and the arrows to make a
+      labeling for the system.
+
+      :arg cListr: an integer array the concentration of the colors
+      :arg aconcs: an integer array of the number of arrows for each
+       color
+
+    """
+
+    species = 1
+    conc_w_arrows = []
+    for i in range(len(aconcs)):
+        na = aconcs[i]
+        ns = cList[i]
+        if ns >= na:
+            while na > 0:
+                conc_w_arrows.append([1,species])
+                na -= 1
+                ns -= 1
+            while ns > 0:
+                conc_w_arrows.append([-1,species])
+                ns -= 1
+        else:
+            while ns > 0:
+                conc_w_arrows.append([-1,species])
+                ns -= 1
+        species += 1
+
+    return(conc_w_arrows)
+
+def create_labeling(config):
+
+    """This routine takes a string of atomic locations as a vector and the
+    atomic concentrations and returns a unique labeling.
+
+    :arg config: list of integers describing the arrangement of atoms on
+      the lattice.
+    """
+    label = ''
+    if isinstance(config[0],list):
+        for i in config:
+            label += str(i[1]-1)
+    else:
+        for i in config:
+            label += str(i-1)            
+    
+    return(label)
+
+def _get_arrow_concs(params):
+    """If the concentrations are being restricted then find the correct 
+    arrow for each species included.
+
+    :arg params: the lattice.in parameters.
+    """
+    a_concs = []
+    if params["is_crestricted"]:
+        for c in params["concs"]:
+            if (len(c) == 4 and params["arrows"]):
+                a_concs.append(c[3])
+            else:
+                a_concs.append(0)
+    else:
+        for i in range(params["nspecies"]):
+            a_concs.append(0)
+    return a_concs
+
+def _polya_out(args):
+    """Generates the 'polya.out' files for the cell sizes specified in 'lattice.in'
+    (or other specified input file).
+    """
+    from os import path
+    from numpy import zeros
+    params = io.read_lattice(args["lattice"])
+
+    for s in range(params["sizes"][0], params["sizes"][1]+1):
+        celldir = args["dataformat"].format(s)
+        out = open(path.join(celldir, args["outfile"]), 'w+')
+
+        # get HNFs, SNFs, and LTs
+        edata = enum_data(s)
+        # find the concentrations available for the desired cell sizes.
+        cList = get_concs_for_size(s, params["nspecies"], params["is_crestricted"],
+                                   len(params["basis_vecs"]), params["concs"])
+        
+        # We need to write the concs in cList to the output file.
+        out.write('{0: <28}'.format("# HNF"))
+        for conc in cList:
+            out.write("{0: <10}".format(':'.join(map(str, conc))))
+        out.write('{0: <10}\n'.format("Total"))
+
+        a_concs = _get_arrow_concs(params)
+        conc_totals = zeros(len(cList), int)
+        for idata, edict in enumerate(edata):
+            HNF = edict["HNF"]
+            out.write("  {0: <26}".format(' '.join(map(str, HNF))))
+            group = io.read_group(edict["group"])
+            # TODO: for arrow enumerations, this is much more complicated, and
+            # still needs to be done...
+            agroup = [[g,[0]] for g in group]
+
+            # we need to loop over the concentrations and find the
+            # number of arrangements possible for each cell size
+            total = 0
+            for iconc, conc in enumerate(cList):
+                if len(conc) > 0:
+                    decorations = arrow_concs(conc,a_concs)
+                    decorations = pb.col_sort(decorations)
+                
+                    # we need to know the concentrations of the
+                    # species with and without arrows
+                    concs_w_arrows = pb.find_concentrations(decorations)
+                    # we also need to know the number of arrows and
+                    # their species so we can undo the previous step
+                    # later
+                    (n_arrows,arrow_types) = pb.how_many_arrows(decorations)
+                    
+                    # now find the number of unique arrangements using Polya.
+                    if arrow_types != 0:
+                        total_num = burn.polya(concs_w_arrows,agroup,arrowings=arrow_types)
+                    else:
+                        total_num = polya(conc, group)
+
+                    out.write("{0: <10d}".format(total_num))
+                    total += total_num
+                    conc_totals[iconc] += total_num
+            out.write('{0: <10d}\n'.format(total))
+        out.write("# " + ''.join(['-' for i in range(len(cList)*10 + 10 + 30)]) + '\n')
+        out.write("{0: <28}".format("  0 0 0 0 0 0"))
+        for ctotal in conc_totals:
+            out.write("{0: <10d}".format(ctotal))
+        out.write("{0: <10d}\n".format(sum(conc_totals)))
+        out.close()
+        
+# check which files are present to see if we are finding the HNFs with
+# the polya count or enumerating subsets within the HNFs.
+def _enum_out(args):
+    """Produce the enumerations of a subset of the total number of possible 
+    arrangements for the desired HNFs. It assumes that all the information 
+    used in the polya part above is still available.
+    """
+    params = io.read_lattice(args["lattice"])
+    systems = io.read_enum(args["input"])
+    io.write_enum(params, outfile="enum.out")    
+
+    count_t = 1
+    from numpy import unique
+    def cellsize(sHNF):
+        return sHNF[0]*sHNF[2]*sHNF[5]
+    cellsizes = unique([cellsize(sys[0]) for sys in systems])
+    datadicts = {}
+    sfmt = ("{0: >10d}{1: >10d}{2: >8d}{3: >9d}{4: >9d}{5: >12d}{6: >4d}{7: >6d}"
+            "{8: >10}  {9: >18}  {10: >44}    {11}\n")
+    def fmtn(l, n):
+        return (''.join(["{{{0:d}: >{1:d}d}}".format(i, n) for i in range(len(l))])).format(*l)
+    
+    with open(args["outfile"], 'a') as f:
+        for s in cellsizes:
+            dataset = enum_data(s)
+            datadicts.update({tuple(d["HNF"]): d for d in dataset})
+
+        for HNF, conc, num_wanted in systems:
+            edata = datadicts[tuple(HNF)]
+            SNF = edata["SNF"]
+            LT = edata["L"]
+            
+            a_concs = _get_arrow_concs(params)
+            configs = enum_sys(edata["group"], list(conc), a_concs, num_wanted)
+
+            for config in configs:
+                labeling = create_labeling(config)
+                o = sfmt.format(count_t, 1, 1, 1, 1, 1, sum(conc), 1,
+                                fmtn(SNF, 3), fmtn(HNF, 3),
+                                fmtn(LT, 5), labeling)
+                f.write(o)
+                count_t += 1
+
+def enum_sys(groupfile, concs, a_concs, num_wanted):
+    """Enumerates a random subset of the unique structures that have the shape
+    defined by the symmetry group and the specified concentration.
+
+    :arg groupfile: path to the file containing the symmetry group.
+    :arg concs: list of integer concentrations for each species.
+    :arg a_concs: list of integer *arrow* concentrations for each species.
+    :arg num_wanted: the number of structures to pick randomly from the enumerated
+      list.
+    """
+    decorations = arrow_concs(concs, a_concs)
+    decorations = pb.col_sort(decorations)
+
+    # get the symmetry group for this HNF. Assumes the group can be
+    # found in the file labeled by (this_HNF)_sym_group.out
+    group = io.read_group(groupfile)
+    # get symgroup from HNF and lat_vecs
+    # add [0] to each element of the symmetry group
+    agroup = [[g,[0]] for g in group]
+
+    # we need to know the concentrations of the
+    # species with and without arrows
+    concs_w_arrows = pb.find_concentrations(decorations)
+    # we also need to know the number of arrows and
+    # their species so we can undo the previous step
+    # later
+    (n_arrows, arrow_types) = pb.how_many_arrows(decorations)
+
+    # now find the number of unique arrangements using
+    # polya
+    if arrow_types != 0:
+        total = burn.polya(concs_w_arrows, agroup, arrowings=arrow_types)
+    else:
+        total = polya(concs, group)
+        
+    # generate the random subset to be used
+    if num_wanted < total:
+        from random import shuffle
+        subset = range(1, total+1) 
+        shuffle(subset)
+        subset = subset[0:num_wanted]
+    else:
+        from msg import warn
+        warn("number of configurations requested exceeds the number of "
+            "unique configurations available.")
         subset = []
-        while len(subset) > amount_wanted:
-            random_num = random.randint(1,total_num)
-            if random_num  not in subset:
-                subset.append(random_num)
-        # A counter to keep track of which element of the set we're
-        # on.
+
+    # here we get the configs and the len of the stabilizers of we're
+    # doing not doing a purely arrowed enumeration. Getting the
+    # stabilizers allows us to remove the superperoidic structures.
+    n_stabs = []
+    if len(concs) == 1 and all(decorations) >=0:
+        configs = []
+        a_configs = pb.add_arrows(decorations, agroup, 6)
         count = 1
-        # Find the elements of z 
-        for z in config:
+        for config in a_configs:
             if count in subset:
-                f.write(str(z) + '\n')
+                configs.append(config)
             count += 1
-    f.close()
-else:
-    if num_wanted == total_num:
-        configs = bm.brancher(Concs,agroup,col,dim)
     else:
-        configs = bm.brancher(Concs,agroup,col,dim,wanted=num_wanted,total=total_num)
+        (configs,n_stabs) = bm.brancher(concs, agroup, decorations, 6, subset)
+
+    # reduced_configs is the list of configurations with the
+    # superperiodic configurations removed.
+    reduced_configs = []
+    # if len(n_stabs)==len(configs):
+    #     for i in range(len(configs)):
+    #         print('i n_stab',n_stabs[i])
+    #         if n_stabs[i] <= 2:
+    #             reduced_configs.append(configs[i])
+    # else:
+    #     reduced_configs = configs                
+    reduced_configs = configs                
+
+    return reduced_configs
+
+def _examples():
+    """Print some examples on how to use this python version of the code."""
+    helptext = ("For all the examples below, it is assumed that you know the fixed concentration "
+                "term T in advance. This term is the first, *positional* argument to the script. "
+                "In addition to the term T, you need to specify the group operations as permutation "
+                "lists. They can be either zero- or one-based. Group operations can be specified "
+                "with the group generators or as a 2D matrix with all the group operations; if the "
+                "lists of values were saved directly from python using a __repr__ or __str__ then "
+                "use the '-parse' argument to specify that.")
+    egs = [("Find the Polya Coefficient with Group Generators",
+            "The code below finds the number of unique ways to color a square with 4 corners using "
+            "2 different colors such that there are 2 corners with each color. "
+            "The group is specified using generators in a file called 'generators.in.paper'. The "
+            "contents of the generators file are:\n  4 3 2 1\n  2 3 4 1\nand are the generators "
+            "for the dihedral group of degree 4.", "./polya.py 2 2 -generators generators.in.paper"),
+           ("Find the Polya Coefficient with an Entire Group",
+            "This code also finds the coefficient, but for a larger group with 144 operations acting "
+            "on a finite set with 20 elements. The term T is specified as [4,4,4,2,2,2,2] so that we "
+            "want 4 of the first 3 colors and 2 of the last 4 colors with 7, the total number of "
+            "colors in the enumeration. The group file 'group.out.cr6' can be viewed in the repo at "
+            "'polya/fortran/tests/'.", "./polya.py 4 4 4 2 2 2 2 -group group.out.cr6")]
+
+    print("POLYA ENUMERATION THEOREM SOLVER\n")
+    for eg in egs:
+        title, desc, code = eg
+        print("--" + title + '--\n')
+        print(desc + '\n')
+        print('  ' + code + '\n')
+
+def _parser_options(phelp=False):
+    """Parses the options and arguments from the command line."""
+    import argparse
+    parser = argparse.ArgumentParser(description="Partial Superstructure Enumeration Code")
+    parser.add_argument("-debug", action="store_true",
+                        help="Print verbose calculation information for debugging.")
+    parser.add_argument("-examples", action="store_true",
+                        help="Print some examples for how to use the enumeration code.")
+    parser.add_argument("-polya", action="store_true",
+                        help=("Predict the total number of unique superstructures for each "
+                              "cell shape and possible concentration."))
+    parser.add_argument("-enum", action="store_true",
+                        help=("Enumerate the number of superstructures of specific shape "
+                              "as specified in the 'enum.in' file."))
+    parser.add_argument("-lattice",
+                        help=("Override the default input file name: 'lattice.in' for "
+                              "enumeration parameters."))
+    parser.add_argument("-input",
+                        help=("Override the default 'enum.in' file name."))
+    parser.add_argument("-dataformat", default="cells.{}",
+                        help=("Specify the default folder name for any cell size that contains "
+                              "the matrices and groups generated by 'enum.x'. Format is: cells.{} "
+                              "where {} is a placeholder for the integer cell size."))
+    parser.add_argument("-verbose", type=int,
+                        help="Specify the verbosity level (1-3) for additional computation info.")
+    parser.add_argument("-outfile",
+                        help=("Override the default output file names: 'polya.out' for polya counting; "
+                              "'enum.out' for structure enumeration."))
+    vardict = vars(parser.parse_args())
+    if phelp or vardict["examples"]:
+        _examples()
+        exit(0)
+
+    if vardict["verbose"]:
+        from msg import set_verbosity
+        set_verbosity(vardict["verbose"])
         
+    if not vardict["lattice"]:
+        vardict["lattice"] = "lattice.in"
+    if not vardict["input"]:
+        vardict["input"] = "enum.in"
+    if not vardict["outfile"]:
+        vardict["outfile"] = "polya.out" if vardict["polya"] else "enum.out"
+    return vardict
 
-print("Found all desired unique configurations")
-print("They are can be found in 'phonon_out.txt':")
-
-f = open('phonon_out.txt', 'a')
-f.write(str(len(configs)))
-print(len(configs))
-
-t = time.clock() - start
-
-# mp.poster(configs)
-
-print("And it took", t, "seconds.")
+def script_enum(args):
+    """Generates the 'polya.out' or 'enum.out' files depending on the script arguments.
+    """
+    from os import path
+    if args["polya"] or args["enum"]:
+        #Perform validation for running those.
+        if not path.isfile(args["input"]):
+            from msg import err
+            err("The input file {} does not exist.".format(args["input"]))
+            
+    if args["polya"]:
+        _polya_out(args)
+    if args["enum"]:
+        _enum_out(args)
+    
+if __name__ == '__main__':
+    script_enum(_parser_options())

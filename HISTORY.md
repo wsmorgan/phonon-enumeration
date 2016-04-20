@@ -1,9 +1,25 @@
 # Revision History for "phonon-enumeration"
 
+## Revision 1.0.0
+
+Changed the driver to make it easeir to run the code and to the two
+different options. The first is to determine the distribution of
+unique arrangements for the different cell sizes and
+concentrations. The second is to actually enumerate the desired number
+of configurations for each of the desired cell sizes and
+concentrations.
+
+Added structures.py, io_utils.py, and polya.py to the src/python
+folder. Also added the input folder that contains sample input and the
+support folder that has the needed altered files for enumlib.
+
+Also updated the documentation in all the code files so that they have
+better formatting and are accurate to the current code.
+
 ## Revision 0.3.0
 
 Changed from the python function to a hash function of my making so
-that we could compare results easily with MatLab. Also added on
+that we could compare results easily with MatLab. Also added an
 inverse hash function for the arrows. These two changes enabled a
 major shift in how duplicates are found. Now instead of finding each
 configuration by permuting the arrows we simply loop over the possible

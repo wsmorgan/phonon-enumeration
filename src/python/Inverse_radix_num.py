@@ -1,18 +1,21 @@
-#Inverse_radix_num.py
+"""Methods for turning a hash into a labeling"""
 
 #import needed modules
 import binomial_calculator as bc
 import numpy as np  
 
-#This module takes a number and turns it into an array of numbers
-#based off of the number and other values passed to it.
-#branch is an integer list of the input radix number that needs to
-#have the hashing undone.
-#Colors is an array containing the concentrations of each color to be
-#used.
-#n is the length of the new array.
-#Reurns an array filled with colors.
 def invhash(branch,colors,n):
+        """Turns a hash array into a labeling, i.e., undoes the hash function
+          from radix_number_generator.py.
+
+          :arg branch: an integer list of the radix number/hash array
+          :arg colors: an integer array of the concentration of the colors
+          :arg n: the length of the labeling array, i.e., the
+          number of sites in the system
+
+          For the details on this method see: http://msg.byu.edu/papers/enum3.pdf
+        """
+
         new = [0 for y in range(n)]
         coluse = 1
         for i in range(0,len(branch)):

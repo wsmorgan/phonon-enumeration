@@ -1,14 +1,18 @@
-#This module contains side programs needed for the phonon_enumeration
-#code.
+"""Methods needed for the enumeration of arrows."""
 
 #import neede modules
 import numpy as np
 from copy import deepcopy
 import radix_num_generator as rn
+
 #Find concentration takes a 1D array, col, and returns a 1D array, 
 #Concs, containing the number of times each element in col appears 
 #in the array.
 def find_concentrations(col):
+    """Finds the concentration of a given array of colors.
+
+      :arg col: an integer array of the labeling
+    """
     Concs=[]
 
     tcol=deepcopy(col)
@@ -24,6 +28,11 @@ def find_concentrations(col):
 #Takes an array of colors and arrows and tells us how many different
 #colors have arrows on them.
 def how_many_arrows(tcol):
+    """Determines the number of colors that have arrows on them.
+
+      :arg tcol: a 2D array of the labeling that contains the colors
+      and arrows for each site.
+    """
     arrows = 0
     
     species = []
@@ -35,9 +44,14 @@ def how_many_arrows(tcol):
                       
     return(arrows,len(species))
 
-# #color_list takes the configuration and returns a unique list of the
-# #colors used without duplicating any duplicates.
+#color_list takes the configuration and returns a unique list of the
+#colors used without duplicates.
 def color_list(col):
+    """Finds the unique colors in a labeling.
+
+      :arg col: an integer array of the labeling.
+
+    """
     colors=[]
 
     tcol=col[:]
@@ -54,17 +68,30 @@ def color_list(col):
 #appear first in the list by concentration followed by the colors with
 #arraws that are also sorted by concentration.
 def col_sort(col_list):
+    """Sorts the labeling so that colors with arrows appear last in the
+      list and so that the arrowed and non-arrowed colors are sorted
+      from lowest to highest concentration.
+
+      :arg col_list: a 2D integer array of the full labeling of the
+      system
+    """
 
     col1 = []
     col2 = []
     colt=[]
+
+    # seperate the arrays into colors with arrrows and colors without
     for i in col_list:
         if i[0] < 0:
             col1.append(i)
         elif i[0] >= 0:
             col2.append(i)
+
+    # sort each array by concentration
     col1 = sorted(col1, key = col1.count, reverse=True)
     col2 = sorted(col2, key = col2.count, reverse=True)
+
+    # put them back together again
     for i in col1:
         colt.append(i)
     for i in col2:
@@ -78,6 +105,14 @@ def col_sort(col_list):
 #agroup is the group operations with their effects on the arrows.
 #dim is the number of arrow directions that are possible for this system.
 def add_arrows(col,agroup,dim):
+    """Finds the unique arrangements of arrows for a given configuration.
+
+      :arg col: a 2D integer array of the initial labeling
+      :arg agroup: the stabilizers for the colors only with the arrow
+      permutations
+      :arg dim: the number of directions the arrows can point
+    """
+    
     #survivors is the array that contains the end result of the permutations
     survivor = []
 
