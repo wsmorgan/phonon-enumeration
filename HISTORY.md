@@ -26,12 +26,12 @@ If anything breaks then I made a mistake while refactoring the code.
 
 ## Revision 1.0.0
 
-Changed the driver to make it easeir to run the code and to the two
-different options. The first is to determine the distribution of
-unique arrangements for the different cell sizes and
-concentrations. The second is to actually enumerate the desired number
-of configurations for each of the desired cell sizes and
-concentrations.
+Changed the driver to make it easeir to run the code and added two
+different modes for running, polya and enum. The first, polya, is used
+to determine the distribution of unique arrangements for the different
+cell sizes and concentrations. The second, enum, actually enumerates
+the requested number of configurations for each of the desired cell
+sizes and concentrations.
 
 Added structures.py, io_utils.py, and polya.py to the src/python
 folder. Also added the input folder that contains sample input and the
