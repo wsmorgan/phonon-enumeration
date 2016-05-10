@@ -7,14 +7,13 @@
 #resultant operation is not in the group it then adds it to the group.
 def a_group(trans,rots):
     """This subroutine combines that translations of the lattice with the
-      rotatians of the lattice.
+    rotatians of the lattice.
 
-      :arg trans: a 2D integer array where each row is an translation
-      of the lattice
-      :arg rots: a 3D integer array. Each row's first entry is the
-      site permutations and the second entry is the arrow
-      permutations.
-
+    :arg trans: a 2D integer array where each row is an translation
+    of the lattice
+    :arg rots: a 3D integer array. Each row's first entry is the
+    site permutations and the second entry is the arrow
+    permutations.
     """
     groupi = []
     for i in trans:
@@ -31,11 +30,10 @@ def a_group(trans,rots):
 
 def group(gen):
     """This subroutine takes the generators of the group then uses them
-      to form the entire group.
+    to form the entire group.
 
-      :arg gen: a 2D integer array of the generators of the group
-      where each row is a seperate generator
-
+    :arg gen: a 2D integer array of the generators of the group
+    where each row is a seperate generator
     """
     # q is a counter to track how many group elements we've found
     q = 1

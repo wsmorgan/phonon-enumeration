@@ -2,9 +2,8 @@
 forms. Also the actual executable for the code."""
 
 #import needed modules
-import branch_method as bm
-import phonon_brancher as pb
-import arrow_group as ar
+import tree as tr
+import phonons as pb
 import polyaburnside as burn
 from polya import polya
 import random
@@ -21,19 +20,18 @@ eps = 1e-7
 
 def get_concs_for_size(size,nspecies,res_concs,nB,concs):
     """Gets the concentration ranges for the atoms within the cells of
-      certain sizes given the constraints provided such as
-      concentration restrictions and the presence of arrows. Code
-      rewritten from the get_conetration_list subroutine of:
-      https://github.com/msg-byu/enumlib/blob/master/src/derivative_structure_generator.f90  
+    certain sizes given the constraints provided such as
+    concentration restrictions and the presence of arrows. Code
+    rewritten from the get_conetration_list subroutine of:
+    https://github.com/msg-byu/enumlib/blob/master/src/derivative_structure_generator.f90  
 
-      :arg size: the cell size in integer form
-      :arg nspecies: the number of atomic species in the system
-      :arg res_concs: a logical that indicates of the concentrations
-      are being restricted
-      :arg nB: the number of basis vectors being used
-      :arg concs: an 2D integer array that contains the concentration
-      ranges for each atom in the system
-
+    :arg size: the cell size in integer form
+    :arg nspecies: the number of atomic species in the system
+    :arg res_concs: a logical that indicates of the concentrations
+    are being restricted
+    :arg nB: the number of basis vectors being used
+    :arg concs: an 2D integer array that contains the concentration
+    ranges for each atom in the system
     """
     if res_concs == True:
         denom = concs[0][2]
@@ -106,12 +104,11 @@ def get_concs_for_size(size,nspecies,res_concs,nB,concs):
 # including the arrows
 def arrow_concs(cList,aconcs):
     """Uses the concentrations of the atoms and the arrows to make a
-      labeling for the system.
+    labeling for the system.
 
-      :arg cListr: an integer array the concentration of the colors
-      :arg aconcs: an integer array of the number of arrows for each
-       color
-
+    :arg cListr: an integer array the concentration of the colors
+    :arg aconcs: an integer array of the number of arrows for each
+    color
     """
 
     species = 1
@@ -136,12 +133,11 @@ def arrow_concs(cList,aconcs):
     return(conc_w_arrows)
 
 def create_labeling(config):
-
     """This routine takes a string of atomic locations as a vector and the
     atomic concentrations and returns a unique labeling.
 
     :arg config: list of integers describing the arrangement of atoms on
-      the lattice.
+    the lattice.
     """
     label = ''
     if isinstance(config[0],list):
@@ -341,7 +337,7 @@ def enum_sys(groupfile, concs, a_concs, num_wanted):
                 configs.append(config)
             count += 1
     else:
-        (configs,n_stabs) = bm.brancher(concs, agroup, decorations, 6, subset)
+        (configs,n_stabs) = tr.brancher(concs, agroup, decorations, 6, subset)
 
     # reduced_configs is the list of configurations with the
     # superperiodic configurations removed.
@@ -422,7 +418,7 @@ def _parser_options(phelp=False):
     if vardict["verbose"]:
         from msg import set_verbosity
         set_verbosity(vardict["verbose"])
-        
+
     if not vardict["lattice"]:
         vardict["lattice"] = "lattice.in"
     if not vardict["input"]:

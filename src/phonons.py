@@ -3,7 +3,7 @@
 #import neede modules
 import numpy as np
 from copy import deepcopy
-import radix_num_generator as rn
+import radix as rn
 
 #Find concentration takes a 1D array, col, and returns a 1D array, 
 #Concs, containing the number of times each element in col appears 
@@ -11,7 +11,7 @@ import radix_num_generator as rn
 def find_concentrations(col):
     """Finds the concentration of a given array of colors.
 
-      :arg col: an integer array of the labeling
+    :arg col: an integer array of the labeling
     """
     Concs=[]
 
@@ -30,8 +30,8 @@ def find_concentrations(col):
 def how_many_arrows(tcol):
     """Determines the number of colors that have arrows on them.
 
-      :arg tcol: a 2D array of the labeling that contains the colors
-      and arrows for each site.
+    :arg tcol: a 2D array of the labeling that contains the colors
+    and arrows for each site.
     """
     arrows = 0
     
@@ -49,8 +49,7 @@ def how_many_arrows(tcol):
 def color_list(col):
     """Finds the unique colors in a labeling.
 
-      :arg col: an integer array of the labeling.
-
+    :arg col: an integer array of the labeling.
     """
     colors=[]
 
@@ -69,11 +68,11 @@ def color_list(col):
 #arraws that are also sorted by concentration.
 def col_sort(col_list):
     """Sorts the labeling so that colors with arrows appear last in the
-      list and so that the arrowed and non-arrowed colors are sorted
-      from lowest to highest concentration.
+    list and so that the arrowed and non-arrowed colors are sorted
+    from lowest to highest concentration.
 
-      :arg col_list: a 2D integer array of the full labeling of the
-      system
+    :arg col_list: a 2D integer array of the full labeling of the
+    system
     """
 
     col1 = []
@@ -107,10 +106,10 @@ def col_sort(col_list):
 def add_arrows(col,agroup,dim):
     """Finds the unique arrangements of arrows for a given configuration.
 
-      :arg col: a 2D integer array of the initial labeling
-      :arg agroup: the stabilizers for the colors only with the arrow
-      permutations
-      :arg dim: the number of directions the arrows can point
+    :arg col: a 2D integer array of the initial labeling
+    :arg agroup: the stabilizers for the colors only with the arrow
+    permutations
+    :arg dim: the number of directions the arrows can point
     """
     
     #survivors is the array that contains the end result of the permutations

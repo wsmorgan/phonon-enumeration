@@ -1,5 +1,29 @@
 # Revision History for "phonon-enumeration"
 
+## Revision 1.1.0
+
+Refactored the code to bring it into best practices standards. All
+tabs are now 4 spaces instead of 8. Other changes include:
+
+Moved binomial_coefficient.py and Inverse_radix_number.py into
+radix_num_generator.py and renamed the file radix.py.
+
+Moved phonon_brancher.py to phonons.py.
+
+Moved arrow_group.py to grouper.py.
+
+Moved branch_method.py to tree.py.
+
+Removed the src/python folder and moved all of its contents into the
+src folder.
+
+Added a .gitignore file.
+
+Removed the old phonon_out.txt output file that got added to the repo
+by mistake.
+
+If anything breaks then I made a mistake while refactoring the code.
+
 ## Revision 1.0.0
 
 Changed the driver to make it easeir to run the code and to the two

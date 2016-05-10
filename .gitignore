@@ -1,0 +1,10 @@
+# Emacs Editing
+*.*~
+\#*#
+\#*
+
+# Unit Testing
+staging/
+
+# Compiled Object files
+*.pyc

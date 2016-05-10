@@ -10,7 +10,10 @@ def read_group(fname):
     with open(fname) as f:
         for line in f:
             if i > 5:
-                groupi.append(map(int, line.split()[4::]))
+                if ('Perm #:') in line:
+                    groupi.append(map(int, line.split()[4::]))
+                else:
+                    groupi[-1] += map(int, line.split())
             i += 1
     from numpy import array
     return(map(list, array(groupi)-1))
