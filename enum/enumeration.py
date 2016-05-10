@@ -2,17 +2,17 @@
 forms. Also the actual executable for the code."""
 
 #import needed modules
-import tree as tr
-import phonons as pb
-import polyaburnside as burn
-from polya import polya
+import enum.tree as tr
+import enum.phonons as pb
+import enum.polyaburnside as burn
+from enum.polya import polya
 import random
 import os
 import math
 import itertools as it
-from structures import enum_data
+from enum.structures import enum_data
 from copy import deepcopy
-import io_utils as io
+import enum.io_utils as io
 
 # hard coded error tolerance. This will need to go away and become
 # part of the input files later.
@@ -427,7 +427,7 @@ def _parser_options(phelp=False):
         exit(0)
 
     if vardict["verbose"]:
-        from msg import set_verbosity
+        from enum.msg import set_verbosity
         set_verbosity(vardict["verbose"])
 
     if not vardict["lattice"]:
@@ -442,11 +442,27 @@ def script_enum(args):
     """Generates the 'polya.out' or 'enum.out' files depending on the script arguments.
     """
     from os import path
-    if args["polya"] or args["enum"]:
-        #Perform validation for running those.
+    if args["polya"]:
+        #Perform validation for running polya.
         if not path.isfile(args["input"]):
-            from msg import err
+            from enum.msg import err
+            err("The input file {} does not exist.".format(args["lattice"]))
+            exit()
+            
+    if args["enum"]:
+        #Perform validation for running enum.
+        if not path.isfile(args["input"]):
+            from enum.msg import err
             err("The input file {} does not exist.".format(args["input"]))
+            exit()
+            
+    if args["enum"] or args["polya"]:
+        from glob import glob
+        #Perform validation for running enum.
+        if len(glob(args["dataformat"].split('.')[0]+'.*')) < 1:
+            from enum.msg import err
+            err("The input folders {} do not exist.".format(args["dataformat"]))
+            exit()
             
     if args["polya"]:
         _polya_out(args)
