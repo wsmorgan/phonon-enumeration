@@ -2,10 +2,9 @@
 forms. Also the actual executable for the code."""
 
 #import needed modules
-import enum.tree as tr
+from enum.tree import brancher
 import enum.phonons as pb
-import enum.polyaburnside as burn
-from enum.polya import polya
+from enum.polyaburnside import polya
 import random
 import os
 import math
@@ -219,9 +218,9 @@ def _polya_out(args):
                     
                     # now find the number of unique arrangements using Polya.
                     if arrow_types != 0:
-                        total_num = burn.polya(concs_w_arrows,agroup,arrowings=arrow_types)
+                        total_num = polya(concs_w_arrows,agroup,arrowings=arrow_types)
                     else:
-                        total_num = polya(conc, group)
+                        total_num = polya(conc, agroup)
 
                     out.write("{0: <10d}".format(total_num))
                     total += total_num
@@ -289,7 +288,6 @@ def enum_sys(groupfile, concs, a_concs, num_wanted):
     """
     decorations = arrow_concs(concs, a_concs)
     decorations = pb.col_sort(decorations)
-
     # get the symmetry group for this HNF. Assumes the group can be
     # found in the file labeled by (this_HNF)_sym_group.out
     group = io.read_group(groupfile)
@@ -308,9 +306,9 @@ def enum_sys(groupfile, concs, a_concs, num_wanted):
     # now find the number of unique arrangements using
     # polya
     if arrow_types != 0:
-        total = burn.polya(concs_w_arrows, agroup, arrowings=arrow_types)
+        total = polya(concs_w_arrows, agroup, arrowings=arrow_types)
     else:
-        total = polya(concs, group)
+        total = polya(concs, agroup)
         
     # generate the random subset to be used
     if num_wanted < total:
@@ -324,7 +322,7 @@ def enum_sys(groupfile, concs, a_concs, num_wanted):
             "unique configurations available.")
         subset = []
 
-    # here we get the configs and the len of the stabilizers of we're
+    # here we get the configs and the len of the stabilizers if we're
     # doing not doing a purely arrowed enumeration. Getting the
     # stabilizers allows us to remove the superperoidic structures.
     n_stabs = []
@@ -337,18 +335,12 @@ def enum_sys(groupfile, concs, a_concs, num_wanted):
                 configs.append(config)
             count += 1
     else:
-        (configs,n_stabs) = tr.brancher(concs, agroup, decorations, 6, subset)
+        (configs,n_stabs) = brancher(concs, agroup, decorations, 6, subset)
 
     # reduced_configs is the list of configurations with the
     # superperiodic configurations removed.
     reduced_configs = []
-    # if len(n_stabs)==len(configs):
-    #     for i in range(len(configs)):
-    #         print('i n_stab',n_stabs[i])
-    #         if n_stabs[i] <= 2:
-    #             reduced_configs.append(configs[i])
-    # else:
-    #     reduced_configs = configs                
+    # need to find a way to remove the superperiodic arrangements
     reduced_configs = configs                
 
     return reduced_configs

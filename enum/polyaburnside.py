@@ -395,10 +395,11 @@ def polya(concentrations, group, arrowings=None, debug=False):
         
     #This is to check that the concentrations sum to the number of sites the group is
     #operating on
+    
     if sum(concentrations) != len(group[0][0]):
         print("The concentrations don't sum to the number of things the group is acting on!")
         exit()
-
+            
     for k in range(2):
         for g in range(len(group)):
             if 0 not in group[0][k]:

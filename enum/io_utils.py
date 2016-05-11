@@ -49,6 +49,7 @@ def read_lattice(filename='lattice.in', verbose=False):
         info('Concentrations are being restrictied.')
         arrows = lines[7+nbas+1].strip()
         if arrows == 'F':
+            arrows = []
             info('No displacement directions are included')
         else:
             arrows = True
@@ -79,14 +80,13 @@ def read_enum(filename="enum.in"):
     num_wanted: number of random structures to draw from the enumerated list.
     """    
     from numpy import loadtxt
-    raw = loadtxt(filename, int)
+    raw = loadtxt(filename, int, ndmin=2)
     systems = []
     for i in range(len(raw)):
         HNF = raw[i,0:6]
         sys_conc = raw[i,6:-1]
         num_wanted = raw[i,-1]
         systems.append((HNF, sys_conc, num_wanted))
-
     return systems
 
 def write_enum(params, outfile="enum.out"):
