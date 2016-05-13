@@ -53,7 +53,7 @@ def read_lattice(filename='lattice.in', verbose=False):
             info('No displacement directions are included')
         else:
             arrows = True
-        concs = [map(int, l.split()) for l in lines[7+nbas+2:]]
+        concs = [map(float, l.split()) for l in lines[7+nbas+2:]]
 
     result = {
         "bulk": bulk,

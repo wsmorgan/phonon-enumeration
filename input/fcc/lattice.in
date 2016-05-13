@@ -24,9 +24,9 @@ bulk
 # order.
 #
 # If displacement directions are to be used then a fourth number
-# follows the fractions the fourth number indicates the number of
-# displaced atoms of that species.
+# follows the fractions the fourth number should be a decimal that
+# indicates the fractional amount of displaced atoms of that species.
 F
 F
-1 3 12 1
-7 12 12 2
+1 6 12 0.0
+1 9 12 0.5

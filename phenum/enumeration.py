@@ -2,20 +2,43 @@
 forms. Also the actual executable for the code."""
 
 #import needed modules
-from enum.tree import brancher
-import enum.phonons as pb
-from enum.polyaburnside import polya
+from phenum.tree import brancher
+import phenum.phonons as pb
+from phenum.polyaburnside import polya
 import random
 import os
 import math
 import itertools as it
-from enum.structures import enum_data
+from phenum.structures import enum_data
 from copy import deepcopy
-import enum.io_utils as io
+import phenum.io_utils as io
+from phenum.grouptheory import get_sym_group
 
 # hard coded error tolerance. This will need to go away and become
 # part of the input files later.
 eps = 1e-7
+
+def _which(program):
+    """Determines where if an executable exists on the users path.
+    This code was contributed by Jay at http://stackoverflow.com/a/377028
+    :args program: The name, or path for the program
+    """
+    import os
+    def is_exe(fpath):
+        return os.path.isfile(fpath) and os.access(fpath, os.X_OK)
+
+    fpath, fname = os.path.split(program)
+    if fpath:
+        if is_exe(program):
+            return program
+    else:
+        for path in os.environ["PATH"].split(os.pathsep):
+            path = path.strip('"')
+            exe_file = os.path.join(path, program)
+            if is_exe(exe_file):
+                return exe_file
+
+    return None
 
 def get_concs_for_size(size,nspecies,res_concs,nB,concs):
     """Gets the concentration ranges for the atoms within the cells of
@@ -110,6 +133,8 @@ def arrow_concs(cList,aconcs):
     color
     """
 
+    aconcs = [int(cList[i]*aconcs[i]) for i in range(len(cList))]
+    
     species = 1
     conc_w_arrows = []
     for i in range(len(aconcs)):
@@ -218,6 +243,15 @@ def _polya_out(args):
                     
                     # now find the number of unique arrangements using Polya.
                     if arrow_types != 0:
+                        # Since enumlib doesn't write the arrow group
+                        # out we have to recompute the group actions
+                        # paired with their effects on the arrows
+                        temp_HNF = HNF.tolist()
+                        full_HNF = [[temp_HNF[0],0,0],[temp_HNF[1],temp_HNF[2],0],temp_HNF[3:]]
+                        sym_g = get_sym_group(params["lat_vecs"],params["basis_vecs"],full_HNF,3)
+                        agroup = []
+                        for i in range(len(sym_g.perm.site_perm)):
+                            agroup.append([sym_g.perm.site_perm[i],sym_g.perm.arrow_perm[i]])
                         total_num = polya(concs_w_arrows,agroup,arrowings=arrow_types)
                     else:
                         total_num = polya(conc, agroup)
@@ -266,7 +300,7 @@ def _enum_out(args):
             LT = edata["L"]
             
             a_concs = _get_arrow_concs(params)
-            configs = enum_sys(edata["group"], list(conc), a_concs, num_wanted)
+            configs = enum_sys(edata["group"], list(conc), a_concs, num_wanted,HNF,params)
 
             for config in configs:
                 labeling = create_labeling(config)
@@ -276,7 +310,7 @@ def _enum_out(args):
                 f.write(o)
                 count_t += 1
 
-def enum_sys(groupfile, concs, a_concs, num_wanted):
+def enum_sys(groupfile, concs, a_concs, num_wanted, HNF, params):
     """Enumerates a random subset of the unique structures that have the shape
     defined by the symmetry group and the specified concentration.
 
@@ -285,6 +319,8 @@ def enum_sys(groupfile, concs, a_concs, num_wanted):
     :arg a_concs: list of integer *arrow* concentrations for each species.
     :arg num_wanted: the number of structures to pick randomly from the enumerated
       list.
+    :args HNF: the HNF for the system we're currently enumerating
+    :args params: the dictionary of parameters read in from lattice.in
     """
     decorations = arrow_concs(concs, a_concs)
     decorations = pb.col_sort(decorations)
@@ -306,10 +342,19 @@ def enum_sys(groupfile, concs, a_concs, num_wanted):
     # now find the number of unique arrangements using
     # polya
     if arrow_types != 0:
+        # Since enumlib doesn't write the arrow group out we have to
+        # recompute the group actions paired with their effects on the
+        # arrows
+        temp_HNF = HNF.tolist()
+        full_HNF = [[temp_HNF[0],0,0],[temp_HNF[1],temp_HNF[2],0],temp_HNF[3:]]
+        sym_g = get_sym_group(params["lat_vecs"],params["basis_vecs"],full_HNF,3)
+        agroup = []
+        for i in range(len(sym_g.perm.site_perm)):
+            agroup.append([sym_g.perm.site_perm[i],sym_g.perm.arrow_perm[i]])
         total = polya(concs_w_arrows, agroup, arrowings=arrow_types)
     else:
         total = polya(concs, agroup)
-        
+
     # generate the random subset to be used
     if num_wanted < total:
         from random import shuffle
@@ -322,10 +367,10 @@ def enum_sys(groupfile, concs, a_concs, num_wanted):
             "unique configurations available.")
         subset = []
 
-    # here we get the configs and the len of the stabilizers if we're
-    # doing not doing a purely arrowed enumeration. Getting the
-    # stabilizers allows us to remove the superperoidic structures.
     n_stabs = []
+    # if we're doing a purely arrow enumeration then we don't need to
+    # do the tree search but instead perform the final step of the
+    # algorithm to find the possible unique displacements of the atoms
     if len(concs) == 1 and all(decorations) >=0:
         configs = []
         a_configs = pb.add_arrows(decorations, agroup, 6)
@@ -433,7 +478,7 @@ def _parser_options(phelp=False):
 def script_enum(args):
     """Generates the 'polya.out' or 'enum.out' files depending on the script arguments.
     """
-    from os import path
+    from os import path, system
     if args["polya"]:
         #Perform validation for running polya.
         if not path.isfile(args["input"]):
@@ -452,9 +497,23 @@ def script_enum(args):
         from glob import glob
         #Perform validation for running enum.
         if len(glob(args["dataformat"].split('.')[0]+'.*')) < 1:
-            from enum.msg import err
-            err("The input folders {} do not exist.".format(args["dataformat"]))
-            exit()
+            from enum.msg import err, warn
+            warn("The input folders {} do not exist.".format(args["dataformat"]))
+            warn("Now running your enumlib executable to build the folders.")
+            if _which('enum.x') != None:
+                os.system('enum.x')
+                if len(glob(args["dataformat"].split('.')[0]+'.*')) < 1:
+                    err("The executable you have for enum.x does not produce "
+                        "the needed input folders {}. In order to correct this "
+                        "you need to follow the compilation instructions found "
+                        "in the README.".format(args["dataformat"]))
+                    exit()                            
+            else:
+                err("Could not find enum.x on your path. Please add it to your path "
+                    "if you have already\n compiled it. Otherwise please follow the "
+                    "instructions found in the README to download, make,\n and place the "
+                    "executable in your path.")
+                exit()
             
     if args["polya"]:
         _polya_out(args)

@@ -10,16 +10,36 @@ of displacement directions, or arrow directions, within a system.
 
 The code currently requires a modified version of the previous
 enumeration code, available at https://github.com/msg-byu/enumlib, to
-run. To make this modified code first get a copy of the original code
-then copy the files 'derivative_structure_generator.f90', wrapper.f90
-and 'Makefile' from the support folder into the old codes
-directory. Then you can follow the instruction to compile the code
-found on that site (be sure to use make F90=(your compiler) enum.x to
-produce the executable).
+run. To make this modified code do the following, get the symlib library:
 
-Once the code is compiled you will need to make a file called
+```
+git clone https://github.com/msg-byu/symlib.git
+cd symlib/src/
+make F90=(your compiler, gfortran or ifort)
+cd ../../
+```
+
+Then get a copy of enumlib:
+
+```
+git clone https://github.com/msg-byu/enumlib.git
+```
+
+Now copy the Makefile, derivative_structure_generator.f90, and
+wrapper.f90 from the phonon-enumeration/support directory to the
+enumlib/src/ directory. Now we can make the enum.x executable and
+place it in our path:
+
+```
+cd enumlib/src/
+make F90=(your compiler) enum.x
+cp enum.x /bin/.
+```
+
+In order for enum.x to run you will need to have its input folder
 struct_enum.in, an example of which can be found in the input folder,
-for the system you desire to model. Then run the compiled enum.x:
+for the system you desire to model. You may then choose to run enum.x
+yourself to generate the needed input files by typing:
 
 ```
 enum.x
@@ -27,14 +47,15 @@ enum.x
 
 This will now generate a number of files titled cell_# where # is the
 cell size. These files contain the information needed to run the new
-enumeration code. The information is setup so that each HNF with it's
-SNF and left transform (as described in
-http://msg.byu.edu/papers/multi.pdf and
+enumeration code. If you do not run enum.x the enumeration.py code
+will execute it for you as long as its in your path. The input files
+are setup so that each HNF with it's SNF and left transform (as
+described in http://msg.byu.edu/papers/multi.pdf and
 http://msg.byu.edu/papers/GLWHart_enumeration.pdf) are listed in a
 file titeled matrices:
 
 ```
-  #n	SNF		HNF			left transform
+  #n	SNF		   HNF			          left transform
    1  1  1  4    1  0  1  0  0  4      1    0    0    0    1    0    0    0    1
    1  1  1  4    1  0  1  0  1  4      1    0    0    0    1    0    0   -1    1   
 ```
@@ -45,6 +66,15 @@ the SNF and lower traingular entries of the HNF should be included in
 this file. The group.n files contain the permutations of the sites on
 the lattice that constitute the symmtery group.
 
+## Installing the code
+
+To install the code use the following command in the
+phonon-enumeration directory:
+
+```
+python setup.py install
+```
+
 ## Running the code
 
 You now have everything you need to run the new enumeration code. You
@@ -54,7 +84,7 @@ that exist for each HNF and symmetry group produced. This mode is run
 as follows:
 
 ```
-python enumeration.py -polya
+enumeration.py -polya
 ```
 
 and expects a file called lattice.in an example of which can be found
@@ -69,7 +99,7 @@ The second option is the actual enumeration of derivative
 structures. This mode is run using:
 
 ```
-python enumeration.py -enum
+enumeration.py -enum
 ```
 
 and expects a file called enum.in which can also be found in the input
@@ -91,7 +121,9 @@ concetrtaion range pair the user would like. For example:
 ## Python Packages Used
 
 The enumeration.py code require the following python packages to run:
--copy
--numpy
--random
 
+- numpy
+
+- pyparsing
+
+- termcolor

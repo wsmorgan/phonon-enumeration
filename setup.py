@@ -16,7 +16,7 @@ except ImportError:
     print("warning: pypandoc module not found, could not convert Markdown to RST")
     read_md = lambda f: open(f, 'r').read()
 
-setup(name='enum',
+setup(name='phenum',
       version='1.0.1',
       description='Enumeration of symmetrically unique derivative superstructures of crystals.',
       long_description=read_md('README.md'),
@@ -29,8 +29,8 @@ setup(name='enum',
           "termcolor",
           "pyparsing",
       ],
-      packages=['enum'],
-      scripts=['enum/enumeration.py'],
+      packages=['phenum'],
+      scripts=['phenum/enumeration.py'],
       classifiers=[
           'Development Status :: 4 - Beta',
           'Intended Audience :: Materials Scientists',
