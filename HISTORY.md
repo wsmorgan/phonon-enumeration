@@ -1,9 +1,74 @@
 # Revision History for "phonon-enumeration"
 
+## Revision 1.2.0
+
+- Moved the enum folder to phenum as a better naming convention
+
+- Added grouptheory.py, also moved contents of grouper.py into this
+  file, and symmetry.py in order to generate the arrow group.
+
+- Implemented the finding of the arrow group in the code in cases
+  where arrow enumerations are wanted. Otherwise the code still reads
+  in the symmetry group from file.
+
+- Changed the arrow concentration input to be fractions that represent
+  the percentage of each atomic species that will have arrows on their
+  sites.
+
+## Revision 1.1.1
+
+- Fixed issue #1. As a result removed polya.py from repo as it is no
+ longer needed.
+
+- Fixed issue #2.
+
+- Removed struct_enum.out from repo as it isn't needed.
+
+
+## Revision 1.1.0
+
+Refactored the code to bring it into best practices standards. All
+tabs are now 4 spaces instead of 8. Other changes include:
+
+- Moved binomial_coefficient.py and Inverse_radix_number.py into
+radix_num_generator.py and renamed the file radix.py.
+
+- Moved phonon_brancher.py to phonons.py.
+
+- Moved arrow_group.py to grouper.py.
+
+- Moved branch_method.py to tree.py.
+
+- Removed the src/python folder and moved all of its contents into the
+src folder.
+
+- Added a .gitignore file.
+
+- Removed the old phonon_out.txt output file that got added to the repo
+by mistake.
+
+If anything breaks then I made a mistake while refactoring the code.
+
+## Revision 1.0.0
+
+Changed the driver to make it easeir to run the code and added two
+different modes for running, polya and enum. The first, polya, is used
+to determine the distribution of unique arrangements for the different
+cell sizes and concentrations. The second, enum, actually enumerates
+the requested number of configurations for each of the desired cell
+sizes and concentrations.
+
+Added structures.py, io_utils.py, and polya.py to the src/python
+folder. Also added the input folder that contains sample input and the
+support folder that has the needed altered files for enumlib.
+
+Also updated the documentation in all the code files so that they have
+better formatting and are accurate to the current code.
+
 ## Revision 0.3.0
 
 Changed from the python function to a hash function of my making so
-that we could compare results easily with MatLab. Also added on
+that we could compare results easily with MatLab. Also added an
 inverse hash function for the arrows. These two changes enabled a
 major shift in how duplicates are found. Now instead of finding each
 configuration by permuting the arrows we simply loop over the possible
