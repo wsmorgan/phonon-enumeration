@@ -1,13 +1,13 @@
 """Generates a random subset of possible structures weighted by the
 Polya distribution for superstructures.
 """
-def enum_data(cellsize, dataformat="cells.{}"):
+def enum_data(cellsize, args):
     """Returns a list of dictionaries with the HNF, SNF, Left Transform
     and permutation group file names for the given cell size.
     """
     from os import path
     from numpy import loadtxt, array
-    dirname = dataformat.format(cellsize)
+    dirname = args["dataformat"].format(cellsize)
     result = []
     
     if path.isdir(dirname):
@@ -21,8 +21,37 @@ def enum_data(cellsize, dataformat="cells.{}"):
                 "L": matrices[i,10:],
                 "group": path.join(dirname, "group.{}".format(matrices[i,0]))})
     else:
-        import phenum.msg as msg
-        msg.err("No data for cell size {0:d} found at {1}.".format(cellsize, dirname))
+        from phenum.msg import warn, err
+        from os import system
+        warn("No data for cell size {0:d} found at {1}. Creating new {2} files now using "
+             "{3}.".format(cellsize, dirname,args["dataformat"],args["exec"]))
+        if _which(args["exec"]) != None:
+            system(args["exec"])
+            system('rm symops_enum_parent_lattice.out readcheck_enum.out fort.*')
+            if path.isdir(dirname):
+                matrices = loadtxt(path.join(dirname, "matrices"), int)
+                limit = matrices.shape[0] if len(matrices.shape) > 1 else 1
+                matrices = array([matrices]) if limit == 1 else matrices
+                for i in range(limit):
+                    result.append({
+                        "SNF": matrices[i,1:4],
+                        "HNF": matrices[i,4:10],
+                        "L": matrices[i,10:],
+                        "group": path.join(dirname, "group.{}".format(matrices[i,0]))})
+            else:
+                err("The executable {0} does not produce the needed input folders {1}, "
+                    "or else your struct_enum.in doesn't agree with your {2} file. "
+                    "\nPlease ensure that your struct_enum.in is correct. If it is then "
+                    "please follow the instructions found to compile {0} in the "
+                    "README.".format(args["exec"],args["dataformat"],args["lattice"]))
+                exit()                            
+        else:
+            err("Could not find {} on your path. Please add it to your path "
+                "if you have already\n compiled it. Otherwise please follow the "
+                "instructions found in the README to download, make,\n and place the "
+                "executable in your path.".format(args["exec"]))
+            exit()
+        
     return result   
 
 def _read_struct_enum():
@@ -336,3 +365,25 @@ def _print_distribution(distr, filename=None, header=True, append=False):
                 size, HNF, conc = key
                 f.write("  {0: <28}  {1: <10}  {2:d}\n".format(' '.join(map(str, HNF)), ' '.join(map(str, conc)), value))
 
+
+def _which(program):
+    """Determines where if an executable exists on the users path.
+    This code was contributed by Jay at http://stackoverflow.com/a/377028
+    :args program: The name, or path for the program
+    """
+    import os
+    def is_exe(fpath):
+        return os.path.isfile(fpath) and os.access(fpath, os.X_OK)
+
+    fpath, fname = os.path.split(program)
+    if fpath:
+        if is_exe(program):
+            return program
+    else:
+        for path in os.environ["PATH"].split(os.pathsep):
+            path = path.strip('"')
+            exe_file = os.path.join(path, program)
+            if is_exe(exe_file):
+                return exe_file
+
+    return None

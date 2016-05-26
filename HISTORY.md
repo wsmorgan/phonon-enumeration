@@ -7,6 +7,7 @@
 - Updated the format of enum.out so that it properly displays the arrows now as described in issue $4.
 - Fixed a bug in tree.py and in enumeration.py that occured when only some of a color were being displaced by an arrow.
 - Also fixed some errors that occured when grouptheory.py was added to the code to find the arrow group.
+- Fixed issue number 11.
 
 ## Revision 1.2.0
 

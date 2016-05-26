@@ -205,11 +205,13 @@ def _polya_out(args):
 
     for s in range(params["sizes"][0], params["sizes"][1]+1):
         celldir = args["dataformat"].format(s)
+
+        # get HNFs, SNFs, and LTs
+        edata = enum_data(s,args)
+
         out = open(path.join(celldir, args["outfile"]), 'w+')
             
 
-        # get HNFs, SNFs, and LTs
-        edata = enum_data(s)
         # find the concentrations available for the desired cell sizes.
         cList = get_concs_for_size(s, params["nspecies"], params["is_crestricted"],
                                    len(params["basis_vecs"]), params["concs"])
@@ -301,7 +303,7 @@ def _enum_out(args):
     with open(args["outfile"], 'a') as f:
         if not params["arrows"]:
             for s in cellsizes:
-                dataset = enum_data(s)
+                dataset = enum_data(s,args)
                 datadicts.update({tuple(d["HNF"]): d for d in dataset})
 
         for HNF, conc, num_wanted in systems:
@@ -381,7 +383,7 @@ def enum_sys(groupfile, concs, a_concs, num_wanted, HNF, params):
         shuffle(subset)
         subset = subset[0:num_wanted]
     else:
-        from msg import warn
+        from phenum.msg import warn
         warn("number of configurations requested exceeds the number of "
             "unique configurations available.")
         subset = []
@@ -488,7 +490,7 @@ def _parser_options(phelp=False):
         exit(0)
 
     if vardict["verbose"]:
-        from enum.msg import set_verbosity
+        from phenum.msg import set_verbosity
         set_verbosity(vardict["verbose"])
 
     if not vardict["lattice"]:
@@ -508,14 +510,14 @@ def script_enum(args):
     if args["polya"]:
         #Perform validation for running polya.
         if not path.isfile(args["input"]):
-            from enum.msg import err
+            from phenum.msg import err
             err("The input file {} does not exist.".format(args["lattice"]))
             exit()
             
     if args["enum"]:
         #Perform validation for running enum.
         if not path.isfile(args["input"]):
-            from enum.msg import err
+            from phenum.msg import err
             err("The input file {} does not exist.".format(args["input"]))
             exit()
             
@@ -523,12 +525,13 @@ def script_enum(args):
         from glob import glob
         #Perform validation for running enum.
         if len(glob(args["dataformat"].split('.')[0]+'.*')) < 1:
-            from enum.msg import err, warn
+            from phenum.msg import err, warn
+            from os import system
             warn("The input folders {} do not exist.".format(args["dataformat"]))
             warn("Now running your enumlib executable to build the folders.")
             if _which(args["exec"]) != None:
-                os.system(args["exec"])
-                os.system('rm symops_enum_parent_lattice.out readcheck_enum.out fort.*')
+                system(args["exec"])
+                system('rm symops_enum_parent_lattice.out readcheck_enum.out fort.*')
                 if len(glob(args["dataformat"].split('.')[0]+'.*')) < 1:
                     err("The executable you have for {} does not produce "
                         "the needed input folders {}. In order to correct this "
