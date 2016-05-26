@@ -112,7 +112,8 @@ def write_enum(params, outfile="enum.out"):
                   "Equivalency list: 1 #Not used in the random enumeration algorithm ",
                   "start   #tot      HNF     Hdegn   labdegn   Totdegn   #size idx    "
                   "pg    SNF             HNF                 Left "
-                  "transform                          labeling",
+                  "transform                          labeling                 "
+                  "directions",
                   ""])
         
     with open(outfile, 'w') as f:

@@ -88,15 +88,15 @@ CONTAINS
     integer, allocatable :: label(:,:), a(:)
     real(dp), dimension(size(volTable,1)) :: minv, maxv, conc
     
-    open(98,file="debug_conc_check.out",position="append")
-    write(98,'(" Original concentration ranges:")')
-    do i = 1, size(concTable,1)
-       write(98,'(90(i4,1x))') concTable(i,:)
-    enddo
-    write(98,'(/," Numbers for given cell size:")')
-    do i = 1, size(volTable,1)
-       write(98,'(90(i4,1x))') volTable(i,:)
-    enddo
+    ! open(98,file="debug_conc_check.out",position="append")
+    ! write(98,'(" Original concentration ranges:")')
+    ! do i = 1, size(concTable,1)
+    !    write(98,'(90(i4,1x))') concTable(i,:)
+    ! enddo
+    ! write(98,'(/," Numbers for given cell size:")')
+    ! do i = 1, size(volTable,1)
+    !    write(98,'(90(i4,1x))') volTable(i,:)
+    ! enddo
     
     ! Imagine an odometer with n wheels, each which has a sequence of
     ! labels (the allowed labels for that atomic site). We'll turn the
@@ -148,12 +148,12 @@ CONTAINS
        a(j) = label(j,digCnt(j)) ! Put the appropriate label in the j-th spot
     enddo
     cList => ralloc(cList,cc,k) ! Reallocate the list to be the proper size
-    write(98,'(/," Number of discrete partitions: ",i5)') size(cList,1)
-    write(98,'(/," generated list:")')
-    do i = 1, size(cList,1)
-       write(98,'(10(i4,1x))') cList(i,:)
-    enddo
-    close(98)
+    ! write(98,'(/," Number of discrete partitions: ",i5)') size(cList,1)
+    ! write(98,'(/," generated list:")')
+    ! do i = 1, size(cList,1)
+    !    write(98,'(10(i4,1x))') cList(i,:)
+    ! enddo
+    ! close(98)
     
   END SUBROUTINE get_concentration_list
 
@@ -405,8 +405,8 @@ CONTAINS
        dRPList%v(:,:,iOp) = rd(:,:) - tRD(:,:)
        call map_dvector_permutation(rd,pd,dRPList%perm(iOp,:),eps)
     enddo
-    name = "debug_dvec_rots.out"
-    call write_rotperms_list(dRPList,name)
+    ! name = "debug_dvec_rots.out"
+    ! call write_rotperms_list(dRPList,name)
 
     ! I don't think we should reduce this list to a unique one. Some
     ! rotations that don't permute the d's could still permute the
@@ -456,7 +456,7 @@ CONTAINS
     logical, allocatable :: skip(:)
     integer OpIndxInSuperCellList, RowInDxGTable
     
-    open(19,file="debug_get_rotation_perms_lists.out")
+    ! open(19,file="debug_get_rotation_perms_lists.out")
 
     ! Number of HNFs (superlattices); Index of the superlattices;
     ! Number of d-vectors in d set
@@ -589,7 +589,7 @@ CONTAINS
           enddo
        enddo
     enddo ! loop over iH (superlattices)
-    close(19)
+    ! close(19)
   ENDSUBROUTINE get_rotation_perms_lists
 
   !!<summary></summary>
@@ -1177,75 +1177,75 @@ CONTAINS
     fixed_cells = .false.
     open(43,file="fixed_cells.in",status="old",iostat=status)
     if(status==0) then
-       write(*,'(A)') "---------------------------------------------------------------------------------------------"
-       write(*,'("Generating permutations for fixed cells. index n=",i2," to ",i2)') nMin, nMax
-       write(*,'("Be aware: non-primitive structures (super-periodic configurations) are included",/,&
-            &"in the final list in this mode.")')
+       ! write(*,'(A)') "---------------------------------------------------------------------------------------------"
+       ! write(*,'("Generating permutations for fixed cells. index n=",i2," to ",i2)') nMin, nMax
+       ! write(*,'("Be aware: non-primitive structures (super-periodic configurations) are included",/,&
+       !      &"in the final list in this mode.")')
        fixed_cells=.true.
     endif
     close(43)
     
-    write(*,'(A)') "---------------------------------------------------------------------------------------------"
-    write(*,'("Calculating derivative structures for index n=",i2," to ",i2)') nMin, nMax
-    if (conc_check) then
-       write(*,'(A)') "Including only structures of which the concentration &
-            &of each atom is in the range:"
-       do i = 1, k
-          write(formatstring,'(A,i1,A,i1,A,i1,A,i1,A)') '("Type:",i2,": ",&
-               &i',int(log10(real(cRange(i,1))+1))+1,&
-               &',"/",i',int(log10(real(cRange(i,3))+1))+1,',"--",i'&
-               &,int(log10(real(cRange(i,2))+1))+1,',"/",i'&
-               &,int(log10(real(cRange(i,3))+1))+1,')'
-          write(*,formatstring) i,cRange(i,1),cRange(i,3),cRange(i,2),cRange(i,3)
-       enddo
-    endif
+    ! write(*,'(A)') "---------------------------------------------------------------------------------------------"
+    ! write(*,'("Calculating derivative structures for index n=",i2," to ",i2)') nMin, nMax
+    ! if (conc_check) then
+       ! write(*,'(A)') "Including only structures of which the concentration &
+       !      &of each atom is in the range:"
+       ! do i = 1, k
+       !    write(formatstring,'(A,i1,A,i1,A,i1,A,i1,A)') '("Type:",i2,": ",&
+       !         &i',int(log10(real(cRange(i,1))+1))+1,&
+       !         &',"/",i',int(log10(real(cRange(i,3))+1))+1,',"--",i'&
+       !         &,int(log10(real(cRange(i,2))+1))+1,',"/",i'&
+       !         &,int(log10(real(cRange(i,3))+1))+1,')'
+       !    write(*,formatstring) i,cRange(i,1),cRange(i,3),cRange(i,2),cRange(i,3)
+       ! enddo
+    ! endif
     
-    write(*,'("Volume",7x,"CPU",8x,"#HNFs",2x,"#SNFs",&
-         &4x,"#reduced",4x,"% dups",6x,"volTot",6x,"RunTot")')
+    ! write(*,'("Volume",7x,"CPU",8x,"#HNFs",2x,"#SNFs",&
+    !      &4x,"#reduced",4x,"% dups",6x,"volTot",6x,"RunTot")')
     
     ! Set up the output file and write the lattice information
-    open(14,file="struct_enum.out")
+    ! open(14,file="struct_enum.out")
     !Write the fortpy version information for the file.
-    write(14, *) '# <fortpy version="3" revision="247"></fortpy>'
-    write(14,'(a10)') title
+    ! write(14, *) '# <fortpy version="3" revision="247"></fortpy>'
+    ! write(14,'(a10)') title
     if (pLatTyp=='S'.or.pLatTyp=="s") then; write(14,'(a4)') "surf"
     elseif (pLatTyp=='B'.or.pLatTyp=="b") then; write(14,'(a4)') "bulk"
     else; print *,"pLatTyp:",pLatTyp
     stop '"pLatTyp" not defined in gen_multilattice_derivs in enumlib'; endif
        
-    do i = 1,3
-       write(14,'(3(g15.8,1x),3x,"# a",i1," parent lattice vector")') parLV(:,i),i
-    enddo
-    write(14, '(i5," # Number of points in the multilattice")') nDFull
-    do iD = 1,nDFull
-       ! Print out the dset points and their possible labels 
-       ! (1) setup the format for output      
-       formatstring='(3(g15.8,1x),3x,"# d",i2.2," d-vector, labels: "'
-       do i=1,digitFull(iD); if (i>1) formatstring=trim(formatstring)//',"/"'; formatstring=trim(formatstring)//',i1'; enddo
-       formatstring=trim(formatstring)//")"
-       ! (2) print the data            
-       write(14,formatstring) dFull(:,iD),iD, labelFull(1:digitFull(iD),iD)
-    enddo
-    write(14,'(i2,"-nary case")') k
-    write(14,'(2i4," # Starting and ending cell sizes for search")') nMin, nMax
-    write(14,'(g15.8," # Epsilon (finite precision parameter)")') eps
-    write(14,'(A)') "Concentration check:"
-    write(14,'(L5)') conc_check
-    if (conc_check) then
-       write(14,'(A)') "Including only structures of which the concentration &
-            &  of each atom is in the range:"
-       do i = 1, k
-          write(14,'("Type ",i1,": ",i4,"/",i4," -- ",i4,"/",i4)') i,cRange(i,1),cRange(i,3),cRange(i,2),cRange(i,3)
-       enddo
-    endif
-    if (full) then; write(14,'("full list of labelings (including incomplete labelings) is used")')
-    else; write(14,'("partial list of labelings (complete labelings only) is used")'); endif
-    write(14,'("Equivalency list:" ,40(I2,1x))') equivalencies(:)
+    ! do i = 1,3
+    !    write(14,'(3(g15.8,1x),3x,"# a",i1," parent lattice vector")') parLV(:,i),i
+    ! enddo
+    ! write(14, '(i5," # Number of points in the multilattice")') nDFull
+    ! do iD = 1,nDFull
+    !    ! Print out the dset points and their possible labels 
+    !    ! (1) setup the format for output      
+    !    formatstring='(3(g15.8,1x),3x,"# d",i2.2," d-vector, labels: "'
+    !    do i=1,digitFull(iD); if (i>1) formatstring=trim(formatstring)//',"/"'; formatstring=trim(formatstring)//',i1'; enddo
+    !    formatstring=trim(formatstring)//")"
+    !    ! (2) print the data            
+    !    write(14,formatstring) dFull(:,iD),iD, labelFull(1:digitFull(iD),iD)
+    ! enddo
+    ! write(14,'(i2,"-nary case")') k
+    ! write(14,'(2i4," # Starting and ending cell sizes for search")') nMin, nMax
+    ! write(14,'(g15.8," # Epsilon (finite precision parameter)")') eps
+    ! write(14,'(A)') "Concentration check:"
+    ! write(14,'(L5)') conc_check
+    ! if (conc_check) then
+    !    write(14,'(A)') "Including only structures of which the concentration &
+    !         &  of each atom is in the range:"
+    !    do i = 1, k
+    !       write(14,'("Type ",i1,": ",i4,"/",i4," -- ",i4,"/",i4)') i,cRange(i,1),cRange(i,3),cRange(i,2),cRange(i,3)
+    !    enddo
+    ! endif
+    ! if (full) then; write(14,'("full list of labelings (including incomplete labelings) is used")')
+    ! else; write(14,'("partial list of labelings (complete labelings only) is used")'); endif
+    ! write(14,'("Equivalency list:" ,40(I2,1x))') equivalencies(:)
              
-    !write(14,'("Symmetry of the primary lattice is of order ",i2)')
+    ! !write(14,'("Symmetry of the primary lattice is of order ",i2)')
 
 
-    write(14,'("start",3x,"#tot",6x,"HNF",5x,"Hdegn",3x,"labdegn",3x,"Totdegn",3x,"#size",1x,"idx",4x,"pg",4x,"SNF",13x,"HNF",17x,"Left transform",26x,"labeling")')
+    ! write(14,'("start",3x,"#tot",6x,"HNF",5x,"Hdegn",3x,"labdegn",3x,"Totdegn",3x,"#size",1x,"idx",4x,"pg",4x,"SNF",13x,"HNF",17x,"Left transform",26x,"labeling")')
 
     ! Check for 2D or 3D request
     if (pLatTyp=='s' .or. pLatTyp=='S') then; LatDim = 2
@@ -1323,37 +1323,37 @@ CONTAINS
 
        call write_matrices(rdHNF, SNF, L, RPLindx, rdRPList, ivol)
        !cycle
-       do iBlock = 1, maxval(RPLindx)
-          !call cpu_time(blockstart)
-          !filename = "debug_temp_perms.out"
-          !call write_rotperms_list(rdRPList(iBlock), filename)
+       ! do iBlock = 1, maxval(RPLindx)
+       !    !call cpu_time(blockstart)
+       !    !filename = "debug_temp_perms.out"
+       !    !call write_rotperms_list(rdRPList(iBlock), filename)
           
-          if (conc_check) then
-             do iC = 1, size(iRange,1) ! loop over each concentration in the range
-                write(*,'("HNF: ",6(i2,1x))') (RDhnf(i,:,iBlock),i=1,3)
-                ! call generate_permutation_labelings_new(ivol, nD, rdRPList(iBlock)%perm, iRange(iC,:), fixed_cells)
-                call generate_permutation_labelings(k,ivol,nD,rdRPList(iBlock)%perm,&
-                     lm,iRange(iC,:),labelFull,digitFull,lab_degen,fixed_cells)
-                ! call generate_disjoint_permutation_labelings(k,ivol,nD&
-                !     &,rdRPList(iBlock)%perm,lm,iRange(iC,:),labelFull,digitFull,2)
-                 call write_labelings(k,ivol,nD,label,digit,iBlock,rdHNF,SNF,L,fixOp,Tcnt,Scnt,HNFcnt&
-                     &,RPLindx,lm,equivalencies,hnf_degen,lab_degen,iRange(iC,:))
-             enddo
-          else
-             call generate_unique_labelings(k,ivol,nD,rdRPList(iBlock)%perm,&
-                  full,lm,label,digit,lab_degen,fixed_cells)
-             ! Now that we have the labeling marker, we can write the output.
-             call write_labelings(k,ivol,nD,label,digit,iBlock,rdHNF,SNF,L,fixOp,Tcnt,Scnt,HNFcnt,RPLindx,lm,equivalencies,hnf_degen,lab_degen)
-             !call cpu_time(endwrite)
-          endif
-       enddo! iBlock
-       !call cpu_time(writetime)
-       call cpu_time(tend)
-       write(*,'(i4,1x,f14.4,1x,i8,3x,i3,3x,i7,7x,f7.4,i12,i12)')ivol,tend-tstart,size(HNF,3),&
-            size(uqSNF,3),size(rdHNF,3),1-size(rdHNF,3)/real(size(HNF,3)),Scnt, Tcnt
+       !    if (conc_check) then
+       !       do iC = 1, size(iRange,1) ! loop over each concentration in the range
+       !          write(*,'("HNF: ",6(i2,1x))') (RDhnf(i,:,iBlock),i=1,3)
+       !          ! call generate_permutation_labelings_new(ivol, nD, rdRPList(iBlock)%perm, iRange(iC,:), fixed_cells)
+       !          call generate_permutation_labelings(k,ivol,nD,rdRPList(iBlock)%perm,&
+       !               lm,iRange(iC,:),labelFull,digitFull,lab_degen,fixed_cells)
+       !          ! call generate_disjoint_permutation_labelings(k,ivol,nD&
+       !          !     &,rdRPList(iBlock)%perm,lm,iRange(iC,:),labelFull,digitFull,2)
+       !           call write_labelings(k,ivol,nD,label,digit,iBlock,rdHNF,SNF,L,fixOp,Tcnt,Scnt,HNFcnt&
+       !               &,RPLindx,lm,equivalencies,hnf_degen,lab_degen,iRange(iC,:))
+       !       enddo
+       !    else
+       !       call generate_unique_labelings(k,ivol,nD,rdRPList(iBlock)%perm,&
+       !            full,lm,label,digit,lab_degen,fixed_cells)
+       !       ! Now that we have the labeling marker, we can write the output.
+       !       call write_labelings(k,ivol,nD,label,digit,iBlock,rdHNF,SNF,L,fixOp,Tcnt,Scnt,HNFcnt,RPLindx,lm,equivalencies,hnf_degen,lab_degen)
+       !       !call cpu_time(endwrite)
+       !    endif
+       ! enddo! iBlock
+       ! !call cpu_time(writetime)
+       ! call cpu_time(tend)
+       ! write(*,'(i4,1x,f14.4,1x,i8,3x,i3,3x,i7,7x,f7.4,i12,i12)')ivol,tend-tstart,size(HNF,3),&
+       !      size(uqSNF,3),size(rdHNF,3),1-size(rdHNF,3)/real(size(HNF,3)),Scnt, Tcnt
     enddo ! loop over cell sizes (ivol)
-    close(14)
-    write(*,'(A)') "---------------------------------------------------------------------------------------------"
+    ! close(14)
+    ! write(*,'(A)') "---------------------------------------------------------------------------------------------"
                 
   ENDSUBROUTINE gen_multilattice_derivatives
 
