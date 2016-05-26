@@ -12,7 +12,6 @@ import itertools as it
 from phenum.structures import enum_data
 from copy import deepcopy
 import phenum.io_utils as io
-from phenum.grouptheory import get_sym_group
 
 # hard coded error tolerance. This will need to go away and become
 # part of the input files later.
@@ -164,14 +163,17 @@ def create_labeling(config):
     the lattice.
     """
     label = ''
+    arrow =  ''
     if isinstance(config[0],list):
         for i in config:
             label += str(i[1]-1)
+            arrow += str(i[0]+1)
     else:
         for i in config:
-            label += str(i-1)            
+            label += str(i-1)
+            arrow += '0'
     
-    return(label)
+    return(label,arrow)
 
 def _get_arrow_concs(params):
     """If the concentrations are being restricted then find the correct 
@@ -195,13 +197,16 @@ def _polya_out(args):
     """Generates the 'polya.out' files for the cell sizes specified in 'lattice.in'
     (or other specified input file).
     """
-    from os import path
+    from os import path, makedirs
     from numpy import zeros
+    from phenum.grouptheory import get_sym_group, get_full_HNF
+    from phenum.msg import warn
     params = io.read_lattice(args["lattice"])
 
     for s in range(params["sizes"][0], params["sizes"][1]+1):
         celldir = args["dataformat"].format(s)
         out = open(path.join(celldir, args["outfile"]), 'w+')
+            
 
         # get HNFs, SNFs, and LTs
         edata = enum_data(s)
@@ -220,10 +225,15 @@ def _polya_out(args):
         for idata, edict in enumerate(edata):
             HNF = edict["HNF"]
             out.write("  {0: <26}".format(' '.join(map(str, HNF))))
-            group = io.read_group(edict["group"])
-            # TODO: for arrow enumerations, this is much more complicated, and
-            # still needs to be done...
-            agroup = [[g,[0]] for g in group]
+
+            if params["arrows"]:
+                sym_g = get_sym_group(params["lat_vecs"],params["basis_vecs"],get_full_HNF(HNF),3)
+                agroup = []
+                for i in range(len(sym_g.perm.site_perm)):
+                    agroup.append([sym_g.perm.site_perm[i],sym_g.perm.arrow_perm[i]])
+            else:
+                group = io.read_group(edict["group"])
+                agroup = [[g,[0]] for g in group]
 
             # we need to loop over the concentrations and find the
             # number of arrangements possible for each cell size
@@ -246,9 +256,7 @@ def _polya_out(args):
                         # Since enumlib doesn't write the arrow group
                         # out we have to recompute the group actions
                         # paired with their effects on the arrows
-                        temp_HNF = HNF.tolist()
-                        full_HNF = [[temp_HNF[0],0,0],[temp_HNF[1],temp_HNF[2],0],temp_HNF[3:]]
-                        sym_g = get_sym_group(params["lat_vecs"],params["basis_vecs"],full_HNF,3)
+                        sym_g = get_sym_group(params["lat_vecs"],params["basis_vecs"],get_full_HNF(HNF),3)
                         agroup = []
                         for i in range(len(sym_g.perm.site_perm)):
                             agroup.append([sym_g.perm.site_perm[i],sym_g.perm.arrow_perm[i]])
@@ -280,33 +288,43 @@ def _enum_out(args):
 
     count_t = 1
     from numpy import unique
+    from phenum.grouptheory import get_full_HNF, SmithNormalForm
     def cellsize(sHNF):
         return sHNF[0]*sHNF[2]*sHNF[5]
     cellsizes = unique([cellsize(sys[0]) for sys in systems])
     datadicts = {}
     sfmt = ("{0: >10d}{1: >10d}{2: >8d}{3: >9d}{4: >9d}{5: >12d}{6: >4d}{7: >6d}"
-            "{8: >10}  {9: >18}  {10: >44}    {11}\n")
+            "{8: >10}  {9: >18}  {10: >44}    {11}    {12: >21""}\n")
     def fmtn(l, n):
         return (''.join(["{{{0:d}: >{1:d}d}}".format(i, n) for i in range(len(l))])).format(*l)
     
     with open(args["outfile"], 'a') as f:
-        for s in cellsizes:
-            dataset = enum_data(s)
-            datadicts.update({tuple(d["HNF"]): d for d in dataset})
+        if not params["arrows"]:
+            for s in cellsizes:
+                dataset = enum_data(s)
+                datadicts.update({tuple(d["HNF"]): d for d in dataset})
 
         for HNF, conc, num_wanted in systems:
-            edata = datadicts[tuple(HNF)]
-            SNF = edata["SNF"]
-            LT = edata["L"]
+            if not params["arrows"]:
+                edata = datadicts[tuple(HNF)]
+                SNF = edata["SNF"]
+                LT = edata["L"]
             
-            a_concs = _get_arrow_concs(params)
-            configs = enum_sys(edata["group"], list(conc), a_concs, num_wanted,HNF,params)
+                a_concs = _get_arrow_concs(params)
+                configs = enum_sys(edata["group"], list(conc), a_concs, num_wanted,HNF,params)
+
+            else:
+                (SNF,L,R) = SmithNormalForm(get_full_HNF(HNF))
+                SNF = [SNF[0][0],SNF[1][1],SNF[2][2]]
+                LT = [item for row in L for item in row]
+                a_concs = _get_arrow_concs(params)
+                configs = enum_sys(None, list(conc), a_concs, num_wanted,HNF,params)
 
             for config in configs:
-                labeling = create_labeling(config)
+                (labeling,arrowing) = create_labeling(config)
                 o = sfmt.format(count_t, 1, 1, 1, 1, 1, sum(conc), 1,
                                 fmtn(SNF, 3), fmtn(HNF, 3),
-                                fmtn(LT, 5), labeling)
+                                fmtn(LT, 5), labeling, arrowing)
                 f.write(o)
                 count_t += 1
 
@@ -326,10 +344,17 @@ def enum_sys(groupfile, concs, a_concs, num_wanted, HNF, params):
     decorations = pb.col_sort(decorations)
     # get the symmetry group for this HNF. Assumes the group can be
     # found in the file labeled by (this_HNF)_sym_group.out
-    group = io.read_group(groupfile)
-    # get symgroup from HNF and lat_vecs
-    # add [0] to each element of the symmetry group
-    agroup = [[g,[0]] for g in group]
+    from phenum.grouptheory import get_full_HNF, get_sym_group
+    if groupfile == None:
+        sym_g = get_sym_group(params["lat_vecs"],params["basis_vecs"],get_full_HNF(HNF),3)
+        agroup = []
+        for i in range(len(sym_g.perm.site_perm)):
+            agroup.append([sym_g.perm.site_perm[i],sym_g.perm.arrow_perm[i]])
+    else:
+        group = io.read_group(groupfile)
+        # get symgroup from HNF and lat_vecs
+        # add [0] to each element of the symmetry group
+        agroup = [[g,[0]] for g in group]
 
     # we need to know the concentrations of the
     # species with and without arrows
@@ -345,12 +370,6 @@ def enum_sys(groupfile, concs, a_concs, num_wanted, HNF, params):
         # Since enumlib doesn't write the arrow group out we have to
         # recompute the group actions paired with their effects on the
         # arrows
-        temp_HNF = HNF.tolist()
-        full_HNF = [[temp_HNF[0],0,0],[temp_HNF[1],temp_HNF[2],0],temp_HNF[3:]]
-        sym_g = get_sym_group(params["lat_vecs"],params["basis_vecs"],full_HNF,3)
-        agroup = []
-        for i in range(len(sym_g.perm.site_perm)):
-            agroup.append([sym_g.perm.site_perm[i],sym_g.perm.arrow_perm[i]])
         total = polya(concs_w_arrows, agroup, arrowings=arrow_types)
     else:
         total = polya(concs, agroup)
@@ -380,14 +399,16 @@ def enum_sys(groupfile, concs, a_concs, num_wanted, HNF, params):
                 configs.append(config)
             count += 1
     else:
-        (configs,n_stabs) = brancher(concs, agroup, decorations, 6, subset)
+        if arrow_types != 0:
+            (configs,n_stabs) = brancher(concs_w_arrows, agroup, decorations, 6, subset)
+        else:
+            (configs,n_stabs) = brancher(concs, agroup, decorations, 6, subset)
 
     # reduced_configs is the list of configurations with the
     # superperiodic configurations removed.
     reduced_configs = []
     # need to find a way to remove the superperiodic arrangements
     reduced_configs = configs                
-
     return reduced_configs
 
 def _examples():
@@ -449,6 +470,9 @@ def _parser_options(phelp=False):
                               "enumeration parameters."))
     parser.add_argument("-input",
                         help=("Override the default 'enum.in' file name."))
+    parser.add_argument("-exec",
+                        help=("Override the default 'enum.x' executable with an executable "
+                              "name or path."))
     parser.add_argument("-dataformat", default="cells.{}",
                         help=("Specify the default folder name for any cell size that contains "
                               "the matrices and groups generated by 'enum.x'. Format is: cells.{} "
@@ -471,6 +495,8 @@ def _parser_options(phelp=False):
         vardict["lattice"] = "lattice.in"
     if not vardict["input"]:
         vardict["input"] = "enum.in"
+    if not vardict["exec"]:
+        vardict["exec"] = "enum.x"
     if not vardict["outfile"]:
         vardict["outfile"] = "polya.out" if vardict["polya"] else "enum.out"
     return vardict
@@ -500,19 +526,20 @@ def script_enum(args):
             from enum.msg import err, warn
             warn("The input folders {} do not exist.".format(args["dataformat"]))
             warn("Now running your enumlib executable to build the folders.")
-            if _which('enum.x') != None:
-                os.system('enum.x')
+            if _which(args["exec"]) != None:
+                os.system(args["exec"])
+                os.system('rm symops_enum_parent_lattice.out readcheck_enum.out fort.*')
                 if len(glob(args["dataformat"].split('.')[0]+'.*')) < 1:
-                    err("The executable you have for enum.x does not produce "
+                    err("The executable you have for {} does not produce "
                         "the needed input folders {}. In order to correct this "
                         "you need to follow the compilation instructions found "
-                        "in the README.".format(args["dataformat"]))
+                        "in the README.".format(args["exec"],args["dataformat"]))
                     exit()                            
             else:
-                err("Could not find enum.x on your path. Please add it to your path "
+                err("Could not find {} on your path. Please add it to your path "
                     "if you have already\n compiled it. Otherwise please follow the "
                     "instructions found in the README to download, make,\n and place the "
-                    "executable in your path.")
+                    "executable in your path.".format(args["exec"]))
                 exit()
             
     if args["polya"]:

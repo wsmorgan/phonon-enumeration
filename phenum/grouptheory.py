@@ -776,3 +776,14 @@ def group(gen):
         
     return(groupi)
 
+def get_full_HNF(HNF):
+    """Turns the reduced HNF to a full HNF matrix.
+    
+    :args HNF: The 1D integer numpy array that contains all the lower
+    diagonal entries of the HNF matrix.
+    """
+
+    temp_HNF = HNF.tolist()
+    full_HNF = [[temp_HNF[0],0,0],[temp_HNF[1],temp_HNF[2],0],temp_HNF[3:]]
+
+    return full_HNF

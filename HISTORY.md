@@ -1,5 +1,13 @@
 # Revision History for "phonon-enumeration"
 
+## Revision 1.2.1
+
+- Added the path to the enum.x code as a command line option as described in issue # 6.
+- Updated derivative_structure_generator.f90 so that it no longer produces unwanted debugging files and other output.
+- Updated the format of enum.out so that it properly displays the arrows now as described in issue $4.
+- Fixed a bug in tree.py and in enumeration.py that occured when only some of a color were being displaced by an arrow.
+- Also fixed some errors that occured when grouptheory.py was added to the code to find the arrow group.
+
 ## Revision 1.2.0
 
 - Moved the enum folder to phenum as a better naming convention

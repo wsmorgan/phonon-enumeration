@@ -126,48 +126,48 @@ def perm(casei,colors,length,index,gen,stab,order,ast):
 	    for j in i:
 		lnew.append(li[j])
 		lib= list(li)
-		lnewb = list(lnew)
-		lnewb2 = []
+	    lnewb = list(lnew)
+	    lnewb2 = []
 
-		# any color that was placed that isn't the color for
-		# the current level is set to zero
-		for y in range(0,len(li)):
-		    if li[y] > index + 1:
-			lib[y] = 0
-		for y in range(0,len(lnew)):
-		    if lnew[y] > index + 1:
-			lnewb[y] = 0
-		for y in range(0,len(lnew)):
-		    if lnewb[y] == 0:
-			lnewb2.append(0)
-		    elif lnewb[y] == index + 1:
-			lnewb2.append(1)
+	    # any color that was placed that isn't the color for
+	    # the current level is set to zero
+	    for y in range(0,len(li)):
+		if li[y] > index + 1:
+		    lib[y] = 0
+	    for y in range(0,len(lnew)):
+		if lnew[y] > index + 1:
+		    lnewb[y] = 0
+	    for y in range(0,len(lnew)):
+		if lnewb[y] == 0:
+		    lnewb2.append(0)
+		elif lnewb[y] == index + 1:
+		    lnewb2.append(1)
+                    
+	    # if the the new and original configurations are the
+	    # same then save the stabilizers
+	    if lnewb == lib:
+		st.append(a)
+	    if li == lnew:
+		ast.append(a)
 
-		# if the the new and original configurations are the
-		# same then save the stabilizers
-		if lnewb == lib:
-		    st.append(a)
-		if li == lnew:
-		    ast.append(a)
-
-		# hash from radix_num_generator turns the array back
-		# into an integer hash array
-		rtest = rng.hash(list(lnewb2),colors)
-		# if the original hash is larger than the new one then
-		# this configuration isn't unique so we set unique to
-		# be 1 and reset the other variables
-		if casei[index] > rtest:
-		    unique = 1
-		    st = []
-		    ast = []
-		    break
-
-		# if the configuration isn't unique break from the
-                # loop
-		if unique == 1:
-		    ast = []
-		    st = []
-		    break
+	    # hash from radix_num_generator turns the array back
+	    # into an integer hash array
+	    rtest = rng.hash(list(lnewb2),colors)
+	    # if the original hash is larger than the new one then
+	    # this configuration isn't unique so we set unique to
+	    # be 1 and reset the other variables
+	    if casei[index] > rtest:
+		unique = 1
+		st = []
+		ast = []
+		break
+            
+	    # if the configuration isn't unique break from the
+            # loop
+	    if unique == 1:
+		ast = []
+		st = []
+		break
     else:
 	unique = 1
 		
@@ -201,7 +201,6 @@ def brancher(concs,group,colors_w_arrows, dim, subset = []):
     # redifine the colors so that the arrows are treated like
     # their own color
     colors = pb.color_list(colors_w_arrows)
-
     # find the total number of atoms
     n = sum(concs)
 
@@ -210,7 +209,6 @@ def brancher(concs,group,colors_w_arrows, dim, subset = []):
 
     # count how many arrows there are
     narrows = pb.how_many_arrows(colors_w_arrows)
-
     # prepare the stabalizer array to be the appropriate size
     stabalizer = [0]*len(concs)
     

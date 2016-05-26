@@ -21,7 +21,7 @@ def enum_data(cellsize, dataformat="cells.{}"):
                 "L": matrices[i,10:],
                 "group": path.join(dirname, "group.{}".format(matrices[i,0]))})
     else:
-        import cesa.msg as msg
+        import phenum.msg as msg
         msg.err("No data for cell size {0:d} found at {1}.".format(cellsize, dirname))
     return result   
 
