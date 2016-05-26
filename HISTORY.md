@@ -1,6 +1,6 @@
 # Revision History for "phonon-enumeration"
 
-## Revision 1.2.1
+## Revision 1.3.0
 
 - Added the path to the enum.x code as a command line option as described in issue # 6.
 - Updated derivative_structure_generator.f90 so that it no longer produces unwanted debugging files and other output.
