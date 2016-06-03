@@ -1,5 +1,16 @@
 # Revision History for "phonon-enumeration"
 
+## Revision 1.4.0
+
+- Refactored the code so that fewer subroutines are located in the driver.
+- Fixed issue #12.
+- Updated the code so that it doesn't need the struct_enum.template file anymore.
+- Added the creation of the enum.in files as described in issue # 10.
+- Added unit tests to all global subroutines excluding those in io_utils.py.
+- Reformated enum.out slightly so that it still works with makestr.x from enumlib.
+- Moved all the hash functions to phonons.py and tree.py and renamed radix.py to numerics.py since it only contains numeric subroutines now.
+- Fixed lots of random bugs that occured during the refactoring.
+
 ## Revision 1.3.0
 
 - Added the path to the enum.x code as a command line option as described in issue # 6.

@@ -1,14 +1,108 @@
 """The heart of the code is here. These methods build the tree and
 check the canfigurations for uniqueness."""
 
-#import needed modules
-import numpy as np
-import radix as rng
-import phonons as pb
-from copy import deepcopy
-import random
+def _coefficients(number_of_each_color,number_of_slots):
+    """This method generates the radix numbers, or total number of
+    combinations of each color, for a given aray.
 
-def perm(casei,colors,length,index,gen,stab,order,ast):
+    :arg number_of_each_color: is an integer array integer indicating the
+    number of times each color is found in the array.
+    :arg number_of_slots: an integer equal to the sum of the
+    number_of_each_color array.
+    """
+    from numerics import binomial_coefficient
+
+    #renames variables for convience and creates an empty array
+    coe = []
+    for i in range(0,len(number_of_each_color)):
+    #Uses the binomial_coefficient method to build an array of radix numebrs
+	coe.append(binomial_coefficient(number_of_slots,number_of_each_color[i]))
+	number_of_slots -= number_of_each_color[i]
+    return coe
+
+def _hash(listi,color):
+    """Generates a hash for each color in the ladeling returning a array
+    of the hash for each color.
+    
+    :arg listi: An integer array that contains the labeling.
+    :arg color: An integer array of the concentrations of the
+    colors.
+
+    For details on this method see: http://msg.byu.edu/papers/enum3.pdf
+    """
+    from numerics import binomial_coefficient
+
+    m = len(listi)
+    li = listi[::-1]
+    rm1 = m - li.index(1)
+    y = 0
+    z = listi[:rm1].count(0)#m - listi[:rm1].count(1)
+    li = listi
+    for i in range(z):
+	p0 = li.index(0) #next(x[0] for x in enumerate(li) if x[1] > j)
+	k = li[p0:].count(1)
+	li = li[p0+1:]
+	y += binomial_coefficient(len(li),k-1)
+    return y
+
+def _invhash(branch,colors,n):
+    """Turns a hash array into a labeling, i.e., undoes the hash()
+    subroutine.
+    
+    :arg branch: an integer list of the radix number/hash array
+    :arg colors: an integer array of the concentration of the colors
+    :arg n: the length of the labeling array, i.e., the
+    number of sites in the system
+
+    For the details on this method see: http://msg.byu.edu/papers/enum3.pdf
+    """
+
+    from numerics import binomial_coefficient
+
+    new = [0 for y in range(n)]
+    coluse = 1
+    for i in range(0,len(branch)):
+        newi = [0 for y in range(n)]
+        I = branch[i]
+        t = colors[i]
+        for l in range(n,0,-1):
+            binom = binomial_coefficient(l-1, t-1)
+            if binom <= I:
+                I -= binom
+            else:
+                newi[n-l] = coluse
+                t -= 1
+        coluse += 1
+        n -= colors[i]
+        si = 0
+        for s in range(0,len(new)):
+            if new[s] == 0:
+                new[s] = newi[si]
+                si += 1
+    return(new)
+
+#color_list takes the configuration and returns a unique list of the
+#colors used without duplicates.
+def _color_list(col):
+    """Finds the unique colors in a labeling.
+
+    :arg col: an integer array of the labeling.
+    """
+    colors=[]
+
+    tcol=col[:]
+    for i in range(len(tcol)):
+        if tcol[i] != 0:
+            colors.append(tcol[i])
+            for j in range(len(tcol)):
+                if tcol[j] == tcol[i] and i != j:
+                    tcol[j] =0
+            tcol[i] =0
+    return(colors)
+
+
+
+def _perm(casei,colors,length,index,gen,stab,order,ast):
     """This method applies a cyclical permutation to an array to determine
     if it is unique. 
 		
@@ -47,7 +141,7 @@ def perm(casei,colors,length,index,gen,stab,order,ast):
 		
     # uses the invhash method from Inverse_radix_num to turn the id
     # number, casei, into an array
-    li = list(rng.invhash(casei,colors,length))
+    li = list(_invhash(casei,colors,length))
 
     # if we're on the first level of the tree then we need to
     # follow a special procedure
@@ -74,7 +168,7 @@ def perm(casei,colors,length,index,gen,stab,order,ast):
 
 	    # hash from radix_num_generator turns the array back into
 	    # an integer hash array
-	    rtest = rng.hash(list(lnewb),colors)
+	    rtest = _hash(list(lnewb),colors)
 
 	    # if the original hash is smaller than the new one we
 	    # don't want to visit the new one again so we set its
@@ -152,7 +246,7 @@ def perm(casei,colors,length,index,gen,stab,order,ast):
 
 	    # hash from radix_num_generator turns the array back
 	    # into an integer hash array
-	    rtest = rng.hash(list(lnewb2),colors)
+	    rtest = _hash(list(lnewb2),colors)
 	    # if the original hash is larger than the new one then
 	    # this configuration isn't unique so we set unique to
 	    # be 1 and reset the other variables
@@ -196,19 +290,22 @@ def brancher(concs,group,colors_w_arrows, dim, subset = []):
     configuration
     """
 
+    from phonons import how_many_arrows, add_arrows
+    from copy import deepcopy
+
     # initial setup	
 
     # redifine the colors so that the arrows are treated like
     # their own color
-    colors = pb.color_list(colors_w_arrows)
+    colors = _color_list(colors_w_arrows)
     # find the total number of atoms
     n = sum(concs)
 
     # Find the mixed radix number counter for the system
-    C = rng.coefficients(concs,n)
+    C = _coefficients(concs,n)
 
     # count how many arrows there are
-    narrows = pb.how_many_arrows(colors_w_arrows)
+    (narrows,arrow_types,concs_w_arrows) = how_many_arrows(colors_w_arrows)
     # prepare the stabalizer array to be the appropriate size
     stabalizer = [0]*len(concs)
     
@@ -217,7 +314,7 @@ def brancher(concs,group,colors_w_arrows, dim, subset = []):
     # we can skip over the ones we already know aren't unique
     ast = []
     order = {}
-    for i in range(0,rng.binomial_coefficient(sum(concs),concs[0])+1):
+    for i in range(0,C[0]+1):
 	order[i] = i
 
     # determine if we are finding a subset of doing a full enumeration
@@ -232,13 +329,9 @@ def brancher(concs,group,colors_w_arrows, dim, subset = []):
 
     #create the all zero branch of lables
     #survivors is an array that stores the unique configurations
-    branch = np.zeros(len(C))
+    from numpy import zeros
+    branch = zeros(len(C))
     survivors = []
-
-    # So that we can eliminate the superperiodic structures we
-    # need to know the number of stabilizers for each survivor so
-    # we'll create a list of the number of stabilizers as well.
-    stab_len = []
 
     #variables used for iteration and as test criteria for
     #navigating the tree
@@ -255,7 +348,7 @@ def brancher(concs,group,colors_w_arrows, dim, subset = []):
 	# 0, if no then unique = 1, perm also outputs the stabilizers
 	# for each level, the order for the first level, and the
 	# stabilizers for the arrow configurations
-	(unique,stabalizer[i+1],order,ast) = perm(branch,concs,n,i,group,stabalizer[i],order,ast)
+	(unique,stabalizer[i+1],order,ast) = _perm(branch,concs,n,i,group,stabalizer[i],order,ast)
 
 	# if this array is unique then we may need to append it to the
 	# list of survivors
@@ -269,7 +362,7 @@ def brancher(concs,group,colors_w_arrows, dim, subset = []):
 		# before saving the configurations
 		if narrows > 0:
 		    # first use invhash to turn the hash back to an array
-		    brancht = list(rng.invhash(branch, concs, len(colors_w_arrows)))
+		    brancht = list(_invhash(branch, concs, len(colors_w_arrows)))
 		    # create a temporary copy of the branch.
 		    tbrancht = []
 		    for tt in range(len(brancht)):
@@ -282,32 +375,30 @@ def brancher(concs,group,colors_w_arrows, dim, subset = []):
 		    # add_arrows from the phonon_brancher code returns
 		    # the unique configurations with the unique arrow
 		    # arrangements
-		    arsurvivors = pb.add_arrows(brancht,ast, dim)
+		    arsurvivors = add_arrows(brancht,ast, dim)
 		    #write the unique confgurations to file.
 		    for z in arsurvivors:
 			# if we aren't using a subset write everything
 			# to file.
 			if not use_subset:
 			    survivors.append(z)
-			    stab_len.append(len(ast))
 			# if we are then we only want to write the
 			# random subset to file.
 			else:
 			    if count in subset:
 				survivors.append(z)
-				stab_len.append(len(ast))
 			count += 1
 		else:
 		    # if there are no arrows just
 		    # write the unique arrangement
 		    # to file
 		    if not use_subset:
-			survivors.append(list(rng.invhash(branch, concs, len(colors_w_arrows))))
-			stab_len.append(len(ast))
+                        tbranch = list(_invhash(branch, concs, len(colors_w_arrows)))
+			survivors.append([[-1,leaf] for leaf in tbranch])
 		    else:
 			if count in subset:
-			    survivors.append(list(rng.invhash(branch, concs, len(colors_w_arrows))))
-			    stab_len.append(len(ast))
+                            tbranch = list(_invhash(branch, concs, len(colors_w_arrows)))
+			    survivors.append([[-1,leaf] for leaf in tbranch])
 		    count += 1
 
 		    # if we aren't on the last contributing level
@@ -371,4 +462,4 @@ def brancher(concs,group,colors_w_arrows, dim, subset = []):
 		test = 1
 
     # done
-    return(survivors,stab_len)
+    return survivors

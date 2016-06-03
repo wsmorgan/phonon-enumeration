@@ -1,7 +1,9 @@
+"""Methods for reading and writing enumeration and polya-counting results."""
+
 """Generates a random subset of possible structures weighted by the
 Polya distribution for superstructures.
 """
-def enum_data(cellsize, args):
+def enum_data(cellsize, args, params):
     """Returns a list of dictionaries with the HNF, SNF, Left Transform
     and permutation group file names for the given cell size.
     """
@@ -9,7 +11,7 @@ def enum_data(cellsize, args):
     from numpy import loadtxt, array
     dirname = args["dataformat"].format(cellsize)
     result = []
-    
+
     if path.isdir(dirname):
         matrices = loadtxt(path.join(dirname, "matrices"), int)
         limit = matrices.shape[0] if len(matrices.shape) > 1 else 1
@@ -23,9 +25,11 @@ def enum_data(cellsize, args):
     else:
         from phenum.msg import warn, err
         from os import system
+        from phenum.io_utils import write_struct_enum, which
         warn("No data for cell size {0:d} found at {1}. Creating new {2} files now using "
              "{3}.".format(cellsize, dirname,args["dataformat"],args["exec"]))
-        if _which(args["exec"]) != None:
+        if which(args["exec"]) != None:
+            write_struct_enum(params)
             system(args["exec"])
             system('rm symops_enum_parent_lattice.out readcheck_enum.out fort.*')
             if path.isdir(dirname):
@@ -113,7 +117,7 @@ def _write_struct_summary(structs):
         out.write("{0: <10d}\n".format(sum(conc_totals.values())))
         out.close()
 
-def distribute(cellsizes, ftype, n=None, dataformat="cells.{}"):
+def _distribute(cellsizes, ftype, n=None, dataformat="cells.{}"):
     """Returns a dictionary specifying how many of each cell shape, size and concentration
     to enumerate in order to obtain a grand total of 'n' unique cells, distributed according
     to the abundance of unique structures predicted by Polya. See the calling signature for
@@ -130,7 +134,7 @@ def distribute(cellsizes, ftype, n=None, dataformat="cells.{}"):
       number.
     :arg dataformat: the name of the directories to search for 'polya.out' files in.
     """
-    (f, dataset, gtotal) = distribution(ftype, None, None, cellsizes=cellsizes, dataformat=dataformat)
+    (f, dataset, gtotal) = _distribution(ftype, None, None, cellsizes=cellsizes, dataformat=dataformat)
     if n > gtotal:
         from msg import warn
         warn("The number of unique structures you requested ({}) ".format(n) +
@@ -141,7 +145,7 @@ def distribute(cellsizes, ftype, n=None, dataformat="cells.{}"):
     #If they didn't specify an 'n', then we also return all the structures.
     if n is None:
         n = gtotal
-        
+
     result = {}
     rtotal = [0]
     def vinsert(key, value, rtotal, n, result):
@@ -225,7 +229,7 @@ def distribute(cellsizes, ftype, n=None, dataformat="cells.{}"):
             key = (size, None, None)
             value = f(n, size)
             relvals.append((key, value, limit))
-
+    
     #This makes the selection according to the relative values and keeps
     #choosing, weighted by relative abundance, until we have the right
     #number of structures.
@@ -238,7 +242,7 @@ def distribute(cellsizes, ftype, n=None, dataformat="cells.{}"):
     from operator import itemgetter
     return result
 
-def distribution(ftype, dataset, gtotal, cast=float, cellsizes=None, dataformat="cells.{}"):
+def _distribution(ftype, dataset, gtotal, cast=float, cellsizes=None, dataformat="cells.{}"):
     """Returns the Polya-weighted distribution function for the specified cell sizes.
     If dataset is None, a dataset and total are loaded using the specified cell sizes.
     This dataset and the total number of structures it contains are returned as
@@ -289,7 +293,12 @@ def distribution(ftype, dataset, gtotal, cast=float, cellsizes=None, dataformat=
         f = lambda n, size, conc: cast(dataset[size]["ctotals"][tuple(conc)]/ftotal*n)
     elif ftype == "size":
         f = lambda n, size: cast(dataset[size]["gtotal"]/ftotal*n)
-
+    else:
+        from msg import err
+        err("The parameter {} is not a valid parameter for the distribution. Please use "
+            " size, shape, conc, or all.".format(ftype))
+        exit()
+        
     return (f, dataset, gtotal)
         
 def _distribution_summary(cellsizes, dataformat="cells.{}"):
@@ -365,25 +374,39 @@ def _print_distribution(distr, filename=None, header=True, append=False):
                 size, HNF, conc = key
                 f.write("  {0: <28}  {1: <10}  {2:d}\n".format(' '.join(map(str, HNF)), ' '.join(map(str, conc)), value))
 
+def make_enum_in(distribution,number=None,dataformat="cells.{}"):
+    """Makes an enum.in file if the distrubiton type is all with the
+    desired number of structures. Otherwise prints the distribution
+    information to the screen for the user.
 
-def _which(program):
-    """Determines where if an executable exists on the users path.
-    This code was contributed by Jay at http://stackoverflow.com/a/377028
-    :args program: The name, or path for the program
+    :arg distribution: The parameters that the distribution is over
+    ('shape', 'conc', 'size', 'all').
+    :arg n: The number of structures or 'all'.
+    :arg dataformat: The folder name for the cell sizes.
+
     """
-    import os
-    def is_exe(fpath):
-        return os.path.isfile(fpath) and os.access(fpath, os.X_OK)
 
-    fpath, fname = os.path.split(program)
-    if fpath:
-        if is_exe(program):
-            return program
+    from os import listdir
+
+    files = listdir(".")
+    sizes = []
+    form = dataformat.split(".")[0]
+
+    ready = False
+    for f in files:
+        if form in f:
+            sizes.append(int(f.split(".")[1]))
+            ready = True
+
+    if ready == False:
+        from msg import err
+        err("The files {} don't exist in this directory. You either need to run"
+            " the -polya option or else navigate into the folder that contains "
+            "the output {} folders.".format(dataformat))
+        exit()
+
+    distr = _distribute(sizes,distribution,n=number,dataformat=dataformat)
+    if distribution.lower() == 'all':
+        _print_distribution(distr,filename="enum.in")
     else:
-        for path in os.environ["PATH"].split(os.pathsep):
-            path = path.strip('"')
-            exe_file = os.path.join(path, program)
-            if is_exe(exe_file):
-                return exe_file
-
-    return None
+        _print_distribution(distr)

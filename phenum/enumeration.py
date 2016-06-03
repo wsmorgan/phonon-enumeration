@@ -1,197 +1,23 @@
 """The methods needed to take input from the user and put it in useful
 forms. Also the actual executable for the code."""
-
-#import needed modules
-from phenum.tree import brancher
-import phenum.phonons as pb
-from phenum.polyaburnside import polya
-import random
-import os
-import math
-import itertools as it
-from phenum.structures import enum_data
-from copy import deepcopy
-import phenum.io_utils as io
-
 # hard coded error tolerance. This will need to go away and become
 # part of the input files later.
-eps = 1e-7
 
-def _which(program):
-    """Determines where if an executable exists on the users path.
-    This code was contributed by Jay at http://stackoverflow.com/a/377028
-    :args program: The name, or path for the program
+def _enum_in(args):
+    """Makes an enum.in file that contains the desired distribution of
+    structures from the polya distribution.
+
+    :arg args: The command line inputs.
     """
-    import os
-    def is_exe(fpath):
-        return os.path.isfile(fpath) and os.access(fpath, os.X_OK)
 
-    fpath, fname = os.path.split(program)
-    if fpath:
-        if is_exe(program):
-            return program
+    from phenum.structures import make_enum_in
+
+    distribution = args["distribution"][0].lower()
+    if args["distribution"][1].lower() == "all":
+        make_enum_in(distribution,dataformat=args["dataformat"])
     else:
-        for path in os.environ["PATH"].split(os.pathsep):
-            path = path.strip('"')
-            exe_file = os.path.join(path, program)
-            if is_exe(exe_file):
-                return exe_file
-
-    return None
-
-def get_concs_for_size(size,nspecies,res_concs,nB,concs):
-    """Gets the concentration ranges for the atoms within the cells of
-    certain sizes given the constraints provided such as
-    concentration restrictions and the presence of arrows. Code
-    rewritten from the get_conetration_list subroutine of:
-    https://github.com/msg-byu/enumlib/blob/master/src/derivative_structure_generator.f90  
-
-    :arg size: the cell size in integer form
-    :arg nspecies: the number of atomic species in the system
-    :arg res_concs: a logical that indicates of the concentrations
-    are being restricted
-    :arg nB: the number of basis vectors being used
-    :arg concs: an 2D integer array that contains the concentration
-    ranges for each atom in the system
-    """
-    if res_concs == True:
-        denom = concs[0][2]
-        volTable = []
-        for atom in concs:
-            minc = min(atom[0:2])
-            maxc = max(atom[0:2])
-            volTable.append([int(math.floor(float(minc)/denom*size*nB)),int(math.ceil(float(maxc)/denom*size*nB)),size*nB])
-
-        n = volTable[0][2]
-        digit = [volTable[i][1]-volTable[i][0] for i in range(len(volTable))]
-        digCnt = [0*i for i in range(len(volTable))]
-        k = len(volTable)
-
-        label = []
-        minv = []
-        maxv = []
-        for i in range(k):
-            label.append(range(volTable[i][0],volTable[i][1]+1))
-            minv.append(float(min([concs[i][0],concs[i][1]]))/concs[i][2])
-            maxv.append(float(max([concs[i][0],concs[i][1]]))/concs[i][2])
-
-        a = [label[i][0] for i in range(len(label))]
-        
-        cc = 0
-        cList = []
-        done = False
-        while done == False:
-            if sum(a) == n:
-                conc = []
-                for i in range(len(a)):
-                    conc.append(a[i]/float(n))
-                if not ((any(conc[i] < (minv[i]-eps) for i in range(len(minv)))) or (any(conc[i] > (maxv[i]+eps) for i in range(len(maxv))))):
-                    cList.append(deepcopy(a))
-            j = k-1
-            done2 = False
-            while done2 == False:
-                if digCnt[j] != digit[j]:
-                    done2 = True
-                    break
-                a[j] = label[j][0]
-                digCnt[j] = 0
-                j -= 1
-                if j < 0:
-                    done2 = True
-                    break
-            if j < 0:
-                done = True
-                break
-            digCnt[j] += 1
-            a[j] = label[j][digCnt[j]]
-            
-    else:
-        cList = []
-        crange = range(0,size+1)
-        aranges = []
-        for i in range(nspecies):
-            aranges.append(crange)
-
-        p_ranges = it.product(*aranges)
-        for p in p_ranges:
-            if sum(p) == size:
-                # if not any([list(c) in cList for c in it.permutations(p)]) == True:
-                cList.append(list(p))
-        cList=cList[1:-1]
-                    
-    return(cList)
-
-# arrow_concs is a method that returns the concentration string
-# including the arrows
-def arrow_concs(cList,aconcs):
-    """Uses the concentrations of the atoms and the arrows to make a
-    labeling for the system.
-
-    :arg cListr: an integer array the concentration of the colors
-    :arg aconcs: an integer array of the number of arrows for each
-    color
-    """
-
-    aconcs = [int(cList[i]*aconcs[i]) for i in range(len(cList))]
-    
-    species = 1
-    conc_w_arrows = []
-    for i in range(len(aconcs)):
-        na = aconcs[i]
-        ns = cList[i]
-        if ns >= na:
-            while na > 0:
-                conc_w_arrows.append([1,species])
-                na -= 1
-                ns -= 1
-            while ns > 0:
-                conc_w_arrows.append([-1,species])
-                ns -= 1
-        else:
-            while ns > 0:
-                conc_w_arrows.append([-1,species])
-                ns -= 1
-        species += 1
-
-    return(conc_w_arrows)
-
-def create_labeling(config):
-    """This routine takes a string of atomic locations as a vector and the
-    atomic concentrations and returns a unique labeling.
-
-    :arg config: list of integers describing the arrangement of atoms on
-    the lattice.
-    """
-    label = ''
-    arrow =  ''
-    if isinstance(config[0],list):
-        for i in config:
-            label += str(i[1]-1)
-            arrow += str(i[0]+1)
-    else:
-        for i in config:
-            label += str(i-1)
-            arrow += '0'
-    
-    return(label,arrow)
-
-def _get_arrow_concs(params):
-    """If the concentrations are being restricted then find the correct 
-    arrow for each species included.
-
-    :arg params: the lattice.in parameters.
-    """
-    a_concs = []
-    if params["is_crestricted"]:
-        for c in params["concs"]:
-            if (len(c) == 4 and params["arrows"]):
-                a_concs.append(c[3])
-            else:
-                a_concs.append(0)
-    else:
-        for i in range(params["nspecies"]):
-            a_concs.append(0)
-    return a_concs
+        make_enum_in(distribution,number=int(args["distribution"][1]),
+                     dataformat=args["dataformat"])
 
 def _polya_out(args):
     """Generates the 'polya.out' files for the cell sizes specified in 'lattice.in'
@@ -201,14 +27,19 @@ def _polya_out(args):
     from numpy import zeros
     from phenum.grouptheory import get_sym_group, get_full_HNF
     from phenum.msg import warn
-    params = io.read_lattice(args["lattice"])
+    from phenum.symmetry import get_concs_for_size
+    from phenum.io_utils import read_lattice, read_group
+    from phenum.structures import enum_data
+    import phenum.phonons as pb
+    from phenum.polyaburnside import polya
+    params = read_lattice(args["lattice"])
 
     for s in range(params["sizes"][0], params["sizes"][1]+1):
         celldir = args["dataformat"].format(s)
 
         # get HNFs, SNFs, and LTs
-        edata = enum_data(s,args)
-
+        edata = enum_data(s,args,params)
+        
         out = open(path.join(celldir, args["outfile"]), 'w+')
             
 
@@ -222,7 +53,7 @@ def _polya_out(args):
             out.write("{0: <10}".format(':'.join(map(str, conc))))
         out.write('{0: <10}\n'.format("Total"))
 
-        a_concs = _get_arrow_concs(params)
+        a_concs = pb.get_arrow_concs(params)
         conc_totals = zeros(len(cList), int)
         for idata, edict in enumerate(edata):
             HNF = edict["HNF"]
@@ -234,7 +65,7 @@ def _polya_out(args):
                 for i in range(len(sym_g.perm.site_perm)):
                     agroup.append([sym_g.perm.site_perm[i],sym_g.perm.arrow_perm[i]])
             else:
-                group = io.read_group(edict["group"])
+                group = read_group(edict["group"])
                 agroup = [[g,[0]] for g in group]
 
             # we need to loop over the concentrations and find the
@@ -242,26 +73,20 @@ def _polya_out(args):
             total = 0
             for iconc, conc in enumerate(cList):
                 if len(conc) > 0:
-                    decorations = arrow_concs(conc,a_concs)
-                    decorations = pb.col_sort(decorations)
+
+                    decorations = pb.arrow_concs(conc,a_concs)
                 
                     # we need to know the concentrations of the
-                    # species with and without arrows
-                    concs_w_arrows = pb.find_concentrations(decorations)
-                    # we also need to know the number of arrows and
-                    # their species so we can undo the previous step
-                    # later
-                    (n_arrows,arrow_types) = pb.how_many_arrows(decorations)
-                    
+                    # species with and without arrows, we also need to
+                    # know the number of arrows and their species so
+                    # we can undo the previous step later
+                    (n_arrows,arrow_types,concs_w_arrows) = pb.how_many_arrows(decorations)
+
                     # now find the number of unique arrangements using Polya.
                     if arrow_types != 0:
                         # Since enumlib doesn't write the arrow group
                         # out we have to recompute the group actions
                         # paired with their effects on the arrows
-                        sym_g = get_sym_group(params["lat_vecs"],params["basis_vecs"],get_full_HNF(HNF),3)
-                        agroup = []
-                        for i in range(len(sym_g.perm.site_perm)):
-                            agroup.append([sym_g.perm.site_perm[i],sym_g.perm.arrow_perm[i]])
                         total_num = polya(concs_w_arrows,agroup,arrowings=arrow_types)
                     else:
                         total_num = polya(conc, agroup)
@@ -284,26 +109,31 @@ def _enum_out(args):
     arrangements for the desired HNFs. It assumes that all the information 
     used in the polya part above is still available.
     """
+
+    import phenum.io_utils as io
+    from phenum.structures import enum_data
+    import phenum.phonons as pb
+    from numpy import unique
+    from phenum.grouptheory import get_full_HNF, SmithNormalForm
+    
     params = io.read_lattice(args["lattice"])
     systems = io.read_enum(args["input"])
     io.write_enum(params, outfile="enum.out")    
 
     count_t = 1
-    from numpy import unique
-    from phenum.grouptheory import get_full_HNF, SmithNormalForm
     def cellsize(sHNF):
         return sHNF[0]*sHNF[2]*sHNF[5]
     cellsizes = unique([cellsize(sys[0]) for sys in systems])
     datadicts = {}
     sfmt = ("{0: >10d}{1: >10d}{2: >8d}{3: >9d}{4: >9d}{5: >12d}{6: >4d}{7: >6d}"
-            "{8: >10}  {9: >18}  {10: >44}    {11}    {12: >21""}\n")
+            "{8: >10}  {9: >18}  {10: >44}    {11}    {12: >21}\n")
     def fmtn(l, n):
         return (''.join(["{{{0:d}: >{1:d}d}}".format(i, n) for i in range(len(l))])).format(*l)
     
     with open(args["outfile"], 'a') as f:
         if not params["arrows"]:
             for s in cellsizes:
-                dataset = enum_data(s,args)
+                dataset = enum_data(s,args,params)
                 datadicts.update({tuple(d["HNF"]): d for d in dataset})
 
         for HNF, conc, num_wanted in systems:
@@ -312,111 +142,28 @@ def _enum_out(args):
                 SNF = edata["SNF"]
                 LT = edata["L"]
             
-                a_concs = _get_arrow_concs(params)
-                configs = enum_sys(edata["group"], list(conc), a_concs, num_wanted,HNF,params)
-
+                a_concs = pb.get_arrow_concs(params)
+                configs = pb.enum_sys(edata["group"], list(conc), a_concs, num_wanted,HNF,params)
+                
             else:
                 (SNF,L,R) = SmithNormalForm(get_full_HNF(HNF))
                 SNF = [SNF[0][0],SNF[1][1],SNF[2][2]]
                 LT = [item for row in L for item in row]
-                a_concs = _get_arrow_concs(params)
-                configs = enum_sys(None, list(conc), a_concs, num_wanted,HNF,params)
+                a_concs = pb.get_arrow_concs(params)
+                configs = pb.enum_sys(None, list(conc), a_concs, num_wanted,HNF,params)
 
             for config in configs:
-                (labeling,arrowing) = create_labeling(config)
+                (labeling,arrowing) = io.create_labeling(config)
                 o = sfmt.format(count_t, 1, 1, 1, 1, 1, sum(conc), 1,
                                 fmtn(SNF, 3), fmtn(HNF, 3),
                                 fmtn(LT, 5), labeling, arrowing)
                 f.write(o)
                 count_t += 1
 
-def enum_sys(groupfile, concs, a_concs, num_wanted, HNF, params):
-    """Enumerates a random subset of the unique structures that have the shape
-    defined by the symmetry group and the specified concentration.
-
-    :arg groupfile: path to the file containing the symmetry group.
-    :arg concs: list of integer concentrations for each species.
-    :arg a_concs: list of integer *arrow* concentrations for each species.
-    :arg num_wanted: the number of structures to pick randomly from the enumerated
-      list.
-    :args HNF: the HNF for the system we're currently enumerating
-    :args params: the dictionary of parameters read in from lattice.in
-    """
-    decorations = arrow_concs(concs, a_concs)
-    decorations = pb.col_sort(decorations)
-    # get the symmetry group for this HNF. Assumes the group can be
-    # found in the file labeled by (this_HNF)_sym_group.out
-    from phenum.grouptheory import get_full_HNF, get_sym_group
-    if groupfile == None:
-        sym_g = get_sym_group(params["lat_vecs"],params["basis_vecs"],get_full_HNF(HNF),3)
-        agroup = []
-        for i in range(len(sym_g.perm.site_perm)):
-            agroup.append([sym_g.perm.site_perm[i],sym_g.perm.arrow_perm[i]])
-    else:
-        group = io.read_group(groupfile)
-        # get symgroup from HNF and lat_vecs
-        # add [0] to each element of the symmetry group
-        agroup = [[g,[0]] for g in group]
-
-    # we need to know the concentrations of the
-    # species with and without arrows
-    concs_w_arrows = pb.find_concentrations(decorations)
-    # we also need to know the number of arrows and
-    # their species so we can undo the previous step
-    # later
-    (n_arrows, arrow_types) = pb.how_many_arrows(decorations)
-
-    # now find the number of unique arrangements using
-    # polya
-    if arrow_types != 0:
-        # Since enumlib doesn't write the arrow group out we have to
-        # recompute the group actions paired with their effects on the
-        # arrows
-        total = polya(concs_w_arrows, agroup, arrowings=arrow_types)
-    else:
-        total = polya(concs, agroup)
-
-    # generate the random subset to be used
-    if num_wanted < total:
-        from random import shuffle
-        subset = range(1, total+1) 
-        shuffle(subset)
-        subset = subset[0:num_wanted]
-    else:
-        from phenum.msg import warn
-        warn("number of configurations requested exceeds the number of "
-            "unique configurations available.")
-        subset = []
-
-    n_stabs = []
-    # if we're doing a purely arrow enumeration then we don't need to
-    # do the tree search but instead perform the final step of the
-    # algorithm to find the possible unique displacements of the atoms
-    if len(concs) == 1 and all(decorations) >=0:
-        configs = []
-        a_configs = pb.add_arrows(decorations, agroup, 6)
-        count = 1
-        for config in a_configs:
-            if count in subset:
-                configs.append(config)
-            count += 1
-    else:
-        if arrow_types != 0:
-            (configs,n_stabs) = brancher(concs_w_arrows, agroup, decorations, 6, subset)
-        else:
-            (configs,n_stabs) = brancher(concs, agroup, decorations, 6, subset)
-
-    # reduced_configs is the list of configurations with the
-    # superperiodic configurations removed.
-    reduced_configs = []
-    # need to find a way to remove the superperiodic arrangements
-    reduced_configs = configs                
-    return reduced_configs
-
 def _examples():
     """Print some examples on how to use this python version of the code."""
     helptext = ("For all the examples below, it is assumed that you have already "
-                "compiled and ran the modified enumlib code as described in the "
+                "compiled the modified enumlib code as described in the "
                 "README or in some other manner obtained the HNFs (supercells) and "
                 "their symmetry groups. You will then need to specify if you are "
                 "obtaining the number of unique arrangements for each supercell and "
@@ -434,7 +181,14 @@ def _examples():
             "folder please see the README. To a different input file to use rather "
             "than lattice.in use the -lattice option or if you have the HNF and "
             "symmetry group data in a different file then cells.n then use "
-            "-dataformat.","./enumeration.py -polya"),
+            "-dataformat.","enumeration.py -polya"),
+           ("Construct an enum.in file before running the -enum mode",
+            "This code assumes that the -polya mode has arleady been run. It takes two"
+            " arguments; the first is the disered distribution type ('size', 'conc',"
+            " 'shape', 'all'), the second is the desired number of structures, if all"
+            " the structures are wanted then the second argument should be 'all'.",
+            "enumeration.py -distribution all all \n  enumeration.py -distribution "
+            " size 200"),
            ("Find the desired number of unique structures",
             "This code also uses the sample system and files found in "
             "input/fcc. It finds the desired number of unique arrangements for each "
@@ -444,7 +198,7 @@ def _examples():
             "Where HNF is the lower triangle of the HNF Conc is the concentrations "
             "of the 2 atoms on the lattice and Number specifies the number of "
             "arrangements for that HNF and concentration range the user desires."
-            , "./enumeration.py -enum")]
+            , "enumeration.py -enum")]
 
     print("POLYA ENUMERATION THEOREM SOLVER\n")
     for eg in egs:
@@ -475,6 +229,11 @@ def _parser_options(phelp=False):
     parser.add_argument("-exec",
                         help=("Override the default 'enum.x' executable with an executable "
                               "name or path."))
+    parser.add_argument("-distribution", nargs= "+",
+                        help=("Makes an enum.in file when the distribution is 'all'. Otherwise "
+                              "the distribution is printed to the screen for the user. "
+                              " The distributions are built from the results of the polya "
+                              "run and contain the specified number of structures."))
     parser.add_argument("-dataformat", default="cells.{}",
                         help=("Specify the default folder name for any cell size that contains "
                               "the matrices and groups generated by 'enum.x'. Format is: cells.{} "
@@ -503,14 +262,15 @@ def _parser_options(phelp=False):
         vardict["outfile"] = "polya.out" if vardict["polya"] else "enum.out"
     return vardict
 
-def script_enum(args):
+def _script_enum(args):
     """Generates the 'polya.out' or 'enum.out' files depending on the script arguments.
     """
     from os import path, system
     if args["polya"]:
         #Perform validation for running polya.
-        if not path.isfile(args["input"]):
+        if not path.isfile(args["lattice"]):
             from phenum.msg import err
+            from os import listdir
             err("The input file {} does not exist.".format(args["lattice"]))
             exit()
             
@@ -520,16 +280,18 @@ def script_enum(args):
             from phenum.msg import err
             err("The input file {} does not exist.".format(args["input"]))
             exit()
-            
+
     if args["enum"] or args["polya"]:
         from glob import glob
         #Perform validation for running enum.
         if len(glob(args["dataformat"].split('.')[0]+'.*')) < 1:
             from phenum.msg import err, warn
+            from phenum.io_utils import which, read_lattice, write_struct_enum
             from os import system
             warn("The input folders {} do not exist.".format(args["dataformat"]))
             warn("Now running your enumlib executable to build the folders.")
-            if _which(args["exec"]) != None:
+            if which(args["exec"]) != None:
+                write_struct_enum(read_lattice(args["lattice"]))
                 system(args["exec"])
                 system('rm symops_enum_parent_lattice.out readcheck_enum.out fort.*')
                 if len(glob(args["dataformat"].split('.')[0]+'.*')) < 1:
@@ -544,11 +306,21 @@ def script_enum(args):
                     "instructions found in the README to download, make,\n and place the "
                     "executable in your path.".format(args["exec"]))
                 exit()
+
+    if args["distribution"]:
+        if len(args["distribution"]) != 2:
+            from phenum.msg import err
+            err("The distribution option takes two arguments. The parameters the distribution "
+                " is over ('shape', 'conc', 'size', 'all') and the number of structures desired."
+                "If all the structures are wanted then the second argument should be 'all'.")
+            exit()
             
     if args["polya"]:
         _polya_out(args)
     if args["enum"]:
         _enum_out(args)
-    
+    if args["distribution"]:
+        _enum_in(args)
+        
 if __name__ == '__main__':
-    script_enum(_parser_options())
+    _script_enum(_parser_options())

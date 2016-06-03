@@ -50,7 +50,7 @@ class opList(object):
         self.rot = rot
         self.shift = shift
 
-def make_member_list(n):
+def _make_member_list(n):
     """Takes the length of three cyclic group and constructs the member
     list so that the permutations can be determined. Each member has
     three components, corresponding to the entries for each of the
@@ -72,7 +72,7 @@ def make_member_list(n):
                 p[im][0] = (p[im-1][0]+1)%n[0] # Then increment the third one
     return p
 
-def find_permutation_of_group(g,gp):
+def _find_permutation_of_group(g,gp):
     """
       :args g: Unpermuted groups
       :args gp: Permuted groups.
@@ -94,7 +94,7 @@ def find_permutation_of_group(g,gp):
             
     return perm
 
-def is_equiv_lattice(lat1,lat2,eps):
+def _is_equiv_lattice(lat1,lat2,eps):
 
     """This function determines whether two lattices are equivalent. That
       is, if one is an equal-volume derivative lattice of the
@@ -118,7 +118,7 @@ def is_equiv_lattice(lat1,lat2,eps):
         is_equiv_lattice = True
     return is_equiv_lattice
         
-def get_sLV_fixing_operations(HNF,pLV,nD,rot,shift,dPerm,eps):
+def _get_sLV_fixing_operations(HNF,pLV,nD,rot,shift,dPerm,eps):
     """
       :args HNF:
       :args pLV:
@@ -146,7 +146,7 @@ def get_sLV_fixing_operations(HNF,pLV,nD,rot,shift,dPerm,eps):
         thisRot = rot[iRot] # Store the rotation
         origLat = numpy.matmul(HNF,pLV).tolist()  # Compute the superlattice
         rotLat = numpy.matmul(numpy.array(origLat),numpy.array(thisRot)).tolist() # Compute the rotated superlattice
-        if is_equiv_lattice(rotLat,origLat,eps):
+        if _is_equiv_lattice(rotLat,origLat,eps):
             # this operation fixes the lattice and should be recorded
             ic += 1
             tmpOp_rot.append(thisRot)
@@ -157,7 +157,7 @@ def get_sLV_fixing_operations(HNF,pLV,nD,rot,shift,dPerm,eps):
         else:
             inList = False
             for iDegen in range(cDegen):
-                if is_equiv_lattice(degen_lattices[iDegen],rotLat,eps):
+                if _is_equiv_lattice(degen_lattices[iDegen],rotLat,eps):
                     inList = True
                     break
           
@@ -177,7 +177,7 @@ def get_sLV_fixing_operations(HNF,pLV,nD,rot,shift,dPerm,eps):
 
     return(fixOp,rotPerm,degeneracy)
 
-def map_dvector_permutation(rd,d,eps,n):
+def _map_dvector_permutation(rd,d,eps,n):
     """
       :args rd: 2D array of rotated basis vectors
       :args d: 2D array of original basis vectors
@@ -209,7 +209,7 @@ def map_dvector_permutation(rd,d,eps,n):
     return(RP)
 
         
-def find_minmax_indices(invec):
+def _find_minmax_indices(invec):
     """Finds the indices corresponding to the minimum and maximum values
       in an integer vector.
 
@@ -257,7 +257,7 @@ def SmithNormalForm(HNF):
             exit()
 
         while (3-[M[0][j],M[1][j],M[2][j]].count(0)) > 1:
-            (minidx,maxidx) = find_minmax_indices([M[0][j],M[1][j],M[2][j]])
+            (minidx,maxidx) = _find_minmax_indices([M[0][j],M[1][j],M[2][j]])
             minm = M[minidx][j]
             mult = M[maxidx][j]/minm
 
@@ -282,7 +282,7 @@ def SmithNormalForm(HNF):
             exit()
 
         while (3-M[j].count(0)) >1:
-            (minidx,maxidx) = find_minmax_indices(M[j])
+            (minidx,maxidx) = _find_minmax_indices(M[j])
             minm = M[j][minidx]
             mult = M[j][maxidx]/M[j][minidx]
 
@@ -359,7 +359,7 @@ def SmithNormalForm(HNF):
 
     return(M,A,B)
 
-def get_dvector_permutations(par_lat,bas_vecs,LatDim,eps):
+def _get_dvector_permutations(par_lat,bas_vecs,LatDim,eps):
     """This routine applies the symmetry operations of the parent lattice
       to the interior points (i.e., the d-set) to see which ones are
       equivalent. Labelings of the lattice points that are contain
@@ -381,7 +381,7 @@ def get_dvector_permutations(par_lat,bas_vecs,LatDim,eps):
     (rot,shift)= sym.get_spaceGroup(par_lat,aTyp,bas_vecs)
 
     if LatDim==2:
-        (rot,shift) = sym.rm_3D_operations(par_lat,rot,shift,eps)
+        (rot,shift) = _rm_3D_operations(par_lat,rot,shift,eps)
 
     nOp = len(rot)
     
@@ -420,9 +420,9 @@ def get_dvector_permutations(par_lat,bas_vecs,LatDim,eps):
         else:
             v_temp.append([rd[i] - tRD[i] for i in range(len(rd))])
         if nD > 1:
-            perm_temp.append(map_dvector_permutation(rd,bas_vecs,eps,nD))
+            perm_temp.append(_map_dvector_permutation(rd,bas_vecs,eps,nD))
         else:
-            perm_temp.append(map_dvector_permutation([rd],[bas_vecs],eps,nD))
+            perm_temp.append(_map_dvector_permutation([rd],[bas_vecs],eps,nD))
 
     dRPList = RotPermList(nL=nL_temp,v=v_temp,perm=perm_temp)
 
@@ -433,7 +433,7 @@ def get_dvector_permutations(par_lat,bas_vecs,LatDim,eps):
 
     return(dRPList)
     
-def get_rotation_perms_lists(A,HNF,L,SNF,Op,RPlist,dperms,eps):
+def _get_rotation_perms_lists(A,HNF,L,SNF,Op,RPlist,dperms,eps):
     """For each HNF, we have a list of the operations (rotations + shifts,
       if present) that leave the superlattice fixed. Given this set of
       fixing operations, make a list of the permutations on the
@@ -475,7 +475,7 @@ def get_rotation_perms_lists(A,HNF,L,SNF,Op,RPlist,dperms,eps):
 
     # Make the group member list for the first SNF
     diag = [SNF[0][0],SNF[1][1],SNF[2][2]]
-    g = make_member_list(diag)
+    g = _make_member_list(diag)
     # arrowg = make_arrow_list(diag)
     Ainv = numpy.linalg.inv(A)
     L = numpy.transpose(L).tolist()
@@ -603,7 +603,7 @@ def get_rotation_perms_lists(A,HNF,L,SNF,Op,RPlist,dperms,eps):
         temp_diag = [diag]*n
         tg = [[tg[i][j]%temp_diag[i][j] for j in range(len(tg[i]))] for i in range(len(tg))] # mod by the SNF entries to
         # bring it back to the "primitive" representation
-        perm = find_permutation_of_group(g,tg)
+        perm = _find_permutation_of_group(g,tg)
         temp_ident = []
         trans_ident = numpy.transpose(ident).tolist()
         for il in range(len(numpy.transpose(ident).tolist())):
@@ -646,19 +646,19 @@ def get_sym_group(par_lat,bas_vecs,HNF,LatDim):
     """
 
     eps = 1E-10
-    ParRPList = get_dvector_permutations(par_lat,bas_vecs,LatDim,eps)
+    ParRPList = _get_dvector_permutations(par_lat,bas_vecs,LatDim,eps)
 
     aTyp = []
     for i in range(len(bas_vecs)):
         aTyp.append(1)
         
     (sgrots,sgshifts) = sym.get_spaceGroup(par_lat,aTyp,bas_vecs,eps)
-    (fixing_ops,RPList,degeneracy) = get_sLV_fixing_operations(HNF,par_lat,len(bas_vecs),sgrots,
+    (fixing_ops,RPList,degeneracy) = _get_sLV_fixing_operations(HNF,par_lat,len(bas_vecs),sgrots,
                                                     sgshifts,ParRPList,eps)
     
     (SNF,L,R) = SmithNormalForm(HNF)
 
-    symm = get_rotation_perms_lists(par_lat,HNF,L,SNF,fixing_ops,RPList,ParRPList,eps)
+    symm = _get_rotation_perms_lists(par_lat,HNF,L,SNF,fixing_ops,RPList,ParRPList,eps)
 
     return(symm)
 
@@ -686,11 +686,32 @@ def a_group(trans,rots):
             if c not in groupi:
                 groupi.append(c)
 
-    groupi = group(groupi)
+    return(groupi)
+
+def a_group_gen(trans,rots):
+    """This subroutine combines that translations of the lattice with the
+    rotatians of the lattice for the generators of the system.
+
+    :arg trans: a 2D integer array where each row is an translation
+    of the lattice
+    :arg rots: a 3D integer array. Each row's first entry is the
+    site permutations and the second entry is the arrow
+    permutations.
+    """
+    groupi = []
+    for i in trans:
+        for j in rots:
+            c = []            
+            c.append([j[0][i[l]] for l in range(0,len(i))])
+            c.append(j[1])
+            if c not in groupi:
+                groupi.append(c)
+
+    groupi = _group(groupi)
     
     return(groupi)
 
-def group(gen):
+def _group(gen):
     """This subroutine takes the generators of the group then uses them
     to form the entire group.
 
@@ -787,3 +808,36 @@ def get_full_HNF(HNF):
     full_HNF = [[temp_HNF[0],0,0],[temp_HNF[1],temp_HNF[2],0],temp_HNF[3:]]
 
     return full_HNF
+
+
+def _rm_3D_operations(aVecs,sgrots,sgshifts,eps):
+    """This subroutine removes operations that are 3 dimmensional.
+
+    :args aVecs: 2D integer array of the primitive real space lattice vectors
+    :args sgrots: 3D integer array containing the space group rotations.
+    :args sgshifts: 2D integer array containing the space group shifts.
+    :args eps: Finite precisions tolerance.
+    """
+  
+    if not numpy.allclose(numpy.array(aVecs[0][1:3]),0.0,rtol=eps,
+                          atol=eps) or not numpy.allclose(numpy.array(aVecs[2][0:2])
+                                                          ,0.0,rtol=eps,atol=eps):
+        print("Error in rm_3d_operations: only allowed for primitive vectors x00,0xx,0xx")
+        exit()
+    
+    nRot = len(sgrots)
+    irot = 0
+    tSGrots = []
+    tSGshifts = []
+    for i in range(nRot):
+        if (numpy.allclose(numpy.array(sgrots[i][0][1:3]),0.0,rtol=eps,atol=eps) and
+            numpy.allclose(numpy.array([sgrots[i][1][0],sgrots[i][2][0]]),0.0,rtol=eps,atol=eps)
+            and numpy.allclose(abs(sgrots[i][0][0]),1.0,rtol=eps,atol=eps)):
+            # this operation is "2D"         
+            irot += 1
+            tSGrots.append(sgrots[i])
+            tSGshifts.append(sgshifts[i])
+
+    nRot = irot
+
+    return(tSGrots,tSGshifts)
