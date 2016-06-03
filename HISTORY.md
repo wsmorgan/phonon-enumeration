@@ -1,5 +1,10 @@
 # Revision History for "phonon-enumeration"
 
+## Revision 1.4.1
+
+- Minor fixes for the pip install.
+
+
 ## Revision 1.4.0
 
 - Refactored the code so that fewer subroutines are located in the driver.
