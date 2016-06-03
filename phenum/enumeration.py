@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 """The methods needed to take input from the user and put it in useful
 forms. Also the actual executable for the code."""
 # hard coded error tolerance. This will need to go away and become
