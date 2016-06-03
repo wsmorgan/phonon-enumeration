@@ -100,14 +100,14 @@ def write_enum(params, outfile="enum.out"):
     lines = []
     lines.append("Random structure enumeration: %s" % (str(datetime.now())))
     lines.append("bulk" if params["bulk"] else "surface")
-    lines.extend(["{0:.7f}       {1:.7f}       {2:.7f}".format(*l) for l in params["lat_vecs"]])
-    lines.append("{0:d}".format(len(params["basis_vecs"])))
-    lines.extend(["{0:.7f}       {1:.7f}       {2:.7f}".format(*l) for l in params["basis_vecs"]])
-    lines.append("{0:d}-nary case".format(params["nspecies"]))
-    lines.append('   '.join(map(str, params["sizes"])))
-    lines.append("1e-7")
+    lines.extend([" {0:.7f}       {1:.7f}       {2:.7f}".format(*l) for l in params["lat_vecs"]])
+    lines.append("    {0:d}".format(len(params["basis_vecs"])))
+    lines.extend(["  {0:.7f}       {1:.7f}       {2:.7f}".format(*l) for l in params["basis_vecs"]])
+    lines.append(" {0:d}-nary case".format(params["nspecies"]))
+    lines.append("   " + '   '.join(map(str, params["sizes"])))
+    lines.append(" 1e-7")
     lines.append("Concentration check:")
-    lines.append("T" if params["is_crestricted"] else "F")
+    lines.append("    T" if params["is_crestricted"] else "    F")
     lines.extend(["full list of labelings (including incomplete labelings) is used ",
                   "Equivalency list: 1 #Not used in the random enumeration algorithm ",
                   "start   #tot      HNF     Hdegn   labdegn   Totdegn   #size idx    "
@@ -118,3 +118,100 @@ def write_enum(params, outfile="enum.out"):
         
     with open(outfile, 'w') as f:
         f.write('\n'.join(lines))
+
+def write_struct_enum(params):
+    """Writes a 'struct_enum.in' file for the executable enum.x.
+
+    :arg params: values returned from method:read_lattice().
+    """
+
+    with open("struct_enum.in","w+") as struct_file:
+        struct_file.write("System \n")
+
+        if params["bulk"] == True:
+            struct_file.write("bulk \n")
+        else:
+            struct_file.write("surface \n")
+
+        latt = ""
+        i = 0
+        for vec in params["lat_vecs"]:
+            for point in vec:
+                latt += str(point) + " "
+            if i < 2:
+                latt += "\n"
+            i += 1
+
+        struct_file.write(latt + " \n")
+
+        struct_file.write(str(params["nspecies"]) + " \n")
+
+        occupancy = ""
+        for i in range(params["nspecies"]):
+            if i < params["nspecies"]-1:
+                occupancy += str(i) +"/"
+            else:
+                occupancy += str(i)
+    
+        basis = ""
+        i = 0
+        for vec in params["basis_vecs"]:
+            for point in vec:
+                basis += str(point) + " "
+            if i < 2:
+                basis += " "+ occupancy + "\n"
+            i += 1
+        
+        struct_file.write(str(len(params["basis_vecs"])) + " \n")
+        struct_file.write(basis + " \n")
+
+        size_range = ""
+        i = 0
+        for point in params["sizes"]:
+            size_range += str(point) + " "
+
+        struct_file.write(size_range + " \n")
+        struct_file.write("0.00001 \n")
+        struct_file.write("full \n")
+
+def which(program):
+    """Determines where if an executable exists on the users path.
+    This code was contributed by Jay at http://stackoverflow.com/a/377028
+    :args program: The name, or path for the program
+    """
+    import os
+    def is_exe(fpath):
+        return os.path.isfile(fpath) and os.access(fpath, os.X_OK)
+
+    fpath, fname = os.path.split(program)
+    if fpath:
+        if is_exe(program):
+            return program
+    else:
+        for path in os.environ["PATH"].split(os.pathsep):
+            path = path.strip('"')
+            exe_file = os.path.join(path, program)
+            if is_exe(exe_file):
+                return exe_file
+
+    return None
+
+def create_labeling(config):
+    """This routine takes a string of atomic locations as a vector and the
+    atomic concentrations and returns a unique labeling.
+
+    :arg config: list of integers describing the arrangement of atoms on
+    the lattice.
+    """
+    label = ''
+    arrow =  ''
+    if isinstance(config[0],list):
+        for i in config:
+            label += str(i[1]-1)
+            arrow += str(i[0]+1)
+    else:
+        for i in config:
+            label += str(i-1)
+            arrow += '0'
+    
+    return(label,arrow)

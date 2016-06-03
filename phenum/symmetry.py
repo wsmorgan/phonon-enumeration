@@ -8,39 +8,93 @@ from copy import deepcopy
 import numpy
 import math
 
-def rm_3D_operations(aVecs,sgrots,sgshifts,eps):
-    """This subroutine removes operations that are 3 dimmensional.
+def get_concs_for_size(size,nspecies,res_concs,nB,concs):
+    """Gets the concentration ranges for the atoms within the cells of
+    certain sizes given the constraints provided such as
+    concentration restrictions and the presence of arrows. Code
+    rewritten from the get_conetration_list subroutine of:
+    https://github.com/msg-byu/enumlib/blob/master/src/derivative_structure_generator.f90  
 
-    :args aVecs: 2D integer array of the primitive real space lattice vectors
-    :args sgrots: 3D integer array containing the space group rotations.
-    :args sgshifts: 2D integer array containing the space group shifts.
-    :args eps: Finite precisions tolerance.
+    :arg size: the cell size in integer form
+    :arg nspecies: the number of atomic species in the system
+    :arg res_concs: a logical that indicates of the concentrations
+    are being restricted
+    :arg nB: the number of basis vectors being used
+    :arg concs: an 2D integer array that contains the concentration
+    ranges for each atom in the system
     """
-  
-    if not numpy.allclose(numpy.array(aVecs[0][1:3]),0.0,rtol=eps,
-                          atol=eps) or not numpy.allclose(numpy.array(aVecs[2][0:2])
-                                                          ,0.0,rtol=eps,atol=eps):
-        print("Error in rm_3d_operations: only allowed for primitive vectors x00,0xx,0xx")
-        exit()
+
+    eps = 1E-10
     
-    nRot = len(sgrots)
-    irot = 0
-    tSGrots = []
-    tSGshifts = []
-    for i in range(nRot):
-        if (numpy.allclose(numpy.array(sgrots[i][0][1:3]),0.0,rtol=eps,atol=eps) and
-            numpy.allclose(numpy.array([sgrots[i][1][0],sgrots[i][2][0]]),0.0,rtol=eps,atol=eps)
-            and numpy.allclose(abs(sgrots[i][0][0]),1.0,rtol=eps,atol=eps)):
-            # this operation is "2D"         
-            irot += 1
-            tSGrots.append(sgrots[i])
-            tSGshifts.append(sgshifts[i])
+    from itertools import product
+    if res_concs == True:
+        denom = concs[0][2]
+        volTable = []
+        for atom in concs:
+            minc = min(atom[0:2])
+            maxc = max(atom[0:2])
+            volTable.append([int(math.floor(float(minc)/denom*size*nB)),int(math.ceil(float(maxc)/denom*size*nB)),size*nB])
 
-    nRot = irot
+        n = volTable[0][2]
+        digit = [volTable[i][1]-volTable[i][0] for i in range(len(volTable))]
+        digCnt = [0*i for i in range(len(volTable))]
+        k = len(volTable)
 
-    return(tSGrots,tSGshifts)
+        label = []
+        minv = []
+        maxv = []
+        for i in range(k):
+            label.append(range(volTable[i][0],volTable[i][1]+1))
+            minv.append(float(min([concs[i][0],concs[i][1]]))/concs[i][2])
+            maxv.append(float(max([concs[i][0],concs[i][1]]))/concs[i][2])
 
-def does_mapping_exist(v,this_type,atom_pos,atomType,eps):
+        a = [label[i][0] for i in range(len(label))]
+        
+        cc = 0
+        cList = []
+        done = False
+        while done == False:
+            if sum(a) == n:
+                conc = []
+                for i in range(len(a)):
+                    conc.append(a[i]/float(n))
+                if not ((any(conc[i] < (minv[i]-eps) for i in range(len(minv)))) or (any(conc[i] > (maxv[i]+eps) for i in range(len(maxv))))):
+                    cList.append(deepcopy(a))
+            j = k-1
+            done2 = False
+            while done2 == False:
+                if digCnt[j] != digit[j]:
+                    done2 = True
+                    break
+                a[j] = label[j][0]
+                digCnt[j] = 0
+                j -= 1
+                if j < 0:
+                    done2 = True
+                    break
+            if j < 0:
+                done = True
+                break
+            digCnt[j] += 1
+            a[j] = label[j][digCnt[j]]
+            
+    else:
+        cList = []
+        crange = range(0,size+1)
+        aranges = []
+        for i in range(nspecies):
+            aranges.append(crange)
+
+        p_ranges = product(*aranges)
+        for p in p_ranges:
+            if sum(p) == size:
+                # if not any([list(c) in cList for c in it.permutations(p)]) == True:
+                cList.append(list(p))
+        cList=cList[1:-1]
+                    
+    return(cList)
+
+def _does_mapping_exist(v,this_type,atom_pos,atomType,eps):
     """Checks to see if a mapping exists between the vector v and the
       position of any of the atoms of type "this_type".  If a mapping
       exists, then the logical "mapped" is returned .true., otherwise
@@ -68,7 +122,7 @@ def does_mapping_exist(v,this_type,atom_pos,atomType,eps):
     return mapped
 
 
-def get_transformations(par_lat):
+def _get_transformations(par_lat):
 
     """This routine generates the matrices for converting vectors from
       lattice coordinates to cartesion coordinates and vice versa.
@@ -118,7 +172,7 @@ def bring_into_cell(vec,cart_to_latt,latt_to_cart,eps):
 
     return(vec)
 
-def get_lattice_pointGroup(aVecs, eps=1E-10):
+def _get_lattice_pointGroup(aVecs, eps=1E-10):
     """This routine returns only the point group of the rather than the
       space group of the given crystal structure.
 
@@ -211,7 +265,7 @@ def get_spaceGroup(par_lat,atomType,bas_vecs,eps=1E-10,lattcoords = False):
       :args lattcoords: (Optional) True if vectors are in lattice
             coordinates rather than cartesian
     """
-
+    
     # Get number of atoms in the basis
     nAtoms = len(atomType)
 
@@ -221,7 +275,7 @@ def get_spaceGroup(par_lat,atomType,bas_vecs,eps=1E-10,lattcoords = False):
     # A vector can be represented as either a set of cartesian coordi-
     # nates or as a linear combination of primitive lattice vectors
     # Get transformation matrices to take us back and forth
-    (latt_to_cart,cart_to_latt) = get_transformations(par_lat)
+    (latt_to_cart,cart_to_latt) = _get_transformations(par_lat)
     
     
     # If we're in lattice coordinates Convert the position of the
@@ -233,9 +287,8 @@ def get_spaceGroup(par_lat,atomType,bas_vecs,eps=1E-10,lattcoords = False):
     # bring all the basis atoms into the unit cell
     for i in range(len(bas_vecs)):
         bas_vecs[i] = bring_into_cell(bas_vecs[i],cart_to_latt,latt_to_cart,eps)
-
     # Now find the point group
-    lattpg_op = get_lattice_pointGroup(par_lat)
+    lattpg_op = _get_lattice_pointGroup(par_lat)
 
     # **** Find the elements of the space group ****
     # Count the elements
@@ -260,7 +313,7 @@ def get_spaceGroup(par_lat,atomType,bas_vecs,eps=1E-10,lattcoords = False):
                 v2 = [v2[i] + fract[i] for i in range(3)]
                 v2 = bring_into_cell(v2, cart_to_latt, latt_to_cart, eps)
                 # Try to map this rotated atom onto another the same type
-                mapped = does_mapping_exist(v2, this_type, atom_pos, atomType, eps)
+                mapped = _does_mapping_exist(v2, this_type, atom_pos, atomType, eps)
                 if not mapped:
                     break # no mapping for this atom
 
@@ -272,5 +325,5 @@ def get_spaceGroup(par_lat,atomType,bas_vecs,eps=1E-10,lattcoords = False):
                 sg_ops.append(lattpg_op[iop]) # Store the rotational part
                 # loop over fractional translations and try next op
                 # By removing the preceding exit, we include fractional translations
-                # for non-primitive lattices. (GLWH 10/26/2009) 
+                # for non-primitive lattices. (GLWH 10/26/2009)
     return(sg_ops,sg_fracts)
