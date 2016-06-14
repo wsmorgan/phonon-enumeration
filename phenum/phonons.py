@@ -298,12 +298,14 @@ def enum_sys(groupfile, concs, a_concs, num_wanted, HNF, params):
         else:
             configs = brancher(concs, agroup, decorations, 6, subset)
 
-    # reduced_configs is the list of configurations with the
-    # superperiodic configurations removed.
-    reduced_configs = []
-    # need to find a way to remove the superperiodic arrangements
-    reduced_configs = configs                
-    return reduced_configs
+    if len(configs) != num_wanted:
+        from msg import err
+        err("Warning the enumeration code returned {} structures when {} were asked for."
+            " This should not happen. Please submit a bug report on "
+            "https://github.com/wsmorgan/phonon-enumeration including your input files so "
+            "that this error may be corrected.".format(str(len(configs)),str(num_wanted)))
+
+    return configs
 
 def _ahash(coloring,dim):
     """Produces a unique number for each possible configuration of

@@ -7,6 +7,9 @@
 # Unit Testing
 staging/
 
+# debugging
+debug/
+
 # Compiled Object files
 *.pyc
 
