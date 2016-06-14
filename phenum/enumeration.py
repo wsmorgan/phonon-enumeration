@@ -124,7 +124,7 @@ def _enum_out(args):
     
     params = io.read_lattice(args["lattice"])
     systems = io.read_enum(args["input"])
-    io.write_enum(params, outfile="enum.out")    
+    io.write_enum(params, outfile=args["outfile"])    
 
     count_t = 1
     count_s = 0
@@ -143,8 +143,8 @@ def _enum_out(args):
             for s in cellsizes:
                 dataset = enum_data(s,args,params)
                 datadicts.update({tuple(d["HNF"]): d for d in dataset})
-                
-        enumlist = []
+
+        enumlist = []    
         for HNF, conc, num_wanted in systems:
             if not params["arrows"]:
                 edata = datadicts[tuple(HNF)]
@@ -163,19 +163,21 @@ def _enum_out(args):
             for config in configs:
                 labeling, arrowing = io.create_labeling(config)
                 enumlist.append((sum(conc), HNF, SNF, LT, labeling, arrowing))
+                
 
             sortenum = sorted(enumlist, key=itemgetter(0, 4))
             last_sz = sortenum[0][0]
-            for (size, HNF, SNF, LT, labeling, arrowing) in sortenum:
-                if size != last_sz:
-                    count_s = 1
-                    last_sz = size
-                else:
-                    count_s += 1
-                o = sfmt.format(count_t, 1, 1, 1, 1, count_s, size, 1, fmtn(SNF, 3), fmtn(HNF, 3),
-                                fmtn(LT, 5), labeling, arrowing)
-                f.write(o)
-                count_t += 1
+            
+        for (size, HNF, SNF, LT, labeling, arrowing) in sortenum:
+            if size != last_sz:
+                count_s = 1
+                last_sz = size
+            else:
+                count_s += 1
+            o = sfmt.format(count_t, 1, 1, 1, 1, count_s, size, 1, fmtn(SNF, 3), fmtn(HNF, 3),
+                            fmtn(LT, 5), labeling, arrowing)
+            f.write(o)
+            count_t += 1
 
 def _examples():
     """Print some examples on how to use this python version of the code."""

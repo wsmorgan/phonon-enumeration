@@ -1,5 +1,11 @@
 # Revision History for "phonon-enumeration"
 
+## Revision 1.4.4
+
+- Fixed the output file error reported in issue # 23.
+- Fixed the output file error reported in issue # 24.
+- Added an error message to indicate of the code ever brakes in a major way.
+
 ## Revision 1.4.3
 
 - Added `-sizes` option to `enumeration.py` so that distribution can be size limited.
