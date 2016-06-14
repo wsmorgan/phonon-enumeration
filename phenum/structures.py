@@ -347,6 +347,11 @@ def _print_distribution(distr, filename=None, header=True, append=False):
 
     :arg distr: the distribution returned by method:distribute().
     """
+    # def _HNF_sort(entry):
+    #     """Sorts the entry by HNF matrix."""
+    #     HNF = entry[2]
+        
+        
     if filename is None:
         from msg import arb, cenum
         bysize = {}
@@ -356,13 +361,14 @@ def _print_distribution(distr, filename=None, header=True, append=False):
             skey = sfmt.format(size, "" if HNF is None else ' '.join(map(str, HNF)),
                                "" if conc is None else ':'.join(map(str, conc)), value)
             cols = (cenum["cwarn"], cenum["cinfo"], cenum["cgens"], cenum["cokay"])
-            if size in bysize:
-                bysize[size].append((skey, cols))
+            if (size, value) in bysize:
+                bysize[(size, value)].append((skey, cols, tuple(HNF)))
             else:
-                bysize[size] = [(skey, cols)]
+                bysize[(size, value)] = [(skey, cols, tuple(HNF))]
 
-        for size in sorted(bysize.keys()):
-            for skey, cols in bysize[size]:
+        from operator import itemgetter
+        for size, value in sorted(bysize.keys()):
+            for skey, cols, HNF in sorted(bysize[(size, value)], key=itemgetter(2)):
                 arb(skey, cols, "|")
     else:
         #We don't worry about ordering it, just write them to file in whatever

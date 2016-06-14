@@ -3,6 +3,7 @@
 ## Revision 1.4.3
 
 - Added `-sizes` option to `enumeration.py` so that distribution can be size limited.
+- Added sorting by cell size, then value, then HNF to the distribution print out.
 
 ## Revision 1.4.2
 

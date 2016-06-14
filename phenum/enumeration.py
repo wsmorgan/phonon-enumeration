@@ -263,7 +263,7 @@ def _parser_options(phelp=False):
     parser.add_argument("-sizes", nargs=2, type=int,
                         help=("Specify the start and stop cell sizes over which to distribute the structure "
                               "selection, weighted by the Polya distribution."))
-
+    
     vardict = vars(parser.parse_args())
     if phelp or vardict["examples"]:
         _examples()
