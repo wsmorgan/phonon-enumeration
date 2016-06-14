@@ -1,5 +1,10 @@
 # Revision History for "phonon-enumeration"
 
+## Revision 1.4.2
+
+- Added counting by cell size to the enumeration output.
+- Added sorting of output by `labeling` in the `enum.out`file.
+
 ## Revision 1.4.1
 
 - Minor fixes for the pip install.

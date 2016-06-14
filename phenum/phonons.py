@@ -91,11 +91,6 @@ def add_arrows(col,agroup,dim):
     permutations
     :arg dim: the number of directions the arrows can point
     """
-
-    with open("add_arrows_group.out","w+") as af:
-        for i in agroup:
-            af.write(str(i) + "\n")
-    
     #survivors is the array that contains the end result of the permutations
     survivor = []
 

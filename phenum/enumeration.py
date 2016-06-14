@@ -123,6 +123,8 @@ def _enum_out(args):
     io.write_enum(params, outfile="enum.out")    
 
     count_t = 1
+    count_s = 0
+    from operator import itemgetter
     def cellsize(sHNF):
         return sHNF[0]*sHNF[2]*sHNF[5]
     cellsizes = unique([cellsize(sys[0]) for sys in systems])
@@ -137,7 +139,8 @@ def _enum_out(args):
             for s in cellsizes:
                 dataset = enum_data(s,args,params)
                 datadicts.update({tuple(d["HNF"]): d for d in dataset})
-
+                
+        enumlist = []
         for HNF, conc, num_wanted in systems:
             if not params["arrows"]:
                 edata = datadicts[tuple(HNF)]
@@ -146,7 +149,6 @@ def _enum_out(args):
             
                 a_concs = pb.get_arrow_concs(params)
                 configs = pb.enum_sys(edata["group"], list(conc), a_concs, num_wanted,HNF,params)
-                
             else:
                 (SNF,L,R) = SmithNormalForm(get_full_HNF(HNF))
                 SNF = [SNF[0][0],SNF[1][1],SNF[2][2]]
@@ -155,9 +157,18 @@ def _enum_out(args):
                 configs = pb.enum_sys(None, list(conc), a_concs, num_wanted,HNF,params)
 
             for config in configs:
-                (labeling,arrowing) = io.create_labeling(config)
-                o = sfmt.format(count_t, 1, 1, 1, 1, 1, sum(conc), 1,
-                                fmtn(SNF, 3), fmtn(HNF, 3),
+                labeling, arrowing = io.create_labeling(config)
+                enumlist.append((sum(conc), HNF, SNF, LT, labeling, arrowing))
+
+            sortenum = sorted(enumlist, key=itemgetter(0, 4))
+            last_sz = sortenum[0][0]
+            for (size, HNF, SNF, LT, labeling, arrowing) in sortenum:
+                if size != last_sz:
+                    count_s = 1
+                    last_sz = size
+                else:
+                    count_s += 1
+                o = sfmt.format(count_t, 1, 1, 1, 1, count_s, size, 1, fmtn(SNF, 3), fmtn(HNF, 3),
                                 fmtn(LT, 5), labeling, arrowing)
                 f.write(o)
                 count_t += 1
