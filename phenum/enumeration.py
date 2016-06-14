@@ -15,11 +15,15 @@ def _enum_in(args):
     from phenum.structures import make_enum_in
 
     distribution = args["distribution"][0].lower()
+    if args["sizes"]:
+        sizes = range(*args["sizes"])
+    else:
+        sizes = None
     if args["distribution"][1].lower() == "all":
-        make_enum_in(distribution,dataformat=args["dataformat"])
+        make_enum_in(distribution,dataformat=args["dataformat"],sizes=sizes)
     else:
         make_enum_in(distribution,number=int(args["distribution"][1]),
-                     dataformat=args["dataformat"])
+                     dataformat=args["dataformat"],sizes=sizes)
 
 def _polya_out(args):
     """Generates the 'polya.out' files for the cell sizes specified in 'lattice.in'
@@ -256,6 +260,10 @@ def _parser_options(phelp=False):
     parser.add_argument("-outfile",
                         help=("Override the default output file names: 'polya.out' for polya counting; "
                               "'enum.out' for structure enumeration."))
+    parser.add_argument("-sizes", nargs=2, type=int,
+                        help=("Specify the start and stop cell sizes over which to distribute the structure "
+                              "selection, weighted by the Polya distribution."))
+
     vardict = vars(parser.parse_args())
     if phelp or vardict["examples"]:
         _examples()

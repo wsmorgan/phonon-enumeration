@@ -1,5 +1,9 @@
 # Revision History for "phonon-enumeration"
 
+## Revision 1.4.3
+
+- Added `-sizes` option to `enumeration.py` so that distribution can be size limited.
+
 ## Revision 1.4.2
 
 - Added counting by cell size to the enumeration output.

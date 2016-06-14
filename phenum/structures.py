@@ -374,7 +374,7 @@ def _print_distribution(distr, filename=None, header=True, append=False):
                 size, HNF, conc = key
                 f.write("  {0: <28}  {1: <10}  {2:d}\n".format(' '.join(map(str, HNF)), ' '.join(map(str, conc)), value))
 
-def make_enum_in(distribution,number=None,dataformat="cells.{}"):
+def make_enum_in(distribution,number=None,dataformat="cells.{}",sizes=None):
     """Makes an enum.in file if the distrubiton type is all with the
     desired number of structures. Otherwise prints the distribution
     information to the screen for the user.
@@ -383,21 +383,29 @@ def make_enum_in(distribution,number=None,dataformat="cells.{}"):
     ('shape', 'conc', 'size', 'all').
     :arg n: The number of structures or 'all'.
     :arg dataformat: The folder name for the cell sizes.
-
+    :arg sizes: when specified, limit the distribution to these integer cell sizes;
+      otherwise, look for all cell sizes we have data for.
     """
 
     from os import listdir
 
     files = listdir(".")
-    sizes = []
-    form = dataformat.split(".")[0]
+    if sizes is None:
+        sizes = []
+        form = dataformat.split(".")[0]
 
-    ready = False
-    for f in files:
-        if form in f:
-            sizes.append(int(f.split(".")[1]))
-            ready = True
-
+        ready = False
+        for f in files:
+            if form in f:
+                sizes.append(int(f.split(".")[1]))
+                ready = True
+    else:
+        for i in sizes:
+            celldir = dataformat.format(i)
+            if celldir not in files:
+                raise ValueError("Cannot find '{}' in current directory.".format(celldir))
+        ready = True
+                
     if ready == False:
         from msg import err
         err("The files {} don't exist in this directory. You either need to run"
