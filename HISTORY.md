@@ -1,5 +1,10 @@
 # Revision History for "phonon-enumeration"
 
+## Revision 1.5.0
+
+-Added makestr.py to the repo as suggested in #7.
+-Added vector_utils.py to enable makestr.py.
+
 ## Revision 1.4.4
 
 - Fixed the output file error reported in issue # 23.

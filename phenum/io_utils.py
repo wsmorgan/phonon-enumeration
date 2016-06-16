@@ -215,3 +215,99 @@ def create_labeling(config):
             arrow += '0'
     
     return(label,arrow)
+
+def read_enum_out(args):
+    """Reads the enum.out file and builds a dictionary with the needed
+    information to construct a POSCAR.
+
+    :arg args: The makeStr.py input arguments
+    """
+    # open the enum.out style file.
+    structf = open(args["input"],"r")
+    # which structures are wanted
+    structures = args["structures"]
+
+    # we'll build a dictionary of the system data and a list of
+    # dictionaries for the structures that are wanted.
+    structure_data = []
+    system = {}
+    system["plattice"] = []
+    system["dvecs"] = []
+    line_count = 1
+    system["nD"] = 0
+    for line in structf:
+        temp = line.rstrip()
+        if not temp.startswith("#"):
+            if line_count == 1:
+                system["title"] = temp
+            if line_count == 2:
+                system["bulksurf"] = temp
+            if line_count in [3,4,5]:
+                vec = [float(v) for v in temp.split()]
+                system["plattice"].append(vec)
+            if line_count == 6:
+                system["nD"] = int(temp.rstrip())
+            if system["nD"] != 0 and line_count in range(7,7+system["nD"]):
+                vec = [float(v) for v in temp.split()]
+                system["dvecs"].append(vec)
+            if line_count == 7+system["nD"]:
+                system["k"] = int(temp.split('-')[0].strip())
+            if line_count == 9 + system["nD"]:
+                system["eps"] = float(temp.strip())
+            if line_count - (14 + system["nD"]) in structures:
+                data = temp.split()
+                this_struct = {}
+                this_struct["strN"] = int(data[0])
+                this_struct["hnfN"] = int(data[1])
+                this_struct["hnf_degen"] = int(data[2])
+                this_struct["lab_degen"] = int(data[3])
+                this_struct["tot_degen"] = int(data[4])
+                this_struct["sizeN"] = int(data[5])
+                this_struct["n"] = int(data[6])
+                this_struct["pgOps"] = int(data[7])
+                this_struct["diag"] = [int(data[8]),int(data[9]),int(data[10])]
+                this_struct["HNF"] = [[int(data[11]),0,0],[int(data[12]),int(data[13]),0],
+                                      [int(data[14]),int(data[15]),int(data[16])]]
+                this_struct["L"] = [[int(data[17]),int(data[18]),int(data[19])],
+                                    [int(data[20]),int(data[21]),int(data[22])],
+                                      [int(data[23]),int(data[24]),int(data[25])]]
+                this_struct["labeling"] = data[26]
+                this_struct["directions"] = data[27]                
+                structure_data.append(this_struct)
+        line_count += 1
+
+    return (system, structure_data)
+
+def write_POSCAR(system_data,space_data,structure_data):
+    """Writes a vasp POSCAR style file for the input structure and system
+    data.
+
+    :arg system_data: a dictionary of the system_data
+    :arg space_data: a dictionary containing the spacial data
+    :arg structure_data: a dictionary of the data for this structure
+    """
+
+    filename = "vasp.{}".format(str(structure_data["strN"]))
+    with open(filename,"w+") as poscar:
+        poscar.write("{} str #: {}\n".format(str(system_data["title"]),str(structure_data["strN"])))
+        poscar.write("1.00\n")
+        for i in range(3):
+            poscar.write(" {}\n".format(" ".join(
+                ["{0: .8f}".format(j) for j in space_data["sLV"][i]])))
+        poscar.write(" ")
+        for i in range(system_data["k"]):
+            ic = 0
+            for iAt in range(structure_data["n"]*system_data["nD"]):
+                labeling = structure_data["labeling"]
+                gIndx = space_data["gIndx"]
+                if labeling[gIndx[iAt]] == str(i):
+                    ic += 1
+            poscar.write("{}   ".format(str(ic)))
+        poscar.write("\n")
+        poscar.write("D\n")
+        for ilab in range(system_data["k"]):
+            for iAt in range(structure_data["n"]*system_data["nD"]):
+                if labeling[gIndx[iAt]] == str(ilab):
+                    poscar.write(" {}\n".format(
+                        "  ".join(["{0: .8f}".format(i) for i in space_data["aBas"][iAt]])))
+        
