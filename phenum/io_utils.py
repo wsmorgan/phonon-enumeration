@@ -222,10 +222,17 @@ def read_enum_out(args):
 
     :arg args: The makeStr.py input arguments
     """
+
+    # which structures are wanted
+    if args["structures"] == None:
+        with open(args["input"],"r") as f:
+            for count, l in enumerate(f):
+                pass
+        structures = range(1,count-13)
+    else:
+        structures = args["structures"]
     # open the enum.out style file.
     structf = open(args["input"],"r")
-    # which structures are wanted
-    structures = args["structures"]
 
     # we'll build a dictionary of the system data and a list of
     # dictionaries for the structures that are wanted.

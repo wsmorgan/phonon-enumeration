@@ -60,7 +60,7 @@ def _parser_options(phelp=False):
     """Parses the options and arguments from the command line."""
     import argparse
     parser = argparse.ArgumentParser(description="Partial Superstructure Enumeration Code")
-    parser.add_argument("structures", type=int, nargs ="+",
+    parser.add_argument("structures", nargs="+",
                         help="The desired structure numbers from the enum.out file")
     parser.add_argument("-debug", action="store_true",
                         help="Print verbose calculation information for debugging.")
@@ -70,7 +70,7 @@ def _parser_options(phelp=False):
                         help=("The displacement amount for the arrows. Default is 0."))
     parser.add_argument("-input",
                         help=("Override the default 'enum.out' file name."))
-    parser.add_argument("-mink", 
+    parser.add_argument("-mink", default="t",
                         help=("Sets flag to perform minkowski reduction of the basis (T/F)."
                               " Default is True."))
     parser.add_argument("-verbose", type=int,
@@ -95,9 +95,20 @@ def _parser_options(phelp=False):
         else:
             from msg import err
             err("The -mink parameter only takes arguments of T or F")
+
+    if vardict["structures"][0].lower() == "all":
+        vardict["structures"] = None
+    elif len(vardict["structures"]) == 1:
+        vardict["structures"] = [int(vardict["structures"][0])]
+    elif len(vardict["structures"]) == 2:
+        vardict["structures"] = range(int(vardict["structures"][0]),
+                                      int(vardict["structures"][1])+1)
     else:
-        vardict["mink"] = True
-            
+        from phenum.msg import err
+        err("Please enter a single structure number, two structures that indicate the first"
+            " and last structure to be used in the input file, or all. The values {} don't "
+            " match this format.".format(vardict["structures"]))
+        exit()
     if not vardict["input"]:
         vardict["input"] = "enum.out"
     if not vardict["outfile"]:
