@@ -46,7 +46,7 @@ def read_lattice(filename='lattice.in', verbose=False):
         concs = []
     else:
         res_conc = True
-        info('Concentrations are being restrictied.')
+        info('Concentrations are being restricted.')
         arrows = lines[7+nbas+1].strip()
         if arrows == 'F':
             arrows = []

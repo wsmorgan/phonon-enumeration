@@ -1,8 +1,8 @@
 """Methods needed for the enumeration of arrows."""
 
 #import neede modules
-from copy import deepcopy
-
+from copy import deepcopy, copy
+from numpy import array, dot
 #Find concentration takes a 1D array, col, and returns a 1D array, 
 #Concs, containing the number of times each element in col appears 
 #in the array.
@@ -83,14 +83,18 @@ def _col_sort(col_list):
 #col is the initial configuration.
 #agroup is the group operations with their effects on the arrows.
 #dim is the number of arrow directions that are possible for this system.
-def add_arrows(col,agroup,dim):
+def add_arrows(col,agroup,dim,accept=None,nested=False,num_wanted=None):
     """Finds the unique arrangements of arrows for a given configuration.
 
     :arg col: a 2D integer array of the initial labeling
     :arg agroup: the stabilizers for the colors only with the arrow
     permutations
     :arg dim: the number of directions the arrows can point
+    :arg accept: acceptance rate of configurations for large enumerations.
+    :arg nested: set to True if this is called from within the context
+      of another progress bar.
     """
+    from random import random
     #survivors is the array that contains the end result of the permutations
     survivor = []
 
@@ -101,12 +105,23 @@ def add_arrows(col,agroup,dim):
     #this is an array for storing the unique arrangements.
     arsurvivors = []
 
+    maxpossible = _ahash(largest_arrow,dim)
+    from phenum.msg import verbosity
+    if verbosity is not None and verbosity >= 1 and not nested:
+        from tqdm import tqdm
+        #If accept is specified, then we should get on average that many out.
+        if num_wanted is not None:
+            ntotal = num_wanted
+        else:
+            ntotal = maxpossible
+        pbar = tqdm(total=ntotal)
+
     #this loop runs over every possible configuration of arrows
     #staring from the one with the smallest hash number and ending
     #with the one with the largest hash number to see if they are
     #unique. Each hash will be stored in orighash (original hash) then
     #compared to the permuted arrows hash (permhash) at the end.
-    for orighash in range(_ahash(largest_arrow,dim)+1):
+    for orighash in range(maxpossible+1):
         arrow_config = _ainvhash(orighash,narrows,dim)
         unique = True
         temp_coloring_with_arroms = [0]*len(col)
@@ -119,9 +134,9 @@ def add_arrows(col,agroup,dim):
             #for the permutation group to be applied to.
             for z in range(len(col)):
                 if col[z][0] < 0:
-                    temp_coloring_with_arroms[z] = deepcopy(col[z])
+                    temp_coloring_with_arroms[z] = list(col[z])
                 elif col[z][0] >= 0:
-                    temp_coloring_with_arroms[z] = deepcopy(col[z])
+                    temp_coloring_with_arroms[z] = list(col[z])
                     temp_coloring_with_arroms[z][0] = arrow_config[l]
                     l += 1
 
@@ -131,14 +146,12 @@ def add_arrows(col,agroup,dim):
             new_coloring_with_arrows = []
             #here we use the permutations of the colors to permute the
             #colors for our configuration.
-            for j in range(len(temp_coloring_with_arroms)):
-                new_coloring_with_arrows.append(temp_coloring_with_arroms[color_perm[j]])
+            new_coloring_with_arrows.extend([temp_coloring_with_arroms[color_perm[j]]
+                                             for j in range(len(temp_coloring_with_arroms))])
             #if there is an arrow on any lattice site it needs to
             #be updated. Otherwise just permute the colors.
-            for site in new_coloring_with_arrows:
-                if site[0] >= 0:
-                    site[0] = arrow_perm[site[0]]
-                    new_arrow_config.append(site[0])
+            new_arrow_config.extend([arrow_perm[site[0]] for site in new_coloring_with_arrows
+                                     if site[0] >= 0])
             #if the new configuration has a smaller hash number than
             #the current configuration then we have seen it before and
             #it is not unique.
@@ -155,15 +168,21 @@ def add_arrows(col,agroup,dim):
             coloring_with_arrows = [0]*len(col)
             i = 0
             for z in range(len(col)):
-                if col[z][0] < 0:
-                    coloring_with_arrows[z] = deepcopy(col[z])
-                elif col[z][0] >= 0:
-                    coloring_with_arrows[z] = deepcopy(col[z])
+                coloring_with_arrows[z] = list(col[z])
+                if col[z][0] >= 0:
                     coloring_with_arrows[z][0] = arrow_config[i]
                     i += 1
-                    
-            arsurvivors.append(coloring_with_arrows)
 
+            if accept is None or random() < accept:
+                arsurvivors.append(coloring_with_arrows)
+                if verbosity is not None and verbosity >= 1 and not nested:
+                    pbar.update(1)
+                if num_wanted is not None and len(arsurvivors) == num_wanted:
+                    break
+
+    if verbosity is not None and verbosity >= 1 and not nested:
+        pbar.close()
+                
     return(arsurvivors)
 
 # arrow_concs is a method that returns the concentration string
@@ -221,7 +240,7 @@ def get_arrow_concs(params):
             a_concs.append(0)
     return a_concs
 
-def enum_sys(groupfile, concs, a_concs, num_wanted, HNF, params):
+def enum_sys(groupfile, concs, a_concs, num_wanted, HNF, params, accept=None):
     """Enumerates a random subset of the unique structures that have the shape
     defined by the symmetry group and the specified concentration.
 
@@ -268,14 +287,25 @@ def enum_sys(groupfile, concs, a_concs, num_wanted, HNF, params):
     else:
         total = polya(concs, agroup)
 
-    # generate the random subset to be used
+    # generate the random subset to be used. WARNING! for phonon enumerations
+    #we have seen values that are *50* digits long! If the number exceeds
+    #1e9, we change the approach to randomization.
+    from phenum.msg import warn, err
     if num_wanted < total:
-        from random import shuffle
-        subset = list(range(1, total+1)) 
-        shuffle(subset)
-        subset = subset[0:num_wanted]
+        if total < 1e6:
+            from random import shuffle
+            subset = list(range(1, total+1)) 
+            shuffle(subset)
+            subset = subset[0:num_wanted]
+        elif accept is None or not isinstance(accept, float):
+            err("The number of unique arrangements is {}. ".format(total) +
+                 "Rerun the script with '-acceptrate'.")
+            exit(0)
+        else:
+            subset = num_wanted
+    elif num_wanted == total:
+        subset = []
     else:
-        from phenum.msg import warn
         warn("number of configurations requested exceeds the number of "
             "unique configurations available.")
         subset = []
@@ -284,19 +314,22 @@ def enum_sys(groupfile, concs, a_concs, num_wanted, HNF, params):
     # if we're doing a purely arrow enumeration then we don't need to
     # do the tree search but instead perform the final step of the
     # algorithm to find the possible unique displacements of the atoms
+    from random import random
     if len(concs) == 1 and all(decorations) >=0:
         configs = []
-        a_configs = add_arrows(decorations, agroup, 6)
+        a_configs = add_arrows(decorations, agroup, 6, accept, num_wanted=num_wanted)
         count = 1
         for config in a_configs:
-            if count in subset:
+            if isinstance(subset, list) and count in subset:
+                configs.append(config)
+            elif accept is not None:
                 configs.append(config)
             count += 1
     else:
         if arrow_types != 0:
-            configs = brancher(concs_w_arrows, agroup, decorations, 6, subset)
+            configs = brancher(concs_w_arrows, agroup, decorations, 6, total, subset, accept)
         else:
-            configs = brancher(concs, agroup, decorations, 6, subset)
+            configs = brancher(concs, agroup, decorations, 6, total, subset, accept)
 
     if len(configs) != num_wanted:
         from .msg import err
@@ -315,11 +348,7 @@ def _ahash(coloring,dim):
     :arg coloring: is a 2D integer array of the full coloring with colors and arrows	    
     :arg dim: the number of directions the arrows can point
     """
-	
-    narrow = 0
-    for i in range(len(coloring)):
-        narrow = narrow + coloring[i]*dim**i
-    return(narrow)
+    return sum([coloring[i]*dim**i for i in range(len(coloring))])
 
 #anum is a unique number that is associated with an array of arrows.
 #num_of_arrows in the number of arrows that are in the array.
@@ -335,5 +364,5 @@ def _ainvhash(anum,num_of_arrrows,dim):
     for i in range(num_of_arrrows):
         base = dim**(num_of_arrrows-1-i)
         arrows[num_of_arrrows-1-i] = anum//base
-        anum = anum -base*(anum//base)
+        anum -= base*arrows[num_of_arrrows-1-i]
     return(arrows)

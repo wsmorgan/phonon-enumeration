@@ -1,5 +1,11 @@
 # Revision History for "phonon-enumeration"
 
+## Revision 1.5.6
+
+- Optimization for the arrow enumeration.
+- Added progress bars for fun (they are useful...)
+- Added profiling with `vprof`. 
+
 ## Revision 1.5.5
 
 - Added support for `python 3`.

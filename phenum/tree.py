@@ -34,7 +34,7 @@ def _hash(listi,color):
 
     m = len(listi)
     li = listi[::-1]
-    rm1 = m - li.index(1)
+    rm1 = m-li.index(1)
     y = 0
     z = listi[:rm1].count(0)#m - listi[:rm1].count(1)
     li = listi
@@ -42,7 +42,9 @@ def _hash(listi,color):
         p0 = li.index(0) #next(x[0] for x in enumerate(li) if x[1] > j)
         k = li[p0:].count(1)
         li = li[p0+1:]
-        y += binomial_coefficient(len(li),k-1)
+        y += binomial_coefficient(m-(p0+1),k-1)
+        m -= (p0 + 1)
+
     return y
 
 def _invhash(branch,colors,n):
@@ -268,7 +270,7 @@ def _perm(casei,colors,length,index,gen,stab,order,ast):
     return(unique,st,order,ast)
 
 
-def brancher(concs,group,colors_w_arrows, dim, subset = []):
+def brancher(concs,group,colors_w_arrows, dim, total=0, subset=None, accept=None):
     """This routine navigates the tree and saves the unique configurations
     to an array survivors.
 		
@@ -278,8 +280,10 @@ def brancher(concs,group,colors_w_arrows, dim, subset = []):
     :arg colors_w_arrows: an integer 2D array that indiciates
     which atoms are being displaced, i.e., where the arrows are.
     :arg dim: the number of directions the arrows can point
+    :arg total: the total number predicted by polya.
     :arg subset: an integer array of the subset of unique
     arrangements wanted
+    :arg accept: for large enumerations, how often to accept configurations.
 	
     The method returns the list of unique configurations and the
     number of stabilizers for the last level of the tree.
@@ -318,7 +322,9 @@ def brancher(concs,group,colors_w_arrows, dim, subset = []):
         order[i] = i
 
     # determine if we are finding a subset of doing a full enumeration
-    if len(subset) > 0:
+    if subset is not None and isinstance(subset, list) and len(subset) > 0:
+        use_subset = True
+    elif (subset is None or isinstance(subset, int)) and accept is not None:
         use_subset = True
     else:
         use_subset = False
@@ -340,10 +346,24 @@ def brancher(concs,group,colors_w_arrows, dim, subset = []):
     # to all the relevant levels
     i = 0
     b0 = 0
-		
+
+    from random import random
+    from phenum.msg import verbosity
+    if verbosity is not None and verbosity >= 1:
+        from tqdm import tqdm
+        if isinstance(subset, list) and len(subset) > 0:
+            ntotal = len(subset)
+        elif isinstance(subset, int):
+            ntotal = subset
+        else:
+            ntotal = total
+        pbar = tqdm(total=ntotal)
     # Now we loop through the different possible hash arrays until
     # they have all been considered
-    while branch[0] < C[0] and (len(survivors) < len(subset) or use_subset == False):
+    ncurrent = 0
+    while branch[0] < C[0] and ((subset is not None and isinstance(subset, list) and len(survivors) < len(subset))
+                                or use_subset == False
+                                or (accept is not None and isinstance(subset, int) and len(survivors) == subset)):
 	# perm determines if the new array is unique, if yes unique =
 	# 0, if no then unique = 1, perm also outputs the stabilizers
 	# for each level, the order for the first level, and the
@@ -375,7 +395,7 @@ def brancher(concs,group,colors_w_arrows, dim, subset = []):
 		    # add_arrows from the phonon_brancher code returns
 		    # the unique configurations with the unique arrow
 		    # arrangements
-                    arsurvivors = add_arrows(brancht,ast, dim)
+                    arsurvivors = add_arrows(brancht,ast, dim, accept, True)
 		    #write the unique confgurations to file.
                     for z in arsurvivors:
 			# if we aren't using a subset write everything
@@ -385,7 +405,9 @@ def brancher(concs,group,colors_w_arrows, dim, subset = []):
 			# if we are then we only want to write the
 			# random subset to file.
                         else:
-                            if count in subset:
+                            if subset is not None and isinstance(subset, list) and count in subset:
+                                survivors.append(z)
+                            elif accept is not None:
                                 survivors.append(z)
                         count += 1
                 else:
@@ -396,7 +418,10 @@ def brancher(concs,group,colors_w_arrows, dim, subset = []):
                         tbranch = list(_invhash(branch, concs, len(colors_w_arrows)))
                         survivors.append([[-1,leaf] for leaf in tbranch])
                     else:
-                        if count in subset:
+                        if subset is not None and isinstance(subset, list) and count in subset:
+                            tbranch = list(_invhash(branch, concs, len(colors_w_arrows)))
+                            survivors.append([[-1,leaf] for leaf in tbranch])
+                        elif accept is not None and random() < accept:
                             tbranch = list(_invhash(branch, concs, len(colors_w_arrows)))
                             survivors.append([[-1,leaf] for leaf in tbranch])
                     count += 1
@@ -460,6 +485,13 @@ def brancher(concs,group,colors_w_arrows, dim, subset = []):
                 branch[i] += 1
             else:
                 test = 1
-
+                
+        if len(survivors) > ncurrent:
+            ncurrent = len(survivors)
+            if verbosity is not None and verbosity >= 1:
+                pbar.update(1)
+                
+    if verbosity is not None and verbosity >= 1:
+        pbar.close()
     # done
     return survivors
