@@ -1,5 +1,10 @@
 # Revision History for "phonon-enumeration"
 
+## Revision 1.5.5
+
+- Fixed a bug in the auto generated struct_enum.in file where the
+  occupancies of some sites weren't being written to file.
+
 ## Revision 1.5.4
 
 - Added the actualy displacement to the atomic positions in the output POSCAR.

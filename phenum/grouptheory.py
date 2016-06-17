@@ -11,7 +11,6 @@ import itertools
 import numpy
 from copy import deepcopy
 import operator
-import symmetry as sym 
 
 class ArrowPerm(object):
     """ArrowPerm pairs a site permutation with an arrow permutation."""
@@ -373,12 +372,14 @@ def _get_dvector_permutations(par_lat,bas_vecs,LatDim,eps):
       :args eps: finite precesion tolerance
     """
 
+    from symmetry import get_spaceGroup, bring_into_cell
+    
     nD = len(bas_vecs)
     aTyp = []
     for i in range(nD):
         aTyp.append(1)
 
-    (rot,shift)= sym.get_spaceGroup(par_lat,aTyp,bas_vecs)
+    (rot,shift)= get_spaceGroup(par_lat,aTyp,bas_vecs)
 
     if LatDim==2:
         (rot,shift) = _rm_3D_operations(par_lat,rot,shift,eps)
@@ -409,9 +410,9 @@ def _get_dvector_permutations(par_lat,bas_vecs,LatDim,eps):
         tRD = deepcopy(rd)
         if nD > 1:
             for iD in range(nD):
-                rd[iD] = sym.bring_into_cell(rd[iD],inv_par_lat,par_lat,eps)
+                rd[iD] = bring_into_cell(rd[iD],inv_par_lat,par_lat,eps)
         else:
-            rd = sym.bring_into_cell(rd,inv_par_lat,par_lat,eps)
+            rd = bring_into_cell(rd,inv_par_lat,par_lat,eps)
 
         # The v vector is the vector that must be added (it's a lattice
         # vector) to move a rotated d-vector back into the parent cell.
@@ -645,21 +646,42 @@ def get_sym_group(par_lat,bas_vecs,HNF,LatDim):
     :args LatDim: 2 if a 2D case 3 if 3D
     """
 
+    from numpy import linalg, allclose
+    from symmetry import bring_into_cell, get_spaceGroup
+    from copy import deepcopy
+    from msg import okay
+    
     eps = 1E-10
+    okay("Start of algorithm to find the group.")
+    # map any atoms in the basis that aren't within the cell to be in
+    # the cell
+    par_lat_inv = linalg.inv(par_lat)
+    temp_basis = deepcopy(bas_vecs)
+    for i in range(len(bas_vecs)):
+        bas_vecs[i] = bring_into_cell(bas_vecs[i],par_lat_inv,par_lat,eps)
+        if not allclose(bas_vecs[i], temp_basis[i], rtol=eps, atol=eps):
+            from msg import warn
+            warn("An atomic basis vector was not inside the unit cell. It has been "
+                 "remapped.\n Original vector: {} \n Remapped vector: {}"
+                 .format(" ".join([str(p) for p in temp_basis[i]]),
+                         " ".join([str(p) for p in bas_vecs[i]])))
+        
     ParRPList = _get_dvector_permutations(par_lat,bas_vecs,LatDim,eps)
 
     aTyp = []
     for i in range(len(bas_vecs)):
         aTyp.append(1)
         
-    (sgrots,sgshifts) = sym.get_spaceGroup(par_lat,aTyp,bas_vecs,eps)
+    (sgrots,sgshifts) = get_spaceGroup(par_lat,aTyp,bas_vecs,eps)
     (fixing_ops,RPList,degeneracy) = _get_sLV_fixing_operations(HNF,par_lat,len(bas_vecs),sgrots,
                                                     sgshifts,ParRPList,eps)
     
     (SNF,L,R) = SmithNormalForm(HNF)
 
-    symm = _get_rotation_perms_lists(par_lat,HNF,L,SNF,fixing_ops,RPList,ParRPList,eps)
+    sym_group = _get_rotation_perms_lists(par_lat,HNF,L,SNF,fixing_ops,RPList,ParRPList,eps)
 
+    okay("Found group of size {}.".format(len(sym_group)))
+    
     return(symm)
 
 #a_group take the set of translations of the lattice and the set of
