@@ -1,5 +1,31 @@
 # Revision History for "phonon-enumeration"
 
+## Revision 1.5.4
+
+- Added the actualy displacement to the atomic positions in the output POSCAR.
+- Fixed a rounding error found in vector_utils.py that was causing the
+  minkouski_reduction to fail.
+
+## Revision 1.5.3
+
+- Fixed the single structure inputs which broke when introducing the
+  range option.
+- Added the all option to the structures parameter as suggested in #28.
+
+## Rivision 1.5.2
+
+- Changed the input argumants as mentioned in #28
+
+## Revision 1.5.1
+
+- Had to change revision number to push up a new pyPI package because
+  I maed an error.
+
+## Revision 1.5.0
+
+- Added makestr.py to the repo as suggested in #7.
+- Added vector_utils.py to enable makestr.py.
+
 ## Revision 1.4.4
 
 - Fixed the output file error reported in issue # 23.

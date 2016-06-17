@@ -147,7 +147,7 @@ def bring_into_cell(vec,cart_to_latt,latt_to_cart,eps):
     """
 
     # Put the representation of the point into lattice coordinates
-    vec = numpy.matmul(numpy.array(cart_to_latt),numpy.array(vec)).tolist()
+    vec = numpy.matmul(cart_to_latt,vec).tolist()
 
     # counter to catch compiler bug
     c = 0
