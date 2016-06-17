@@ -285,7 +285,7 @@ def read_enum_out(args):
 
     return (system, structure_data)
 
-def write_POSCAR(system_data,space_data,structure_data):
+def write_POSCAR(system_data,space_data,structure_data,displacement):
     """Writes a vasp POSCAR style file for the input structure and system
     data.
 
@@ -294,7 +294,19 @@ def write_POSCAR(system_data,space_data,structure_data):
     :arg structure_data: a dictionary of the data for this structure
     """
 
+    from numpy import array
+    
     filename = "vasp.{}".format(str(structure_data["strN"]))
+
+    labeling = structure_data["labeling"]            
+    gIndx = space_data["gIndx"]
+    arrows = structure_data["directions"]
+
+    arrow_directions = [[0,0,0],[0,0,-1],[0,-1,0],[-1,0,0],[1,0,0],[0,1,0],[0,0,1]]
+    directions = []
+    for arrow in arrows:
+        directions.append(array(arrow_directions[int(arrow)]))
+    
     with open(filename,"w+") as poscar:
         poscar.write("{} str #: {}\n".format(str(system_data["title"]),str(structure_data["strN"])))
         poscar.write("1.00\n")
@@ -305,8 +317,6 @@ def write_POSCAR(system_data,space_data,structure_data):
         for i in range(system_data["k"]):
             ic = 0
             for iAt in range(structure_data["n"]*system_data["nD"]):
-                labeling = structure_data["labeling"]
-                gIndx = space_data["gIndx"]
                 if labeling[gIndx[iAt]] == str(i):
                     ic += 1
             poscar.write("{}   ".format(str(ic)))
@@ -315,6 +325,7 @@ def write_POSCAR(system_data,space_data,structure_data):
         for ilab in range(system_data["k"]):
             for iAt in range(structure_data["n"]*system_data["nD"]):
                 if labeling[gIndx[iAt]] == str(ilab):
+                    out_array = array(space_data["aBas"][iAt]) + directions[iAt]*displacement
                     poscar.write(" {}\n".format(
-                        "  ".join(["{0: .8f}".format(i) for i in space_data["aBas"][iAt]])))
+                        "  ".join(["{0: .8f}".format(i) for i in out_array.tolist()])))
         

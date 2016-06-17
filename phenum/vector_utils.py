@@ -131,9 +131,8 @@ def _minkowski_reduce_basis(IN,eps):
             norms[idx] = 0
         OUT = deepcopy(temp) # Copy the sorted vectors back to OUT
         (OUT[0], OUT[1], OUT[2]) = _reduce_C_in_ABC(OUT[0],OUT[1],OUT[2],eps)
-        if linalg.norm(OUT[2]) >= linalg.norm(OUT[1])-eps :
+        if linalg.norm(OUT[2]) >= (linalg.norm(OUT[1])-eps):
             break
-
 
     if not _minkowski_conditions_check(OUT,eps):
         from msg import err
@@ -234,8 +233,6 @@ def _reduce_C_in_ABC(A,B,C,eps):
     from numpy import cross, linalg, dot, allclose, matmul, array
     from copy import deepcopy
     from math import floor
-
-    from numpy import matrix
     
     oldABC = deepcopy([A,B,C])
     
@@ -250,7 +247,6 @@ def _reduce_C_in_ABC(A,B,C,eps):
     # affine plane A,B + C that is nearest the origin. Call this T.
     cpdAB = [i/linalg.norm(cross(A,B)) for i in cross(A,B)]
     T = [C[i] - cpdAB[i]*dot(C,cpdAB) for i in range(3)]
-    
     if not allclose(dot(T,cross(A,B)),0,atol=eps,rtol=eps):
         from msg import err
         err("{} Projection of C into A,B plane failed".format(str(dot(T,cross(A,B)))))
@@ -261,15 +257,14 @@ def _reduce_C_in_ABC(A,B,C,eps):
     ABCinv = linalg.inv(ABC).tolist()
 
     LC = [int(floor(i +eps)) for i in matmul(T,ABCinv).tolist()]
-
     # Compute the distance from T to each of the four corners of the cell and pick
     # the one that is the closest.
-    corners = [[0,0,0],[1,0,0],[0,1,0],[1,1,0]]
+    corners = array([[0,0,0],[1,0,0],[0,1,0],[1,1,0]])
     dist = []
     for i in range(0,4):
-        temp1 = [corners[i][j] + LC[j] for j in range(3)]
-        temp2 = [T[j] -matmul(ABC,temp1).tolist()[j] for j in range(3)]
-        dist.append(linalg.norm(temp2))
+        temp1 = corners[i] + array(LC)
+        temp2 = array(T) -matmul((corners[i] + array(LC)),ABC)
+        dist.append(linalg.norm(array(T) -matmul((corners[i] + array(LC)),ABC)))
 
     idx = dist.index(min(dist))
 
@@ -340,11 +335,12 @@ def _gaussian_reduce_two_vectors(U,V,eps):
             from msg import err
             err("gaussian_reduce_two_vectors failed to converge in 10 iterations")
             exit()
-        R = [V[i]-int(dot(U,V)/dot(U,U))*U[i] for i in range(3)] #Shorten V as much as possible
+        R = [V[i]-int(round(dot(U,V)/dot(U,U)))*U[i] for i in range(3)] #Shorten V as much as possible
         V = U # Swap U and V (so U remains the shortest)
         U = R
         if norm(U) >= (norm(V) - eps):
             done = True
+        it += 1
 
     # Make sure that the {U,V} are listed in ascending order on exit; ||U||<||V||
     temp = U
