@@ -11,7 +11,8 @@ import itertools
 import numpy
 from copy import deepcopy
 import operator
-import symmetry as sym 
+from . import symmetry as sym 
+from functools import reduce
 
 class ArrowPerm(object):
     """ArrowPerm pairs a site permutation with an arrow permutation."""
@@ -200,11 +201,11 @@ def _map_dvector_permutation(rd,d,eps,n):
                 break
 
     if len(RP) != len(d):
-        print("d-vector didn't permute in map_dvector_permutation "
+        print(("d-vector didn't permute in map_dvector_permutation "
               "This usually means that the d-set from the input structure and the d-set"
               " from the struct_enum.out have a different origin or don't live in the same"
               " unit cell. This probably isn't your fault---the code should overcome this."
-              ,RP)
+              ,RP))
         exit()
     return(RP)
 
@@ -259,10 +260,10 @@ def SmithNormalForm(HNF):
         while (3-[M[0][j],M[1][j],M[2][j]].count(0)) > 1:
             (minidx,maxidx) = _find_minmax_indices([M[0][j],M[1][j],M[2][j]])
             minm = M[minidx][j]
-            mult = M[maxidx][j]/minm
+            mult = M[maxidx][j]//minm
 
-            M[maxidx] = map(operator.sub,M[maxidx],[mult*i for i in M[minidx]])
-            A[maxidx] = map(operator.sub,A[maxidx],[mult*i for i in A[minidx]])
+            M[maxidx] = list(map(operator.sub,M[maxidx],[mult*i for i in M[minidx]]))
+            A[maxidx] = list(map(operator.sub,A[maxidx],[mult*i for i in A[minidx]]))
 
             if numpy.dot(numpy.dot(numpy.array(A),numpy.array(HNF)),numpy.array(B)).any() != numpy.array(M).any():
                 print("ROW: Transformation matrices didn't work")
@@ -325,14 +326,14 @@ def SmithNormalForm(HNF):
                 for k in range(1,3):
                     local[i][k] = abs(M[i][k]%M[0][0])
             nondividx = local.index(max(local))
-            M[0] = map(operator.add,M[0],M[nondividx+1])
-            A[0] = map(operator.add,A[0],A[nondividx+1])
+            M[0] = list(map(operator.add,M[0],M[nondividx+1]))
+            A[0] = list(map(operator.add,A[0],A[nondividx+1]))
             continue
 
         if j == 1:
             if M[2][2]%M[1][1] != 0:
-                M[1] = map(operator.add,M[1],M[2])
-                A[1] = map(operator.add,A[1],A[2])
+                M[1] = list(map(operator.add,M[1],M[2]))
+                A[1] = list(map(operator.add,A[1],A[2]))
                 continue
         else:
             j = 1
@@ -468,7 +469,7 @@ def _get_rotation_perms_lists(A,HNF,L,SNF,Op,RPlist,dperms,eps):
     identT = []
     tperms_perm = []
     temp_rperms_perm = []
-    identT = [list(i) for i in zip(*[iter(range(0,n*nD))]*n)]  # we could combine
+    identT = [list(i) for i in zip(*[iter(list(range(0,n*nD)))]*n)]  # we could combine
     # those two lines, but gfortran
     ident  = numpy.transpose(identT).tolist()            # does some strange things then.
     RPlist.nL=0  # initialize the number
@@ -657,7 +658,6 @@ def get_sym_group(par_lat,bas_vecs,HNF,LatDim):
                                                     sgshifts,ParRPList,eps)
     
     (SNF,L,R) = SmithNormalForm(HNF)
-
     symm = _get_rotation_perms_lists(par_lat,HNF,L,SNF,fixing_ops,RPList,ParRPList,eps)
 
     return(symm)

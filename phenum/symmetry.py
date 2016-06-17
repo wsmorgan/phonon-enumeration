@@ -44,7 +44,7 @@ def get_concs_for_size(size,nspecies,res_concs,nB,concs):
         minv = []
         maxv = []
         for i in range(k):
-            label.append(range(volTable[i][0],volTable[i][1]+1))
+            label.append(list(range(volTable[i][0],volTable[i][1]+1)))
             minv.append(float(min([concs[i][0],concs[i][1]]))/concs[i][2])
             maxv.append(float(max([concs[i][0],concs[i][1]]))/concs[i][2])
 
@@ -80,7 +80,7 @@ def get_concs_for_size(size,nspecies,res_concs,nB,concs):
             
     else:
         cList = []
-        crange = range(0,size+1)
+        crange = list(range(0,size+1))
         aranges = []
         for i in range(nspecies):
             aranges.append(crange)

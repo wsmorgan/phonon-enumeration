@@ -49,7 +49,7 @@ def map_enumStr_to_real_space(system_data,structure_data,minkowskiReduce):
                 for z3 in range(z1*(d-(e*b)/c)/a+(e*z2)/c, f+z1*(d-(e*b)/c)/a+(e*z2)/c):
                     ic +=1
                     if ic > n:
-                        from msg import err
+                        from .msg import err
                         err("Problem with basis atoms in map_enpStr_to_real_space...")
                         exit()
                     # Atomic basis vector in Cartesian coordinates
@@ -60,7 +60,7 @@ def map_enumStr_to_real_space(system_data,structure_data,minkowskiReduce):
                     greal = matmul(L,[float(z1),float(z2),float(z3)]).tolist() 
                     g = [int(i) for i in greal] # Convert the g-vector from real to integer
                     if not allclose(greal,g,rtol=eps,atol=eps):
-                        from msg import err
+                        from .msg import err
                         err("map2G didn't work in map_enumStr_to_real_space")
                         exit()
                     # Bring the g-vector back into the first tile
@@ -70,7 +70,7 @@ def map_enumStr_to_real_space(system_data,structure_data,minkowskiReduce):
 
                     gIndx.append((iD)*S[0]*S[1]*S[2]+g[0]*S[1]*S[2]+g[1]*S[2]+g[2])
     if ic != n*nD:
-        from msg import err
+        from .msg import err
         err("ERROR: map_enumStr_to_real_space: Didn't find the correct # of basis atoms")
         exit()
 
@@ -113,7 +113,7 @@ def _minkowski_reduce_basis(IN,eps):
     IN = matrix.transpose(array(IN)).tolist()
 
     if allclose(linalg.det(IN),0.0,rtol=eps,atol=eps):
-        from msg import err
+        from .msg import err
         err("Input basis for 'minkowski_reduce_basis' was not linearly independent")
         exit()
     OUT = deepcopy(IN)
@@ -123,7 +123,7 @@ def _minkowski_reduce_basis(IN,eps):
         # Sort the three vectors into ascending order
         temp = deepcopy(OUT)
         norms = linalg.norm(temp,axis=1).tolist()
-        tt = range(3)
+        tt = list(range(3))
         tt.reverse()
         for i in tt:
             idx = norms.index(max(norms))
@@ -135,7 +135,7 @@ def _minkowski_reduce_basis(IN,eps):
             break
 
     if not _minkowski_conditions_check(OUT,eps):
-        from msg import err
+        from .msg import err
         err("ERROR in minkowski_reduce_basis: Minkowski conditions not met."
             "Number of iterations: {}".format(str(limit)))
         exit()
@@ -159,7 +159,7 @@ def _minkowski_conditions_check(basis,eps):
     :arg eps: finitie precision tolerance
     """
     from numpy import linalg
-    from msg import err
+    from .msg import err
     
     b1 = basis[0]
     b2 = basis[1]
@@ -248,7 +248,7 @@ def _reduce_C_in_ABC(A,B,C,eps):
     cpdAB = [i/linalg.norm(cross(A,B)) for i in cross(A,B)]
     T = [C[i] - cpdAB[i]*dot(C,cpdAB) for i in range(3)]
     if not allclose(dot(T,cross(A,B)),0,atol=eps,rtol=eps):
-        from msg import err
+        from .msg import err
         err("{} Projection of C into A,B plane failed".format(str(dot(T,cross(A,B)))))
 
     # Now find the four points of the A,B lattice, in the affine
@@ -285,7 +285,7 @@ def _reduce_C_in_ABC(A,B,C,eps):
         temp2 = matmul(temp1,ABC).tolist()
         C = [C[i] - temp2[i] for i in range(len(C))]
     else:
-        from msg import err
+        from .msg import err
         err("Case failed in reduce_C_in_ABC"
             "Lattice coordinates in the A,B plane: ".format(' '.join([str(i) for i in LC])))
     
@@ -295,7 +295,7 @@ def _reduce_C_in_ABC(A,B,C,eps):
     for i in range(3):
         for j in range(3):
             if (temp[i][j] - int(temp[i][j])) > eps:
-                from msg import err
+                from .msg import err
                 err("Lattice was not preserved in reduce_C_in_ABC")
                 exit()
 
@@ -332,7 +332,7 @@ def _gaussian_reduce_two_vectors(U,V,eps):
     it = 1
     while not done:
         if it > 10:
-            from msg import err
+            from .msg import err
             err("gaussian_reduce_two_vectors failed to converge in 10 iterations")
             exit()
         R = [V[i]-int(round(dot(U,V)/dot(U,U)))*U[i] for i in range(3)] #Shorten V as much as possible

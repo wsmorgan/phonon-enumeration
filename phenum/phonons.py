@@ -271,7 +271,7 @@ def enum_sys(groupfile, concs, a_concs, num_wanted, HNF, params):
     # generate the random subset to be used
     if num_wanted < total:
         from random import shuffle
-        subset = range(1, total+1) 
+        subset = list(range(1, total+1)) 
         shuffle(subset)
         subset = subset[0:num_wanted]
     else:
@@ -299,7 +299,7 @@ def enum_sys(groupfile, concs, a_concs, num_wanted, HNF, params):
             configs = brancher(concs, agroup, decorations, 6, subset)
 
     if len(configs) != num_wanted:
-        from msg import err
+        from .msg import err
         err("Warning the enumeration code returned {} structures when {} were asked for."
             " This should not happen. Please submit a bug report on "
             "https://github.com/wsmorgan/phonon-enumeration including your input files so "
@@ -318,7 +318,7 @@ def _ahash(coloring,dim):
 	
     narrow = 0
     for i in range(len(coloring)):
-	narrow = narrow + coloring[i]*dim**i
+        narrow = narrow + coloring[i]*dim**i
     return(narrow)
 
 #anum is a unique number that is associated with an array of arrows.
@@ -333,7 +333,7 @@ def _ainvhash(anum,num_of_arrrows,dim):
     """
     arrows = [0]*num_of_arrrows
     for i in range(num_of_arrrows):
-	base = dim**(num_of_arrrows-1-i)
-	arrows[num_of_arrrows-1-i] = anum//base
-	anum = anum -base*(anum//base)
+        base = dim**(num_of_arrrows-1-i)
+        arrows[num_of_arrrows-1-i] = anum//base
+        anum = anum -base*(anum//base)
     return(arrows)

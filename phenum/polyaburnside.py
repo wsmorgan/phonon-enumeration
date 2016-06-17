@@ -8,6 +8,7 @@ of multinomials. Construct a product class by specifying the exponent and target
 and then add multinomials using the Product instance's append(). The coefficient is
 then available from the coeff().
 """
+from functools import reduce
 class Sequence(object):
     """Represents an exponent-limited sequence with a single root. Here, sequence represents a
     sequence of integer values k_1, k_2...k_j that are the exponents of a single term in a multinomial.
@@ -279,7 +280,7 @@ def group(gen):
 
     #Make sure the group is zero-based for python.
     if not 0 in gen[0]:
-        ngens = [list(map(lambda e: e-1, g)) for g in gen]
+        ngens = [list([e-1 for e in g]) for g in gen]
     else:
         ngens = gen
 
@@ -422,9 +423,9 @@ def polya(concentrations, group, arrowings=None, debug=False):
 
     if debug:
         for key in polyndict:
-            print(str(polyndict[key]), " => ", polyndict[key].coeff())
+            print((str(polyndict[key]), " => ", polyndict[key].coeff()))
 
-    rad = sum([p.coeff() for p in polyndict.values()])
+    rad = sum([p.coeff() for p in list(polyndict.values())])
     return int(rad/float(len(group)))             
 
 def _examples():
@@ -452,9 +453,9 @@ def _examples():
     print("POLYA ENUMERATION THEOREM SOLVER\n")
     for eg in egs:
         title, desc, code = eg
-        print("--" + title + '--\n')
-        print(desc + '\n')
-        print('  ' + code + '\n')
+        print(("--" + title + '--\n'))
+        print((desc + '\n'))
+        print(('  ' + code + '\n'))
 
 def _parser_options():
     """Parses the options and arguments from the command line."""
@@ -493,7 +494,7 @@ def _read_file(args, filepath):
     with open(path.expanduser(filepath)) as f:
         if args["parse"] == "text":
             for line in f:
-                contents.append(map(int, line.split()))
+                contents.append(list(map(int, line.split())))
         else:
             contents = eval(f.read())
 

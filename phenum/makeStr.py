@@ -52,9 +52,9 @@ def _examples():
     print("MAKES A VASP POSCAR FOR THE DESIRED STRUCTUR\n")
     for eg in egs:
         title, desc, code = eg
-        print("--" + title + '--\n')
-        print(desc + '\n')
-        print('  ' + code + '\n')
+        print(("--" + title + '--\n'))
+        print((desc + '\n'))
+        print(('  ' + code + '\n'))
 
 def _parser_options(phelp=False):
     """Parses the options and arguments from the command line."""
@@ -93,7 +93,7 @@ def _parser_options(phelp=False):
         elif vardict["mink"].lower() == "f":
             vardict["mink"] = False
         else:
-            from msg import err
+            from .msg import err
             err("The -mink parameter only takes arguments of T or F")
 
     if vardict["structures"][0].lower() == "all":
@@ -101,8 +101,8 @@ def _parser_options(phelp=False):
     elif len(vardict["structures"]) == 1:
         vardict["structures"] = [int(vardict["structures"][0])]
     elif len(vardict["structures"]) == 2:
-        vardict["structures"] = range(int(vardict["structures"][0]),
-                                      int(vardict["structures"][1])+1)
+        vardict["structures"] = list(range(int(vardict["structures"][0]),
+                                      int(vardict["structures"][1])+1))
     else:
         from phenum.msg import err
         err("Please enter a single structure number, two structures that indicate the first"

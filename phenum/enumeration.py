@@ -16,7 +16,7 @@ def _enum_in(args):
 
     distribution = args["distribution"][0].lower()
     if args["sizes"]:
-        sizes = range(*args["sizes"])
+        sizes = list(range(*args["sizes"]))
     else:
         sizes = None
     if args["distribution"][1].lower() == "all":
@@ -222,9 +222,9 @@ def _examples():
     print("POLYA ENUMERATION THEOREM SOLVER\n")
     for eg in egs:
         title, desc, code = eg
-        print("--" + title + '--\n')
-        print(desc + '\n')
-        print('  ' + code + '\n')
+        print(("--" + title + '--\n'))
+        print((desc + '\n'))
+        print(('  ' + code + '\n'))
 
 def _parser_options(phelp=False):
     """Parses the options and arguments from the command line."""
