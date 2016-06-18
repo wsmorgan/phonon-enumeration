@@ -1,9 +1,20 @@
 # Revision History for "phonon-enumeration"
 
+## Revision 1.5.7
+
+- Fixed the bug reported in issue #15.
+- Added a different workflow for the purely arrow enumerations where
+  only a small number of unique arrangements are wanted.
+  
+## Revision 1.5.6
+
+- Optimization for the arrow enumeration.
+- Added progress bars for fun (they are useful...)
+- Added profiling with `vprof`. 
+
 ## Revision 1.5.5
 
-- Fixed a bug in the auto generated struct_enum.in file where the
-  occupancies of some sites weren't being written to file.
+- Added support for `python 3`.
 
 ## Revision 1.5.4
 

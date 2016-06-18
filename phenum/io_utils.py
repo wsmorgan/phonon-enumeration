@@ -11,12 +11,12 @@ def read_group(fname):
         for line in f:
             if i > 5:
                 if ('Perm #:') in line:
-                    groupi.append(map(int, line.split()[4::]))
+                    groupi.append(list(map(int, line.split()[4::])))
                 else:
-                    groupi[-1] += map(int, line.split())
+                    groupi[-1] += list(map(int, line.split()))
             i += 1
     from numpy import array
-    return(map(list, array(groupi)-1))
+    return(list(map(list, array(groupi)-1)))
 
 def read_lattice(filename='lattice.in', verbose=False):
     """Reads the lattice.in file; returns a dictionary with the following fields:
@@ -28,16 +28,16 @@ def read_lattice(filename='lattice.in', verbose=False):
       "arrows": logical that indicates if arrows are present,
       "concs": array of the concentrations in format [1,3].
     """
-    from msg import info
+    from .msg import info
     with open(filename,'r') as f:
         lines = [l for l in f.readlines() if l.strip()[0] != '#']
         
     sizes = [int(el) for el in lines[0].split(' ')]
     bulk = lines[1].strip()[0].lower() == 'b'
-    lat_vecs = [map(float, l.split()) for l in lines[2:5]]
+    lat_vecs = [list(map(float, l.split())) for l in lines[2:5]]
     nspecies = int(lines[5])
     nbas = int(lines[6])
-    bas_vecs = [map(float, l.split()) for l in lines[7:7+nbas]]
+    bas_vecs = [list(map(float, l.split())) for l in lines[7:7+nbas]]
 
     arrows = False
     res_conc = False
@@ -46,14 +46,14 @@ def read_lattice(filename='lattice.in', verbose=False):
         concs = []
     else:
         res_conc = True
-        info('Concentrations are being restrictied.')
+        info('Concentrations are being restricted.')
         arrows = lines[7+nbas+1].strip()
         if arrows == 'F':
             arrows = []
             info('No displacement directions are included')
         else:
             arrows = True
-        concs = [map(float, l.split()) for l in lines[7+nbas+2:]]
+        concs = [list(map(float, l.split())) for l in lines[7+nbas+2:]]
 
     result = {
         "bulk": bulk,
@@ -223,7 +223,7 @@ def read_enum_out(args):
         with open(args["input"],"r") as f:
             for count, l in enumerate(f):
                 pass
-        structures = range(1,count-13)
+        structures = list(range(1,count-13))
     else:
         structures = args["structures"]
     # open the enum.out style file.

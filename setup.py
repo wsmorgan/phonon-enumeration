@@ -17,7 +17,7 @@ except ImportError:
     read_md = lambda f: open(f, 'r').read()
 
 setup(name='phenum',
-      version='1.5.4',
+      version='1.5.7',
       description='Enumeration of symmetrically unique derivative superstructures of crystals.',
       long_description=read_md('README.md'),
       author='Wiley S Morgan',
@@ -40,6 +40,8 @@ setup(name='phenum',
           'Programming Language :: Python',
           'Programming Language :: Python :: 2',
           'Programming Language :: Python :: 2.7',
+          'Programming Language :: Python :: 3',
+          'Programming Language :: Python :: 3.4',
           'Topic :: Scientific/Engineering :: Physics',
       ],
      )

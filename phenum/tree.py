@@ -10,14 +10,14 @@ def _coefficients(number_of_each_color,number_of_slots):
     :arg number_of_slots: an integer equal to the sum of the
     number_of_each_color array.
     """
-    from numerics import binomial_coefficient
+    from .numerics import binomial_coefficient
 
     #renames variables for convience and creates an empty array
     coe = []
     for i in range(0,len(number_of_each_color)):
     #Uses the binomial_coefficient method to build an array of radix numebrs
-	coe.append(binomial_coefficient(number_of_slots,number_of_each_color[i]))
-	number_of_slots -= number_of_each_color[i]
+        coe.append(binomial_coefficient(number_of_slots,number_of_each_color[i]))
+        number_of_slots -= number_of_each_color[i]
     return coe
 
 def _hash(listi,color):
@@ -30,19 +30,21 @@ def _hash(listi,color):
 
     For details on this method see: http://msg.byu.edu/papers/enum3.pdf
     """
-    from numerics import binomial_coefficient
+    from .numerics import binomial_coefficient
 
     m = len(listi)
     li = listi[::-1]
-    rm1 = m - li.index(1)
+    rm1 = m-li.index(1)
     y = 0
     z = listi[:rm1].count(0)#m - listi[:rm1].count(1)
     li = listi
     for i in range(z):
-	p0 = li.index(0) #next(x[0] for x in enumerate(li) if x[1] > j)
-	k = li[p0:].count(1)
-	li = li[p0+1:]
-	y += binomial_coefficient(len(li),k-1)
+        p0 = li.index(0) #next(x[0] for x in enumerate(li) if x[1] > j)
+        k = li[p0:].count(1)
+        li = li[p0+1:]
+        y += binomial_coefficient(m-(p0+1),k-1)
+        m -= (p0 + 1)
+
     return y
 
 def _invhash(branch,colors,n):
@@ -57,7 +59,7 @@ def _invhash(branch,colors,n):
     For the details on this method see: http://msg.byu.edu/papers/enum3.pdf
     """
 
-    from numerics import binomial_coefficient
+    from .numerics import binomial_coefficient
 
     new = [0 for y in range(n)]
     coluse = 1
@@ -135,7 +137,7 @@ def _perm(casei,colors,length,index,gen,stab,order,ast):
     #initialize unique to be 0 and arrays to be empty
     unique = 0
     if stab == 0:
-	stab = []
+        stab = []
     st = []
     ast = []
 		
@@ -148,127 +150,127 @@ def _perm(casei,colors,length,index,gen,stab,order,ast):
     if index == 0:
 	# first apply all the symmetry operations one at a time, a
 	# is a single operation
-	for a in gen:
+        for a in gen:
 	    # get the effect of the group on the colors, ingore the arrows
 	    # i is the permutation of the colors for this operation
-	    i = a[0]
-	    lnew = []
+            i = a[0]
+            lnew = []
 	    # apply the permutation to get an equivalent configuration
-	    for j in i:
-		lnew.append(li[j])
-	    lnewb = list(lnew)
+            for j in i:
+                lnew.append(li[j])
+            lnewb = list(lnew)
                 
 	    # any color that was placed that isn't the color for the
 	    # current level is set to zero
-	    for y in range(0,len(lnew)):
-		if lnew[y] != index + 1:
-		    lnewb[y] = 0
-		elif lnew[y] == index + 1:
-		    lnewb[y] = 1
+            for y in range(0,len(lnew)):
+                if lnew[y] != index + 1:
+                    lnewb[y] = 0
+                elif lnew[y] == index + 1:
+                    lnewb[y] = 1
 
 	    # hash from radix_num_generator turns the array back into
 	    # an integer hash array
-	    rtest = _hash(list(lnewb),colors)
+            rtest = _hash(list(lnewb),colors)
 
 	    # if the original hash is smaller than the new one we
 	    # don't want to visit the new one again so we set its
 	    # location in order to be -1
-	    if casei[0] < rtest:
-		order[rtest] = -1
+            if casei[0] < rtest:
+                order[rtest] = -1
             
 	    # if the original hash is larger than the new one then
 	    # this configuration isn't unique so we set unique to be 1
 	    # and reset the other variables
-	    elif casei[0] > rtest:
-		unique += 1
-		st = []
-		ast = []
-		break
+            elif casei[0] > rtest:
+                unique += 1
+                st = []
+                ast = []
+                break
 
 	    # if the symmetry group didn't change this level
             # of the hash then it is a stabilizer and needs to
             # be saved
-	    elif casei[0] == rtest:
-		st.append(a)
+            elif casei[0] == rtest:
+                st.append(a)
 
 	    # if the symmetry op changed nothing in the
 	    # configuration then it is a stabilizer for the
 	    # arrow level and needs to be saved
-	    if li == lnew:
-		ast.append(a)
+            if li == lnew:
+                ast.append(a)
 
     # if there is only a single stabilizer then the configuration is
     # unique and the stabilizer needs to be used for any later braches
     elif len(stab) == 1:
-	st = stab
-	ast = stab
+        st = stab
+        ast = stab
 
     # if there are multiple stabilizers then we need to apply each of
     # them just like we needed to apply the entire group on the first
     # level of the tree
     elif len(stab) > 1:
-	ast = []
+        ast = []
         # first apply all the stabilizers one at a time, a is a single
         # operation
-	for a in stab:
+        for a in stab:
 	    # get the effect of the group on the colors, ingore the
 	    # arrows i is the permutation of the colors for this
 	    # operation
-	    i = a[0]
-	    lnew = []
+            i = a[0]
+            lnew = []
 	    # apply the permutation to get an equivalent configuration
-	    for j in i:
-		lnew.append(li[j])
-		lib= list(li)
-	    lnewb = list(lnew)
-	    lnewb2 = []
+            for j in i:
+                lnew.append(li[j])
+                lib= list(li)
+            lnewb = list(lnew)
+            lnewb2 = []
 
 	    # any color that was placed that isn't the color for
 	    # the current level is set to zero
-	    for y in range(0,len(li)):
-		if li[y] > index + 1:
-		    lib[y] = 0
-	    for y in range(0,len(lnew)):
-		if lnew[y] > index + 1:
-		    lnewb[y] = 0
-	    for y in range(0,len(lnew)):
-		if lnewb[y] == 0:
-		    lnewb2.append(0)
-		elif lnewb[y] == index + 1:
-		    lnewb2.append(1)
+            for y in range(0,len(li)):
+                if li[y] > index + 1:
+                    lib[y] = 0
+            for y in range(0,len(lnew)):
+                if lnew[y] > index + 1:
+                    lnewb[y] = 0
+            for y in range(0,len(lnew)):
+                if lnewb[y] == 0:
+                    lnewb2.append(0)
+                elif lnewb[y] == index + 1:
+                    lnewb2.append(1)
                     
 	    # if the the new and original configurations are the
 	    # same then save the stabilizers
-	    if lnewb == lib:
-		st.append(a)
-	    if li == lnew:
-		ast.append(a)
+            if lnewb == lib:
+                st.append(a)
+            if li == lnew:
+                ast.append(a)
 
 	    # hash from radix_num_generator turns the array back
 	    # into an integer hash array
-	    rtest = _hash(list(lnewb2),colors)
+            rtest = _hash(list(lnewb2),colors)
 	    # if the original hash is larger than the new one then
 	    # this configuration isn't unique so we set unique to
 	    # be 1 and reset the other variables
-	    if casei[index] > rtest:
-		unique = 1
-		st = []
-		ast = []
-		break
+            if casei[index] > rtest:
+                unique = 1
+                st = []
+                ast = []
+                break
             
 	    # if the configuration isn't unique break from the
             # loop
-	    if unique == 1:
-		ast = []
-		st = []
-		break
+            if unique == 1:
+                ast = []
+                st = []
+                break
     else:
-	unique = 1
+        unique = 1
 		
     return(unique,st,order,ast)
 
 
-def brancher(concs,group,colors_w_arrows, dim, subset = []):
+def brancher(concs,group,colors_w_arrows, dim, total=0, subset=None, accept=None):
     """This routine navigates the tree and saves the unique configurations
     to an array survivors.
 		
@@ -278,8 +280,10 @@ def brancher(concs,group,colors_w_arrows, dim, subset = []):
     :arg colors_w_arrows: an integer 2D array that indiciates
     which atoms are being displaced, i.e., where the arrows are.
     :arg dim: the number of directions the arrows can point
+    :arg total: the total number predicted by polya.
     :arg subset: an integer array of the subset of unique
     arrangements wanted
+    :arg accept: for large enumerations, how often to accept configurations.
 	
     The method returns the list of unique configurations and the
     number of stabilizers for the last level of the tree.
@@ -290,7 +294,7 @@ def brancher(concs,group,colors_w_arrows, dim, subset = []):
     configuration
     """
 
-    from phonons import how_many_arrows, add_arrows
+    from .phonons import how_many_arrows, add_arrows
     from copy import deepcopy
 
     # initial setup	
@@ -315,13 +319,15 @@ def brancher(concs,group,colors_w_arrows, dim, subset = []):
     ast = []
     order = {}
     for i in range(0,C[0]+1):
-	order[i] = i
+        order[i] = i
 
     # determine if we are finding a subset of doing a full enumeration
-    if len(subset) > 0:
-	use_subset = True
+    if subset is not None and isinstance(subset, list) and len(subset) > 0:
+        use_subset = True
+    elif (subset is None or isinstance(subset, int)) and accept is not None:
+        use_subset = True
     else:
-	use_subset = False
+        use_subset = False
 				
     # count is an integer counter used to keep track of where in
     # the total number of configurations we are.
@@ -340,71 +346,90 @@ def brancher(concs,group,colors_w_arrows, dim, subset = []):
     # to all the relevant levels
     i = 0
     b0 = 0
-		
+
+    from random import random
+    from phenum.msg import verbosity
+    if verbosity is not None and verbosity >= 1:
+        from tqdm import tqdm
+        if isinstance(subset, list) and len(subset) > 0:
+            ntotal = len(subset)
+        elif isinstance(subset, int):
+            ntotal = subset
+        else:
+            ntotal = total
+        pbar = tqdm(total=ntotal)
     # Now we loop through the different possible hash arrays until
     # they have all been considered
-    while branch[0] < C[0] and (len(survivors) < len(subset) or use_subset == False):
+    ncurrent = 0
+    while branch[0] < C[0] and ((subset is not None and isinstance(subset, list) and len(survivors) < len(subset))
+                                or use_subset == False
+                                or (accept is not None and isinstance(subset, int) and len(survivors) == subset)):
 	# perm determines if the new array is unique, if yes unique =
 	# 0, if no then unique = 1, perm also outputs the stabilizers
 	# for each level, the order for the first level, and the
 	# stabilizers for the arrow configurations
-	(unique,stabalizer[i+1],order,ast) = _perm(branch,concs,n,i,group,stabalizer[i],order,ast)
+        (unique,stabalizer[i+1],order,ast) = _perm(branch,concs,n,i,group,stabalizer[i],order,ast)
 
 	# if this array is unique then we may need to append it to the
 	# list of survivors
-	if unique == 0:
+        if unique == 0:
 	    # if we've visited every level of the tree
 	    # then we need to append the unique
 	    # configurations
-	    if b0 == 1 or i == 0:
+            if b0 == 1 or i == 0:
 		# if there are arrows we need to see
 		# what their unique arrangements are
 		# before saving the configurations
-		if narrows > 0:
+                if narrows > 0:
 		    # first use invhash to turn the hash back to an array
-		    brancht = list(_invhash(branch, concs, len(colors_w_arrows)))
+                    brancht = list(_invhash(branch, concs, len(colors_w_arrows)))
 		    # create a temporary copy of the branch.
-		    tbrancht = []
-		    for tt in range(len(brancht)):
-			tbrancht.append(colors[brancht[tt]-1][1])
+                    tbrancht = []
+                    for tt in range(len(brancht)):
+                        tbrancht.append(colors[brancht[tt]-1][1])
 		    # make a coloring with arrows to be passed to the
 		    # arrow permutiation code by adding arrows back
 		    # into the array where needed.
-		    for z in range(len(brancht)):
-			brancht[z] = deepcopy(colors[brancht[z] -1])
+                    for z in range(len(brancht)):
+                        brancht[z] = deepcopy(colors[brancht[z] -1])
 		    # add_arrows from the phonon_brancher code returns
 		    # the unique configurations with the unique arrow
 		    # arrangements
-		    arsurvivors = add_arrows(brancht,ast, dim)
+                    arsurvivors = add_arrows(brancht,ast, dim, accept, True)
 		    #write the unique confgurations to file.
-		    for z in arsurvivors:
+                    for z in arsurvivors:
 			# if we aren't using a subset write everything
 			# to file.
-			if not use_subset:
-			    survivors.append(z)
+                        if not use_subset:
+                            survivors.append(z)
 			# if we are then we only want to write the
 			# random subset to file.
-			else:
-			    if count in subset:
-				survivors.append(z)
-			count += 1
-		else:
+                        else:
+                            if subset is not None and isinstance(subset, list) and count in subset:
+                                survivors.append(z)
+                            elif accept is not None:
+                                survivors.append(z)
+                        count += 1
+                else:
 		    # if there are no arrows just
 		    # write the unique arrangement
 		    # to file
-		    if not use_subset:
+                    if not use_subset:
                         tbranch = list(_invhash(branch, concs, len(colors_w_arrows)))
-			survivors.append([[-1,leaf] for leaf in tbranch])
-		    else:
-			if count in subset:
+                        survivors.append([[-1,leaf] for leaf in tbranch])
+                    else:
+                        if subset is not None and isinstance(subset, list) and count in subset:
                             tbranch = list(_invhash(branch, concs, len(colors_w_arrows)))
-			    survivors.append([[-1,leaf] for leaf in tbranch])
-		    count += 1
+                            survivors.append([[-1,leaf] for leaf in tbranch])
+                        elif accept is not None and random() < accept:
+                            tbranch = list(_invhash(branch, concs, len(colors_w_arrows)))
+                            survivors.append([[-1,leaf] for leaf in tbranch])
+                    count += 1
 
 		    # if we aren't on the last contributing level
 		    # of the tree then make sure b0 is 0
-	    if i < len(branch) - 2:
-		b0 = 0
+            if i < len(branch) - 2:
+                b0 = 0
 
 	# all that follows dictates how we navigate the tree. This can
 	# be a little tricky but does work at this time. Basically try
@@ -413,53 +438,60 @@ def brancher(concs,group,colors_w_arrows, dim, subset = []):
 								
 	# if b0 is 0 then we need to move up to the next level of the
 	# tree at this point
-	if b0 == 0:
-	    i += 1
+        if b0 == 0:
+            i += 1
 	    # if we are now looking at the last level then set b0 to 1
 	    # so that any unique configurations found will be saved
-	    if i == len(branch) - 2:
-		b0 = 1
+            if i == len(branch) - 2:
+                b0 = 1
 
 	# root is a variable that tells us if we've filled this
 	# level of the tree yet
-	root = 0
+        root = 0
 	# if root = 0 and i>0 then we need to check to see if
 	# we need to back track up the tree yet
-	while root == 0 and i > 0:
+        while root == 0 and i > 0:
 	    # if we've used all the configurations for this level then
 	    # we need to go back a level, if not then set root to 1 so
 	    # that we keep moving forward through the tree
-	    if branch[i] == C[i]-1:
+            if branch[i] == C[i]-1:
 		# first reset this level's number so that it will
 		# increment properly the next time it's visited
-		branch[i] = 0  
+                branch[i] = 0  
 		# next reduce i by 1 to go back a level
-		i -= 1
+                i -= 1
 		# if i = 0 we're back to the bottom of the tree. We
 		# need to reset the stabilizers, b0 and increment the
 		# bottom layers index, branch[i], by 1
-		if i == 0:
-		    stabalizer = [0]*len(concs)
-		    b0 = 0
-		    branch[i] += 1
-	    else:
-		root = 1
+                if i == 0:
+                    stabalizer = [0]*len(concs)
+                    b0 = 0
+                    branch[i] += 1
+            else:
+                root = 1
                 
 	# if b0=1 then we need to increase this level index,
 	# branch[i], by 1 to consider the next configuration
-	if b0 == 1:
-	    branch[i] += 1
+        if b0 == 1:
+            branch[i] += 1
 
 	# test helps us check the first level for areas we can skip
-	test = 0
-	while test == 0:
+        test = 0
+        while test == 0:
 	    # if we're on the first branch and the order
 	    # for this configuration is negative then we
 	    # skip it. Otherwise we need to consider it.
-	    if i == 0 and order[branch[i]] == -1:
-		branch[i] += 1
-	    else:
-		test = 1
-
+            if i == 0 and order[branch[i]] == -1:
+                branch[i] += 1
+            else:
+                test = 1
+                
+        if len(survivors) > ncurrent:
+            ncurrent = len(survivors)
+            if verbosity is not None and verbosity >= 1:
+                pbar.update(1)
+                
+    if verbosity is not None and verbosity >= 1:
+        pbar.close()
     # done
     return survivors

@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/Users/trunks/envs/py3/bin/python3.4
 
 """The methods needed to take input from the user and put it in useful
 forms. Also the actual executable for the code."""
@@ -16,7 +16,7 @@ def _enum_in(args):
 
     distribution = args["distribution"][0].lower()
     if args["sizes"]:
-        sizes = range(*args["sizes"])
+        sizes = list(range(*args["sizes"]))
     else:
         sizes = None
     if args["distribution"][1].lower() == "all":
@@ -30,7 +30,6 @@ def _polya_out(args):
     (or other specified input file).
     """
     from os import path, makedirs
-    from numpy import zeros
     from phenum.grouptheory import get_sym_group, get_full_HNF
     from phenum.msg import warn
     from phenum.symmetry import get_concs_for_size
@@ -56,11 +55,11 @@ def _polya_out(args):
         # We need to write the concs in cList to the output file.
         out.write('{0: <28}'.format("# HNF"))
         for conc in cList:
-            out.write("{0: <10}".format(':'.join(map(str, conc))))
-        out.write('{0: <10}\n'.format("Total"))
+            out.write("{0: <50}".format(':'.join(map(str, conc))))
+        out.write('{0: <50}\n'.format("Total"))
 
         a_concs = pb.get_arrow_concs(params)
-        conc_totals = zeros(len(cList), int)
+        conc_totals = [0 for i in range(len(cList))]
         for idata, edict in enumerate(edata):
             HNF = edict["HNF"]
             out.write("  {0: <26}".format(' '.join(map(str, HNF))))
@@ -97,15 +96,15 @@ def _polya_out(args):
                     else:
                         total_num = polya(conc, agroup)
 
-                    out.write("{0: <10d}".format(total_num))
+                    out.write("{0: <50d}".format(total_num))
                     total += total_num
                     conc_totals[iconc] += total_num
             out.write('{0: <10d}\n'.format(total))
         out.write("# " + ''.join(['-' for i in range(len(cList)*10 + 10 + 30)]) + '\n')
         out.write("{0: <28}".format("  0 0 0 0 0 0"))
         for ctotal in conc_totals:
-            out.write("{0: <10d}".format(ctotal))
-        out.write("{0: <10d}\n".format(sum(conc_totals)))
+            out.write("{0: <50d}".format(ctotal))
+        out.write("{0: <50d}\n".format(sum(conc_totals)))
         out.close()
         
 # check which files are present to see if we are finding the HNFs with
@@ -152,13 +151,13 @@ def _enum_out(args):
                 LT = edata["L"]
             
                 a_concs = pb.get_arrow_concs(params)
-                configs = pb.enum_sys(edata["group"], list(conc), a_concs, num_wanted,HNF,params)
+                configs = pb.enum_sys(edata["group"], list(conc), a_concs, num_wanted,HNF,params, args["acceptrate"])
             else:
                 (SNF,L,R) = SmithNormalForm(get_full_HNF(HNF))
                 SNF = [SNF[0][0],SNF[1][1],SNF[2][2]]
                 LT = [item for row in L for item in row]
                 a_concs = pb.get_arrow_concs(params)
-                configs = pb.enum_sys(None, list(conc), a_concs, num_wanted,HNF,params)
+                configs = pb.enum_sys(None, list(conc), a_concs, num_wanted,HNF,params, args["acceptrate"])
 
             for config in configs:
                 labeling, arrowing = io.create_labeling(config)
@@ -222,9 +221,9 @@ def _examples():
     print("POLYA ENUMERATION THEOREM SOLVER\n")
     for eg in egs:
         title, desc, code = eg
-        print("--" + title + '--\n')
-        print(desc + '\n')
-        print('  ' + code + '\n')
+        print(("--" + title + '--\n'))
+        print((desc + '\n'))
+        print(('  ' + code + '\n'))
 
 def _parser_options(phelp=False):
     """Parses the options and arguments from the command line."""
@@ -265,6 +264,12 @@ def _parser_options(phelp=False):
     parser.add_argument("-sizes", nargs=2, type=int,
                         help=("Specify the start and stop cell sizes over which to distribute the structure "
                               "selection, weighted by the Polya distribution."))
+    parser.add_argument("-acceptrate", type=float,
+                        help=("For large numbers of unique arrangements, specify how often one should be "
+                              "kept in the final list."))
+    parser.add_argument("-profile",
+                        help=("Profile the code as it runs. Requires vprof (`pip install vprof`). Argument "
+                              "is a combination of 'c', 'm' and 'h'. See vprof docs."))
     
     vardict = vars(parser.parse_args())
     if phelp or vardict["examples"]:
@@ -346,4 +351,9 @@ def _script_enum(args):
         _enum_in(args)
         
 if __name__ == '__main__':
-    _script_enum(_parser_options())
+    args = _parser_options()
+    if args["profile"]:
+        from vprof import profiler
+        profiler.run(_script_enum, args["profile"], args=(args,), host='localhost', port=8000)
+    else:
+        _script_enum(args)

@@ -90,10 +90,10 @@ def _write_struct_summary(structs):
     to file for verification of polya.
     """
     from numpy import zeros
-    for sN, HNFS in structs.items():
+    for sN, HNFS in list(structs.items()):
         out = open('enum_'+str(sN)+'.out', 'w+')
         out.write('{0: <28}'.format("# HNF"))
-        first = sorted(HNFS.itervalues().next())
+        first = sorted(next(iter(HNFS.values())))
         for conc in first:
             out.write("{0: <10}".format(':'.join(map(str, conc))))
         out.write('{0: <10}\n'.format("Total"))
@@ -136,7 +136,7 @@ def _distribute(cellsizes, ftype, n=None, dataformat="cells.{}"):
     """
     (f, dataset, gtotal) = _distribution(ftype, None, None, cellsizes=cellsizes, dataformat=dataformat)
     if n > gtotal:
-        from msg import warn
+        from .msg import warn
         warn("The number of unique structures you requested ({}) ".format(n) +
              "exceeds the total number of unique structures ({}). ".format(gtotal) +
              "The code will return *all* structures for the distribution.")
@@ -198,33 +198,33 @@ def _distribute(cellsizes, ftype, n=None, dataformat="cells.{}"):
                 recount += 1
 
             if recount == 3 and rtotal[0] < n:
-                from msg import warn
+                from .msg import warn
                 warn("Reached maximum recursion limit in random assignment.")
                 
     #First, compile a dictionary at the lowest level that has the weights
     #for the desired value of 'n'.
     relvals = []
     if ftype=="all":
-        for size, data in dataset.items():
-            for HNF, distr in data["distr"].items():
-                for conc, limit in distr.items():
+        for size, data in list(dataset.items()):
+            for HNF, distr in list(data["distr"].items()):
+                for conc, limit in list(distr.items()):
                     key = (size, HNF, conc)
                     value = f(n, size, HNF, conc)
                     relvals.append((key, value, limit))
     elif ftype == "shape":
-        for size, data in dataset.items():
-            for HNF, limit in data["stotals"].items():
+        for size, data in list(dataset.items()):
+            for HNF, limit in list(data["stotals"].items()):
                 key = (size, HNF, None)
                 value = f(n, size, HNF)
                 relvals.append((key, value, limit))                
     elif ftype == "conc":
-        for size, data in dataset.items():
-            for conc, limit in data["ctotals"].items():
+        for size, data in list(dataset.items()):
+            for conc, limit in list(data["ctotals"].items()):
                 key = (size, None, conc)
                 value = f(n, size, conc)
                 relvals.append((key, value, limit))
     elif ftype == "size":
-        for size, data in dataset.items():
+        for size, data in list(dataset.items()):
             limit = data["gtotal"]
             key = (size, None, None)
             value = f(n, size)
@@ -236,7 +236,7 @@ def _distribute(cellsizes, ftype, n=None, dataformat="cells.{}"):
     assign(relvals, f, rtotal, gtotal, n, result, ftype)
     #Make sure we are returning exactly how many they asked for.
     if rtotal[0] > n:
-        from msg import warn
+        from .msg import warn
         warn("More structures were returned than asked for, should not be possible.")
 
     from operator import itemgetter
@@ -277,7 +277,7 @@ def _distribution(ftype, dataset, gtotal, cast=float, cellsizes=None, dataformat
         if cellsizes is not None:
             (dataset, gtotal) = _distribution_summary(cellsizes, dataformat)
         else:
-            from msg import err
+            from .msg import err
             err("No dataset or cell sizes specified.")
             return None
         
@@ -294,7 +294,7 @@ def _distribution(ftype, dataset, gtotal, cast=float, cellsizes=None, dataformat
     elif ftype == "size":
         f = lambda n, size: cast(dataset[size]["gtotal"]/ftotal*n)
     else:
-        from msg import err
+        from .msg import err
         err("The parameter {} is not a valid parameter for the distribution. Please use "
             " size, shape, conc, or all.".format(ftype))
         exit()
@@ -318,7 +318,7 @@ def _distribution_summary(cellsizes, dataformat="cells.{}"):
         dirname = dataformat.format(s)
         source = path.join(dirname, "polya.out")
         if not path.isfile(source):
-            from msg import err
+            from .msg import err
             err("Cannot find polya distribution for size {} at {}".format(s, source))
             continue
 
@@ -353,10 +353,10 @@ def _print_distribution(distr, filename=None, header=True, append=False):
         
         
     if filename is None:
-        from msg import arb, cenum
+        from .msg import arb, cenum
         bysize = {}
         sfmt = " {0: <5d} | {1: <15} | {2: <5} | {3: <5d} "
-        for key, value in distr.items():
+        for key, value in list(distr.items()):
             size, HNF, conc = key
             skey = sfmt.format(size, "" if HNF is None else ' '.join(map(str, HNF)),
                                "" if conc is None else ':'.join(map(str, conc)), value)
@@ -376,7 +376,7 @@ def _print_distribution(distr, filename=None, header=True, append=False):
         with open(filename, 'w' if not append else 'a') as f:
             if header:
                 f.write("# {0: <28}  {1: <10}  {2}\n".format("HNF", "Conc.", "Number"))
-            for key, value in distr.items():
+            for key, value in list(distr.items()):
                 size, HNF, conc = key
                 f.write("  {0: <28}  {1: <10}  {2:d}\n".format(' '.join(map(str, HNF)), ' '.join(map(str, conc)), value))
 
@@ -413,7 +413,7 @@ def make_enum_in(distribution,number=None,dataformat="cells.{}",sizes=None):
         ready = True
                 
     if ready == False:
-        from msg import err
+        from .msg import err
         err("The files {} don't exist in this directory. You either need to run"
             " the -polya option or else navigate into the folder that contains "
             "the output {} folders.".format(dataformat))

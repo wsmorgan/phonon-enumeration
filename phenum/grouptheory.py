@@ -9,7 +9,6 @@ inside the RotPermList class.
 
 import itertools
 import numpy
-from copy import deepcopy
 import operator
 
 class ArrowPerm(object):
@@ -58,12 +57,14 @@ def _make_member_list(n):
     :args n: Integer array containing the diagonal elements of the SNF.
     """
     from operator import mul
+    from functools import reduce
+    
     depth = reduce(mul,n,1)
     p = []
     for i in range(depth):
         p.append([0,0,0])
     for im in range(1,reduce(mul,n,1)):  # Loop over the members of the translation group
-        p[im] = deepcopy(p[im-1]) # Start with the same digits as in the previous increment        
+        p[im] = list(p[im-1]) # Start with the same digits as in the previous increment        
         p[im][2] = (p[im-1][2]+1)%n[2]  # Increment the first cyclic group
         if (p[im][2]==0):             # If it rolled over then
             p[im][1] = (p[im-1][1] +1) % n[1] # increment the next cyclic group
@@ -232,13 +233,14 @@ def SmithNormalForm(HNF):
       :args HNF: The integer matrix HNF for which the SNFs are to be
             found
     """
-
+    from numpy import dot
+    
     if numpy.linalg.det(numpy.array(HNF)) < 1:
         print("SmithNormalForm routine failed because the input matrix had a negative determinant")
         exit()
     
     A = [[0,0,0],[0,0,0],[0,0,0]]
-    M = deepcopy(HNF)
+    M = list(HNF)
     B = [[0,0,0],[0,0,0],[0,0,0]]
 
     for i in range(3):
@@ -258,23 +260,22 @@ def SmithNormalForm(HNF):
         while (3-[M[0][j],M[1][j],M[2][j]].count(0)) > 1:
             (minidx,maxidx) = _find_minmax_indices([M[0][j],M[1][j],M[2][j]])
             minm = M[minidx][j]
-            mult = M[maxidx][j]/minm
+            mult = M[maxidx][j]//minm
 
-            M[maxidx] = map(operator.sub,M[maxidx],[mult*i for i in M[minidx]])
-            A[maxidx] = map(operator.sub,A[maxidx],[mult*i for i in A[minidx]])
-
-            if numpy.dot(numpy.dot(numpy.array(A),numpy.array(HNF)),numpy.array(B)).any() != numpy.array(M).any():
+            M[maxidx] = list(map(operator.sub,M[maxidx],[mult*i for i in M[minidx]]))
+            A[maxidx] = list(map(operator.sub,A[maxidx],[mult*i for i in A[minidx]]))
+            if dot(dot(A,HNF),B).any() != numpy.array(M).any():
                 print("ROW: Transformation matrices didn't work")
                 exit()
 
         if M[j][j] == 0:
             maxidx = [abs(M[0][j]),abs(M[1][j]),abs(M[2][j])].index(max([abs(M[0][j]),abs(M[1][j]),abs(M[2][j])]))
-            tmprow = deepcopy(A[j])
-            A[j] = deepcopy(A[maxidx])
+            tmprow = list(A[j])
+            A[j] = list(A[maxidx])
             A[maxidx] = tmprow
 
-            tmprow = deepcopy(M[j])
-            M[j] = deepcopy(M[maxidx])
+            tmprow = list(M[j])
+            M[j] = list(M[maxidx])
             M[maxidx] = tmprow    
         if numpy.dot(numpy.dot(numpy.array(A),numpy.array(HNF)),numpy.array(B)).any() != numpy.array(M).any():
             print("ROWSWAP: Transformation matrices didn't work")
@@ -372,7 +373,7 @@ def _get_dvector_permutations(par_lat,bas_vecs,LatDim,eps):
       :args eps: finite precesion tolerance
     """
 
-    from symmetry import get_spaceGroup, bring_into_cell
+    from phenum.symmetry import get_spaceGroup, bring_into_cell
     
     nD = len(bas_vecs)
     aTyp = []
@@ -407,7 +408,7 @@ def _get_dvector_permutations(par_lat,bas_vecs,LatDim,eps):
             
         else:
             rd = [rd_rot[i] + shift[iOp][i] for i in range(len(rd_rot))]
-        tRD = deepcopy(rd)
+        tRD = list(rd)
         if nD > 1:
             for iD in range(nD):
                 rd[iD] = bring_into_cell(rd[iD],inv_par_lat,par_lat,eps)
@@ -469,7 +470,7 @@ def _get_rotation_perms_lists(A,HNF,L,SNF,Op,RPlist,dperms,eps):
     identT = []
     tperms_perm = []
     temp_rperms_perm = []
-    identT = [list(i) for i in zip(*[iter(range(0,n*nD))]*n)]  # we could combine
+    identT = [list(i) for i in zip(*[iter(list(range(0,n*nD)))]*n)]  # we could combine
     # those two lines, but gfortran
     ident  = numpy.transpose(identT).tolist()            # does some strange things then.
     RPlist.nL=0  # initialize the number
@@ -647,16 +648,14 @@ def get_sym_group(par_lat,bas_vecs,HNF,LatDim):
     """
 
     from numpy import linalg, allclose
-    from symmetry import bring_into_cell, get_spaceGroup
-    from copy import deepcopy
-    from msg import okay
+    from phenum.symmetry import bring_into_cell, get_spaceGroup
     
     eps = 1E-10
-    okay("Start of algorithm to find the group.")
+
     # map any atoms in the basis that aren't within the cell to be in
     # the cell
     par_lat_inv = linalg.inv(par_lat)
-    temp_basis = deepcopy(bas_vecs)
+    temp_basis = list(bas_vecs)
     for i in range(len(bas_vecs)):
         bas_vecs[i] = bring_into_cell(bas_vecs[i],par_lat_inv,par_lat,eps)
         if not allclose(bas_vecs[i], temp_basis[i], rtol=eps, atol=eps):
@@ -679,10 +678,8 @@ def get_sym_group(par_lat,bas_vecs,HNF,LatDim):
     (SNF,L,R) = SmithNormalForm(HNF)
 
     sym_group = _get_rotation_perms_lists(par_lat,HNF,L,SNF,fixing_ops,RPList,ParRPList,eps)
-
-    okay("Found group of size {}.".format(len(sym_group)))
     
-    return(symm)
+    return(sym_group)
 
 #a_group take the set of translations of the lattice and the set of
 #rotations of the lattice paired with their effect on the arrows of
