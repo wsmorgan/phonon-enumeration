@@ -154,13 +154,8 @@ def write_struct_enum(params):
                 occupancy += str(i)
     
         basis = ""
-        i = 0
         for vec in params["basis_vecs"]:
-            for point in vec:
-                basis += str(point) + " "
-            if i < 2:
-                basis += " "+ occupancy + "\n"
-            i += 1
+            basis += "{}  {} \n".format(" ".join([str(point) for point in vec]),occupancy)
         
         struct_file.write(str(len(params["basis_vecs"])) + " \n")
         struct_file.write(basis + " \n")
