@@ -1,7 +1,6 @@
 """Methods needed for the enumeration of arrows."""
 
 #import neede modules
-from copy import deepcopy, copy
 from numpy import array, dot
 #Find concentration takes a 1D array, col, and returns a 1D array, 
 #Concs, containing the number of times each element in col appears 
@@ -13,7 +12,7 @@ def _find_concentrations(col):
     """
     Concs=[]
 
-    tcol=deepcopy(col)
+    tcol= list(col)
     for i in range(len(tcol)):
         if tcol[i] != 0:
             Concs.append(tcol.count(tcol[i]))
@@ -83,7 +82,7 @@ def _col_sort(col_list):
 #col is the initial configuration.
 #agroup is the group operations with their effects on the arrows.
 #dim is the number of arrow directions that are possible for this system.
-def add_arrows(col,agroup,dim,accept=None,nested=False,num_wanted=None):
+def add_arrows(col,agroup,dim,accept=None,nested=False,num_wanted=None, small=False):
     """Finds the unique arrangements of arrows for a given configuration.
 
     :arg col: a 2D integer array of the initial labeling
@@ -95,8 +94,6 @@ def add_arrows(col,agroup,dim,accept=None,nested=False,num_wanted=None):
       of another progress bar.
     """
     from random import random
-    #survivors is the array that contains the end result of the permutations
-    survivor = []
 
     #Find out how many arrows there are in the col array
     (narrows,arrow_types,conc_w_arrows) = how_many_arrows(col)
@@ -121,68 +118,139 @@ def add_arrows(col,agroup,dim,accept=None,nested=False,num_wanted=None):
     #with the one with the largest hash number to see if they are
     #unique. Each hash will be stored in orighash (original hash) then
     #compared to the permuted arrows hash (permhash) at the end.
-    for orighash in range(maxpossible+1):
-        arrow_config = _ainvhash(orighash,narrows,dim)
-        unique = True
-        temp_coloring_with_arroms = [0]*len(col)
-        #we need to cycle through each of the operations in the
-        #permutation group that got passed in to see if they will turn
-        #the arrow configuration into one we've already seen.
-        for perm in agroup:
-            l = 0
-            #this loop constucts the coloring with the correct arrows
-            #for the permutation group to be applied to.
-            for z in range(len(col)):
-                if col[z][0] < 0:
-                    temp_coloring_with_arroms[z] = list(col[z])
-                elif col[z][0] >= 0:
-                    temp_coloring_with_arroms[z] = list(col[z])
-                    temp_coloring_with_arroms[z][0] = arrow_config[l]
-                    l += 1
+    orighash = 0
+    if not small:
+        while orighash <= maxpossible:
+            # for orighash in range(maxpossible+1):
+            arrow_config = _ainvhash(orighash,narrows,dim)
+            unique = True
+            temp_coloring_with_arroms = [0]*len(col)
+            #we need to cycle through each of the operations in the
+            #permutation group that got passed in to see if they will turn
+            #the arrow configuration into one we've already seen.
+            for perm in agroup:
+                l = 0
+                #this loop constucts the coloring with the correct arrows
+                #for the permutation group to be applied to.
+                for z in range(len(col)):
+                    if col[z][0] < 0:
+                        temp_coloring_with_arroms[z] = list(col[z])
+                    elif col[z][0] >= 0:
+                        temp_coloring_with_arroms[z] = list(col[z])
+                        temp_coloring_with_arroms[z][0] = arrow_config[l]
+                        l += 1
 
-            new_arrow_config=[]
-            arrow_perm = perm[1]
-            color_perm = perm[0]
-            new_coloring_with_arrows = []
-            #here we use the permutations of the colors to permute the
-            #colors for our configuration.
-            new_coloring_with_arrows.extend([temp_coloring_with_arroms[color_perm[j]]
-                                             for j in range(len(temp_coloring_with_arroms))])
-            #if there is an arrow on any lattice site it needs to
-            #be updated. Otherwise just permute the colors.
-            new_arrow_config.extend([arrow_perm[site[0]] for site in new_coloring_with_arrows
-                                     if site[0] >= 0])
-            #if the new configuration has a smaller hash number than
-            #the current configuration then we have seen it before and
-            #it is not unique.
-            permhash = _ahash(new_arrow_config,dim)
-            if permhash < orighash:
-                unique = False
-                break
-        #if none of the permutations have had a smaller hash number
-        #than the current configuration then the configuration is
-        #unique and we need to add it to the list.
-        if unique == True:
-            #this loop make the coloring with the arrows that will be
-            #added to the list of unique configurations.
-            coloring_with_arrows = [0]*len(col)
-            i = 0
-            for z in range(len(col)):
-                coloring_with_arrows[z] = list(col[z])
-                if col[z][0] >= 0:
-                    coloring_with_arrows[z][0] = arrow_config[i]
-                    i += 1
+                new_arrow_config=[]
+                arrow_perm = perm[1]
+                color_perm = perm[0]
+                new_coloring_with_arrows = []
+                #here we use the permutations of the colors to permute the
+                #colors for our configuration.
+                new_coloring_with_arrows.extend([temp_coloring_with_arroms[color_perm[j]]
+                                                 for j in range(len(temp_coloring_with_arroms))])
+                #if there is an arrow on any lattice site it needs to
+                #be updated. Otherwise just permute the colors.
+                new_arrow_config.extend([arrow_perm[site[0]] for site in new_coloring_with_arrows
+                                         if site[0] >= 0])
+                #if the new configuration has a smaller hash number than
+                #the current configuration then we have seen it before and
+                #it is not unique.
+                permhash = _ahash(new_arrow_config,dim)
+                if permhash < orighash:
+                    unique = False
+                    break
+                #if none of the permutations have had a smaller hash number
+                #than the current configuration then the configuration is
+                #unique and we need to add it to the list.
+            if unique == True:
+                #this loop make the coloring with the arrows that will be
+                #added to the list of unique configurations.
+                coloring_with_arrows = [0]*len(col)
+                i = 0
+                for z in range(len(col)):
+                    coloring_with_arrows[z] = list(col[z])
+                    if col[z][0] >= 0:
+                        coloring_with_arrows[z][0] = arrow_config[i]
+                        i += 1
 
-            if accept is None or random() < accept:
+                if accept is None or random() < accept:
+                    arsurvivors.append(coloring_with_arrows)
+                    if verbosity is not None and verbosity >= 1 and not nested:
+                        pbar.update(1)
+                    if num_wanted is not None and len(arsurvivors) == num_wanted:
+                        break
+            orighash += 1
+    else:
+        from random import randrange
+        visited = []
+        orighash = randrange(maxpossible)
+        while len(arsurvivors) < num_wanted:
+            while orighash in visited:
+                orighash = randrange(maxpossible)
+
+            visited.append(orighash)
+            
+            arrow_config = _ainvhash(orighash,narrows,dim)
+            unique = True
+            temp_coloring_with_arroms = [0]*len(col)
+            #we need to cycle through each of the operations in the
+            #permutation group that got passed in to see if they will turn
+            #the arrow configuration into one we've already seen.
+            for perm in agroup:
+                l = 0
+                #this loop constucts the coloring with the correct arrows
+                #for the permutation group to be applied to.
+                for z in range(len(col)):
+                    if col[z][0] < 0:
+                        temp_coloring_with_arroms[z] = list(col[z])
+                    elif col[z][0] >= 0:
+                        temp_coloring_with_arroms[z] = list(col[z])
+                        temp_coloring_with_arroms[z][0] = arrow_config[l]
+                        l += 1
+
+                new_arrow_config=[]
+                arrow_perm = perm[1]
+                color_perm = perm[0]
+                new_coloring_with_arrows = []
+                #here we use the permutations of the colors to permute the
+                #colors for our configuration.
+                new_coloring_with_arrows.extend([temp_coloring_with_arroms[color_perm[j]]
+                                                 for j in range(len(temp_coloring_with_arroms))])
+                #if there is an arrow on any lattice site it needs to
+                #be updated. Otherwise just permute the colors.
+                new_arrow_config.extend([arrow_perm[site[0]] for site in new_coloring_with_arrows
+                                         if site[0] >= 0])
+                #if the new configuration has a smaller hash number than
+                #the current configuration then we have seen it before and
+                #it is not unique.
+                permhash = _ahash(new_arrow_config,dim)
+                if permhash in visited and permhash != orighash:
+                    unique = False
+                    break
+                #if none of the permutations have had a smaller hash number
+                #than the current configuration then the configuration is
+                #unique and we need to add it to the list.
+            if unique == True:
+                #this loop make the coloring with the arrows that will be
+                #added to the list of unique configurations.
+                coloring_with_arrows = [0]*len(col)
+                i = 0
+                for z in range(len(col)):
+                    coloring_with_arrows[z] = list(col[z])
+                    if col[z][0] >= 0:
+                        coloring_with_arrows[z][0] = arrow_config[i]
+                        i += 1
+
                 arsurvivors.append(coloring_with_arrows)
+                
                 if verbosity is not None and verbosity >= 1 and not nested:
                     pbar.update(1)
-                if num_wanted is not None and len(arsurvivors) == num_wanted:
-                    break
-
+                # if num_wanted is not None and len(arsurvivors) == num_wanted:
+                #     break
+                        
     if verbosity is not None and verbosity >= 1 and not nested:
         pbar.close()
-                
+
     return(arsurvivors)
 
 # arrow_concs is a method that returns the concentration string
@@ -297,9 +365,8 @@ def enum_sys(groupfile, concs, a_concs, num_wanted, HNF, params, accept=None):
             subset = list(range(1, total+1)) 
             shuffle(subset)
             subset = subset[0:num_wanted]
-        elif accept is None or not isinstance(accept, float):
-            err("The number of unique arrangements is {}. ".format(total) +
-                 "Rerun the script with '-acceptrate'.")
+        elif accept is not None and (not isinstance(accept, float) or accept > 1.0):
+            err("'-acceptrate' is to be a float less than 1.")
             exit(0)
         else:
             subset = num_wanted
@@ -317,12 +384,17 @@ def enum_sys(groupfile, concs, a_concs, num_wanted, HNF, params, accept=None):
     from random import random
     if len(concs) == 1 and all(decorations) >=0:
         configs = []
-        a_configs = add_arrows(decorations, agroup, 6, accept, num_wanted=num_wanted)
+        if float(num_wanted)/total < 0.001 and accept is None:
+            small = True
+            a_configs = add_arrows(decorations, agroup, 6, accept, num_wanted=num_wanted,small=True)
+        else:
+            a_configs = add_arrows(decorations, agroup, 6, accept, num_wanted=num_wanted)
+            
         count = 1
         for config in a_configs:
             if isinstance(subset, list) and count in subset:
                 configs.append(config)
-            elif accept is not None:
+            elif accept is not None or small:
                 configs.append(config)
             count += 1
     else:
@@ -337,6 +409,8 @@ def enum_sys(groupfile, concs, a_concs, num_wanted, HNF, params, accept=None):
             " This should not happen. Please submit a bug report on "
             "https://github.com/wsmorgan/phonon-enumeration including your input files so "
             "that this error may be corrected.".format(str(len(configs)),str(num_wanted)))
+        if len(configs) == 0:
+            exit()
 
     return configs
 

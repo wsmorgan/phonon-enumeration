@@ -146,8 +146,9 @@ def bring_into_cell(vec,cart_to_latt,latt_to_cart,eps):
       :args eps: Finite precision tolerance.
     """
 
+    from numpy import matmul
     # Put the representation of the point into lattice coordinates
-    vec = numpy.matmul(cart_to_latt,vec).tolist()
+    vec = matmul(cart_to_latt,vec).tolist()
 
     # counter to catch compiler bug
     c = 0
@@ -168,9 +169,9 @@ def bring_into_cell(vec,cart_to_latt,latt_to_cart,eps):
 
     
     # Put the point back into cartesion coordinate representation
-    vec = numpy.matmul(numpy.array(latt_to_cart), numpy.array(vec)).tolist()
+    vec = matmul(numpy.array(latt_to_cart), numpy.array(vec)).tolist()
 
-    return(vec)
+    return vec
 
 def _get_lattice_pointGroup(aVecs, eps=1E-10):
     """This routine returns only the point group of the rather than the

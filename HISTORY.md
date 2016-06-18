@@ -1,5 +1,11 @@
 # Revision History for "phonon-enumeration"
 
+## Revision 1.5.7
+
+- Fixed the bug reported in issue #15.
+- Added a different workflow for the purely arrow enumerations where
+  only a small number of unique arrangements are wanted.
+  
 ## Revision 1.5.6
 
 - Optimization for the arrow enumeration.
