@@ -17,7 +17,7 @@ def _make_structures(args):
         space_data["aBas"] = cartesian2direct(space_data["sLV"],space_data["aBas"],
                                               system["eps"])
         
-        write_POSCAR(system,space_data,structure,args["displace"])
+        write_POSCAR(system,space_data,structure,args["displace"],args["species"])
         
 
 def _examples():
@@ -73,6 +73,8 @@ def _parser_options(phelp=False):
     parser.add_argument("-mink", default="t",
                         help=("Sets flag to perform minkowski reduction of the basis (T/F)."
                               " Default is True."))
+    parser.add_argument("-species", nargs="+",
+                        help=("Specify the atomic species present in the system."))
     parser.add_argument("-verbose", type=int,
                         help="Specify the verbosity level (1-3) for additional computation info.")
     parser.add_argument("-outfile",
@@ -109,7 +111,9 @@ def _parser_options(phelp=False):
             " and last structure to be used in the input file, or all. The values {} don't "
             " match this format.".format(vardict["structures"]))
         exit()
-        
+
+    if not vardict["species"]:
+        vardict["species"] = None
     if not vardict["input"]:
         vardict["input"] = "enum.out"
     if not vardict["outfile"]:

@@ -1,5 +1,10 @@
 # Revision History for "phonon-enumeration"
 
+## Revision 1.5.8
+
+- Added options to makeStr.py to allow the lattice parameter to be
+  calculated and override the default title as descrbide in #32.
+
 ## Revision 1.5.7
 
 - Fixed the bug reported in issue #15.
