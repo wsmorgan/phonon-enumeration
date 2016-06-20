@@ -280,22 +280,23 @@ def read_enum_out(args):
 
     return (system, structure_data)
 
-def write_POSCAR(system_data,space_data,structure_data,displacement,elements):
+def write_POSCAR(system_data,space_data,structure_data,args):
     """Writes a vasp POSCAR style file for the input structure and system
     data.
 
     :arg system_data: a dictionary of the system_data
     :arg space_data: a dictionary containing the spacial data
     :arg structure_data: a dictionary of the data for this structure
-    :arg displacement: The amount the each displaced atom needs to be
-      shifted by in terms of the lattice vectors.
-    :arg elements: List of the elements in the system
+    :arg args: Dictionary of user supplied input.
     """
 
     from numpy import array
     from element_data import get_lattice_parameter
-    
-    filename = "vasp.{}".format(str(structure_data["strN"]))
+
+    if "{}" in args["outfile"]:
+        filename = args["outfile"].format(str(structure_data["strN"]))
+    else:
+        filename = args["outfile"] + ".{}".format(str(structure_data["strN"]))
 
     labeling = structure_data["labeling"]            
     gIndx = space_data["gIndx"]
@@ -312,10 +313,11 @@ def write_POSCAR(system_data,space_data,structure_data,displacement,elements):
                 this_conc += 1
         concs.append(this_conc)
     def_title = "{} str #: {}\n".format(str(system_data["title"]),str(structure_data["strN"]))
-    lattice_parameter, title = get_lattice_parameter(elements,concs,def_title)
+
+    lattice_parameter, title = get_lattice_parameter(args["species"],concs,def_title)
     for arrow in arrows:
         directions.append(array(arrow_directions[int(arrow)]))
-    
+
     with open(filename,"w+") as poscar:
         poscar.write("{}\n".format(title))
         poscar.write("{}\n".format(lattice_parameter))
@@ -323,7 +325,7 @@ def write_POSCAR(system_data,space_data,structure_data,displacement,elements):
             poscar.write(" {}\n".format(" ".join(
                 ["{0: .8f}".format(j) for j in space_data["sLV"][i]])))
         poscar.write(" ")
-        if elements == None:
+        if args["species"] == None:
             for ic in concs:
                 poscar.write("{}   ".format(str(ic)))
         else:
@@ -336,7 +338,7 @@ def write_POSCAR(system_data,space_data,structure_data,displacement,elements):
         for ilab in range(system_data["k"]):
             for iAt in range(structure_data["n"]*system_data["nD"]):
                 if labeling[gIndx[iAt]] == str(ilab):
-                    out_array = array(space_data["aBas"][iAt]) + directions[iAt]*displacement
+                    out_array = array(space_data["aBas"][iAt]) + directions[iAt]*args["displace"]
                     poscar.write(" {}\n".format(
                         "  ".join(["{0: .8f}".format(i) for i in out_array.tolist()])))
         

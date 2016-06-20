@@ -1,5 +1,10 @@
 # Revision History for "phonon-enumeration"
 
+## Revision 1.5.9
+
+- Fixed the bug reported in #34.
+- Updated the -help info for the -displacement flag.
+
 ## Revision 1.5.8
 
 - Added options to makeStr.py to allow the lattice parameter to be
