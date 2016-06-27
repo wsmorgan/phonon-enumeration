@@ -16,8 +16,8 @@ def _make_structures(args):
 
         space_data["aBas"] = cartesian2direct(space_data["sLV"],space_data["aBas"],
                                               system["eps"])
-        
-        write_POSCAR(system,space_data,structure,args["displace"])
+        # print(args["species"])
+        write_POSCAR(system,space_data,structure,args)
         
 
 def _examples():
@@ -67,12 +67,15 @@ def _parser_options(phelp=False):
     parser.add_argument("-examples", action="store_true",
                         help="Print some examples for how to use the enumeration code.")
     parser.add_argument("-displace", type=float,
-                        help=("The displacement amount for the arrows. Default is 0."))
+                        help=("The displacement amount for the arrows in units of the lattice "
+                              "vectors. Default is 0."))
     parser.add_argument("-input",
                         help=("Override the default 'enum.out' file name."))
     parser.add_argument("-mink", default="t",
                         help=("Sets flag to perform minkowski reduction of the basis (T/F)."
                               " Default is True."))
+    parser.add_argument("-species", nargs="+",
+                        help=("Specify the atomic species present in the system."))
     parser.add_argument("-verbose", type=int,
                         help="Specify the verbosity level (1-3) for additional computation info.")
     parser.add_argument("-outfile",
@@ -109,7 +112,9 @@ def _parser_options(phelp=False):
             " and last structure to be used in the input file, or all. The values {} don't "
             " match this format.".format(vardict["structures"]))
         exit()
-        
+
+    if not vardict["species"]:
+        vardict["species"] = None
     if not vardict["input"]:
         vardict["input"] = "enum.out"
     if not vardict["outfile"]:
