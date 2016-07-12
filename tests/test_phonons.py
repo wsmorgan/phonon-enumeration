@@ -482,6 +482,32 @@ class TestEnumSys(ut.TestCase):
         out = _read_output("enum_sys.out.10")
         self.assertEqual(enum_sys(groupfile,concs,a_cons,num_wanted,HNF,params),out)
 
+    def test11(self):
+        from phenum.phonons import enum_sys
+        from numpy import array
+        groupfile = None
+        concs = [1,0,1,1,1]
+        a_cons = [0.0,0.0,0.0,1.0,1.0]
+        num_wanted = 36
+        HNF = array([1,0,2,0,0,2])
+        params = {'bulk': True, 'nspecies': 4, 'concs': [[0.0, 4.0, 4.0, 0.0], [0.0, 4.0, 4.0, 0.0], [0.0, 4.0, 4.0, 1.0], [0.0, 4.0, 4.0, 1.0]], 'basis_vecs': [[0.0, 0.0, 0.0]], 'sizes': [4, 4], 'lat_vecs': [[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]], 'arrows': True, 'is_crestricted': True}
+        out = _read_output("enum_sys.out.11")
+
+        self.assertEqual(len(enum_sys(groupfile,concs,a_cons,num_wanted,HNF,params)),len(out))
+
+    def test12(self):
+        from phenum.phonons import enum_sys
+        from numpy import array
+        groupfile = None
+        concs = [2,0,5]
+        a_cons = [0.25,0.0,0.75]
+        num_wanted = 738
+        HNF = array([1,0,1,0,0,7])
+        params = {'bulk': True, 'nspecies': 2, 'concs': [[1.0, 6.0, 12.0, 0.25], [1.0, 9.0, 12.0, 0.75]], 'basis_vecs': [[0.0, 0.0, 0.0]], 'sizes': [7, 7], 'lat_vecs': [[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]], 'arrows': True, 'is_crestricted': True}
+        out = _read_output("enum_sys.out.12")
+
+        self.assertEqual(len(enum_sys(groupfile,concs,a_cons,num_wanted,HNF,params)),len(out))
+
 class TestAddArrows(ut.TestCase):
     """Tests of the add_arrows subroutine."""
 
