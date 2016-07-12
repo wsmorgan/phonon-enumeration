@@ -4,6 +4,7 @@
 #The method calls for an integer input num
 #The method returns the factorial(represented as fact in the method)
 def factorial(num):
+
     """Finds the factorial of the input integer.
     
     :arg num: an integer
@@ -24,7 +25,7 @@ def factorial(num):
 #This method finds a binomial coefficient that is it calculates n
 #choose r The method calls for two integer values n and r and the
 #method factorial The method returns the binomial factorial as result
-def binomial_coefficient_o(n,r):
+def binomial_coefficient_old(n,r):
     """Finds the binomial coefficient, n choose r, for a given set of
     integers.
     
@@ -41,11 +42,7 @@ def binomial_coefficient_o(n,r):
     return result
 
 def binomial_coefficient(n, k):
-    """This implementation was taken from "Binomial Coefﬁcient Computation: Recursion 
-    or Iteration?" by Yannis Manolopoulos, ACM SIGCSE Bulletin InRoads, Vol.34, No.4, 
-    December 2002. http://delab.csd.auth.gr/papers/SBI02m.pdf It is supposed to be robust 
-    against large, intermediate values and to have optimal complexity.
-    """
+
     if k < 0 or k > n:
         return 0
     if k==0 and n == 0:

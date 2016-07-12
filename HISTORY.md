@@ -1,5 +1,10 @@
 # Revision History for "phonon-enumeration"
 
+## Revision 1.5.10
+
+-Fixed the bugs reported in #35 and #36.
+
+
 ## Revision 1.5.9
 
 - Fixed the bug reported in #34.

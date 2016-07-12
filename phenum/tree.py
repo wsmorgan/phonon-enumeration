@@ -224,7 +224,6 @@ def _perm(casei,colors,length,index,gen,stab,order,ast):
                 lib= list(li)
             lnewb = list(lnew)
             lnewb2 = []
-
 	    # any color that was placed that isn't the color for
 	    # the current level is set to zero
             for y in range(0,len(li)):
@@ -369,7 +368,7 @@ def brancher(concs,group,colors_w_arrows, dim, total=0, subset=None, accept=None
 	# for each level, the order for the first level, and the
 	# stabilizers for the arrow configurations
         (unique,stabalizer[i+1],order,ast) = _perm(branch,concs,n,i,group,stabalizer[i],order,ast)
-
+        
 	# if this array is unique then we may need to append it to the
 	# list of survivors
         if unique == 0:
@@ -495,3 +494,4 @@ def brancher(concs,group,colors_w_arrows, dim, total=0, subset=None, accept=None
         pbar.close()
     # done
     return survivors
+

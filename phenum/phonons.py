@@ -57,7 +57,7 @@ def _col_sort(col_list):
     col1 = []
     col2 = []
     colt=[]
-
+    
     # seperate the arrays into colors with arrrows and colors without
     for i in col_list:
         if i[0] < 0:
@@ -66,15 +66,13 @@ def _col_sort(col_list):
             col2.append(i)
 
     # sort each array by concentration
-    col1 = sorted(col1, key = col1.count, reverse=True)
-    col2 = sorted(col2, key = col2.count, reverse=True)
-
+    col1 = sorted(col1, key = col1.count)
+    col2 = sorted(col2, key = col2.count)
     # put them back together again
     for i in col1:
         colt.append(i)
     for i in col2:
         colt.append(i)
-    
     return(colt)
 
 #this method takes a configuration and finds the unique ways of
@@ -267,28 +265,27 @@ def arrow_concs(cList,aconcs):
 
     aconcs = [int(cList[i]*aconcs[i]) for i in range(len(cList))]
     
-    species = 1
-    conc_w_arrows = []
+    decoration_w_arrows = []
+    labels = range(1,len(cList)+1)
     for i in range(len(aconcs)):
         na = aconcs[i]
         ns = cList[i]
         if ns >= na:
             while na > 0:
-                conc_w_arrows.append([1,species])
+                decoration_w_arrows.append([1,labels[i]])
                 na -= 1
                 ns -= 1
             while ns > 0:
-                conc_w_arrows.append([-1,species])
+                decoration_w_arrows.append([-1,labels[i]])
                 ns -= 1
         else:
             while ns > 0:
-                conc_w_arrows.append([-1,species])
+                decoration_w_arrows.append([-1,labels[i]])
                 ns -= 1
-        species += 1
 
-    conc_w_arrows = _col_sort(conc_w_arrows)
-
-    return(conc_w_arrows)
+    decoration_w_arrows = _col_sort(decoration_w_arrows)
+    
+    return(decoration_w_arrows)
 
 def get_arrow_concs(params):
     """If the concentrations are being restricted then find the correct 
@@ -343,7 +340,7 @@ def enum_sys(groupfile, concs, a_concs, num_wanted, HNF, params, accept=None):
     # we need to know the concentrations of the species with and
     # without arrows, we also need to know the number of arrows and
     # their species so we can undo the previous step later
-    (n_arrows, arrow_types,concs_w_arrows) = how_many_arrows(decorations)
+    (n_arrows, arrow_types,sorted_concs) = how_many_arrows(decorations)
 
     # now find the number of unique arrangements using
     # polya
@@ -351,7 +348,7 @@ def enum_sys(groupfile, concs, a_concs, num_wanted, HNF, params, accept=None):
         # Since enumlib doesn't write the arrow group out we have to
         # recompute the group actions paired with their effects on the
         # arrows
-        total = polya(concs_w_arrows, agroup, arrowings=arrow_types)
+        total = polya(sorted_concs, agroup, arrowings=arrow_types)
     else:
         total = polya(concs, agroup)
 
@@ -399,9 +396,9 @@ def enum_sys(groupfile, concs, a_concs, num_wanted, HNF, params, accept=None):
             count += 1
     else:
         if arrow_types != 0:
-            configs = brancher(concs_w_arrows, agroup, decorations, 6, total, subset, accept)
+            configs = brancher(sorted_concs, agroup, decorations, 6, total, subset, accept)
         else:
-            configs = brancher(concs, agroup, decorations, 6, total, subset, accept)
+            configs = brancher(sorted_concs, agroup, decorations, 6, total, subset, accept)
 
     if len(configs) != num_wanted:
         from .msg import err

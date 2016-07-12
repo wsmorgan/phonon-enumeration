@@ -170,7 +170,7 @@ class TestArrowConcs(ut.TestCase):
         cList = [1, 2, 1]
         aconcs = [0, 0.4245868629437351, 0]
 
-        self.assertEqual(arrow_concs(cList,aconcs),[[-1, 2], [-1, 2], [-1, 1], [-1, 3]])
+        self.assertEqual(arrow_concs(cList,aconcs),[[-1, 1], [-1, 3], [-1, 2], [-1, 2]])
         
     def test2(self):
         from phenum.phonons import arrow_concs
@@ -186,8 +186,8 @@ class TestArrowConcs(ut.TestCase):
 
         cList = [10, 3, 1]
         aconcs = [0, 0.4989661535030203, 0]
-        out = [[-1, 1], [-1, 1], [-1, 1], [-1, 1], [-1, 1], [-1, 1], [-1, 1], [-1, 1], [-1, 1],
-               [-1, 1], [-1, 2], [-1, 2], [-1, 3], [1, 2]]
+        out = [[-1, 3], [-1, 2], [-1, 2], [-1, 1], [-1, 1], [-1, 1], [-1, 1], [-1, 1], [-1, 1],
+               [-1, 1], [-1, 1], [-1, 1], [-1, 1], [1, 2]]
         
         self.assertEqual(arrow_concs(cList,aconcs),out)
         
@@ -196,8 +196,8 @@ class TestArrowConcs(ut.TestCase):
 
         cList = [2, 4, 1, 5, 2, 1, 1]
         aconcs = [0.9068065455664464, 0.2858477549741846, 0, 0, 0.6957735268097871, 0, 0]
-        out = [[-1, 4], [-1, 4], [-1, 4], [-1, 4], [-1, 4], [-1, 2], [-1, 2], [-1, 2], [-1, 1],
-               [-1, 3], [-1, 5], [-1, 6], [-1, 7], [1, 1], [1, 2], [1, 5]]
+        out = [[-1, 1], [-1, 3], [-1, 5], [-1, 6], [-1, 7], [-1, 2], [-1, 2], [-1, 2], [-1, 4],
+               [-1, 4], [-1, 4], [-1, 4], [-1, 4], [1, 1], [1, 2], [1, 5]]
         
         self.assertEqual(arrow_concs(cList,aconcs),out)
         
@@ -215,7 +215,7 @@ class TestArrowConcs(ut.TestCase):
 
         cList = [3, 1]
         aconcs = [0.32514696876724436, 0]
-        out = [[-1, 1], [-1, 1], [-1, 1], [-1, 2]]
+        out = [[-1, 2], [-1, 1], [-1, 1], [-1, 1]]
         
         self.assertEqual(arrow_concs(cList,aconcs),out)
         
@@ -233,8 +233,8 @@ class TestArrowConcs(ut.TestCase):
 
         cList = [2, 8, 3, 1]
         aconcs = [0.8244881520042212, 0.33517966472359717, 0.677253228566329, 0]
-        out = [[-1, 2], [-1, 2], [-1, 2], [-1, 2], [-1, 2], [-1, 2], [-1, 1], [-1, 3], [-1, 4],
-               [1, 2], [1, 2], [1, 3], [1, 3], [1, 1]]
+        out = [[-1, 1], [-1, 3], [-1, 4], [-1, 2], [-1, 2], [-1, 2], [-1, 2], [-1, 2], [-1, 2],
+               [1, 1], [1, 2], [1, 2], [1, 3], [1, 3]]
         
         self.assertEqual(arrow_concs(cList,aconcs),out)
         
@@ -243,7 +243,7 @@ class TestArrowConcs(ut.TestCase):
 
         cList = [4, 1, 1, 1]
         aconcs = [0, 0, 0, 0]
-        out = [[-1, 1], [-1, 1], [-1, 1], [-1, 1], [-1, 2], [-1, 3], [-1, 4]]
+        out = [[-1, 2], [-1, 3], [-1, 4], [-1, 1], [-1, 1], [-1, 1], [-1, 1]]
         
         self.assertEqual(arrow_concs(cList,aconcs),out)
         
@@ -252,9 +252,27 @@ class TestArrowConcs(ut.TestCase):
 
         cList = [18, 1]
         aconcs = [0,0]
-        out = [[-1, 1], [-1, 1], [-1, 1], [-1, 1], [-1, 1], [-1, 1], [-1, 1], [-1, 1], [-1, 1],
+        out = [[-1, 2], [-1, 1], [-1, 1], [-1, 1], [-1, 1], [-1, 1], [-1, 1], [-1, 1], [-1, 1],
                [-1, 1], [-1, 1], [-1, 1], [-1, 1], [-1, 1], [-1, 1], [-1, 1], [-1, 1], [-1, 1],
-               [-1, 2]]
+               [-1, 1]]
+        
+        self.assertEqual(arrow_concs(cList,aconcs),out)
+        
+    def test11(self):
+        from phenum.phonons import arrow_concs
+
+        cList = [2, 0, 1]
+        aconcs = [0,0,0]
+        out = [[-1, 3], [-1, 1], [-1,1]]
+        
+        self.assertEqual(arrow_concs(cList,aconcs),out)
+        
+    def test12(self):
+        from phenum.phonons import arrow_concs
+
+        cList = [3, 0, 2]
+        aconcs = [0,0,0.5]
+        out = [[-1, 3], [-1, 1], [-1, 1], [-1, 1], [1, 3]]
         
         self.assertEqual(arrow_concs(cList,aconcs),out)
         
@@ -374,7 +392,8 @@ class TestEnumSys(ut.TestCase):
         num_wanted = 4
         HNF = array([1,0,1,1,2,7])
         params = {'bulk': True, 'nspecies': 2, 'concs': [], 'basis_vecs': [[0.0, 0.0, 0.0]], 'sizes': [1, 11], 'lat_vecs': [[0.5, 0.5, 0.0], [0.5, 0.0, 0.5], [0.0, 0.5, 0.5]], 'arrows': False, 'is_crestricted': False}
-        out = [[[-1, 1], [-1, 1], [-1, 1], [-1, 1], [-1, 2], [-1, 2], [-1, 2]], [[-1, 1], [-1, 1], [-1, 1], [-1, 2], [-1, 1], [-1, 2], [-1, 2]], [[-1, 1], [-1, 1], [-1, 2], [-1, 1], [-1, 1], [-1, 2], [-1, 2]], [[-1, 1], [-1, 1], [-1, 2], [-1, 1], [-1, 2], [-1, 1], [-1, 2]]]
+        out = _read_output("enum_sys.out.3")
+                    
         self.assertEqual(enum_sys(groupfile,concs,a_cons,num_wanted,HNF,params),out)
 
     def test4(self):
@@ -410,7 +429,8 @@ class TestEnumSys(ut.TestCase):
         num_wanted = 6
         HNF = array([1,0,1,0,0,6])
         params = {'bulk': True, 'nspecies': 3, 'concs': [[1.0, 6.0, 12.0, 0.0], [1.0, 9.0, 12.0, 0.5], [1.0, 12.0, 12.0, 0.25]], 'basis_vecs': [[0.0, 0.0, 0.0]], 'sizes': [6, 6], 'lat_vecs': [[0.5, 0.5, 0.0], [0.5, 0.0, 0.5], [0.0, 0.5, 0.5]], 'arrows': True, 'is_crestricted': True}
-        out = [[[-1, 1], [-1, 1], [-1, 1], [-1, 2], [-1, 3], [-1, 3]], [[-1, 1], [-1, 1], [-1, 1], [-1, 3], [-1, 2], [-1, 3]], [[-1, 1], [-1, 1], [-1, 2], [-1, 1], [-1, 3], [-1, 3]], [[-1, 1], [-1, 1], [-1, 3], [-1, 1], [-1, 2], [-1, 3]], [[-1, 1], [-1, 1], [-1, 3], [-1, 1], [-1, 3], [-1, 2]], [[-1, 1], [-1, 2], [-1, 1], [-1, 3], [-1, 1], [-1, 3]]]
+        out = _read_output("enum_sys.out.6")
+
         self.assertEqual(enum_sys(groupfile,concs,a_cons,num_wanted,HNF,params),out)
 
     def test7(self):
@@ -423,6 +443,7 @@ class TestEnumSys(ut.TestCase):
         HNF = array([1,0,1,0,5,6])
         params = {'bulk': True, 'nspecies': 3, 'concs': [[1.0, 6.0, 12.0, 0.0], [1.0, 9.0, 12.0, 0.5], [1.0, 12.0, 12.0, 0.25]], 'basis_vecs': [[0.0, 0.0, 0.0]], 'sizes': [3, 3], 'lat_vecs': [[0.5, 0.5, 0.0], [0.5, 0.0, 0.5], [0.0, 0.5, 0.5]], 'arrows': True, 'is_crestricted': True}
         out = _read_output("enum_sys.out.7")
+
         self.assertEqual(enum_sys(groupfile,concs,a_cons,num_wanted,HNF,params),out)
 
     def test8(self):
