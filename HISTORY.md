@@ -1,5 +1,12 @@
 # Revision History for "phonon-enumeration"
 
+## Revision 1.5.10
+
+- Fixed the bugs reported in #35, #36, and #38.
+- Added the -cellsdir option as described in #31 in order to allow the
+  user to specify where the cells.{} folders are
+
+
 ## Revision 1.5.9
 
 - Fixed the bug reported in #34.

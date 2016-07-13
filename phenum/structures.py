@@ -9,7 +9,7 @@ def enum_data(cellsize, args, params):
     """
     from os import path
     from numpy import loadtxt, array
-    dirname = args["dataformat"].format(cellsize)
+    dirname = "{}{}".format(args["cellsdir"],args["dataformat"].format(cellsize))
     result = []
 
     if path.isdir(dirname):
@@ -380,7 +380,7 @@ def _print_distribution(distr, filename=None, header=True, append=False):
                 size, HNF, conc = key
                 f.write("  {0: <28}  {1: <10}  {2:d}\n".format(' '.join(map(str, HNF)), ' '.join(map(str, conc)), value))
 
-def make_enum_in(distribution,number=None,dataformat="cells.{}",sizes=None):
+def make_enum_in(distribution,directory,number=None,dataformat="cells.{}",sizes=None):
     """Makes an enum.in file if the distrubiton type is all with the
     desired number of structures. Otherwise prints the distribution
     information to the screen for the user.
@@ -391,10 +391,15 @@ def make_enum_in(distribution,number=None,dataformat="cells.{}",sizes=None):
     :arg dataformat: The folder name for the cell sizes.
     :arg sizes: when specified, limit the distribution to these integer cell sizes;
       otherwise, look for all cell sizes we have data for.
+    :arg directory: The directory that contains the folders with the cell sizes.
     """
 
-    from os import listdir
+    from os import listdir, chdir, getcwd
 
+    initial_directory = getcwd()
+    if directory != "":
+        chdir(directory)
+    
     files = listdir(".")
     if sizes is None:
         sizes = []
@@ -420,7 +425,10 @@ def make_enum_in(distribution,number=None,dataformat="cells.{}",sizes=None):
         exit()
 
     distr = _distribute(sizes,distribution,n=number,dataformat=dataformat)
-    if distribution.lower() == 'all':
+    if initial_directory != getcwd():
+        chdir(initial_directory)
+        
+    if distribution.lower() == "all":
         _print_distribution(distr,filename="enum.in")
     else:
         _print_distribution(distr)
