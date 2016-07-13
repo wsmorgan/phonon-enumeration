@@ -23,7 +23,6 @@ def get_concs_for_size(size,nspecies,res_concs,nB,concs):
     :arg concs: an 2D integer array that contains the concentration
     ranges for each atom in the system
     """
-
     eps = 1E-10
     
     from itertools import product
@@ -84,14 +83,10 @@ def get_concs_for_size(size,nspecies,res_concs,nB,concs):
         aranges = []
         for i in range(nspecies):
             aranges.append(crange)
-
-        p_ranges = product(*aranges)
-        for p in p_ranges:
+        for p in product(*aranges):
             if sum(p) == size:
                 # if not any([list(c) in cList for c in it.permutations(p)]) == True:
                 cList.append(list(p))
-        cList=cList[1:-1]
-                    
     return(cList)
 
 def _does_mapping_exist(v,this_type,atom_pos,atomType,eps):

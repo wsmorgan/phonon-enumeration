@@ -305,7 +305,7 @@ def get_arrow_concs(params):
             a_concs.append(0)
     return a_concs
 
-def enum_sys(groupfile, concs, a_concs, num_wanted, HNF, params, accept=None):
+def enum_sys(groupfile, concs, a_concs, num_wanted, HNF, params, supers, accept=None):
     """Enumerates a random subset of the unique structures that have the shape
     defined by the symmetry group and the specified concentration.
 
@@ -316,6 +316,7 @@ def enum_sys(groupfile, concs, a_concs, num_wanted, HNF, params, accept=None):
       list.
     :args HNF: the HNF for the system we're currently enumerating
     :args params: the dictionary of parameters read in from lattice.in
+    :args supers: True if superperiodic structures are to be kept.
     """
 
     from phenum.grouptheory import get_full_HNF, get_sym_group
@@ -323,6 +324,7 @@ def enum_sys(groupfile, concs, a_concs, num_wanted, HNF, params, accept=None):
     from phenum.tree import brancher
     import phenum.io_utils as io
 
+    cellsize = sum(concs)/len(params["basis_vecs"])
     decorations = arrow_concs(concs, a_concs)
     # get the symmetry group for this HNF. Assumes the group can be
     # found in the file labeled by (this_HNF)_sym_group.out
@@ -395,12 +397,9 @@ def enum_sys(groupfile, concs, a_concs, num_wanted, HNF, params, accept=None):
                 configs.append(config)
             count += 1
     else:
-        if arrow_types != 0:
-            configs = brancher(sorted_concs, agroup, decorations, 6, total, subset, accept)
-        else:
-            configs = brancher(sorted_concs, agroup, decorations, 6, total, subset, accept)
+        configs = brancher(sorted_concs, agroup, decorations, 6, supers, cellsize, total, subset, accept)
 
-    if len(configs) != num_wanted:
+    if len(configs) != num_wanted and not super:              
         from .msg import err
         err("Warning the enumeration code returned {} structures when {} were asked for."
             " This should not happen. Please submit a bug report on "

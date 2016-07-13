@@ -269,7 +269,7 @@ def _perm(casei,colors,length,index,gen,stab,order,ast):
     return(unique,st,order,ast)
 
 
-def brancher(concs,group,colors_w_arrows, dim, total=0, subset=None, accept=None):
+def brancher(concs,group,colors_w_arrows, dim, supers, cellsize, total=0, subset=None, accept=None):
     """This routine navigates the tree and saves the unique configurations
     to an array survivors.
 		
@@ -283,6 +283,8 @@ def brancher(concs,group,colors_w_arrows, dim, total=0, subset=None, accept=None
     :arg subset: an integer array of the subset of unique
     arrangements wanted
     :arg accept: for large enumerations, how often to accept configurations.
+    :arg supers: Logical that indicates if super periodic structures are to be kept.
+    :arg cellsize: The number of cells in the system 
 	
     The method returns the list of unique configurations and the
     number of stabilizers for the last level of the tree.
@@ -310,7 +312,7 @@ def brancher(concs,group,colors_w_arrows, dim, total=0, subset=None, accept=None
     # count how many arrows there are
     (narrows,arrow_types,concs_w_arrows) = how_many_arrows(colors_w_arrows)
     # prepare the stabalizer array to be the appropriate size
-    stabalizer = [0]*len(concs)
+    stabalizer = [0]*(len(concs)+1)
     
     # ast is the stabalizer for the arrow permutaiton order is used to
     # track which branchs of the first layer we have already seen so
@@ -368,6 +370,30 @@ def brancher(concs,group,colors_w_arrows, dim, total=0, subset=None, accept=None
 	# for each level, the order for the first level, and the
 	# stabilizers for the arrow configurations
         (unique,stabalizer[i+1],order,ast) = _perm(branch,concs,n,i,group,stabalizer[i],order,ast)
+
+        if not supers:
+            from operator import mul
+            # if we have a unique structure then we need to check if
+            # it's super periodic before saving it.
+            if unique == 0 and (b0 == 1 or i == 0):
+                brancht = list(_invhash(branch, concs, len(colors_w_arrows)))
+                for trans in range(1,int(cellsize)):
+                    action = group[trans][0]
+                    trans_branch = []
+                    for act in action:
+                        trans_branch.append(brancht[act])
+                    if trans_branch == brancht:
+                        unique = 1
+                        if use_subset:
+                            if count in subset:
+                                loc = subset.index(count)
+                                nv = count
+                                while nv in subset and nv < reduce(mul,C,1):
+                                    nv += 1
+                                subset[loc] = nv
+
+                            count += 1
+                        break
         
 	# if this array is unique then we may need to append it to the
 	# list of survivors
@@ -415,13 +441,16 @@ def brancher(concs,group,colors_w_arrows, dim, total=0, subset=None, accept=None
 		    # to file
                     if not use_subset:
                         tbranch = list(_invhash(branch, concs, len(colors_w_arrows)))
+                        tbranch = [colors[leaf -1][1] for leaf in tbranch]
                         survivors.append([[-1,leaf] for leaf in tbranch])
                     else:
                         if subset is not None and isinstance(subset, list) and count in subset:
                             tbranch = list(_invhash(branch, concs, len(colors_w_arrows)))
+                            tbranch = [colors[leaf -1][1] for leaf in tbranch]
                             survivors.append([[-1,leaf] for leaf in tbranch])
                         elif accept is not None and random() < accept:
                             tbranch = list(_invhash(branch, concs, len(colors_w_arrows)))
+                            tbranch = [colors[leaf -1][1] for leaf in tbranch]
                             survivors.append([[-1,leaf] for leaf in tbranch])
                     count += 1
 
@@ -438,10 +467,11 @@ def brancher(concs,group,colors_w_arrows, dim, total=0, subset=None, accept=None
 	# if b0 is 0 then we need to move up to the next level of the
 	# tree at this point
         if b0 == 0:
-            i += 1
+            if i < len(branch)-1:
+                i += 1
 	    # if we are now looking at the last level then set b0 to 1
 	    # so that any unique configurations found will be saved
-            if i == len(branch) - 2:
+            if i >= len(branch) - 2:
                 b0 = 1
 
 	# root is a variable that tells us if we've filled this
