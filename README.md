@@ -1,4 +1,4 @@
-[![PyPI](https://img.shields.io/pypi/v/fortpy.svg)](https://pypi.python.org/pypi/phenum/)[![Build Status](https://travis-ci.org/wsmorgan/phonon-enumeration.svg?branch=master)](https://travis-ci.org/wsmorgan/phonon-enumeration)
+[![PyPI](https://img.shields.io/pypi/v/phenm.svg)](https://pypi.python.org/pypi/phenum/)[![Build Status](https://travis-ci.org/wsmorgan/phonon-enumeration.svg?branch=master)](https://travis-ci.org/wsmorgan/phonon-enumeration)
 
 # phonon-enumeration
 
