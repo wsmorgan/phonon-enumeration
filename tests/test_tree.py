@@ -24,7 +24,7 @@ class Testbrancher(ut.TestCase):
         (narrows,atypes,Concs) = how_many_arrows(col)
         agroup = a_group_gen(trans,rots)
         out = [[[-1, 1], [0, 2]],[[-1, 1], [1, 2]],[[-1, 1], [4, 2]]]
-        self.assertEqual(tree.brancher(Concs,agroup,col,dim),out)
+        self.assertEqual(tree.brancher(Concs,agroup,col,dim,True,2),out)
         
     def test_toy_3(self):
         from phenum.grouptheory import a_group
@@ -37,7 +37,7 @@ class Testbrancher(ut.TestCase):
         (narrows,atypes,Concs) = how_many_arrows(col)
         agroup = a_group(trans,rots)
         out = [[[-1,1],[0,2]],[[-1,1],[1,2]]]
-        self.assertEqual(tree.brancher(Concs,agroup,col,dim),out)
+        self.assertEqual(tree.brancher(Concs,agroup,col,dim,True,2),out)
         
     def test_toy_1(self):
         from phenum.grouptheory import a_group
@@ -50,7 +50,7 @@ class Testbrancher(ut.TestCase):
         (narrows,atypes,Concs) = how_many_arrows(col)
         agroup = a_group(trans,rots)
         out = [[[-1,1],[-1,2]]]
-        self.assertEqual(tree.brancher(Concs,agroup,col,dim),out)
+        self.assertEqual(tree.brancher(Concs,agroup,col,dim,True,2),out)
 
     def test_3g_1(self):
         from phenum.grouptheory import a_group
@@ -62,7 +62,7 @@ class Testbrancher(ut.TestCase):
         (narrows,atypes,Concs) = how_many_arrows(col)
         agroup = a_group(trans,rots)
         out = _read_output('3g_1')
-        self.assertEqual(tree.brancher(Concs,agroup,col,dim),out)
+        self.assertEqual(tree.brancher(Concs,agroup,col,dim,True,4),out)
 
     def test_3g_3(self):
         from phenum.grouptheory import a_group
@@ -74,7 +74,7 @@ class Testbrancher(ut.TestCase):
         (narrows,atypes,Concs) = how_many_arrows(col)
         agroup = a_group(trans,rots)
         out = _read_output('3g_3')
-        self.assertEqual(tree.brancher(Concs,agroup,col,dim),out)
+        self.assertEqual(tree.brancher(Concs,agroup,col,dim,True,4),out)
 
     def test_3f_1(self):
         from phenum.grouptheory import a_group
@@ -86,7 +86,7 @@ class Testbrancher(ut.TestCase):
         (narrows,atypes,Concs) = how_many_arrows(col)
         agroup = a_group(trans,rots)
         out = _read_output("3f_1")
-        self.assertEqual(tree.brancher(Concs,agroup,col,dim),out)
+        self.assertEqual(tree.brancher(Concs,agroup,col,dim,True,6),out)
 
     def test_3e_1(self):
         from phenum.grouptheory import a_group
@@ -98,7 +98,7 @@ class Testbrancher(ut.TestCase):
         (narrows,atypes,Concs) = how_many_arrows(col)
         agroup = a_group(trans,rots)
         out = _read_output("3e_1")
-        self.assertEqual(tree.brancher(Concs,agroup,col,dim),out)
+        self.assertEqual(tree.brancher(Concs,agroup,col,dim,True,6),out)
 
     def test_3h_1(self):
         from phenum.grouptheory import a_group
@@ -110,7 +110,7 @@ class Testbrancher(ut.TestCase):
         (narrows,atypes,Concs) = how_many_arrows(col)
         agroup = a_group(trans,rots)
         out = _read_output("3h_1")
-        self.assertEqual(tree.brancher(Concs,agroup,col,dim),out)
+        self.assertEqual(tree.brancher(Concs,agroup,col,dim,True,6),out)
 
     def test_pg(self):
         from phenum.grouptheory import a_group
@@ -122,7 +122,7 @@ class Testbrancher(ut.TestCase):
         (narrows,atypes,Concs) = how_many_arrows(col)
         agroup = a_group(trans,rots)
         out = _read_output("pg")
-        self.assertEqual(tree.brancher(Concs,agroup,col,dim),out)
+        self.assertEqual(tree.brancher(Concs,agroup,col,dim,True,9),out)
 
     def test_3d_1(self):
         from phenum.grouptheory import a_group
@@ -134,7 +134,7 @@ class Testbrancher(ut.TestCase):
         (narrows,atypes,Concs) = how_many_arrows(col)
         agroup = a_group(trans,rots)
         out = _read_output("3d_1")
-        self.assertEqual(tree.brancher(Concs,agroup,col,dim),out)
+        self.assertEqual(tree.brancher(Concs,agroup,col,dim,True,8),out)
 
     def test_p10(self):
         from phenum.grouptheory import a_group
@@ -146,7 +146,7 @@ class Testbrancher(ut.TestCase):
         (narrows,atypes,Concs) = how_many_arrows(col)
         agroup = a_group(trans,rots)
         out = _read_output("p10")
-        self.assertEqual(tree.brancher(Concs,agroup,col,dim),out)
+        self.assertEqual(tree.brancher(Concs,agroup,col,dim,True,8),out)
 
     def test_3d_1(self):
         from phenum.grouptheory import a_group
@@ -158,7 +158,7 @@ class Testbrancher(ut.TestCase):
         (narrows,atypes,Concs) = how_many_arrows(col)
         agroup = a_group(trans,rots)
         out = _read_output("p9")
-        self.assertEqual(tree.brancher(Concs,agroup,col,dim),out)
+        self.assertEqual(tree.brancher(Concs,agroup,col,dim,True,8),out)
 
     def test_p8(self):
         from phenum.grouptheory import a_group
@@ -170,7 +170,7 @@ class Testbrancher(ut.TestCase):
         (narrows,atypes,Concs) = how_many_arrows(col)
         agroup = a_group(trans,rots)
         out = _read_output("p8")
-        self.assertEqual(tree.brancher(Concs,agroup,col,dim),out)
+        self.assertEqual(tree.brancher(Concs,agroup,col,dim,True,18),out)
 
     def test_o22(self):
         from phenum.grouptheory import a_group
@@ -182,20 +182,7 @@ class Testbrancher(ut.TestCase):
         (narrows,atypes,Concs) = how_many_arrows(col)
         agroup = a_group(trans,rots)
         out = _read_output("o22")
-        self.assertEqual(tree.brancher(Concs,agroup,col,dim),out)
-        
-    # To long for testing purposes
-    # def test_p7(self):
-    #     from phenum.grouptheory import a_group
-    #     from phenum.phonons import how_many_arrows
-    #     dim = 4
-    #     col = [[-1,1],[-1,1],[-1,1],[-1,1],[-1,1],[-1,1],[-1,1],[-1,1],[-1,2],[-1,2],[-1,2],[-1,2],[-1,2],[-1,2],[-1,2],[-1,2],[0,3],[0,4]]
-    #     trans =[[j - 1 for j in i] for i in[[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18], [2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,1], [3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,1,2], [4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,1,2,3], [5,6,7,8,9,10,11,12,13,14,15,16,17,18,1,2,3,4], [6,7,8,9,10,11,12,13,14,15,16,17,18,1,2,3,4,5], [7,8,9,10,11,12,13,14,15,16,17,18,1,2,3,4,5,6], [8,9,10,11,12,13,14,15,16,17,18,1,2,3,4,5,6,7], [9,10,11,12,13,14,15,16,17,18,1,2,3,4,5,6,7,8], [10,11,12,13,14,15,16,17,18,1,2,3,4,5,6,7,8,9], [11,12,13,14,15,16,17,18,1,2,3,4,5,6,7,8,9,10], [12,13,14,15,16,17,18,1,2,3,4,5,6,7,8,9,10,11], [13,14,15,16,17,18,1,2,3,4,5,6,7,8,9,10,11,12], [14,15,16,17,18,1,2,3,4,5,6,7,8,9,10,11,12,13], [15,16,17,18,1,2,3,4,5,6,7,8,9,10,11,12,13,14], [16,17,18,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15], [17,18,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16], [18,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17]]]
-    #     rots = [[[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17],[0,1,2,3]],[[0,17,16,15,14,13,12,11,10,9,8,7,6,5,4,3,2,1],[2,3,0,2]]]
-    #     (narrows,atypes,Concs) = how_many_arrows(col)
-    #     agroup = a_group(trans,rots)
-    #     out = _read_output("p7")
-    #     self.assertEqual(tree.brancher(Concs,agroup,col,dim),out)
+        self.assertEqual(tree.brancher(Concs,agroup,col,dim,True,9),out)
         
     def test_o10(self):
         from phenum.grouptheory import a_group
@@ -207,7 +194,7 @@ class Testbrancher(ut.TestCase):
         (narrows,atypes,Concs) = how_many_arrows(col)
         agroup = a_group(trans,rots)
         out = _read_output("o10")
-        self.assertEqual(tree.brancher(Concs,agroup,col,dim),out)
+        self.assertEqual(tree.brancher(Concs,agroup,col,dim,True,12),out)
         
     def test_o25(self):
         from phenum.grouptheory import a_group
@@ -219,7 +206,7 @@ class Testbrancher(ut.TestCase):
         (narrows,atypes,Concs) = how_many_arrows(col)
         agroup = a_group(trans,rots)
         out = _read_output("o25")
-        self.assertEqual(tree.brancher(Concs,agroup,col,dim),out)
+        self.assertEqual(tree.brancher(Concs,agroup,col,dim,True,8),out)
         
     def test_o21(self):
         from phenum.grouptheory import a_group
@@ -231,7 +218,7 @@ class Testbrancher(ut.TestCase):
         (narrows,atypes,Concs) = how_many_arrows(col)
         agroup = a_group(trans,rots)
         out = _read_output("o21")
-        self.assertEqual(tree.brancher(Concs,agroup,col,dim),out)
+        self.assertEqual(tree.brancher(Concs,agroup,col,dim,True,8),out)
 
     def test_p6(self):
         from phenum.grouptheory import a_group
@@ -243,20 +230,7 @@ class Testbrancher(ut.TestCase):
         (narrows,atypes,Concs) = how_many_arrows(col)
         agroup = a_group(trans,rots)
         out = _read_output("p6")
-        self.assertEqual(tree.brancher(Concs,agroup,col,dim),out)
-
-    # to large for testing purposes
-    # def test_p5(self):
-    #     from phenum.grouptheory import a_group
-    #     from phenum.phonons import how_many_arrows
-    #     dim = 4
-    # col = [[-3,1],[-3,1],[-3,1],[-3,1],[-3,1],[-3,1],[-3,1],[-3,1],[-3,2],[-3,2],[-3,2],[-3,2],[-3,2],[-3,2],[3,3],[3,3],[3,4],[3,4]]
-    #     trans =[[j - 1 for j in i] for i in[[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18], [2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,1], [3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,1,2], [4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,1,2,3], [5,6,7,8,9,10,11,12,13,14,15,16,17,18,1,2,3,4], [6,7,8,9,10,11,12,13,14,15,16,17,18,1,2,3,4,5], [7,8,9,10,11,12,13,14,15,16,17,18,1,2,3,4,5,6], [8,9,10,11,12,13,14,15,16,17,18,1,2,3,4,5,6,7], [9,10,11,12,13,14,15,16,17,18,1,2,3,4,5,6,7,8], [10,11,12,13,14,15,16,17,18,1,2,3,4,5,6,7,8,9], [11,12,13,14,15,16,17,18,1,2,3,4,5,6,7,8,9,10], [12,13,14,15,16,17,18,1,2,3,4,5,6,7,8,9,10,11], [13,14,15,16,17,18,1,2,3,4,5,6,7,8,9,10,11,12], [14,15,16,17,18,1,2,3,4,5,6,7,8,9,10,11,12,13], [15,16,17,18,1,2,3,4,5,6,7,8,9,10,11,12,13,14], [16,17,18,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15], [17,18,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16], [18,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17]]]
-    #     rots = [[[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17],[0,1,2,3]],[[0,17,16,15,14,13,12,11,10,9,8,7,6,5,4,3,2,1],[2,3,0,2]]]
-    #     (narrows,atypes,Concs) = how_many_arrows(col)
-    #     agroup = a_group(trans,rots)
-    #     out = _read_output("p5")
-    #     self.assertEqual(tree.brancher(Concs,agroup,col,dim),out)
+        self.assertEqual(tree.brancher(Concs,agroup,col,dim,False,18),out)
         
     def test_p4(self):
         from phenum.grouptheory import a_group
@@ -268,7 +242,7 @@ class Testbrancher(ut.TestCase):
         (narrows,atypes,Concs) = how_many_arrows(col)
         agroup = a_group(trans,rots)
         out = _read_output("p4")
-        self.assertEqual(tree.brancher(Concs,agroup,col,dim),out)
+        self.assertEqual(tree.brancher(Concs,agroup,col,dim,True,4),out)
         
     def test_p3(self):
         from phenum.grouptheory import a_group
@@ -280,7 +254,7 @@ class Testbrancher(ut.TestCase):
         (narrows,atypes,Concs) = how_many_arrows(col)
         agroup = a_group(trans,rots)
         out = _read_output("p3")
-        self.assertEqual(tree.brancher(Concs,agroup,col,dim),out)
+        self.assertEqual(tree.brancher(Concs,agroup,col,dim,True,6),out)
         
     def test_p2(self):
         from phenum.grouptheory import a_group
@@ -292,7 +266,7 @@ class Testbrancher(ut.TestCase):
         (narrows,atypes,Concs) = how_many_arrows(col)
         agroup = a_group(trans,rots)
         out = _read_output("p2")
-        self.assertEqual(tree.brancher(Concs,agroup,col,dim),out)
+        self.assertEqual(tree.brancher(Concs,agroup,col,dim,False,8),out)
         
     def test_p1(self):
         from phenum.grouptheory import a_group
@@ -304,22 +278,7 @@ class Testbrancher(ut.TestCase):
         (narrows,atypes,Concs) = how_many_arrows(col)
         agroup = a_group(trans,rots)
         out = _read_output("p1")
-        self.assertEqual(tree.brancher(Concs,agroup,col,dim),out)
-    # Not a brancher test. This is an add arrows test since there is only one color.
-    # def test_3g_2(self):
-    #     from phenum.grouptheory import a_group
-    #     from phenum.phonons import how_many_arrows
-    #     dim = 6
-    #     col = [[1,1],[1,1],[1,1],[1,1]]
-    #     trans = [[j-1 for j in i] for i in [[1, 2, 3, 4], [2, 1, 4, 3], [3, 4, 1, 2], [4, 3, 2, 1]]]
-    #     rots = [[[j-1 for j in i] for i in t] for t in [[[1, 2, 3, 4], [1, 2, 3, 4, 5, 6]], [[1, 4, 3, 2], [1, 3, 2, 4, 6, 5]], [[1, 2, 3, 4], [4, 2, 3, 1, 5, 6]], [[1, 4, 3, 2], [4, 3, 2, 1, 6, 5]], [[1, 2, 3, 4], [1, 5, 3, 4, 2, 6]], [[1, 4, 3, 2], [1, 3, 5, 4, 6, 2]], [[1, 2, 3, 4], [4, 5, 3, 1, 2, 6]], [[1, 4, 3, 2], [4, 3, 5, 1, 6, 2]], [[1, 2, 3, 4], [1, 2, 6, 4, 5, 3]], [[1, 4, 3, 2], [1, 6, 2, 4, 3, 5]], [[1, 2, 3, 4], [4, 2, 6, 1, 5, 3]], [[1, 4, 3, 2], [4, 6, 2, 1, 3, 5]], [[1, 2, 3, 4], [1, 5, 6, 4, 2, 3]], [[1, 4, 3, 2], [1, 6, 5, 4, 3, 2]], [[1, 2, 3, 4], [4, 5, 6, 1, 2, 3]], [[1, 4, 3, 2], [4, 6, 5, 1, 3, 2]]]]
-    #     (narrows,atypes,Concs) = how_many_arrows(col)
-    #     agroup = a_group(trans,rots)
-    #     out = [[[0, 1], [0, 1], [0, 1], [0, 1]], [[1, 1], [0, 1], [0, 1], [0, 1]], [[3, 1], [0, 1], [0, 1], [0, 1]], [[1, 1], [1, 1], [0, 1], [0, 1]], [[2, 1], [1, 1], [0, 1], [0, 1]], [[3, 1], [1, 1], [0, 1], [0, 1]], [[4, 1], [1, 1], [0, 1], [0, 1]], [[2, 1], [2, 1], [0, 1], [0, 1]], [[3, 1], [2, 1], [0, 1], [0, 1]], [[5, 1], [2, 1], [0, 1], [0, 1]], [[3, 1], [3, 1], [0, 1], [0, 1]], [[1, 1], [0, 1], [1, 1], [0, 1]], [[2, 1], [0, 1], [1, 1], [0, 1]], [[3, 1], [0, 1], [1, 1], [0, 1]], [[4, 1], [0, 1], [1, 1], [0, 1]], [[1, 1], [1, 1], [1, 1], [0, 1]], [[2, 1], [1, 1], [1, 1], [0, 1]], [[3, 1], [1, 1], [1, 1], [0, 1]], [[4, 1], [1, 1], [1, 1], [0, 1]], [[1, 1], [2, 1], [1, 1], [0, 1]], [[3, 1], [2, 1], [1, 1], [0, 1]], [[4, 1], [2, 1], [1, 1], [0, 1]], [[5, 1], [2, 1], [1, 1], [0, 1]], [[1, 1], [3, 1], [1, 1], [0, 1]], [[2, 1], [3, 1], [1, 1], [0, 1]], [[4, 1], [3, 1], [1, 1], [0, 1]], [[1, 1], [4, 1], [1, 1], [0, 1]], [[3, 1], [4, 1], [1, 1], [0, 1]], [[4, 1], [4, 1], [1, 1], [0, 1]], [[1, 1], [1, 1], [2, 1], [0, 1]], [[4, 1], [1, 1], [2, 1], [0, 1]], [[3, 1], [2, 1], [2, 1], [0, 1]], [[3, 1], [5, 1], [2, 1], [0, 1]], [[3, 1], [0, 1], [3, 1], [0, 1]], [[1, 1], [1, 1], [1, 1], [1, 1]], [[2, 1], [1, 1], [1, 1], [1, 1]], [[4, 1], [1, 1], [1, 1], [1, 1]], [[2, 1], [2, 1], [1, 1], [1, 1]], [[4, 1], [2, 1], [1, 1], [1, 1]], [[5, 1], [2, 1], [1, 1], [1, 1]], [[4, 1], [4, 1], [1, 1], [1, 1]], [[2, 1], [1, 1], [2, 1], [1, 1]], [[4, 1], [1, 1], [2, 1], [1, 1]], [[5, 1], [1, 1], [2, 1], [1, 1]], [[1, 1], [4, 1], [2, 1], [1, 1]], [[5, 1], [4, 1], [2, 1], [1, 1]], [[1, 1], [5, 1], [2, 1], [1, 1]], [[4, 1], [5, 1], [2, 1], [1, 1]], [[4, 1], [1, 1], [4, 1], [1, 1]], [[1, 1], [4, 1], [4, 1], [1, 1]]]
-    #     self.assertEqual(tree.brancher(Concs,agroup,col,dim),out)
-
+        self.assertEqual(tree.brancher(Concs,agroup,col,dim,True,4),out)
     
-        
-
 if __name__ == '__main__':
     untittest.main()
