@@ -1,5 +1,10 @@
 # Revision History for "phonon-enumeration"
 
+## Revision 1.6.0
+
+- Added an option to save the distribution as described in #20.
+- Fixed the bug reported in #14.
+
 ## Revision 1.5.10
 
 - Fixed the bugs reported in #35, #36, and #38.

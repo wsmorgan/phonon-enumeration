@@ -1,3 +1,5 @@
+[![PyPI](https://img.shields.io/pypi/v/fortpy.svg)](https://pypi.python.org/pypi/phenum/) [![Build Status](https://travis-ci.org/wsmorgan/phonon-enumeration.svg?branch=master)](https://travis-ci.org/wsmorgan/phonon-enumeration)
+
 # phonon-enumeration
 
 This code is used to enumerate all the derivative structures of a

@@ -117,7 +117,7 @@ def _write_struct_summary(structs):
         out.write("{0: <10d}\n".format(sum(conc_totals.values())))
         out.close()
 
-def _distribute(cellsizes, ftype, n=None, dataformat="cells.{}"):
+def _distribute(cellsizes, ftype, n=None, dataformat="cells.{}",seed=None):
     """Returns a dictionary specifying how many of each cell shape, size and concentration
     to enumerate in order to obtain a grand total of 'n' unique cells, distributed according
     to the abundance of unique structures predicted by Polya. See the calling signature for
@@ -133,17 +133,17 @@ def _distribute(cellsizes, ftype, n=None, dataformat="cells.{}"):
       If this value is None, then *all* structure types are returned with their unique
       number.
     :arg dataformat: the name of the directories to search for 'polya.out' files in.
+    :arg seed: The seed for the random number generator.
     """
     (f, dataset, gtotal) = _distribution(ftype, None, None, cellsizes=cellsizes, dataformat=dataformat)
-    if n > gtotal:
+    #If they didn't specify an 'n', then we also return all the structures.
+    if n is None:
+        n = gtotal
+    elif n > gtotal:
         from .msg import warn
         warn("The number of unique structures you requested ({}) ".format(n) +
              "exceeds the total number of unique structures ({}). ".format(gtotal) +
              "The code will return *all* structures for the distribution.")
-        n = gtotal
-
-    #If they didn't specify an 'n', then we also return all the structures.
-    if n is None:
         n = gtotal
 
     result = {}
@@ -160,7 +160,7 @@ def _distribute(cellsizes, ftype, n=None, dataformat="cells.{}"):
         else:
             return False   
     
-    def assign(relvals, f, rtotal, gtotal, n, result, ftype):
+    def assign(relvals, f, rtotal, gtotal, n, result, ftype,seed_val=None):
         """Recurses through the relative weights specified to fill the
         result dictionary until it has the exact number of structures
         requested.
@@ -171,8 +171,12 @@ def _distribute(cellsizes, ftype, n=None, dataformat="cells.{}"):
         else:
             from numpy import round
             from math import modf
-            from random import random
+            from random import random, seed, getstate
             from operator import itemgetter
+            import sys
+            if seed_val != None:
+                seed(a=seed_val)
+                
             ids = {
                 "all": lambda key: key,
                 "shape": lambda key: key[0:2],
@@ -233,7 +237,7 @@ def _distribute(cellsizes, ftype, n=None, dataformat="cells.{}"):
     #This makes the selection according to the relative values and keeps
     #choosing, weighted by relative abundance, until we have the right
     #number of structures.
-    assign(relvals, f, rtotal, gtotal, n, result, ftype)
+    assign(relvals, f, rtotal, gtotal, n, result, ftype,seed_val=seed)
     #Make sure we are returning exactly how many they asked for.
     if rtotal[0] > n:
         from .msg import warn
@@ -342,17 +346,17 @@ def _distribution_summary(cellsizes, dataformat="cells.{}"):
         gtotal += dataset[s]["gtotal"]
     return (dataset, gtotal)    
 
-def _print_distribution(distr, filename=None, header=True, append=False):
+def _print_distribution(distr, distribution, filename=None, header=True, append=False, show=False):
     """Prints the specified distribution to screen or file.
 
     :arg distr: the distribution returned by method:distribute().
+    :arg distribution: The type of distribution, i.e., 'shape', 'size', 'conc', or 'all'.
+    :arg filename: The output file name.
+    :arg header: True if the header is to be included in the file.
+    :arg append: True if the file is to be appended to.
+    :arg show: True if the distribution is to be printed to the screen.
     """
-    # def _HNF_sort(entry):
-    #     """Sorts the entry by HNF matrix."""
-    #     HNF = entry[2]
-        
-        
-    if filename is None:
+    if show:
         from .msg import arb, cenum
         bysize = {}
         sfmt = " {0: <5d} | {1: <15} | {2: <5} | {3: <5d} "
@@ -362,25 +366,42 @@ def _print_distribution(distr, filename=None, header=True, append=False):
                                "" if conc is None else ':'.join(map(str, conc)), value)
             cols = (cenum["cwarn"], cenum["cinfo"], cenum["cgens"], cenum["cokay"])
             if (size, value) in bysize:
-                bysize[(size, value)].append((skey, cols, tuple(HNF)))
+                bysize[(size, value)].append((skey, cols, tuple(HNF) if HNF is not None else None))
             else:
-                bysize[(size, value)] = [(skey, cols, tuple(HNF))]
+                bysize[(size, value)] = [(skey, cols, tuple(HNF) if HNF is not None else None)]
 
         from operator import itemgetter
         for size, value in sorted(bysize.keys()):
-            for skey, cols, HNF in sorted(bysize[(size, value)], key=itemgetter(2)):
+            for skey, cols, HNF in sorted([[(i or "") for i in x] for x in bysize[(size, value)]], key=itemgetter(2)):
                 arb(skey, cols, "|")
-    else:
+
+    if filename is not None:
         #We don't worry about ordering it, just write them to file in whatever
         #order the keys are in.
         with open(filename, 'w' if not append else 'a') as f:
             if header:
-                f.write("# {0: <28}  {1: <10}  {2}\n".format("HNF", "Conc.", "Number"))
+                if distribution == "all":
+                    f.write("# {0: <28}  {1: <10}  {2}\n".format("HNF", "Conc.", "Number"))
+                elif distribution == "shape":
+                    f.write("# {0: <18}  {1}\n".format("HNF", "Number"))
+                elif distribution == "conc":
+                    f.write("# {0: <6}  {1: <6}  {2}\n".format("Size", "Conc.", "Number"))
+                else:
+                    f.write("# {0: <6}  {1}\n".format("Size", "Number"))
             for key, value in list(distr.items()):
                 size, HNF, conc = key
-                f.write("  {0: <28}  {1: <10}  {2:d}\n".format(' '.join(map(str, HNF)), ' '.join(map(str, conc)), value))
-
-def make_enum_in(distribution,directory,number=None,dataformat="cells.{}",sizes=None):
+                if conc == None:
+                    conc = []
+                if distribution == "all":
+                    f.write("  {0: <28}  {1: <10}  {2:d}\n".format(' '.join(map(str, HNF)), ' '.join(map(str, conc)), value))
+                elif distribution == "shape":
+                    f.write("  {0: <18}  {1}\n".format(' '.join(map(str, HNF)), value))
+                elif distribution == "conc":
+                    f.write("  {0: <6}  {1: <6}  {2:d}\n".format(size, ' '.join(map(str, conc)), value))
+                else:
+                    f.write("  {0: <6}  {1:d}\n".format(size, value))
+                    
+def make_enum_in(distribution,directory,outfile,number=None,dataformat="cells.{}",sizes=None,save=True,seed=None):
     """Makes an enum.in file if the distrubiton type is all with the
     desired number of structures. Otherwise prints the distribution
     information to the screen for the user.
@@ -392,6 +413,9 @@ def make_enum_in(distribution,directory,number=None,dataformat="cells.{}",sizes=
     :arg sizes: when specified, limit the distribution to these integer cell sizes;
       otherwise, look for all cell sizes we have data for.
     :arg directory: The directory that contains the folders with the cell sizes.
+    :arg outfile: The name of the output file for the distribution
+    :arg save: True if the data is to be saved to file.
+    :arg seed: The seed for the random number generator.
     """
 
     from os import listdir, chdir, getcwd
@@ -424,11 +448,11 @@ def make_enum_in(distribution,directory,number=None,dataformat="cells.{}",sizes=
             "the output {} folders.".format(dataformat))
         exit()
 
-    distr = _distribute(sizes,distribution,n=number,dataformat=dataformat)
+    distr = _distribute(sizes,distribution,n=number,dataformat=dataformat,seed=seed)
     if initial_directory != getcwd():
         chdir(initial_directory)
         
     if distribution.lower() == "all":
-        _print_distribution(distr,filename="enum.in")
+        _print_distribution(distr,distribution,filename=outfile)
     else:
-        _print_distribution(distr)
+        _print_distribution(distr,distribution,filename= outfile if save else None,show=True)
