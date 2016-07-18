@@ -1,4 +1,4 @@
-"""Methods for testing the subroutines in the polyaburnside module."""
+# """Methods for testing the subroutines in the polyaburnside module."""
 import unittest as ut
 from phenum.polyaburnside import polya
 

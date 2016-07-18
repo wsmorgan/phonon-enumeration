@@ -144,5 +144,3 @@ class TestBinomialCoefficient(ut.TestCase):
         r = 1
         out = 1 
         self.assertEqual(binomial_coefficient(n,r),out)
-
-

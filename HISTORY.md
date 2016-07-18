@@ -1,5 +1,12 @@
 # Revision History for "phonon-enumeration"
 
+## Revision 1.6.0
+
+- Added an option to save the distribution as described in #20.
+- Fixed the bug reported in #14.
+- Added the filter option for finer control over the enumerations as described in #21.
+- Added unit tests for structures.py and the -distribution option of enumeration.py.
+
 ## Revision 1.5.10
 
 - Fixed the bugs reported in #35, #36, and #38.
