@@ -21,11 +21,12 @@ def _enum_in(args):
         sizes = None
     if args["distribution"][1].lower() == "all":
         make_enum_in(distribution,args["cellsdir"],dataformat=args["dataformat"],sizes=sizes,
-                     outfile=args["outfile"],save= True if args["savedist"] else False,seed=args["seed"])
+                     outfile=args["outfile"],save= True if args["savedist"] else False,seed=args["seed"],
+                     restrict=args["filter"])
     else:
         make_enum_in(distribution,args["cellsdir"],number=int(args["distribution"][1]),
                      dataformat=args["dataformat"],sizes=sizes,outfile=args["outfile"],
-                     save= True if args["savedist"] else False,seed=args["seed"])
+                     save= True if args["savedist"] else False,seed=args["seed"],restrict=args["filter"])
 
 def _polya_out(args):
     """Generates the 'polya.out' files for the cell sizes specified in 'lattice.in'
@@ -286,6 +287,10 @@ def _parser_options(phelp=False):
     
     parser.add_argument("-super", action="store_true",
                         help=("Overrides the exclusion of the superperiodic cells from the output."))
+    parser.add_argument("-filter", nargs = 2,
+                        help=("Applys a filter over the 'shape' or the 'conc' option of the distributions. "
+                                "The first entry should specify the filter the second should be the name of the "
+                                "file containing the desired restrictions."))
     
     vardict = vars(parser.parse_args())
     if phelp or vardict["examples"]:
@@ -391,6 +396,7 @@ def _script_enum(args):
         
 if __name__ == '__main__':
     args = _parser_options()
+    
     if args["profile"]:
         from vprof import profiler
         profiler.run(_script_enum, args["profile"], args=(args,), host='localhost', port=8000)

@@ -117,7 +117,7 @@ def _write_struct_summary(structs):
         out.write("{0: <10d}\n".format(sum(conc_totals.values())))
         out.close()
 
-def _distribute(cellsizes, ftype, n=None, dataformat="cells.{}",seed=None):
+def _distribute(cellsizes, ftype, n=None, dataformat="cells.{}",seed=None, res_type=None, res_values=None):
     """Returns a dictionary specifying how many of each cell shape, size and concentration
     to enumerate in order to obtain a grand total of 'n' unique cells, distributed according
     to the abundance of unique structures predicted by Polya. See the calling signature for
@@ -135,7 +135,8 @@ def _distribute(cellsizes, ftype, n=None, dataformat="cells.{}",seed=None):
     :arg dataformat: the name of the directories to search for 'polya.out' files in.
     :arg seed: The seed for the random number generator.
     """
-    (f, dataset, gtotal) = _distribution(ftype, None, None, cellsizes=cellsizes, dataformat=dataformat)
+    (f, dataset, gtotal) = _distribution(ftype, None, None, cellsizes=cellsizes, dataformat=dataformat,
+                                         res_values=res_values,res_type=res_type)
     #If they didn't specify an 'n', then we also return all the structures.
     if n is None:
         n = gtotal
@@ -246,7 +247,8 @@ def _distribute(cellsizes, ftype, n=None, dataformat="cells.{}",seed=None):
     from operator import itemgetter
     return result
 
-def _distribution(ftype, dataset, gtotal, cast=float, cellsizes=None, dataformat="cells.{}"):
+def _distribution(ftype, dataset, gtotal, cast=float, cellsizes=None, dataformat="cells.{}",res_type = None,
+                  res_values=None):
     """Returns the Polya-weighted distribution function for the specified cell sizes.
     If dataset is None, a dataset and total are loaded using the specified cell sizes.
     This dataset and the total number of structures it contains are returned as
@@ -276,10 +278,22 @@ def _distribution(ftype, dataset, gtotal, cast=float, cellsizes=None, dataformat
       the granularity of the predictions.
     :arg cellsizes: a list of the cell sizes to include in the data set summary.
     :arg dataformat: the name of the directories to search for 'polya.out' files in.
+    :arg res_type: 'shape' if shapes are being restricted, or 'conc' if concentrations are  being restricted.
+    :arg res_values: The allowed values of the restricted parameter.
     """
     if dataset is None:
         if cellsizes is not None:
-            (dataset, gtotal) = _distribution_summary(cellsizes, dataformat)
+            if res_type is not None:
+                if res_type == "shape":
+                    (dataset, gtotal) = _distribution_summary(cellsizes, dataformat=dataformat, HNFs=res_values)
+                elif res_type == "conc":
+                    (dataset, gtotal) = _distribution_summary(cellsizes, dataformat=dataformat, wanted_concs=res_values)
+                else:
+                    from .msg import err
+                    err("Cannot filter the distribution using {}. Please use 'shape' or 'conc'.".format(res_type))
+                    exit()
+            else:
+                (dataset, gtotal) = _distribution_summary(cellsizes, dataformat=dataformat)
         else:
             from .msg import err
             err("No dataset or cell sizes specified.")
@@ -302,10 +316,10 @@ def _distribution(ftype, dataset, gtotal, cast=float, cellsizes=None, dataformat
         err("The parameter {} is not a valid parameter for the distribution. Please use "
             " size, shape, conc, or all.".format(ftype))
         exit()
-        
+
     return (f, dataset, gtotal)
         
-def _distribution_summary(cellsizes, dataformat="cells.{}"):
+def _distribution_summary(cellsizes, HNFs = None, wanted_concs = None, dataformat="cells.{}"):
     """Returns a dictionary that summarizes the Polya predictions for unique structures
     by cell size, shape and concentration for use by a distribution function. Returns
     a tuple (summary dict, grand total), where grand total is the total number of structures
@@ -313,6 +327,8 @@ def _distribution_summary(cellsizes, dataformat="cells.{}"):
 
     :arg cellsizes: a list of the cell sizes to include in the data set summary.
     :arg dataformat: the name of the directories to search for 'polya.out' files in.
+    :arg HNFs: a list of the allowed HNFs.
+    :arg wanted_concs: a list of the allowed concentrations.
     """
     from os import path
     from numpy import loadtxt
@@ -332,18 +348,52 @@ def _distribution_summary(cellsizes, dataformat="cells.{}"):
             concs = [tuple(map(int, h.split(":"))) for h in headings[2:-1]]
         polya = loadtxt(source, int)
         distr = {}
-        for iHNF, HNF in enumerate(polya[0:-1,0:6]):
-            distr[tuple(HNF)] = {tuple(c): v for c, v in zip(concs, polya[iHNF,6:-1])}
-        stotals = {tuple(m): v for m, v in zip(polya[0:-1,0:6], polya[:-1,-1])}
-        ctotals = {c: v for c, v in zip(concs, polya[-1, 6:-1])}
+
+        if HNFs == None and wanted_concs == None:
+            for iHNF, HNF in enumerate(polya[0:-1,0:6]):
+                distr[tuple(HNF)] = {tuple(c): v for c, v in zip(concs, polya[iHNF,6:-1])}
+            stotals = {tuple(m): v for m, v in zip(polya[0:-1,0:6], polya[:-1,-1])}
+            ctotals = {c: v for c, v in zip(concs, polya[-1, 6:-1])}
+        elif HNFs != None:
+            ctotals = {c: v for c, v in zip(concs,[0]*len(concs))}
+            stotals = {}
+            for iHNF, HNF in enumerate(polya[0:-1,0:6]):
+                if tuple(HNF) in HNFs:
+                    distr[tuple(HNF)] = {tuple(c): v for c, v in zip(concs, polya[iHNF,6:-1])}
+                    for c, v in zip(concs, polya[iHNF,6:-1]):
+                        ctotals[c] += v
+            for m, v in zip(polya[0:-1,0:6], polya[:-1,-1]):
+                if tuple(m) in HNFs:
+                    stotals[tuple(m)] = v
+        elif wanted_concs != None:
+            ctotals = {c: v for c, v in zip(concs,[0]*len(concs))}
+            stotals = {}
+            for iHNF, HNF in enumerate(polya[0:-1,0:6]):
+                cs = []
+                vs = []
+                count = 0
+
+                for c, v in zip(concs, polya[iHNF,6:-1]):
+                    if c in wanted_concs:
+                        ctotals[c] += v
+                        cs.append(c)
+                        vs.append(v)
+                        count += 1
+
+                distr[tuple(HNF)] = {tuple(c): v for c, v in zip(cs, vs)}
+            for m, v in zip(polya[0:-1,0:6], polya[:-1,-1]):
+                if tuple(m) in distr:
+                    stotals[tuple(m)] = v
+
         dataset[s] = {
             "distr": distr,
             "concs": concs,
             "ctotals": ctotals,
             "stotals": stotals,
-            "gtotal": polya[-1,-1]
+            "gtotal": sum([ctotals[key] for key in ctotals])
         }
         gtotal += dataset[s]["gtotal"]
+
     return (dataset, gtotal)    
 
 def _print_distribution(distr, distribution, filename=None, header=True, append=False, show=False):
@@ -401,7 +451,8 @@ def _print_distribution(distr, distribution, filename=None, header=True, append=
                 else:
                     f.write("  {0: <6}  {1:d}\n".format(size, value))
                     
-def make_enum_in(distribution,directory,outfile,number=None,dataformat="cells.{}",sizes=None,save=True,seed=None):
+def make_enum_in(distribution,directory,outfile,number=None,dataformat="cells.{}",sizes=None,save=True,seed=None,
+                 restrict=None):
     """Makes an enum.in file if the distrubiton type is all with the
     desired number of structures. Otherwise prints the distribution
     information to the screen for the user.
@@ -416,6 +467,7 @@ def make_enum_in(distribution,directory,outfile,number=None,dataformat="cells.{}
     :arg outfile: The name of the output file for the distribution
     :arg save: True if the data is to be saved to file.
     :arg seed: The seed for the random number generator.
+    :arg restrict: A list containing the restriction type ('shape','conc') and the file of allowed values.
     """
 
     from os import listdir, chdir, getcwd
@@ -448,7 +500,22 @@ def make_enum_in(distribution,directory,outfile,number=None,dataformat="cells.{}
             "the output {} folders.".format(dataformat))
         exit()
 
-    distr = _distribute(sizes,distribution,n=number,dataformat=dataformat,seed=seed)
+    if restrict is not None:
+        # from numpy import loadtxt
+        res_values = []
+        with open(restrict[1],"r") as resf:
+            for values in resf:
+                if "#" in values:
+                    pass
+                elif restrict[0] == "shape":
+                    res_values.append(tuple([int(i) for i in values.split()[0:6]]))
+                elif restrict[0] == "conc":
+                    res_values.append(tuple([int(i) for i in values.split()[1:3]]))
+
+        distr = _distribute(sizes,distribution,n=number,dataformat=dataformat,seed=seed,res_type=restrict[0],res_values=res_values)        
+    else:
+        distr = _distribute(sizes,distribution,n=number,dataformat=dataformat,seed=seed)
+
     if initial_directory != getcwd():
         chdir(initial_directory)
         
