@@ -1,5 +1,9 @@
 # Revision History for "phonon-enumeration"
 
+## Revision 1.7.0
+
+- Added the displaying of HNFs for the non-expert user as discussed in #22.
+
 ## Revision 1.6.0
 
 - Added an option to save the distribution as described in #20.

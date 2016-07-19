@@ -5,6 +5,18 @@ forms. Also the actual executable for the code."""
 # hard coded error tolerance. This will need to go away and become
 # part of the input files later.
 
+def _plot_HNFs(args):
+    """Makes plots of the shapes of the HNF's provided in the enum.in input file.
+
+    :arg args: The command line inputs.
+    """
+    if args["shapes"]:
+        from phenum.visualize import HNF_shapes
+        HNF_shapes(args["input"],args["lattice"],args["show"])
+    else:
+        from phenum.visualize import HNF_atoms
+        HNF_atoms(args["input"],args["lattice"],args["show"])    
+
 def _enum_in(args):
     """Makes an enum.in file that contains the desired distribution of
     structures from the polya distribution.
@@ -291,7 +303,13 @@ def _parser_options(phelp=False):
                         help=("Applys a filter over the 'shape' or the 'conc' option of the distributions. "
                                 "The first entry should specify the filter the second should be the name of the "
                                 "file containing the desired restrictions."))
-    
+    parser.add_argument("-visualize", action="store_true",
+                        help=("Makes plots of the shapes of the HNF's in the provided enum.in style file."))
+    parser.add_argument("-shapes", action="store_true",
+                        help=("The visualization excludes the atoms showing just the shapes of the cells."))
+    parser.add_argument("-show", action="store_true",
+                        help=("If present then the visualization will loop through an interactive image for each HNF."))
+        
     vardict = vars(parser.parse_args())
     if phelp or vardict["examples"]:
         _examples()
@@ -393,6 +411,8 @@ def _script_enum(args):
         _enum_out(args)
     if args["distribution"]:
         _enum_in(args)
+    if args["visualize"]:
+        _plot_HNFs(args)
         
 if __name__ == '__main__':
     args = _parser_options()

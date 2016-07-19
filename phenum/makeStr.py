@@ -9,7 +9,6 @@ def _make_structures(args):
 
     # for each structure write the vasp POSCAR
     for structure in structure_data:
-        
         # space_data is a dictionary containing the spacial data for
         # the structure
         space_data = map_enumStr_to_real_space(system,structure,args["mink"])

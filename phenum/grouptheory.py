@@ -230,11 +230,9 @@ def SmithNormalForm(HNF):
     """Finds the Smith Normal Form (SNF) of an HNF as well as the left and
       right transforms.
       
-      :args HNF: The integer matrix HNF for which the SNFs are to be
-            found
+    :args HNF: The integer matrix HNF for which the SNF is to be found.
     """
     from numpy import dot
-    
     if numpy.linalg.det(numpy.array(HNF)) < 1:
         print("SmithNormalForm routine failed because the input matrix had a negative determinant")
         exit()
@@ -822,8 +820,12 @@ def get_full_HNF(HNF):
     :args HNF: The 1D integer numpy array that contains all the lower
     diagonal entries of the HNF matrix.
     """
-
-    temp_HNF = HNF.tolist()
+    import numpy as np
+    
+    if type(HNF).__module__ == np.__name__:
+        temp_HNF = HNF.tolist()
+    else:
+        temp_HNF = HNF
     full_HNF = [[temp_HNF[0],0,0],[temp_HNF[1],temp_HNF[2],0],temp_HNF[3:]]
 
     return full_HNF
