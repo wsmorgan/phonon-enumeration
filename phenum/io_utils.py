@@ -292,6 +292,7 @@ def write_POSCAR(system_data,space_data,structure_data,args):
 
     from numpy import array
     from element_data import get_lattice_parameter
+    from random import uniform
 
     if "{}" in args["outfile"]:
         filename = args["outfile"].format(str(structure_data["strN"]))
@@ -319,12 +320,12 @@ def write_POSCAR(system_data,space_data,structure_data,args):
         directions.append(array(arrow_directions[int(arrow)]))
 
     with open(filename,"w+") as poscar:
-        poscar.write("{}\n".format(title))
-        poscar.write("{}\n".format(lattice_parameter))
+        poscar.write("{}".format(title))
+        poscar.write("{0:.2f}\n".format(lattice_parameter))
         for i in range(3):
             poscar.write(" {}\n".format(" ".join(
                 ["{0: .8f}".format(j) for j in space_data["sLV"][i]])))
-        poscar.write(" ")
+        poscar.write("  ")
         if args["species"] == None:
             for ic in concs:
                 poscar.write("{}   ".format(str(ic)))
@@ -337,8 +338,11 @@ def write_POSCAR(system_data,space_data,structure_data,args):
         poscar.write("D\n")
         for ilab in range(system_data["k"]):
             for iAt in range(structure_data["n"]*system_data["nD"]):
+                rattle = uniform(-args["rattle"],args["rattle"])
+                displace = directions[iAt]*args["displace"]*lattice_parameter
+                displace += displace*rattle
                 if labeling[gIndx[iAt]] == str(ilab):
-                    out_array = array(space_data["aBas"][iAt]) + directions[iAt]*args["displace"]
+                    out_array = array(space_data["aBas"][iAt]) + displace
                     poscar.write(" {}\n".format(
                         "  ".join(["{0: .8f}".format(i) for i in out_array.tolist()])))
         

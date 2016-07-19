@@ -3,6 +3,7 @@
 ## Revision 1.7.0
 
 - Added the displaying of HNFs for the non-expert user as discussed in #22.
+- Added the rattle option as described in #33.
 
 ## Revision 1.6.0
 
