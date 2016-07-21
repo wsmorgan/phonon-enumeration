@@ -13,8 +13,8 @@ def _make_structures(args):
         # the structure
         space_data = map_enumStr_to_real_space(system,structure,args["mink"])
 
-        space_data["aBas"] = cartesian2direct(space_data["sLV"],space_data["aBas"],
-                                              system["eps"])
+        space_data["aBas"] = cartesian2direct(space_data["sLV"],
+                                              space_data["aBas"],system["eps"])
         # print(args["species"])
         write_POSCAR(system,space_data,structure,args)
         
@@ -133,7 +133,7 @@ def _script_enum(args):
     """Generates the vasp output file for the desired structure.
     """
     from os import path, system
-            
+    # print("args",args)
     _make_structures(args)
         
 if __name__ == '__main__':

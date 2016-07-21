@@ -291,7 +291,7 @@ def write_POSCAR(system_data,space_data,structure_data,args):
     """
 
     from numpy import array
-    from element_data import get_lattice_parameter
+    from phenum.element_data import get_lattice_parameter
     from random import uniform
 
     if "{}" in args["outfile"]:
@@ -302,6 +302,7 @@ def write_POSCAR(system_data,space_data,structure_data,args):
     labeling = structure_data["labeling"]            
     gIndx = space_data["gIndx"]
     arrows = structure_data["directions"]
+    struct_n = structure_data["strN"]
 
     arrow_directions = [[0,0,0],[0,0,-1],[0,-1,0],[-1,0,0],[1,0,0],[0,1,0],[0,0,1]]
     directions = []
@@ -316,15 +317,16 @@ def write_POSCAR(system_data,space_data,structure_data,args):
     def_title = "{} str #: {}\n".format(str(system_data["title"]),str(structure_data["strN"]))
 
     lattice_parameter, title = get_lattice_parameter(args["species"],concs,def_title)
+
     for arrow in arrows:
         directions.append(array(arrow_directions[int(arrow)]))
-
+    sLV = space_data["sLV"]
     with open(filename,"w+") as poscar:
-        poscar.write("{}".format(title))
+        poscar.write(title)
         poscar.write("{0:.2f}\n".format(lattice_parameter))
         for i in range(3):
             poscar.write(" {}\n".format(" ".join(
-                ["{0: .8f}".format(j) for j in space_data["sLV"][i]])))
+                ["{0: .8f}".format(j) for j in sLV[i]])))
         poscar.write("  ")
         if args["species"] == None:
             for ic in concs:

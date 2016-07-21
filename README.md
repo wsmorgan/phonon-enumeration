@@ -1,4 +1,4 @@
-[![PyPI](https://img.shields.io/pypi/v/fortpy.svg)](https://pypi.python.org/pypi/phenum/) [![Build Status](https://travis-ci.org/wsmorgan/phonon-enumeration.svg?branch=master)](https://travis-ci.org/wsmorgan/phonon-enumeration)
+[![PyPI](https://img.shields.io/pypi/v/phenum.svg)](https://pypi.python.org/pypi/phenum/) [![Build Status](https://travis-ci.org/wsmorgan/phonon-enumeration.svg?branch=master)](https://travis-ci.org/wsmorgan/phonon-enumeration)
 
 # phonon-enumeration
 
@@ -79,46 +79,91 @@ python setup.py install
 
 ## Running the code
 
-You now have everything you need to run the new enumeration code. You
-have two options for how to proceed. First the algorithm can use the
-burnside polya algorithm to predict the number of unique structures
-that exist for each HNF and symmetry group produced. This mode is run
-as follows:
+# Enumerating a system
+
+You now have everything you need to run the new enumeration code. The
+work flow for this code is as follows. Samples of all input files can
+be found in the input folder. First find the polya distribution for the
+system described in your lattice.in file:
 
 ```
 enumeration.py -polya
 ```
 
-and expects a file called lattice.in an example of which can be found
-in the input folder. This mode produces a file for each cell size that
-lists the number of unique configurations for each HNF at every
-possible concentration range for the cell size. This data can be very
-useful when modeling large systems as it will allow the user to select
-an appropriate distribution of structures to use given the number of
-each type available.
+Next we need to build an enum.in file. You may either build this by
+hand or have the code build it for you using the `-distribution`
+option which takes two arguments, the type of distribution and the
+number of structures we want in the results.
 
-The second option is the actual enumeration of derivative
-structures. This mode is run using:
+```
+enumeration.py -distribution all all
+enumeration.py -distribution all 100
+```
+
+If any option other than 'all' is passed into the first argument then
+the code will not produce an enum.in file that will be useful for the
+actual enumeration. The options of 'HNF', 'shape', and 'conc' are
+simply for the user's viewing purposes.
+
+Once an enum.in file has been constructed we can enumerate the entire
+set of unique configurations:
 
 ```
 enumeration.py -enum
 ```
 
-and expects a file called enum.in which can also be found in the input
-folder. The enum.in folder should contain a list of the desired HNFs,
-their concentration ranges, and the number of arrangements for the HNF
-concetrtaion range pair the user would like. For example:
+This will make an enum.out file listing the unique configurations.
+
+# Making POSCARS
+
+Phenum contains a second executable for making POSCARS. To make a
+POSCAR first select a structure number, or range of structures, for
+the POSCARs to be constructed for from the enum.out file. Then run:
+
 ```
-# HNF                           Conc.       Number
-  1 0 1 0 2 11                  8 3         2
-  1 0 1 3 4 8                   4 4         1
-  1 0 1 1 4 11                  6 5         3
-  1 0 1 0 0 10                  6 4         2
-  1 0 1 1 5 10                  8 2         1
-  1 0 1 1 2 10                  7 3         1
-  1 0 1 0 3 11                  7 4         3
-  1 0 1 0 2 9                   5 4         2
+makeStr.py 10
 ```
+
+This would make the POSCAR for the 10th structure. For a range of
+structures use:
+
+```
+makeStr.py 20 30
+```
+
+To make POSCARs for the 20th to 30th structures. The POSCARS are saved
+as vasp.* files. To have the code calculate the lattice parameter as
+well use:
+
+```
+makeStr.py 10 -species Al Ni
+```
+
+Where the Al and Ni are replaced with the elements in the system being
+modeled.
+
+# Visualization
+
+At times it is useful to construct the distribution based off the
+shapes of the supercells. For the non-expert user an option has been
+added to the code to make pictures of the supercells. To do this first
+we need to make a distribution of only the supercells:
+
+```
+enumeration.py -distribution shape all -savedist
+```
+
+This created an enum.in file that lists only the supercells and the
+number of unique arrangements within each supercell. We can now
+visualize each of the supercells:
+
+```
+enumeration.py -visualize -shape
+```
+
+This creates a pdf file for each of the supercells. The `-shape`
+option forces the code to include the lines that define the cell in
+the pdfs.
 
 ## Python Packages Used
 
@@ -129,3 +174,5 @@ The enumeration.py code require the following python packages to run:
 - pyparsing
 
 - termcolor
+
+- matplotlib
