@@ -291,7 +291,8 @@ def write_POSCAR(system_data,space_data,structure_data,args):
     """
 
     from numpy import array
-    from element_data import get_lattice_parameter
+    from phenum.element_data import get_lattice_parameter
+    from random import uniform
 
     if "{}" in args["outfile"]:
         filename = args["outfile"].format(str(structure_data["strN"]))
@@ -301,6 +302,7 @@ def write_POSCAR(system_data,space_data,structure_data,args):
     labeling = structure_data["labeling"]            
     gIndx = space_data["gIndx"]
     arrows = structure_data["directions"]
+    struct_n = structure_data["strN"]
 
     arrow_directions = [[0,0,0],[0,0,-1],[0,-1,0],[-1,0,0],[1,0,0],[0,1,0],[0,0,1]]
     directions = []
@@ -315,16 +317,17 @@ def write_POSCAR(system_data,space_data,structure_data,args):
     def_title = "{} str #: {}\n".format(str(system_data["title"]),str(structure_data["strN"]))
 
     lattice_parameter, title = get_lattice_parameter(args["species"],concs,def_title)
+
     for arrow in arrows:
         directions.append(array(arrow_directions[int(arrow)]))
-
+    sLV = space_data["sLV"]
     with open(filename,"w+") as poscar:
-        poscar.write("{}\n".format(title))
-        poscar.write("{}\n".format(lattice_parameter))
+        poscar.write(title)
+        poscar.write("{0:.2f}\n".format(lattice_parameter))
         for i in range(3):
             poscar.write(" {}\n".format(" ".join(
-                ["{0: .8f}".format(j) for j in space_data["sLV"][i]])))
-        poscar.write(" ")
+                ["{0: .8f}".format(j) for j in sLV[i]])))
+        poscar.write("  ")
         if args["species"] == None:
             for ic in concs:
                 poscar.write("{}   ".format(str(ic)))
@@ -337,8 +340,11 @@ def write_POSCAR(system_data,space_data,structure_data,args):
         poscar.write("D\n")
         for ilab in range(system_data["k"]):
             for iAt in range(structure_data["n"]*system_data["nD"]):
+                rattle = uniform(-args["rattle"],args["rattle"])
+                displace = directions[iAt]*args["displace"]*lattice_parameter
+                displace += displace*rattle
                 if labeling[gIndx[iAt]] == str(ilab):
-                    out_array = array(space_data["aBas"][iAt]) + directions[iAt]*args["displace"]
+                    out_array = array(space_data["aBas"][iAt]) + displace
                     poscar.write(" {}\n".format(
                         "  ".join(["{0: .8f}".format(i) for i in out_array.tolist()])))
         

@@ -9,7 +9,9 @@ def map_enumStr_to_real_space(system_data,structure_data,minkowskiReduce):
     :arg minkowskiReduce: logical indicating if basis should be reduced.
 
     """
-
+    # print("in system_data",system_data)
+    # print("in structure_data",structure_data)
+    # print("in minkReduce",minkowskiReduce)
     from numpy import matmul, allclose, matrix, array
     
     nD = system_data["nD"]
@@ -29,15 +31,14 @@ def map_enumStr_to_real_space(system_data,structure_data,minkowskiReduce):
     HNF = structure_data["HNF"]
     eps = system_data["eps"]
     L = structure_data["L"]
-    # Compute the superlattice vectors 
+    # Compute the superlattice vectors
     sLV = matmul(pLV,HNF).tolist()
-
     # Find the coordinates of the basis atoms
     gIndx = []
 
     if minkowskiReduce:
-        sLV = _minkowski_reduce_basis(sLV,eps)
-
+        sLV = list(map(list,zip(*_minkowski_reduce_basis(list(map(list,zip(*sLV))),eps))))
+        
     # Find each atomic position from the g-space information
     aBas = []
     ic = 0  # Keep track of the number of points mapped so far
@@ -45,8 +46,8 @@ def map_enumStr_to_real_space(system_data,structure_data,minkowskiReduce):
     for iD in range(0, nD):  
         # For the limits on the loops, see the "interior_points.pdf" write-up
         for z1 in range(a):
-            for z2 in range((b*z1)/a, c+(b*z1)/a):
-                for z3 in range(z1*(d-(e*b)/c)/a+(e*z2)/c, f+z1*(d-(e*b)/c)/a+(e*z2)/c):
+            for z2 in range(int((b*z1)/a), int(c+(b*z1)/a)):
+                for z3 in range(int(z1*(d-(e*b)/c)/a+(e*z2)/c), int(f+z1*(d-(e*b)/c)/a+(e*z2)/c)):
                     ic +=1
                     if ic > n:
                         from .msg import err
@@ -84,12 +85,12 @@ def map_enumStr_to_real_space(system_data,structure_data,minkowskiReduce):
     if k % 2 == 0:
         for iAt in range(0, n*nD):
             i = int(labeling[gIndx[iAt]])
-            digit = i-k/2 # convert 0..k-1 label to spin variable -k/2..k/2
-        x[i] += 1  # Keep track of the concentration of each atom type
-        if digit < 0:
-            spin.append(digit)
-        else:
-            spin.append(digit+1) # skip 0 as a spin if k is even
+            digit = i-k//2 # convert 0..k-1 label to spin variable -k/2..k/2
+            x[i] += 1  # Keep track of the concentration of each atom type
+            if digit < 0:
+                spin.append(digit)
+            else:
+                spin.append(digit+1) # skip 0 as a spin if k is even
     else:
         for iAt in range(0, n*nD):
             i = int(labeling[gIndx[iAt]])
@@ -98,7 +99,8 @@ def map_enumStr_to_real_space(system_data,structure_data,minkowskiReduce):
 
     x = [i/float(n*nD) for i in x]
 
-    space_data = {"sLV": sLV, "aBas": aBas, "spin": spin, "gIndx": gIndx, "x": x}
+    space_data = {"sLV": list(map(list,zip(*sLV))), "aBas": aBas, "spin": spin, "gIndx": gIndx, "x": x}
+    # print("out space_data",space_data)
     return space_data
 
 
@@ -109,8 +111,6 @@ def _minkowski_reduce_basis(IN,eps):
     from copy import deepcopy
 
     limit = 10
-
-    IN = matrix.transpose(array(IN)).tolist()
 
     if allclose(linalg.det(IN),0.0,rtol=eps,atol=eps):
         from .msg import err
@@ -129,6 +129,7 @@ def _minkowski_reduce_basis(IN,eps):
             idx = norms.index(max(norms))
             temp[i] = OUT[idx]
             norms[idx] = 0
+
         OUT = deepcopy(temp) # Copy the sorted vectors back to OUT
         (OUT[0], OUT[1], OUT[2]) = _reduce_C_in_ABC(OUT[0],OUT[1],OUT[2],eps)
         if linalg.norm(OUT[2]) >= (linalg.norm(OUT[1])-eps):
@@ -148,7 +149,7 @@ def _minkowski_reduce_basis(IN,eps):
         temp[0] = OUT[1]
         OUT[1] = OUT[2]
         OUT[2] = temp[0]
-    
+
     return OUT
 
 def _minkowski_conditions_check(basis,eps):
@@ -247,6 +248,7 @@ def _reduce_C_in_ABC(A,B,C,eps):
     # affine plane A,B + C that is nearest the origin. Call this T.
     cpdAB = [i/linalg.norm(cross(A,B)) for i in cross(A,B)]
     T = [C[i] - cpdAB[i]*dot(C,cpdAB) for i in range(3)]
+
     if not allclose(dot(T,cross(A,B)),0,atol=eps,rtol=eps):
         from .msg import err
         err("{} Projection of C into A,B plane failed".format(str(dot(T,cross(A,B)))))
@@ -254,7 +256,7 @@ def _reduce_C_in_ABC(A,B,C,eps):
     # Now find the four points of the A,B lattice, in the affine
     # plane, that enclose the point T
     ABC = [A,B,C]
-    ABCinv = linalg.inv(ABC).tolist()
+    ABCinv = linalg.inv(ABC)
 
     LC = [int(floor(i +eps)) for i in matmul(T,ABCinv).tolist()]
     # Compute the distance from T to each of the four corners of the cell and pick
@@ -288,13 +290,13 @@ def _reduce_C_in_ABC(A,B,C,eps):
         from .msg import err
         err("Case failed in reduce_C_in_ABC"
             "Lattice coordinates in the A,B plane: ".format(' '.join([str(i) for i in LC])))
-    
+
     ABC = [A,B,C]
     ABCinv = linalg.inv(ABC)
-    temp = matmul(oldABC,ABCinv).tolist()
+    temp = matmul(list(map(list,zip(*ABCinv))),list(map(list,zip(*oldABC)))).tolist()
     for i in range(3):
         for j in range(3):
-            if (temp[i][j] - int(temp[i][j])) > eps:
+            if abs(temp[i][j] - int(round(temp[i][j]))) > eps:
                 from .msg import err
                 err("Lattice was not preserved in reduce_C_in_ABC")
                 exit()
@@ -320,7 +322,7 @@ def _gaussian_reduce_two_vectors(U,V,eps):
 
     from numpy.linalg import norm
     from numpy import dot
-                
+
     it = 0
     if norm(U) > (norm(V) - eps):
        # Make sure that the {U,V} are listed in ascending order; ||U||<||V||
@@ -335,7 +337,7 @@ def _gaussian_reduce_two_vectors(U,V,eps):
             from .msg import err
             err("gaussian_reduce_two_vectors failed to converge in 10 iterations")
             exit()
-        R = [V[i]-int(round(dot(U,V)/dot(U,U)))*U[i] for i in range(3)] #Shorten V as much as possible
+        R = [V[i]-int(round(dot(U,V)/dot(U,U)+1E-10))*U[i] for i in range(3)] #Shorten V as much as possible
         V = U # Swap U and V (so U remains the shortest)
         U = R
         if norm(U) >= (norm(V) - eps):
@@ -346,7 +348,6 @@ def _gaussian_reduce_two_vectors(U,V,eps):
     temp = U
     U = V
     V = temp
-
     return U, V
 
 def cartesian2direct(sLV,aBas, eps):

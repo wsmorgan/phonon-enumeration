@@ -9,13 +9,12 @@ def _make_structures(args):
 
     # for each structure write the vasp POSCAR
     for structure in structure_data:
-        
         # space_data is a dictionary containing the spacial data for
         # the structure
         space_data = map_enumStr_to_real_space(system,structure,args["mink"])
 
-        space_data["aBas"] = cartesian2direct(space_data["sLV"],space_data["aBas"],
-                                              system["eps"])
+        space_data["aBas"] = cartesian2direct(space_data["sLV"],
+                                              space_data["aBas"],system["eps"])
         # print(args["species"])
         write_POSCAR(system,space_data,structure,args)
         
@@ -68,7 +67,7 @@ def _parser_options(phelp=False):
                         help="Print some examples for how to use the enumeration code.")
     parser.add_argument("-displace", type=float,
                         help=("The displacement amount for the arrows in units of the lattice "
-                              "vectors. Default is 0."))
+                              "parameter. Default is 0."))
     parser.add_argument("-input",
                         help=("Override the default 'enum.out' file name."))
     parser.add_argument("-mink", default="t",
@@ -81,6 +80,10 @@ def _parser_options(phelp=False):
     parser.add_argument("-outfile",
                         help=("Override the default output file names: 'vasp.{structure#}'" 
                               "for the structures."))
+    parser.add_argument("-rattle", type=float,
+                        help=("Randomizes the positions of the atoms in the POSCAR by the no "
+                              "more than the fraction of the displacement provided."))
+
     vardict = vars(parser.parse_args())
     if phelp or vardict["examples"]:
         _examples()
@@ -121,13 +124,16 @@ def _parser_options(phelp=False):
         vardict["outfile"] = "vasp.{}"
     if not vardict["displace"]:
         vardict["displace"] = 0.0
+    if not vardict["rattle"]:
+        vardict["rattle"] = 0.0
+        
     return vardict
 
 def _script_enum(args):
     """Generates the vasp output file for the desired structure.
     """
     from os import path, system
-            
+    # print("args",args)
     _make_structures(args)
         
 if __name__ == '__main__':

@@ -36,5 +36,5 @@ def get_lattice_parameter(elements, concentrations, default_title):
                 if concentrations[i] > 0:
                     title += " {} ".format(elements[i])
             lat_param = float(lat_param) / sum(concentrations)
-        
-    return lat_param, title    
+            title = "{0} {1}\n".format(default_title.strip(),title)
+    return lat_param, title
