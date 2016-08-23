@@ -15,7 +15,7 @@ def _make_structures(args):
 
         space_data["aBas"] = cartesian2direct(space_data["sLV"],
                                               space_data["aBas"],system["eps"])
-        # print(args["species"])
+
         write_POSCAR(system,space_data,structure,args)
         
 

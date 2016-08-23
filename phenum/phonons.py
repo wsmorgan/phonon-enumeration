@@ -423,16 +423,16 @@ def _ahash(coloring,dim):
 #anum is a unique number that is associated with an array of arrows.
 #num_of_arrows in the number of arrows that are in the array.
 #dim is the number of directions the arrows can point.
-def _ainvhash(anum,num_of_arrrows,dim):
+def _ainvhash(anum,num_of_arrows,dim):
     """Turns an arrow hash back into the array of arrow directions.
 
     :arg anum: the arrow hash number
     :arg num_of_arrows: the number of arrows in the system
     :arg dim: the number of directions the arrows can point
     """
-    arrows = [0]*num_of_arrrows
-    for i in range(num_of_arrrows):
-        base = dim**(num_of_arrrows-1-i)
-        arrows[num_of_arrrows-1-i] = anum//base
-        anum -= base*arrows[num_of_arrrows-1-i]
+    arrows = [0]*num_of_arrows
+    for i in range(num_of_arrows):
+        base = dim**(num_of_arrows-1-i)
+        arrows[num_of_arrows-1-i] = anum//base
+        anum -= base*arrows[num_of_arrows-1-i]
     return(arrows)
