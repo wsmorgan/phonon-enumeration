@@ -142,8 +142,7 @@ def bring_into_cell(vec,cart_to_latt,latt_to_cart,eps):
 
     from numpy import matmul
     # Put the representation of the point into lattice coordinates
-    vec = matmul(cart_to_latt,vec).tolist()
-
+    vec = matmul(vec,cart_to_latt).tolist()
     # counter to catch compiler bug
     c = 0
     maxc = max(math.ceil(abs(max(vec))),math.ceil(abs(min(vec))))*2
@@ -161,10 +160,8 @@ def bring_into_cell(vec,cart_to_latt,latt_to_cart,eps):
             print("ERROR: loop does not end in bring_into_cell. Probably compiler bug.")
             exit()
 
-    
     # Put the point back into cartesion coordinate representation
-    vec = matmul(latt_to_cart, vec).tolist()
-
+    vec = matmul(vec,latt_to_cart).tolist()
     return vec
 
 def _get_lattice_pointGroup(aVecs, eps=1E-10):
@@ -259,7 +256,6 @@ def get_spaceGroup(par_lat,atomType,bas_vecs,eps=1E-10,lattcoords = False):
       :args lattcoords: (Optional) True if vectors are in lattice
             coordinates rather than cartesian
     """
-    
     # Get number of atoms in the basis    
     nAtoms = len(atomType)
 
@@ -271,16 +267,16 @@ def get_spaceGroup(par_lat,atomType,bas_vecs,eps=1E-10,lattcoords = False):
     # Get transformation matrices to take us back and forth
     (latt_to_cart,cart_to_latt) = _get_transformations(par_lat)
     
-    
     # If we're in lattice coordinates Convert the position of the
     # basis atoms from lattice coordinates.
     if lattcoords:
         for i in range(nAtoms):
-            atom_pos[i] = numpy.matmul(numpy.array(latt_to_cart),numpy.array(atom_pos[i])).tolist()
+            atom_pos[i] = numpy.matmul(latt_to_cart,atom_pos[i]).tolist()
 
     # bring all the basis atoms into the unit cell
-    for i in range(len(bas_vecs)):
-        bas_vecs[i] = bring_into_cell(bas_vecs[i],cart_to_latt,latt_to_cart,eps)
+    for i in range(len(atom_pos)):
+        atom_pos[i] = bring_into_cell(atom_pos[i],cart_to_latt,latt_to_cart,eps)
+
     # Now find the point group
     lattpg_op = _get_lattice_pointGroup(par_lat,eps=eps)
 
@@ -298,19 +294,19 @@ def get_spaceGroup(par_lat,atomType,bas_vecs,eps=1E-10,lattcoords = False):
             if (atomType[jAtom] != atomType[0]):
                 continue
             fract = [atom_pos[jAtom][i] - v[i] for i in range(3)]
-            fract = bring_into_cell(fract, list(map(list,zip(*cart_to_latt))), list(map(list,zip(*latt_to_cart))), eps)
+            fract = bring_into_cell(fract, cart_to_latt, latt_to_cart, eps)
             # Is each atom of every type mapped by this rotation + translation?
             for kAtom in range(nAtoms):
                 this_type = atomType[kAtom]
                 # Rotate and translate each atom        
-                v2 = numpy.matmul(numpy.array(lattpg_op[iop]),numpy.array(atom_pos[kAtom])).tolist()
+                v2 = numpy.matmul(lattpg_op[iop],atom_pos[kAtom]).tolist()
                 v2 = [v2[i] + fract[i] for i in range(3)]
-                v2 = bring_into_cell(v2, list(map(list,zip(*cart_to_latt))), list(map(list,zip(*latt_to_cart))), eps)
+                v2 = bring_into_cell(v2, cart_to_latt, latt_to_cart, eps)
                 
                 # Try to map this rotated atom onto another the same type
                 mapped = _does_mapping_exist(v2, this_type, atom_pos, atomType, eps)
                 if not mapped:
-                    continue # no mapping for this atom
+                    break # no mapping for this atom
 
             # if all atoms mapped successfully then count this
             # element (rotation + translation)

@@ -27,9 +27,10 @@ class RotPermList(object):
     """
     def __init__(self,nL = None,v =None,perm = None,RotIndx = None,arrows=None):
         """Initializes the RotPermList.
-          :args nL: An integer indicating the number of operations
-          :args v: A 2D integer array containing the lattice vectors
-          :args perm: 
+        :args nL: An integer indicating the number of operations
+        :args v: A 2D integer array containing the lattice vectors
+        :args perm: 
+        :args RotIndx: 
         """
         self.nL = nL
         self.v = v
@@ -59,11 +60,11 @@ def _make_member_list(n):
     from operator import mul
     from functools import reduce
     
-    depth = reduce(mul,n,1)
+    depth = int(round(reduce(mul,n,1)))
     p = []
     for i in range(depth):
         p.append([0,0,0])
-    for im in range(1,reduce(mul,n,1)):  # Loop over the members of the translation group
+    for im in range(1,depth):  # Loop over the members of the translation group
         p[im] = list(p[im-1]) # Start with the same digits as in the previous increment        
         p[im][2] = (p[im-1][2]+1)%n[2]  # Increment the first cyclic group
         if (p[im][2]==0):             # If it rolled over then
@@ -106,31 +107,31 @@ def _is_equiv_lattice(lat1,lat2,eps):
       on the determinant. This is not mentioned by Santoro and Mighell
       (issue of opposite handedness---which doesn't matter to me).
 
-      :args lat1: 2D integer array containing the first lattice.
-      :args lat2: 2D integer array containing the second lattice.
+      :args lat1: 2D array containing the first lattice.
+      :args lat2: 2D array containing the second lattice.
       :args eps: The finite precision tolerance.
     """
+    from numpy import linalg, allclose, matmul
     is_equiv_lattice = False
-    lat1inv = numpy.linalg.inv(numpy.array(lat1)).tolist()
-    S = numpy.matmul(numpy.array(lat2),lat1inv).tolist()
-    if (numpy.allclose(abs(numpy.linalg.det(numpy.array(S))),1.0,rtol=eps,atol=eps) and
-        numpy.allclose(numpy.array(S),numpy.array([[int(round(S[i][j])) for j in range(3)] for i in range(3)]),rtol=eps,atol=eps)):
+    lat1inv = linalg.inv(lat1)
+    S = matmul(lat1inv,lat2).tolist()
+    if (allclose(abs(linalg.det(S)),1.0,rtol=0,atol=eps) and
+        allclose(S,[[int(round(S[i][j])) for j in range(3)] for i in range(3)],rtol=0,atol=eps)):
         is_equiv_lattice = True
     return is_equiv_lattice
         
 def _get_sLV_fixing_operations(HNF,pLV,nD,rot,shift,dPerm,eps):
     """
-      :args HNF:
-      :args pLV:
-      :args nD:
-      :args rot:
-      :args shift:
-      :args dPerm:
+      :args HNF: A 2D array containing the hermite normal form matrix.
+      :args pLV: A 2D array containing the parent lattice vectors.
+      :args nD: The number of atoms in the cell.
+      :args rot: A 3D array containing all the rotation matrices.
+      :args shift: A 2D array containing the translations. 
+      :args dPerm: 
       :args eps: Finite precision tolerance.
     """
-    
-    nRot = len(rot)
 
+    nRot = len(rot)
     degen_lattices = []
     for i in range(nRot):
         degen_lattices.append([[0,0,0],[0,0,0],[0,0,0]])
@@ -144,8 +145,8 @@ def _get_sLV_fixing_operations(HNF,pLV,nD,rot,shift,dPerm,eps):
     tIndex = [] # temp variables
     for iRot in range(nRot):  # Loop over each rotation
         thisRot = rot[iRot] # Store the rotation
-        origLat = numpy.matmul(HNF,pLV).tolist()  # Compute the superlattice
-        rotLat = numpy.matmul(numpy.array(origLat),numpy.array(thisRot)).tolist() # Compute the rotated superlattice
+        origLat = numpy.matmul(pLV,HNF).tolist()  # Compute the superlattice
+        rotLat = numpy.matmul(thisRot,origLat).tolist() # Compute the rotated superlattice
         if _is_equiv_lattice(rotLat,origLat,eps):
             # this operation fixes the lattice and should be recorded
             ic += 1
@@ -170,10 +171,11 @@ def _get_sLV_fixing_operations(HNF,pLV,nD,rot,shift,dPerm,eps):
     degeneracy = cDegen
     # Allocate the storage for them
     fixOp = opList(tmpOp_rot,tmpOp_shift) # Stuff the rotations into the permanent array
-    if nD > 1:
-        rotPerm = RotPermList(v=tv,RotIndx=tIndex)
-    else:
-        rotPerm = RotPermList(v=[tv],RotIndx=tIndex)
+
+    # if nD > 1:
+    rotPerm = RotPermList(v=tv,RotIndx=tIndex)
+    # else:
+    #     rotPerm = RotPermList(v=[tv],RotIndx=tIndex)
 
     return(fixOp,rotPerm,degeneracy)
 
@@ -194,7 +196,7 @@ def _map_dvector_permutation(rd,d,eps,n):
         for jD in range(nD):
             if found[jD]:
                 continue
-            if numpy.allclose(numpy.array(rd[iD]),numpy.array(d[jD]),atol=eps,rtol=eps):
+            if numpy.allclose(numpy.array(rd[iD]),numpy.array(d[jD]),atol=eps,rtol=0):
                 RP.append(jD)
                 found[jD] = True
                 break
@@ -218,7 +220,7 @@ def _find_minmax_indices(invec):
 
     vec = [abs(i) for i in invec]
     
-    this_min = invec.index(min([i for i in vec if i > 0]))
+    this_min = vec.index(min([i for i in vec if i > 0]))
 
     rvec = [i for i in reversed(vec)]
     
@@ -252,7 +254,7 @@ def SmithNormalForm(HNF):
     while not stop_loop:
         itCnt += 1
         if (itCnt >=100):
-            print("Bad progromming in SmithNormalForm")
+            print("Bad programming in SmithNormalForm")
             exit()
 
         while (3-[M[0][j],M[1][j],M[2][j]].count(0)) > 1:
@@ -363,7 +365,7 @@ def _get_dvector_permutations(par_lat,bas_vecs,LatDim,eps):
       equivalent. Labelings of the lattice points that are contain
       permutations only of labels on equivalant sites are physically
       equivalent and therefore redundant. We use these permutations to
-     eliminate those duplicate labelings
+      eliminate those duplicate labelings
 
       :args pLV: A 2D integer array containing the parent lattice vectors
       :args bas_vacs: A 2D integer array containing the basis vectors for the cell
@@ -372,13 +374,15 @@ def _get_dvector_permutations(par_lat,bas_vecs,LatDim,eps):
     """
 
     from phenum.symmetry import get_spaceGroup, bring_into_cell
+    from copy import deepcopy
     
     nD = len(bas_vecs)
     aTyp = []
     for i in range(nD):
         aTyp.append(1)
 
-    (rot,shift)= get_spaceGroup(par_lat,aTyp,bas_vecs)
+    bv_copy = deepcopy(bas_vecs)
+    (rot,shift) = get_spaceGroup(par_lat,aTyp,bv_copy,eps = eps)
 
     if LatDim==2:
         (rot,shift) = _rm_3D_operations(par_lat,rot,shift,eps)
@@ -400,25 +404,29 @@ def _get_dvector_permutations(par_lat,bas_vecs,LatDim,eps):
         else:
             temp_b = bas_vecs
         rd_rot = numpy.matmul(temp_b,rot[iOp]).tolist()
+
         if nD > 1:
             rd_shift = [shift[iOp]]*nD
             rd =  [[rd_rot[i][j] + rd_shift[i][j] for j in range(len(rd_rot[i]))] for i in range(len(rd_rot))]
             
         else:
             rd = [rd_rot[i] + shift[iOp][i] for i in range(len(rd_rot))]
+            
         tRD = list(rd)
         if nD > 1:
             for iD in range(nD):
+                inv_par_lat = inv_par_lat
                 rd[iD] = bring_into_cell(rd[iD],inv_par_lat,par_lat,eps)
         else:
             rd = bring_into_cell(rd,inv_par_lat,par_lat,eps)
-
+            
         # The v vector is the vector that must be added (it's a lattice
         # vector) to move a rotated d-vector back into the parent cell.
+
         if nD > 1:
             v_temp.append([[rd[i][j] - tRD[i][j] for j in range(len(rd[i]))] for i in range(len(rd))])
         else:
-            v_temp.append([rd[i] - tRD[i] for i in range(len(rd))])
+            v_temp.append([[rd[i] - tRD[i] for i in range(len(rd))]])
         if nD > 1:
             perm_temp.append(_map_dvector_permutation(rd,bas_vecs,eps,nD))
         else:
@@ -430,7 +438,6 @@ def _get_dvector_permutations(par_lat,bas_vecs,LatDim,eps):
     # rotations that don't permute the d's could still permute the
     # g's. So we have to keep all the d permutations, even if they
     # look redundant here.
-
     return(dRPList)
     
 def _get_rotation_perms_lists(A,HNF,L,SNF,Op,RPlist,dperms,eps):
@@ -515,7 +522,7 @@ def _get_rotation_perms_lists(A,HNF,L,SNF,Op,RPlist,dperms,eps):
             # rag = numpy.transpose(numpy.matmul(Tinv,numpy.transpose([[temp1a[i][j]+temp2a[i][j] for j in range(len(temp1a[i]))] for i in range(len(temp1a))]))).tolist()
             temp_gp = [[int(round(rgp[i][j])) for j in range(len(rgp[i]))] for i in range(len(rgp))] # Move the rotated group into an integer array
             temp_ag = [[int(round(rag[i][j])) for j in range(len(rag[i]))] for i in range(len(rag))]
-            if not numpy.allclose(rgp,temp_gp,rtol=eps,atol=eps):
+            if not numpy.allclose(rgp,temp_gp,rtol=0,atol=eps):
                 print("Transform left big fractional parts")
                 exit()
 
@@ -656,7 +663,7 @@ def get_sym_group(par_lat,bas_vecs,HNF,LatDim):
     temp_basis = list(bas_vecs)
     for i in range(len(bas_vecs)):
         bas_vecs[i] = bring_into_cell(bas_vecs[i],par_lat_inv,par_lat,eps)
-        if not allclose(bas_vecs[i], temp_basis[i], rtol=eps, atol=eps):
+        if not allclose(bas_vecs[i], temp_basis[i], rtol=0, atol=eps):
             from msg import warn
             warn("An atomic basis vector was not inside the unit cell. It has been "
                  "remapped.\n Original vector: {} \n Remapped vector: {}"
@@ -840,9 +847,9 @@ def _rm_3D_operations(aVecs,sgrots,sgshifts,eps):
     :args eps: Finite precisions tolerance.
     """
   
-    if not numpy.allclose(numpy.array(aVecs[0][1:3]),0.0,rtol=eps,
+    if not numpy.allclose(numpy.array(aVecs[0][1:3]),0.0,rtol=0,
                           atol=eps) or not numpy.allclose(numpy.array(aVecs[2][0:2])
-                                                          ,0.0,rtol=eps,atol=eps):
+                                                          ,0.0,rtol=0,atol=eps):
         print("Error in rm_3d_operations: only allowed for primitive vectors x00,0xx,0xx")
         exit()
     
@@ -851,9 +858,9 @@ def _rm_3D_operations(aVecs,sgrots,sgshifts,eps):
     tSGrots = []
     tSGshifts = []
     for i in range(nRot):
-        if (numpy.allclose(numpy.array(sgrots[i][0][1:3]),0.0,rtol=eps,atol=eps) and
-            numpy.allclose(numpy.array([sgrots[i][1][0],sgrots[i][2][0]]),0.0,rtol=eps,atol=eps)
-            and numpy.allclose(abs(sgrots[i][0][0]),1.0,rtol=eps,atol=eps)):
+        if (numpy.allclose(numpy.array(sgrots[i][0][1:3]),0.0,rtol=0,atol=eps) and
+            numpy.allclose(numpy.array([sgrots[i][1][0],sgrots[i][2][0]]),0.0,rtol=0,atol=eps)
+            and numpy.allclose(abs(sgrots[i][0][0]),1.0,rtol=0,atol=eps)):
             # this operation is "2D"         
             irot += 1
             tSGrots.append(sgrots[i])
