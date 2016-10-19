@@ -6,17 +6,17 @@ forms. Also the actual executable for the code."""
 # hard coded error tolerance. This will need to go away and become
 # part of the input files later.
 
-def _plot_HNFs(args):
+def _plot_HNFs(args,testmode=False):
     """Makes plots of the shapes of the HNF's provided in the enum.in input file.
 
     :arg args: The command line inputs.
     """
     if args["shapes"]:
         from phenum.visualize import HNF_shapes
-        HNF_shapes(args["input"],args["lattice"],args["show"])
+        HNF_shapes(args["input"],args["lattice"],args["show"],testmode=testmode)
     else:
         from phenum.visualize import HNF_atoms
-        HNF_atoms(args["input"],args["lattice"],args["show"])    
+        HNF_atoms(args["input"],args["lattice"],args["show"],testmode=testmode)    
 
 def _enum_in(args):
     """Makes an enum.in file that contains the desired distribution of
@@ -336,10 +336,12 @@ def _parser_options():
 
     return args # pragma: no cover
 
-def _script_enum(args):
+def _script_enum(args, testmode=False):
     """Generates the 'polya.out' or 'enum.out' files depending on the script arguments.
     """
     from os import path, system
+    from phenum.base import set_testmode
+    set_testmode(testmode)
     if args["polya"]:
         #Perform validation for running polya.
         if not path.isfile(args["lattice"]):
@@ -410,7 +412,7 @@ def _script_enum(args):
     if args["distribution"]:
         _enum_in(args)
     if args["visualize"]:
-        _plot_HNFs(args)
+        _plot_HNFs(args,testmode=testmode)
         
 if __name__ == '__main__':
     args = _parser_options()

@@ -1,13 +1,14 @@
 # Revision History for "phonon-enumeration"
 
 ## Revision 1.7.1
-- Refactored the driver for ease of unit testing.
+- Refactored the drivers (enumeration.py and makeStr.py) for ease of unit testing.
 - Changed some error messages to raise value erros instead.
 - Fixed a number of bugs in grouptheory.py related to improper
   translation of original fortran codes matrix operations.
 - Removed depricated binomial calculator from numerics.py.
 - Cleaned up the calls to numpy and removed unneeded calls to
   numpy.array.
+-Fixed an indexing error in polyaburnside.py.
 
 ## Revision 1.7.0
 

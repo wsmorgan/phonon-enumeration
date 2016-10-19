@@ -402,9 +402,9 @@ def polya(concentrations, group, arrowings=None, debug=False):
             
     for k in range(2):
         for g in range(len(group)):
-            if 0 not in group[0][k]:
+            if 0 not in group[g][k]:
                 group[g][k] = [j-1 for j in group[g][k]]
-                
+    print("gf",group)
     polyndict = {}
     #The operations in the group are used to construct the unique polynomials for each operation.
     for polynomials in _group_to_cyclic(group):

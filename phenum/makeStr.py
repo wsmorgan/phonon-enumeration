@@ -1,4 +1,16 @@
 #!/usr/bin/env python
+from phenum import msg
+
+def RepresentsInt(s):
+    """Determines if a stri could be an int.
+
+    :arg s: The string to be tested.
+    """    
+    try: 
+        int(s)
+        return True
+    except ValueError:
+        return False
 
 def _make_structures(args):
     """Makes a VASP POSCAR file for the desired structures."""
@@ -19,9 +31,10 @@ def _make_structures(args):
         write_POSCAR(system,space_data,structure,args)
         
 
-def _examples():
+def examples():
     """Print some examples on how to use this python version of the code."""
-    helptext = ("For all the examples below, it is assumed that you have already "
+    script = "makeStr: Makes a vasp style POSCAR for the desired system."
+    explain = ("For all the examples below, it is assumed that you have already "
                 "compiled the modified enumlib code as described in the "
                 "README or in some other manner obtained the HNFs (supercells) and "
                 "their symmetry groups. You will then need to specify if you are "
@@ -30,7 +43,7 @@ def _examples():
                 "desired number of configurations for each HNF and concentration. "
                 "Additionally you way change the default input file names to ones of "
                 "your own creation.")
-    egs = [("Find the Polya distribution",
+    contents = [("Find the Polya distribution",
             "The code below finds the number of unique arrangements for each "
             "supercell (HNF) for a binary system on an fcc lattice which can have "
             "1 to 11 atoms in the supercell as described in the lattice.in found in "
@@ -48,93 +61,78 @@ def _examples():
             " the structures are wanted then the second argument should be 'all'.",
             "enumeration.py -distribution all all \n  enumeration.py -distribution "
             " size 200")]
-    print("MAKES A VASP POSCAR FOR THE DESIRED STRUCTUR\n")
-    for eg in egs:
-        title, desc, code = eg
-        print(("--" + title + '--\n'))
-        print((desc + '\n'))
-        print(('  ' + code + '\n'))
+    required = ("REQUIRED: A `enum.out` file.")
+    output = ("RETURNS: A vasp style POSCAR labeled vasp.* where the `*` is replaced "
+              "with the structure number for the `enum.out` file.")
+    details = ("")
+    outputfmt = ("")
 
-def _parser_options(phelp=False):
-    """Parses the options and arguments from the command line."""
-    import argparse
-    parser = argparse.ArgumentParser(description="Partial Superstructure Enumeration Code")
-    parser.add_argument("structures", nargs="+",
-                        help="The desired structure numbers from the enum.out file")
-    parser.add_argument("-debug", action="store_true",
-                        help="Print verbose calculation information for debugging.")
-    parser.add_argument("-examples", action="store_true",
-                        help="Print some examples for how to use the enumeration code.")
-    parser.add_argument("-displace", type=float,
+    msg.example(script, explain, contents, required, output, outputfmt, details)
+
+script_options = {
+    "structures": dict(nargs="+",
+                        help=("The desired structure numbers from the enum.out file")),
+    "-displace": dict(default=0.0, type=float,
                         help=("The displacement amount for the arrows in units of the lattice "
-                              "parameter. Default is 0."))
-    parser.add_argument("-input",
-                        help=("Override the default 'enum.out' file name."))
-    parser.add_argument("-mink", default="t",
+                               "parameter. Default is 0.")),
+    "-input": dict(default="enum.out",type=str,
+                        help=("Override the default 'enum.out' file name.")),
+    "-mink": dict(default="t", choices=["t","f"],
                         help=("Sets flag to perform minkowski reduction of the basis (T/F)."
-                              " Default is True."))
-    parser.add_argument("-species", nargs="+",
-                        help=("Specify the atomic species present in the system."))
-    parser.add_argument("-verbose", type=int,
-                        help="Specify the verbosity level (1-3) for additional computation info.")
-    parser.add_argument("-outfile",
+                              " Default is True.")),
+    "-species": dict(default=None, nargs="+",type=str,
+                        help=("Specify the atomic species present in the system.")),
+    "-outfile": dict(default="vasp.{}",type=str,
                         help=("Override the default output file names: 'vasp.{structure#}'" 
-                              "for the structures."))
-    parser.add_argument("-rattle", type=float,
+                              "for the structures.")),
+    "-rattle": dict(default=0.0, type=float,
                         help=("Randomizes the positions of the atoms in the POSCAR by the no "
                               "more than the fraction of the displacement provided."))
+}
+"""dict: default command-line arguments and their
+    :meth:`argparse.ArgumentParser.add_argument` keyword arguments.
+"""
 
-    vardict = vars(parser.parse_args())
-    if phelp or vardict["examples"]:
-        _examples()
-        exit(0)
-
-    if vardict["verbose"]:
-        from phenum.msg import set_verbosity
-        set_verbosity(vardict["verbose"])
-
-    if vardict["mink"]:
-        if vardict["mink"].lower() == "t":
-            vardict["mink"] = True
-        elif vardict["mink"].lower() == "f":
-            vardict["mink"] = False
-        else:
-            from .msg import err
-            err("The -mink parameter only takes arguments of T or F")
-
-    if vardict["structures"][0].lower() == "all":
-        vardict["structures"] = None
-    elif len(vardict["structures"]) == 1:
-        vardict["structures"] = [int(vardict["structures"][0])]
-    elif len(vardict["structures"]) == 2:
-        vardict["structures"] = list(range(int(vardict["structures"][0]),
-                                      int(vardict["structures"][1])+1))
-    else:
-        from phenum.msg import err
-        err("Please enter a single structure number, two structures that indicate the first"
-            " and last structure to be used in the input file, or all. The values {} don't "
-            " match this format.".format(vardict["structures"]))
-        exit()
-
-    if not vardict["species"]:
-        vardict["species"] = None
-    if not vardict["input"]:
-        vardict["input"] = "enum.out"
-    if not vardict["outfile"]:
-        vardict["outfile"] = "vasp.{}"
-    if not vardict["displace"]:
-        vardict["displace"] = 0.0
-    if not vardict["rattle"]:
-        vardict["rattle"] = 0.0
+def _parser_options():
+    """Parses the options and arguments from the command line."""
+    #We have two options: get some of the details from the config file,
+    import argparse
+    from phenum import base
+    pdescr = "POSCAR contstruction."
+    parser = argparse.ArgumentParser(parents=[base.bparser], description=pdescr)
+    for arg, options in script_options.items():
+        parser.add_argument(arg, **options)
         
-    return vardict
+    args = base.exhandler(examples, parser)
+    if args is None:
+        return
 
-def _script_enum(args):
+    return args #pragma: no cover
+
+def run(args):
     """Generates the vasp output file for the desired structure.
     """
-    from os import path, system
-    # print("args",args)
+
+    if args["structures"] != None :
+        if not RepresentsInt(args["structures"][0]) and args["structures"][0].lower() == "all":
+            args["structures"] = None
+        elif len(args["structures"])  == 1 and RepresentsInt(args["structures"][0]):
+            args["structures"] = [int(args["structures"][0])]
+        elif len(args["structures"]) == 2:
+            args["structures"] = list(range(int(args["structures"][0]),
+                                            int(args["structures"][1])+1))
+        else:
+            raise ValueError("Please enter a single structure number, two structures that "
+                             "indicate the first and last structure to be used in the input "
+                             "file, or all. The values {} don't match this "
+                             "format.".format(args["structures"]))
+    else:
+        raise ValueError("Please enter a single structure number, two structures that "
+                         "indicate the first and last structure to be used in the input "
+                         "file, or all. The values {} don't match this "
+                         "format.".format(args["structures"]))
+
     _make_structures(args)
         
 if __name__ == '__main__':
-    _script_enum(_parser_options())
+    run(_parser_options())

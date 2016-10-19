@@ -3,8 +3,7 @@ import unittest as ut
 import os
 
 import pytest
-import os
-# The virtual, pseudorandom port is setup as a session fixture in conftest.py
+
 def get_sargs(args):
     """Returns the list of arguments parsed from sys.argv.
     """
@@ -264,3 +263,30 @@ class TestEnumIn(ut.TestCase):
         else:
             self._compare_files('test_enum.in','tests/enumeration/sc_1/enum.in_shape2_10_p3')
         system("rm test_enum.in")
+
+class TestPlotHNFs(ut.TestCase):
+    """Tests of the _enum_in subroutine."""
+
+    def test_visualize1(self):
+        from phenum.enumeration import _script_enum
+        from os import system
+        args = {'profile': None, 'savedist': False, 'verbose': None, 'exec': 'enum.x',
+                'outfile': None, 'enum': False, 'cellsdir': 'tests/enumeration/sc_1/',
+                'lattice': 'input/fcc/lattice.in', 'dataformat': 'cells.{}', 'acceptrate': None,
+                'examples': False, 'sizes': None, 'debug': False,
+                'input': 'tests/enumeration/sc_1/enum.in_100',
+                'polya': False, 'super': False, 'distribution': None,'seed':None,
+                'filter':None,'visualize':True,'shapes':True,'show':False}
+        _script_enum(args,testmode=True)
+    
+    def test_visualize2(self):
+        from phenum.enumeration import _script_enum
+        from os import system
+        args = {'profile': None, 'savedist': False, 'verbose': None, 'exec': 'enum.x',
+                'outfile': None, 'enum': False, 'cellsdir': 'tests/enumeration/sc_1/',
+                'lattice': 'input/fcc/lattice.in', 'dataformat': 'cells.{}', 'acceptrate': None,
+                'examples': False, 'sizes': None, 'debug': False,
+                'input': 'tests/enumeration/sc_1/enum.in_100',
+                'polya': False, 'super': False, 'distribution': None,'seed':None,
+                'filter':None,'visualize':True,'shapes':False,'show':False}
+        _script_enum(args,testmode=True)   

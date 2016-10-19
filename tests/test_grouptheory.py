@@ -1938,9 +1938,6 @@ class TestGetRotationPermsLists(ut.TestCase):
                         rot1.perm.site_perm = sorted(rot1.perm.site_perm)
                         rot2.perm.site_perm = sorted(rot2.perm.site_perm)
                         for i in range(len(rot1.perm.site_perm)):
-                            print("i",i)
-                            print("1",rot1.perm.site_perm[i])
-                            print("2",rot2.perm.site_perm[i])
                             for j in range(len(rot1.perm.site_perm[i])):
                                 self.assertEqual(rot1.perm.site_perm[i][j],rot2.perm.site_perm[i][j])
                     else:
@@ -2818,8 +2815,6 @@ class TestGetSymGroup(ut.TestCase):
         LatDim = 3
         out = _read_output("arrow_group.out.10")
         symm = get_sym_group(par_lat,bas_vacs,HNF,LatDim)
-        for i in range(len(symm.perm.site_perm)):
-            print("[{0}, {1}]".format(symm.perm.site_perm[i],symm.perm.arrow_perm[i]))
         agroup = []
         for i in range(len(symm.perm.site_perm)):
             agroup.append([symm.perm.site_perm[i],symm.perm.arrow_perm[i]])            
