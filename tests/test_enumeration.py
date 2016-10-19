@@ -1,5 +1,23 @@
 """Methods for testing the subroutines in the enumeration module."""
 import unittest as ut
+import os
+
+import pytest
+import os
+# The virtual, pseudorandom port is setup as a session fixture in conftest.py
+def get_sargs(args):
+    """Returns the list of arguments parsed from sys.argv.
+    """
+    import sys
+    sys.argv = args
+    from phenum.enumeration import _parser_options
+    return _parser_options()    
+
+def test_examples():
+    """Makes sure the script examples work properly.
+    """
+    argv = ["py.test", "-examples"]
+    assert get_sargs(argv) is None
 
 class TestEnumIn(ut.TestCase):
     """Tests of the _enum_in subroutine."""
@@ -10,7 +28,6 @@ class TestEnumIn(ut.TestCase):
         :arg file2: The control output file.
         """
         out1 = []
-        print("f1",file1)
         with open(file1,"r") as f1:
             for line in f1:
                 out1.append(line.strip())
@@ -19,8 +36,6 @@ class TestEnumIn(ut.TestCase):
             for line in f2:
                 out2.append(line.strip())
         test = len(out1) == len(out2) and sorted(out1) == sorted(out2)
-        print("out1",out1)
-        print("out2",out2)
         self.assertEqual(True,test)
 
     def _check_total(self,test_file,number):
@@ -85,7 +100,8 @@ class TestEnumIn(ut.TestCase):
 
     def test_EnumIn4(self):
         from phenum.enumeration import _enum_in
-        from os import system
+        from os import system, getcwd, chdir
+        direct = getcwd()
         import sys
         args = {'profile': None, 'savedist': False, 'verbose': None, 'exec': 'enum.x',
                 'outfile': 'test_enum.in', 'enum': False, 'cellsdir': 'tests/enumeration/fcc_2/',
@@ -99,10 +115,12 @@ class TestEnumIn(ut.TestCase):
         else:
             self._compare_files('test_enum.in','tests/enumeration/fcc_2/enum.in_50_p3')
         system("rm test_enum.in")
+        chdir(direct)
 
     def test_EnumIn5(self):
         from phenum.enumeration import _enum_in
-        from os import system
+        from os import system, getcwd, chdir
+        direct = getcwd()
         args = {'profile': None, 'savedist': False, 'verbose': None, 'exec': 'enum.x',
                 'outfile': 'test_enum.in', 'enum': False, 'cellsdir': 'tests/enumeration/sc_1/',
                 'lattice': 'lattice.in', 'dataformat': 'cells.{}', 'acceptrate': None,
@@ -112,6 +130,7 @@ class TestEnumIn(ut.TestCase):
         _enum_in(args)
         self._compare_files('test_enum.in','tests/enumeration/sc_1/enum.in_100')
         system("rm test_enum.in")
+        chdir(direct)
 
     def test_EnumIn6(self):
         from phenum.enumeration import _enum_in

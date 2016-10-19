@@ -1,5 +1,6 @@
 """Methods for testing the subroutines in the symmetry module."""
 import unittest as ut
+import numpy as np
 
 gpath =  "tests/symmetry/"
 
@@ -199,7 +200,6 @@ class TestGetConcsForSize(ut.TestCase):
 class TestGetSpaceGroup(ut.TestCase):
     """Tests of the get_spaceGroup subroutine."""
 
-
     def _compare_space_group(self,out1,out2):
         ops1 = out1[0]
         ops2 = out2[0]
@@ -288,8 +288,7 @@ class TestGetSpaceGroup(ut.TestCase):
         bas_vecs =  [[0.0, 0.0, 0.0], [0.25, 0.25, 0.75], [0.5, 0.5, 0.25]]
         eps =  1e-10
         lattcoords =  False
-        out =  ([[[-1.0, 0.0, 0.0], [0.0, -1.0, 0.0], [0.0, 0.0, -1.0]], [[-1.0, 0.0, 0.0], [0.0, -1.0, 0.0], [0.0, 0.0, 1.0]], [[-1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, -1.0]], [[-1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]], [[0.0, -1.0, 0.0], [-1.0, 0.0, 0.0], [0.0, 0.0, -1.0]], [[0.0, -1.0, 0.0], [-1.0, 0.0, 0.0], [0.0, 0.0, 1.0]], [[0.0, -1.0, 0.0], [1.0, 0.0, 0.0], [0.0, 0.0, -1.0]], [[0.0, -1.0, 0.0], [1.0, 0.0, 0.0], [0.0, 0.0, 1.0]], [[0.0, 1.0, 0.0], [-1.0, 0.0, 0.0], [0.0, 0.0, -1.0]], [[0.0, 1.0, 0.0], [-1.0, 0.0, 0.0], [0.0, 0.0, 1.0]], [[0.0, 1.0, 0.0], [1.0, 0.0, 0.0], [0.0, 0.0, -1.0]], [[0.0, 1.0, 0.0], [1.0, 0.0, 0.0], [0.0, 0.0, 1.0]], [[1.0, 0.0, 0.0], [0.0, -1.0, 0.0], [0.0, 0.0, -1.0]], [[1.0, 0.0, 0.0], [0.0, -1.0, 0.0], [0.0, 0.0, 1.0]], [[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, -1.0]], [[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]]], [[0.5, 0.5, 0.25], [0.0, 0.0, 0.0], [0.5, 0.5, 0.25], [0.0, 0.0, 0.0], [0.5, 0.5, 0.25], [0.0, 0.0, 0.0], [0.5, 0.5, 0.25], [0.0, 0.0, 0.0], [0.5, 0.5, 0.25], [0.0, 0.0, 0.0], [0.5, 0.5, 0.25], [0.0, 0.0, 0.0], [0.5, 0.5, 0.25], [0.0, 0.0, 0.0], [0.5, 0.5, 0.25], [0.0, 0.0, 0.0]])
-        print(get_spaceGroup(par_lat,atomType,bas_vecs,eps,lattcoords))
+        out =  ([[[0.0, 1.0, 0.0], [1.0, 0.0, 0.0], [0.0, 0.0, 1.0]], [[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]]], [[0.0, 0.0, 0.0], [0.0, 0.0, 0.0]])
         self.assertEqual(get_spaceGroup(par_lat,atomType,bas_vecs,eps,lattcoords),out)
 
     def test8(self):
@@ -299,8 +298,7 @@ class TestGetSpaceGroup(ut.TestCase):
         bas_vecs =  [[0.0, 0.0, 0.0], [0.25, 0.25, 0.75], [0.5, 0.5, 0.25]]
         eps =  1e-10
         lattcoords =  False
-        out =  ([[[-1.0, 0.0, 0.0], [0.0, -1.0, 0.0], [0.0, 0.0, -1.0]], [[-1.0, 0.0, 0.0], [0.0, -1.0, 0.0], [0.0, 0.0, 1.0]], [[-1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, -1.0]], [[-1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]], [[0.0, -1.0, 0.0], [-1.0, 0.0, 0.0], [0.0, 0.0, -1.0]], [[0.0, -1.0, 0.0], [-1.0, 0.0, 0.0], [0.0, 0.0, 1.0]], [[0.0, -1.0, 0.0], [1.0, 0.0, 0.0], [0.0, 0.0, -1.0]], [[0.0, -1.0, 0.0], [1.0, 0.0, 0.0], [0.0, 0.0, 1.0]], [[0.0, 1.0, 0.0], [-1.0, 0.0, 0.0], [0.0, 0.0, -1.0]], [[0.0, 1.0, 0.0], [-1.0, 0.0, 0.0], [0.0, 0.0, 1.0]], [[0.0, 1.0, 0.0], [1.0, 0.0, 0.0], [0.0, 0.0, -1.0]], [[0.0, 1.0, 0.0], [1.0, 0.0, 0.0], [0.0, 0.0, 1.0]], [[1.0, 0.0, 0.0], [0.0, -1.0, 0.0], [0.0, 0.0, -1.0]], [[1.0, 0.0, 0.0], [0.0, -1.0, 0.0], [0.0, 0.0, 1.0]], [[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, -1.0]], [[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]]], [[0.5, 0.5, 0.25], [0.0, 0.0, 0.0], [0.5, 0.5, 0.25], [0.0, 0.0, 0.0], [0.5, 0.5, 0.25], [0.0, 0.0, 0.0], [0.5, 0.5, 0.25], [0.0, 0.0, 0.0], [0.5, 0.5, 0.25], [0.0, 0.0, 0.0], [0.5, 0.5, 0.25], [0.0, 0.0, 0.0], [0.5, 0.5, 0.25], [0.0, 0.0, 0.0], [0.5, 0.5, 0.25], [0.0, 0.0, 0.0]])
-        print(get_spaceGroup(par_lat,atomType,bas_vecs,eps,lattcoords))
+        out =  ([[[0.0, 1.0, 0.0], [1.0, 0.0, 0.0], [0.0, 0.0, 1.0]], [[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]]], [[0.0, 0.0, 0.0], [0.0, 0.0, 0.0]])
         self.assertEqual(get_spaceGroup(par_lat,atomType,bas_vecs,eps,lattcoords),out)
 
     def test9(self):
@@ -411,10 +409,9 @@ class TestGetSpaceGroup(ut.TestCase):
         lattcoords =  _read_logical(gpath+"get_spaceGroup_lattcoords.in."+str(case))
 
         out = _read_spaceGroup(case)
-        print("eps prime",eps)
+
         ops, fract = get_spaceGroup(par_lat,atomType,bas_vecs,eps=eps,lattcoords=lattcoords)
-        print(len(out[0]),len(out[1]))
-        print(len(ops),len(fract))
+
         self._compare_space_group(out,[ops,fract])
 
     def test_getsg18(self):
@@ -458,6 +455,18 @@ class TestGetSpaceGroup(ut.TestCase):
         ops, fract = get_spaceGroup(par_lat,atomType,bas_vecs,eps,lattcoords)
         self._compare_space_group(out,[ops,fract])
         
+    def test_getsg21(self):
+        from phenum.symmetry import get_spaceGroup, _get_transformations
+        par_lat =  [[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]]
+        (prim_to_cart, cart_to_prim) = _get_transformations(par_lat)
+        atomType =  [1, 1, 1]
+        bas_vecs =  [[0.0, 0.0, 0.0], [0.25, 0.25, 0.75], [0.5, 0.5, 0.25]]
+        bas_vecs = [np.matmul(cart_to_prim, i).tolist() for i in bas_vecs]
+        eps =  1e-10
+        lattcoords =  True
+        out =  ([[[0.0, 1.0, 0.0], [1.0, 0.0, 0.0], [0.0, 0.0, 1.0]], [[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]]], [[0.0, 0.0, 0.0], [0.0, 0.0, 0.0]])
+        self.assertEqual(get_spaceGroup(par_lat,atomType,bas_vecs,eps,lattcoords),out)
+
 class TestBringIntoCell(ut.TestCase):
     """Tests of the bring_into_cell subroutine."""
 
@@ -605,6 +614,42 @@ class TestBringIntoCell(ut.TestCase):
         out =  [0.0, 0.0, 0.0]
         self.assertEqual(bring_into_cell(bas_vecs,cart_to_latt,latt_to_cart,eps),out)
 
+    def test16(self):
+        from phenum.symmetry import bring_into_cell
+        bas_vecs = [1.0,0.0,1.0]
+        cart_to_latt = [[1.0, -1.0, 0.1], [1.0, 1.0, -0.1], [-1.0, 1.0, 0.1]]
+        latt_to_cart = [[0.5, 0.5, 0.0], [0.0, 0.5, 0.5], [5.0, 0.0, 5.0]]
+        eps = 1e-3
+        out = [1.0,0.0,1.0]
+        self.assertEqual(bring_into_cell(bas_vecs,cart_to_latt,latt_to_cart,eps),out)
+
+    def test17(self):
+        from phenum.symmetry import bring_into_cell
+        bas_vecs = [2.0,0.0,2.0]
+        cart_to_latt = [[1.0, -1.0, 0.1], [1.0, 1.0, -0.1], [-1.0, 1.0, 0.1]]
+        latt_to_cart = [[0.5, 0.5, 0.0], [0.0, 0.5, 0.5], [5.0, 0.0, 5.0]]
+        eps = 1e-3
+        out = [2.0,0.0,2.0]
+        self.assertEqual(bring_into_cell(bas_vecs,cart_to_latt,latt_to_cart,eps),out)
+
+    def test18(self):
+        from phenum.symmetry import bring_into_cell
+        bas_vecs = [3.0,0.0,3.0]
+        cart_to_latt = [[1.0, -1.0, 0.1], [1.0, 1.0, -0.1], [-1.0, 1.0, 0.1]]
+        latt_to_cart = [[0.5, 0.5, 0.0], [0.0, 0.5, 0.5], [5.0, 0.0, 5.0]]
+        eps = 1e-3
+        out = [3.0000000000000004, 0.0, 3.0000000000000004]
+        self.assertEqual(bring_into_cell(bas_vecs,cart_to_latt,latt_to_cart,eps),out)
+
+    def test19(self):
+        from phenum.symmetry import bring_into_cell
+        bas_vecs = [0.0, 0.5779502399999998, 1.6329931599999998]
+        cart_to_latt = [[1.0, 0.0, 0.0], [-0.5773502717125849, 1.1547005434251698, 0.0], [0.0, 0.0, 0.6123724213915893]]
+        latt_to_cart = [[1.0, 0.0, 0.0], [0.5, 0.8660254, 0.0], [0.0, 0.0, 1.6329932]]
+        eps = 1e-3
+        out = [1.0000000000000000, 0.57795023999999980, -4.0000000416390380E-008]
+        self.assertEqual(bring_into_cell(bas_vecs,cart_to_latt,latt_to_cart,eps),out)
+       
 class TestGetLatticePointGroup(ut.TestCase):
     def test_getpg1(self):
         from phenum.symmetry import _get_lattice_pointGroup

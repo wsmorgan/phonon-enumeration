@@ -49,7 +49,7 @@ def map_enumStr_to_real_space(system_data,structure_data,minkowskiReduce):
             for z2 in range(int((b*z1)/a), int(c+(b*z1)/a)):
                 for z3 in range(int(z1*(d-(e*b)/c)/a+(e*z2)/c), int(f+z1*(d-(e*b)/c)/a+(e*z2)/c)):
                     ic +=1
-                    if ic > n:
+                    if ic > n: #pragma: no cover
                         from .msg import err
                         err("Problem with basis atoms in map_enpStr_to_real_space...")
                         exit()
@@ -60,7 +60,7 @@ def map_enumStr_to_real_space(system_data,structure_data,minkowskiReduce):
                     # Map position into the group
                     greal = matmul(L,[float(z1),float(z2),float(z3)]).tolist() 
                     g = [int(i) for i in greal] # Convert the g-vector from real to integer
-                    if not allclose(greal,g,rtol=eps,atol=eps):
+                    if not allclose(greal,g,rtol=eps,atol=eps): #pragma: no cover
                         from .msg import err
                         err("map2G didn't work in map_enumStr_to_real_space")
                         exit()
@@ -70,7 +70,7 @@ def map_enumStr_to_real_space(system_data,structure_data,minkowskiReduce):
                     # tells us which atom type is used at this position
 
                     gIndx.append((iD)*S[0]*S[1]*S[2]+g[0]*S[1]*S[2]+g[1]*S[2]+g[2])
-    if ic != n*nD:
+    if ic != n*nD: #pragma: no cover
         from .msg import err
         err("ERROR: map_enumStr_to_real_space: Didn't find the correct # of basis atoms")
         exit()
@@ -113,9 +113,8 @@ def _minkowski_reduce_basis(IN,eps):
     limit = 10
 
     if allclose(linalg.det(IN),0.0,rtol=eps,atol=eps):
-        from .msg import err
-        err("Input basis for 'minkowski_reduce_basis' was not linearly independent")
-        exit()
+        raise ValueError("Input basis for 'minkowski_reduce_basis' was not linearly independent")
+
     OUT = deepcopy(IN)
 
     # Keep applying the greedy algorithm until the vectors come out already sorted
@@ -135,7 +134,7 @@ def _minkowski_reduce_basis(IN,eps):
         if linalg.norm(OUT[2]) >= (linalg.norm(OUT[1])-eps):
             break
 
-    if not _minkowski_conditions_check(OUT,eps):
+    if not _minkowski_conditions_check(OUT,eps): #pragma: no cover
         from .msg import err
         err("ERROR in minkowski_reduce_basis: Minkowski conditions not met."
             "Number of iterations: {}".format(str(limit)))
@@ -249,7 +248,7 @@ def _reduce_C_in_ABC(A,B,C,eps):
     cpdAB = [i/linalg.norm(cross(A,B)) for i in cross(A,B)]
     T = [C[i] - cpdAB[i]*dot(C,cpdAB) for i in range(3)]
 
-    if not allclose(dot(T,cross(A,B)),0,atol=eps,rtol=eps):
+    if not allclose(dot(T,cross(A,B)),0,atol=eps,rtol=eps): #pragma: no cover
         from .msg import err
         err("{} Projection of C into A,B plane failed".format(str(dot(T,cross(A,B)))))
 
@@ -286,8 +285,8 @@ def _reduce_C_in_ABC(A,B,C,eps):
         temp1 = [corners[3][i] + LC[i] for i in range(3)]
         temp2 = matmul(temp1,ABC).tolist()
         C = [C[i] - temp2[i] for i in range(len(C))]
-    else:
-        from .msg import err
+    else: #pragma: no cover
+        from .msg import err 
         err("Case failed in reduce_C_in_ABC"
             "Lattice coordinates in the A,B plane: ".format(' '.join([str(i) for i in LC])))
 
@@ -296,7 +295,7 @@ def _reduce_C_in_ABC(A,B,C,eps):
     temp = matmul(list(map(list,zip(*ABCinv))),list(map(list,zip(*oldABC)))).tolist()
     for i in range(3):
         for j in range(3):
-            if abs(temp[i][j] - int(round(temp[i][j]))) > eps:
+            if abs(temp[i][j] - int(round(temp[i][j]))) > eps: #pragma: no cover
                 from .msg import err
                 err("Lattice was not preserved in reduce_C_in_ABC")
                 exit()
@@ -333,7 +332,7 @@ def _gaussian_reduce_two_vectors(U,V,eps):
     done = False
     it = 1
     while not done:
-        if it > 10:
+        if it > 10: # pragma: no cover
             from .msg import err
             err("gaussian_reduce_two_vectors failed to converge in 10 iterations")
             exit()

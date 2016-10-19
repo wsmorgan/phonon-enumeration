@@ -156,7 +156,7 @@ def bring_into_cell(vec,cart_to_latt,latt_to_cart,eps):
                 vec[i] -= 1
             elif vec[i] < 0-eps:
                 vec[i] += 1
-        if (c>maxc):
+        if (c>maxc): #pragma: no cover
             print("ERROR: loop does not end in bring_into_cell. Probably compiler bug.")
             exit()
 
@@ -292,7 +292,7 @@ def get_spaceGroup(par_lat,atomType,bas_vecs,eps=1E-10,lattcoords = False):
         # Loop over all possible fractional translations
         for jAtom in range(nAtoms):
             if (atomType[jAtom] != atomType[0]):
-                continue
+                continue #pragma: no cover
             fract = [atom_pos[jAtom][i] - v[i] for i in range(3)]
             fract = bring_into_cell(fract, cart_to_latt, latt_to_cart, eps)
             # Is each atom of every type mapped by this rotation + translation?

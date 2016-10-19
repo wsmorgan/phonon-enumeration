@@ -350,7 +350,7 @@ def brancher(concs,group,colors_w_arrows, dim, supers, cellsize, total=0, subset
 
     from random import random
     from phenum.msg import verbosity
-    if verbosity is not None and verbosity >= 1:
+    if verbosity is not None and verbosity >= 1: #pragma: no cover
         from tqdm import tqdm
         if isinstance(subset, list) and len(subset) > 0:
             ntotal = len(subset)
@@ -517,10 +517,10 @@ def brancher(concs,group,colors_w_arrows, dim, supers, cellsize, total=0, subset
                 
         if len(survivors) > ncurrent:
             ncurrent = len(survivors)
-            if verbosity is not None and verbosity >= 1:
+            if verbosity is not None and verbosity >= 1: #pragma: no cover
                 pbar.update(1)
                 
-    if verbosity is not None and verbosity >= 1:
+    if verbosity is not None and verbosity >= 1: #pragma: no cover
         pbar.close()
     # done
     return survivors

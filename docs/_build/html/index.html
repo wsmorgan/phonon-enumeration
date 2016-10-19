@@ -1,0 +1,643 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="python">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Welcome to phenum’s documentation! &#8212; phenum 10 documentation</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '10',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="top" title="phenum 10 documentation" href="#" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="welcome-to-phenum-s-documentation">
+<h1>Welcome to phenum&#8217;s documentation!<a class="headerlink" href="#welcome-to-phenum-s-documentation" title="Permalink to this headline">¶</a></h1>
+<p>Contents:</p>
+<div class="toctree-wrapper compound">
+</div>
+<span class="target" id="module-phenum.symmetry"></span><p>Methods used for generating the symmetry group. All of these
+methods were adapted to python from their original fortran
+implementations which can be found at:
+<a class="reference external" href="https://github.com/msg-byu/symlib">https://github.com/msg-byu/symlib</a></p>
+<dl class="function">
+<dt id="phenum.symmetry.bring_into_cell">
+<code class="descclassname">phenum.symmetry.</code><code class="descname">bring_into_cell</code><span class="sig-paren">(</span><em>vec</em>, <em>cart_to_latt</em>, <em>latt_to_cart</em>, <em>eps</em><span class="sig-paren">)</span><a class="headerlink" href="#phenum.symmetry.bring_into_cell" title="Permalink to this definition">¶</a></dt>
+<dd><p>This subroutine translates a point back into the unit cell in
+lattice coordinates, the coefficients of the point must all be
+less than one and at least zero.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Args vec:</th><td class="field-body">A 1D integer array of the atom position vector</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">Args cart_to_latt:</th></tr>
+<tr class="field-even field"><td>&nbsp;</td><td class="field-body">The matrix that transforms from cartesian to lattice coordinates</td>
+</tr>
+<tr class="field-odd field"><th class="field-name" colspan="2">Args latt_to_cart:</th></tr>
+<tr class="field-odd field"><td>&nbsp;</td><td class="field-body">The matrix that transforms form lattice to cartesian coordinates</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Args eps:</th><td class="field-body">Finite precision tolerance.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="phenum.symmetry.get_concs_for_size">
+<code class="descclassname">phenum.symmetry.</code><code class="descname">get_concs_for_size</code><span class="sig-paren">(</span><em>size</em>, <em>nspecies</em>, <em>res_concs</em>, <em>nB</em>, <em>concs</em><span class="sig-paren">)</span><a class="headerlink" href="#phenum.symmetry.get_concs_for_size" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets the concentration ranges for the atoms within the cells of
+certain sizes given the constraints provided such as
+concentration restrictions and the presence of arrows. Code
+rewritten from the get_conetration_list subroutine of:
+<a class="reference external" href="https://github.com/msg-byu/enumlib/blob/master/src/derivative_structure_generator.f90">https://github.com/msg-byu/enumlib/blob/master/src/derivative_structure_generator.f90</a></p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>size</strong> &#8211; the cell size in integer form</li>
+<li><strong>nspecies</strong> &#8211; the number of atomic species in the system</li>
+<li><strong>res_concs</strong> &#8211; a logical that indicates of the concentrations</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>are being restricted
+:arg nB: the number of basis vectors being used
+:arg concs: an 2D integer array that contains the concentration
+ranges for each atom in the system</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="phenum.symmetry.get_spaceGroup">
+<code class="descclassname">phenum.symmetry.</code><code class="descname">get_spaceGroup</code><span class="sig-paren">(</span><em>par_lat</em>, <em>atomType</em>, <em>bas_vecs</em>, <em>eps=1e-10</em>, <em>lattcoords=False</em><span class="sig-paren">)</span><a class="headerlink" href="#phenum.symmetry.get_spaceGroup" title="Permalink to this definition">¶</a></dt>
+<dd><p>This routine takes a crystal structure (basis vectors and basis
+atoms and positions) and returns the point operators and
+fractional translations of the space group. The routine assumes
+that the given crystal structure is already primitive.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Args par_lat:</th><td class="field-body">A 2D integere array that contains the parent lattice vectors</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Args atomType:</th><td class="field-body">Integer array representing the type of each basis atom</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Args bas_vecs:</th><td class="field-body">A 2D integere array that contains the basis vectors for the cell</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Args eps:</th><td class="field-body">(Optional) Finite precisions tolerance</td>
+</tr>
+<tr class="field-odd field"><th class="field-name" colspan="2">Args lattcoords:</th></tr>
+<tr class="field-odd field"><td>&nbsp;</td><td class="field-body">(Optional) True if vectors are in lattice
+coordinates rather than cartesian</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<span class="target" id="module-phenum.element_data"></span><dl class="function">
+<dt id="phenum.element_data.get_lattice_parameter">
+<code class="descclassname">phenum.element_data.</code><code class="descname">get_lattice_parameter</code><span class="sig-paren">(</span><em>elements</em>, <em>concentrations</em>, <em>default_title</em><span class="sig-paren">)</span><a class="headerlink" href="#phenum.element_data.get_lattice_parameter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Finds the lattice parameters for the provided atomic species using Vagars law.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>elements</strong> &#8211; A dictionary of elements in the system and their concentrations.</li>
+<li><strong>title</strong> &#8211; The default system title.</li>
+<li><strong>concentrations</strong> &#8211; The concentrations of each element.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<span class="target" id="module-phenum.phonons"></span><p>Methods needed for the enumeration of arrows.</p>
+<dl class="function">
+<dt id="phenum.phonons.add_arrows">
+<code class="descclassname">phenum.phonons.</code><code class="descname">add_arrows</code><span class="sig-paren">(</span><em>col</em>, <em>agroup</em>, <em>dim</em>, <em>accept=None</em>, <em>nested=False</em>, <em>num_wanted=None</em>, <em>small=False</em><span class="sig-paren">)</span><a class="headerlink" href="#phenum.phonons.add_arrows" title="Permalink to this definition">¶</a></dt>
+<dd><p>Finds the unique arrangements of arrows for a given configuration.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>col</strong> &#8211; a 2D integer array of the initial labeling</li>
+<li><strong>agroup</strong> &#8211; the stabilizers for the colors only with the arrow</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>permutations
+:arg dim: the number of directions the arrows can point
+:arg accept: acceptance rate of configurations for large enumerations.
+:arg nested: set to True if this is called from within the context</p>
+<blockquote>
+<div>of another progress bar.</div></blockquote>
+</dd></dl>
+
+<dl class="function">
+<dt id="phenum.phonons.arrow_concs">
+<code class="descclassname">phenum.phonons.</code><code class="descname">arrow_concs</code><span class="sig-paren">(</span><em>cList</em>, <em>aconcs</em><span class="sig-paren">)</span><a class="headerlink" href="#phenum.phonons.arrow_concs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Uses the concentrations of the atoms and the arrows to make a
+labeling for the system. It then sorts them to be in the correct
+order for the code.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>cListr</strong> &#8211; an integer array the concentration of the colors</li>
+<li><strong>aconcs</strong> &#8211; an array of floats of the fractional number of arrows</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>for each color</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="phenum.phonons.enum_sys">
+<code class="descclassname">phenum.phonons.</code><code class="descname">enum_sys</code><span class="sig-paren">(</span><em>groupfile</em>, <em>concs</em>, <em>a_concs</em>, <em>num_wanted</em>, <em>HNF</em>, <em>params</em>, <em>accept=None</em><span class="sig-paren">)</span><a class="headerlink" href="#phenum.phonons.enum_sys" title="Permalink to this definition">¶</a></dt>
+<dd><p>Enumerates a random subset of the unique structures that have the shape
+defined by the symmetry group and the specified concentration.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>groupfile</strong> &#8211; path to the file containing the symmetry group.</li>
+<li><strong>concs</strong> &#8211; list of integer concentrations for each species.</li>
+<li><strong>a_concs</strong> &#8211; list of integer <em>arrow</em> concentrations for each species.</li>
+<li><strong>num_wanted</strong> &#8211; the number of structures to pick randomly from the enumerated
+list.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Args HNF:</th><td class="field-body"><p class="first">the HNF for the system we&#8217;re currently enumerating</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Args params:</th><td class="field-body"><p class="first last">the dictionary of parameters read in from lattice.in</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="phenum.phonons.get_arrow_concs">
+<code class="descclassname">phenum.phonons.</code><code class="descname">get_arrow_concs</code><span class="sig-paren">(</span><em>params</em><span class="sig-paren">)</span><a class="headerlink" href="#phenum.phonons.get_arrow_concs" title="Permalink to this definition">¶</a></dt>
+<dd><p>If the concentrations are being restricted then find the correct 
+arrow for each species included.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>params</strong> &#8211; the lattice.in parameters.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="phenum.phonons.how_many_arrows">
+<code class="descclassname">phenum.phonons.</code><code class="descname">how_many_arrows</code><span class="sig-paren">(</span><em>tcol</em><span class="sig-paren">)</span><a class="headerlink" href="#phenum.phonons.how_many_arrows" title="Permalink to this definition">¶</a></dt>
+<dd><p>Determines the number of colors that have arrows on them.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>tcol</strong> &#8211; a 2D array of the labeling that contains the colors</td>
+</tr>
+</tbody>
+</table>
+<p>and arrows for each site.</p>
+</dd></dl>
+
+<span class="target" id="module-phenum.structures"></span><p>Methods for reading and writing enumeration and polya-counting results.</p>
+<dl class="function">
+<dt id="phenum.structures.enum_data">
+<code class="descclassname">phenum.structures.</code><code class="descname">enum_data</code><span class="sig-paren">(</span><em>cellsize</em>, <em>args</em>, <em>params</em><span class="sig-paren">)</span><a class="headerlink" href="#phenum.structures.enum_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a list of dictionaries with the HNF, SNF, Left Transform
+and permutation group file names for the given cell size.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="phenum.structures.make_enum_in">
+<code class="descclassname">phenum.structures.</code><code class="descname">make_enum_in</code><span class="sig-paren">(</span><em>distribution</em>, <em>number=None</em>, <em>dataformat='cells.{}'</em>, <em>sizes=None</em><span class="sig-paren">)</span><a class="headerlink" href="#phenum.structures.make_enum_in" title="Permalink to this definition">¶</a></dt>
+<dd><p>Makes an enum.in file if the distrubiton type is all with the
+desired number of structures. Otherwise prints the distribution
+information to the screen for the user.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>distribution</strong> &#8211; The parameters that the distribution is over</td>
+</tr>
+</tbody>
+</table>
+<p>(&#8216;shape&#8217;, &#8216;conc&#8217;, &#8216;size&#8217;, &#8216;all&#8217;).
+:arg n: The number of structures or &#8216;all&#8217;.
+:arg dataformat: The folder name for the cell sizes.
+:arg sizes: when specified, limit the distribution to these integer cell sizes;</p>
+<blockquote>
+<div>otherwise, look for all cell sizes we have data for.</div></blockquote>
+</dd></dl>
+
+<span class="target" id="module-phenum.vector_utils"></span><p>Contains routines used to map the enumerated structures to real space.</p>
+<dl class="function">
+<dt id="phenum.vector_utils.cartesian2direct">
+<code class="descclassname">phenum.vector_utils.</code><code class="descname">cartesian2direct</code><span class="sig-paren">(</span><em>sLV</em>, <em>aBas</em>, <em>eps</em><span class="sig-paren">)</span><a class="headerlink" href="#phenum.vector_utils.cartesian2direct" title="Permalink to this definition">¶</a></dt>
+<dd><p>This routine takes three lattice vectors and a list of atomic basis
+vector in Cartesian coordinates and converts them to direct
+(&#8220;lattice&#8221;) coordinates.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>sLV</strong> &#8211; Superlattice vectors (Cartesian coordinates)</li>
+<li><strong>aBas</strong> &#8211; Atomic positions (cartesian coordinates first, then direct)</li>
+<li><strong>eps</strong> &#8211; Finite precision tolerance.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="phenum.vector_utils.map_enumStr_to_real_space">
+<code class="descclassname">phenum.vector_utils.</code><code class="descname">map_enumStr_to_real_space</code><span class="sig-paren">(</span><em>system_data</em>, <em>structure_data</em>, <em>minkowskiReduce</em><span class="sig-paren">)</span><a class="headerlink" href="#phenum.vector_utils.map_enumStr_to_real_space" title="Permalink to this definition">¶</a></dt>
+<dd><p>Maps an enumerated structure back to real space. Returns a
+dictionary containing the real space data.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>system_data</strong> &#8211; a dictionary containing all the information about the sysytem.</li>
+<li><strong>sturture_data</strong> &#8211; a dictionary containing the information for this structure.</li>
+<li><strong>minkowskiReduce</strong> &#8211; logical indicating if basis should be reduced.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<span class="target" id="module-phenum.tree"></span><p>The heart of the code is here. These methods build the tree and
+check the canfigurations for uniqueness.</p>
+<dl class="function">
+<dt id="phenum.tree.brancher">
+<code class="descclassname">phenum.tree.</code><code class="descname">brancher</code><span class="sig-paren">(</span><em>concs</em>, <em>group</em>, <em>colors_w_arrows</em>, <em>dim</em>, <em>total=0</em>, <em>subset=None</em>, <em>accept=None</em><span class="sig-paren">)</span><a class="headerlink" href="#phenum.tree.brancher" title="Permalink to this definition">¶</a></dt>
+<dd><p>This routine navigates the tree and saves the unique configurations
+to an array survivors.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>concs</strong> &#8211; the concentrations of the colors or atoms</li>
+<li><strong>group</strong> &#8211; the symmetry group for the system, including the</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>effect on the arrows (displacement directions)
+:arg colors_w_arrows: an integer 2D array that indiciates
+which atoms are being displaced, i.e., where the arrows are.
+:arg dim: the number of directions the arrows can point
+:arg total: the total number predicted by polya.
+:arg subset: an integer array of the subset of unique
+arrangements wanted
+:arg accept: for large enumerations, how often to accept configurations.</p>
+<p>The method returns the list of unique configurations and the
+number of stabilizers for the last level of the tree.</p>
+<p>survivors: is the 3D array of the unique arrangements of
+colors and arrows
+stob_len: the number of stabilizers for a given unique
+configuration</p>
+</dd></dl>
+
+<span class="target" id="module-phenum.grouptheory"></span><p>Methods for taking an HNF and finding the site permutations and the
+arrow permutations. All of these have been modified for python from
+their original fortran implementations which can be found at:
+<a class="reference external" href="https://github.com/msg-byu/enumlib/">https://github.com/msg-byu/enumlib/</a>. Of these only get_rotation
+get_rotation_perms_lists() has been modified in order to produce the
+arrow group. The class ArrowPerm has also been added and implemented
+inside the RotPermList class.</p>
+<dl class="class">
+<dt id="phenum.grouptheory.ArrowPerm">
+<em class="property">class </em><code class="descclassname">phenum.grouptheory.</code><code class="descname">ArrowPerm</code><span class="sig-paren">(</span><em>site_perm=None</em>, <em>arrow_perm=None</em><span class="sig-paren">)</span><a class="headerlink" href="#phenum.grouptheory.ArrowPerm" title="Permalink to this definition">¶</a></dt>
+<dd><p>ArrowPerm pairs a site permutation with an arrow permutation.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="phenum.grouptheory.RotPermList">
+<em class="property">class </em><code class="descclassname">phenum.grouptheory.</code><code class="descname">RotPermList</code><span class="sig-paren">(</span><em>nL=None</em>, <em>v=None</em>, <em>perm=None</em>, <em>RotIndx=None</em>, <em>arrows=None</em><span class="sig-paren">)</span><a class="headerlink" href="#phenum.grouptheory.RotPermList" title="Permalink to this definition">¶</a></dt>
+<dd><p>RotPermList maintains the data structure for the rotations and
+permutations from the fortran code.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="phenum.grouptheory.SmithNormalForm">
+<code class="descclassname">phenum.grouptheory.</code><code class="descname">SmithNormalForm</code><span class="sig-paren">(</span><em>HNF</em><span class="sig-paren">)</span><a class="headerlink" href="#phenum.grouptheory.SmithNormalForm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Finds the Smith Normal Form (SNF) of an HNF as well as the left and
+right transforms.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Args HNF:</th><td class="field-body">The integer matrix HNF for which the SNFs are to be
+found</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="phenum.grouptheory.a_group">
+<code class="descclassname">phenum.grouptheory.</code><code class="descname">a_group</code><span class="sig-paren">(</span><em>trans</em>, <em>rots</em><span class="sig-paren">)</span><a class="headerlink" href="#phenum.grouptheory.a_group" title="Permalink to this definition">¶</a></dt>
+<dd><p>This subroutine combines that translations of the lattice with the
+rotatians of the lattice.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>trans</strong> &#8211; a 2D integer array where each row is an translation</td>
+</tr>
+</tbody>
+</table>
+<p>of the lattice
+:arg rots: a 3D integer array. Each row&#8217;s first entry is the
+site permutations and the second entry is the arrow
+permutations.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="phenum.grouptheory.a_group_gen">
+<code class="descclassname">phenum.grouptheory.</code><code class="descname">a_group_gen</code><span class="sig-paren">(</span><em>trans</em>, <em>rots</em><span class="sig-paren">)</span><a class="headerlink" href="#phenum.grouptheory.a_group_gen" title="Permalink to this definition">¶</a></dt>
+<dd><p>This subroutine combines that translations of the lattice with the
+rotatians of the lattice for the generators of the system.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>trans</strong> &#8211; a 2D integer array where each row is an translation</td>
+</tr>
+</tbody>
+</table>
+<p>of the lattice
+:arg rots: a 3D integer array. Each row&#8217;s first entry is the
+site permutations and the second entry is the arrow
+permutations.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="phenum.grouptheory.get_full_HNF">
+<code class="descclassname">phenum.grouptheory.</code><code class="descname">get_full_HNF</code><span class="sig-paren">(</span><em>HNF</em><span class="sig-paren">)</span><a class="headerlink" href="#phenum.grouptheory.get_full_HNF" title="Permalink to this definition">¶</a></dt>
+<dd><p>Turns the reduced HNF to a full HNF matrix.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Args HNF:</th><td class="field-body">The 1D integer numpy array that contains all the lower</td>
+</tr>
+</tbody>
+</table>
+<p>diagonal entries of the HNF matrix.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="phenum.grouptheory.get_sym_group">
+<code class="descclassname">phenum.grouptheory.</code><code class="descname">get_sym_group</code><span class="sig-paren">(</span><em>par_lat</em>, <em>bas_vecs</em>, <em>HNF</em>, <em>LatDim</em><span class="sig-paren">)</span><a class="headerlink" href="#phenum.grouptheory.get_sym_group" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generates the symmetry group for a given lattice and HNF</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Args par_lat:</th><td class="field-body">a 2D integer array that contains the parrent</td>
+</tr>
+</tbody>
+</table>
+<p>lattice vectors
+:args bas_vecs: The atomic basis for the lattice
+:args HNF: The HNF that defines the supercell
+:args LatDim: 2 if a 2D case 3 if 3D</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="phenum.grouptheory.opList">
+<em class="property">class </em><code class="descclassname">phenum.grouptheory.</code><code class="descname">opList</code><span class="sig-paren">(</span><em>rot=None</em>, <em>shift=None</em><span class="sig-paren">)</span><a class="headerlink" href="#phenum.grouptheory.opList" title="Permalink to this definition">¶</a></dt>
+<dd><p>opList maintains the data structure of the fixing operations form
+the fortran code.</p>
+</dd></dl>
+
+<span class="target" id="module-phenum.msg"></span><p>This module handles writing to the terminal or a log file with support
+for coloring for warnings, errors, etc.</p>
+<dl class="function">
+<dt id="phenum.msg.arb">
+<code class="descclassname">phenum.msg.</code><code class="descname">arb</code><span class="sig-paren">(</span><em>text</em>, <em>cols</em>, <em>split</em><span class="sig-paren">)</span><a class="headerlink" href="#phenum.msg.arb" title="Permalink to this definition">¶</a></dt>
+<dd><p>Prints a line of text in arbitrary colors specified by the numeric
+values contained in msg.cenum dictionary.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="phenum.msg.blank">
+<code class="descclassname">phenum.msg.</code><code class="descname">blank</code><span class="sig-paren">(</span><em>n=1</em>, <em>level=2</em><span class="sig-paren">)</span><a class="headerlink" href="#phenum.msg.blank" title="Permalink to this definition">¶</a></dt>
+<dd><p>Prints a blank line to the terminal.</p>
+</dd></dl>
+
+<dl class="data">
+<dt id="phenum.msg.cenum">
+<code class="descclassname">phenum.msg.</code><code class="descname">cenum</code><em class="property"> = {'cwarn': 1, 'cerrs': 0, 'cstds': 4, 'cokay': 5, 'cinfo': 2, 'cgens': 3}</em><a class="headerlink" href="#phenum.msg.cenum" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dict of the various colors available for coloring specific
+lines in the arb().</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="phenum.msg.err">
+<code class="descclassname">phenum.msg.</code><code class="descname">err</code><span class="sig-paren">(</span><em>msg</em>, <em>level=-1</em>, <em>prefix=True</em><span class="sig-paren">)</span><a class="headerlink" href="#phenum.msg.err" title="Permalink to this definition">¶</a></dt>
+<dd><p>Prints the specified message as an error; prepends &#8220;ERROR&#8221; to
+the message, so that can be left off.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="phenum.msg.gen">
+<code class="descclassname">phenum.msg.</code><code class="descname">gen</code><span class="sig-paren">(</span><em>msg</em>, <em>level=1</em><span class="sig-paren">)</span><a class="headerlink" href="#phenum.msg.gen" title="Permalink to this definition">¶</a></dt>
+<dd><p>Prints the message as generic output to terminal.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="phenum.msg.info">
+<code class="descclassname">phenum.msg.</code><code class="descname">info</code><span class="sig-paren">(</span><em>msg</em>, <em>level=1</em><span class="sig-paren">)</span><a class="headerlink" href="#phenum.msg.info" title="Permalink to this definition">¶</a></dt>
+<dd><p>Prints the specified message as information.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="phenum.msg.okay">
+<code class="descclassname">phenum.msg.</code><code class="descname">okay</code><span class="sig-paren">(</span><em>msg</em>, <em>level=1</em><span class="sig-paren">)</span><a class="headerlink" href="#phenum.msg.okay" title="Permalink to this definition">¶</a></dt>
+<dd><p>Prints the specified message as textual progress update.</p>
+</dd></dl>
+
+<dl class="data">
+<dt id="phenum.msg.quiet">
+<code class="descclassname">phenum.msg.</code><code class="descname">quiet</code><em class="property"> = None</em><a class="headerlink" href="#phenum.msg.quiet" title="Permalink to this definition">¶</a></dt>
+<dd><p>When in quiet mode, no text is ever printed to terminal unless its
+verbosity level is explicitly specified.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="phenum.msg.set_quiet">
+<code class="descclassname">phenum.msg.</code><code class="descname">set_quiet</code><span class="sig-paren">(</span><em>is_quiet</em><span class="sig-paren">)</span><a class="headerlink" href="#phenum.msg.set_quiet" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets whether the messaging system is running in quiet mode. Quiet mode
+only prints messages with explicit verbosity specified. If verbosity==None
+and quiet==True, any message with level &gt;= 0 is printed.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="phenum.msg.set_verbosity">
+<code class="descclassname">phenum.msg.</code><code class="descname">set_verbosity</code><span class="sig-paren">(</span><em>level</em><span class="sig-paren">)</span><a class="headerlink" href="#phenum.msg.set_verbosity" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the modules message verbosity level for <em>all</em> messages printed.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>level</strong> &#8211; a positive integer (&gt;0); higher levels including more detail.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="phenum.msg.std">
+<code class="descclassname">phenum.msg.</code><code class="descname">std</code><span class="sig-paren">(</span><em>msg</em>, <em>level=1</em><span class="sig-paren">)</span><a class="headerlink" href="#phenum.msg.std" title="Permalink to this definition">¶</a></dt>
+<dd><p>Prints using the standard print() function.</p>
+</dd></dl>
+
+<dl class="data">
+<dt id="phenum.msg.verbosity">
+<code class="descclassname">phenum.msg.</code><code class="descname">verbosity</code><em class="property"> = None</em><a class="headerlink" href="#phenum.msg.verbosity" title="Permalink to this definition">¶</a></dt>
+<dd><p>The verbosity level of messages being printed by the module.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="phenum.msg.warn">
+<code class="descclassname">phenum.msg.</code><code class="descname">warn</code><span class="sig-paren">(</span><em>msg</em>, <em>level=0</em>, <em>prefix=True</em><span class="sig-paren">)</span><a class="headerlink" href="#phenum.msg.warn" title="Permalink to this definition">¶</a></dt>
+<dd><p>Prints the specified message as a warning; prepends &#8220;WARNING&#8221; to
+the message, so that can be left off.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="phenum.msg.will_print">
+<code class="descclassname">phenum.msg.</code><code class="descname">will_print</code><span class="sig-paren">(</span><em>level=1</em><span class="sig-paren">)</span><a class="headerlink" href="#phenum.msg.will_print" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns True if the current global status of messaging would print a
+message using any of the printing functions in this module.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="indices-and-tables">
+<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></li>
+<li><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></li>
+<li><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></li>
+</ul>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="#">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Welcome to phenum&#8217;s documentation!</a></li>
+<li><a class="reference internal" href="#indices-and-tables">Indices and tables</a></li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="#">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/index.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2016, Wiley S. Morgan.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.4.8</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
+      
+      |
+      <a href="_sources/index.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

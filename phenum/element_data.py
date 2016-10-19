@@ -23,11 +23,10 @@ def get_lattice_parameter(elements, concentrations, default_title):
         title = default_title
     else:
         if len(elements) != len(concentrations):
-            from msg import err
-            err("You have provided {} element names when {} elements are present "
+            raise ValueError("You have provided {} element names when {} elements are present "
                 "in the system. Please provide the correct number of elements."
                 .format(len(elements),len(concentrations)))
-            exit()
+
         else:
             title = ""
             lat_param = 0

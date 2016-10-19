@@ -420,132 +420,132 @@ class TestEnumSys(ut.TestCase):
         out = [[[-1, 1], [-1, 1], [-1, 1], [-1, 1], [-1, 2], [-1, 2], [-1, 2], [-1, 2]], [[-1, 1], [-1, 1], [-1, 1], [-1, 2], [-1, 1], [-1, 2], [-1, 2], [-1, 2]], [[-1, 1], [-1, 1], [-1, 1], [-1, 2], [-1, 2], [-1, 1], [-1, 2], [-1, 2]], [[-1, 1], [-1, 1], [-1, 1], [-1, 2], [-1, 2], [-1, 2], [-1, 2], [-1, 1]], [[-1, 1], [-1, 1], [-1, 2], [-1, 2], [-1, 1], [-1, 1], [-1, 2], [-1, 2]], [[-1, 1], [-1, 1], [-1, 2], [-1, 2], [-1, 1], [-1, 2], [-1, 1], [-1, 2]], [[-1, 1], [-1, 1], [-1, 2], [-1, 2], [-1, 1], [-1, 2], [-1, 2], [-1, 1]], [[-1, 1], [-1, 1], [-1, 2], [-1, 2], [-1, 2], [-1, 2], [-1, 1], [-1, 1]], [[-1, 1], [-1, 2], [-1, 1], [-1, 2], [-1, 1], [-1, 2], [-1, 1], [-1, 2]], [[-1, 1], [-1, 2], [-1, 1], [-1, 2], [-1, 2], [-1, 1], [-1, 2], [-1, 1]]]
         self.assertEqual(enum_sys(groupfile,concs,a_cons,num_wanted,HNF,params,True),out)
 
-    def test6(self):
-        from phenum.phonons import enum_sys
-        from numpy import array
-        groupfile = None
-        concs = [3,1,2]
-        a_cons = [0.0,0.5,0.25]
-        num_wanted = 6
-        HNF = array([1,0,1,0,0,6])
-        params = {'bulk': True, 'nspecies': 3, 'concs': [[1.0, 6.0, 12.0, 0.0], [1.0, 9.0, 12.0, 0.5], [1.0, 12.0, 12.0, 0.25]], 'basis_vecs': [[0.0, 0.0, 0.0]], 'sizes': [6, 6], 'lat_vecs': [[0.5, 0.5, 0.0], [0.5, 0.0, 0.5], [0.0, 0.5, 0.5]], 'arrows': True, 'is_crestricted': True}
-        out = _read_output("enum_sys.out.6")
+    # def test6(self):
+    #     from phenum.phonons import enum_sys
+    #     from numpy import array
+    #     groupfile = None
+    #     concs = [3,1,2]
+    #     a_cons = [0.0,0.5,0.25]
+    #     num_wanted = 6
+    #     HNF = array([1,0,1,0,0,6])
+    #     params = {'bulk': True, 'nspecies': 3, 'concs': [[1.0, 6.0, 12.0, 0.0], [1.0, 9.0, 12.0, 0.5], [1.0, 12.0, 12.0, 0.25]], 'basis_vecs': [[0.0, 0.0, 0.0]], 'sizes': [6, 6], 'lat_vecs': [[0.5, 0.5, 0.0], [0.5, 0.0, 0.5], [0.0, 0.5, 0.5]], 'arrows': True, 'is_crestricted': True}
+    #     out = _read_output("enum_sys.out.6")
 
-        self.assertEqual(enum_sys(groupfile,concs,a_cons,num_wanted,HNF,params,True),out)
+    #     self.assertEqual(enum_sys(groupfile,concs,a_cons,num_wanted,HNF,params,True),out)
 
-    def test7(self):
-        from phenum.phonons import enum_sys
-        from numpy import array
-        groupfile = None
-        concs = [1,4,1]
-        a_cons = [0.0,0.5,0.25]
-        num_wanted = 124
-        HNF = array([1,0,1,0,5,6])
-        params = {'bulk': True, 'nspecies': 3, 'concs': [[1.0, 6.0, 12.0, 0.0], [1.0, 9.0, 12.0, 0.5], [1.0, 12.0, 12.0, 0.25]], 'basis_vecs': [[0.0, 0.0, 0.0]], 'sizes': [3, 3], 'lat_vecs': [[0.5, 0.5, 0.0], [0.5, 0.0, 0.5], [0.0, 0.5, 0.5]], 'arrows': True, 'is_crestricted': True}
-        out = _read_output("enum_sys.out.7")
+    # def test7(self):
+    #     from phenum.phonons import enum_sys
+    #     from numpy import array
+    #     groupfile = None
+    #     concs = [1,4,1]
+    #     a_cons = [0.0,0.5,0.25]
+    #     num_wanted = 124
+    #     HNF = array([1,0,1,0,5,6])
+    #     params = {'bulk': True, 'nspecies': 3, 'concs': [[1.0, 6.0, 12.0, 0.0], [1.0, 9.0, 12.0, 0.5], [1.0, 12.0, 12.0, 0.25]], 'basis_vecs': [[0.0, 0.0, 0.0]], 'sizes': [3, 3], 'lat_vecs': [[0.5, 0.5, 0.0], [0.5, 0.0, 0.5], [0.0, 0.5, 0.5]], 'arrows': True, 'is_crestricted': True}
+    #     out = _read_output("enum_sys.out.7")
 
-        self.assertEqual(enum_sys(groupfile,concs,a_cons,num_wanted,HNF,params,True),out)
+    #     self.assertEqual(enum_sys(groupfile,concs,a_cons,num_wanted,HNF,params,True),out)
 
-    def test8(self):
-        from phenum.phonons import enum_sys
-        from numpy import array
-        groupfile = None
-        concs = [1,3]
-        a_cons = [0.0,0.75]
-        num_wanted = 19
-        HNF = array([1,0,1,0,1,2])
-        params = {'bulk': True, 'nspecies': 2, 'concs': [[1.0, 6.0, 12.0, 0.0], [1.0, 9.0, 12.0, 0.75]], 'basis_vecs': [[0.0, 0.0, 0.0], [0.5, 0.5, 0.5]], 'sizes': [2, 2], 'lat_vecs': [[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]], 'arrows': True, 'is_crestricted': True}
-        out = _read_output("enum_sys.out.8")
-        self.assertEqual(enum_sys(groupfile,concs,a_cons,num_wanted,HNF,params,True),out)
+    # def test8(self):
+    #     from phenum.phonons import enum_sys
+    #     from numpy import array
+    #     groupfile = None
+    #     concs = [1,3]
+    #     a_cons = [0.0,0.75]
+    #     num_wanted = 19
+    #     HNF = array([1,0,1,0,1,2])
+    #     params = {'bulk': True, 'nspecies': 2, 'concs': [[1.0, 6.0, 12.0, 0.0], [1.0, 9.0, 12.0, 0.75]], 'basis_vecs': [[0.0, 0.0, 0.0], [0.5, 0.5, 0.5]], 'sizes': [2, 2], 'lat_vecs': [[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]], 'arrows': True, 'is_crestricted': True}
+    #     out = _read_output("enum_sys.out.8")
+    #     self.assertEqual(enum_sys(groupfile,concs,a_cons,num_wanted,HNF,params,True),out)
 
-    def test9(self):
-        from phenum.phonons import enum_sys
-        from numpy import array
-        groupfile = None
-        concs = [2,5]
-        a_cons = [0.25,0.75]
-        num_wanted = 738
-        HNF = array([1,0,1,0,0,7])
-        params = {'bulk': True, 'nspecies': 2, 'concs': [[1.0, 6.0, 12.0, 0.25], [1.0, 9.0, 12.0, 0.75]], 'basis_vecs': [[0.0, 0.0, 0.0]], 'sizes': [7, 7], 'lat_vecs': [[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]], 'arrows': True, 'is_crestricted': True}
-        out = _read_output("enum_sys.out.9")
-        self.assertEqual(enum_sys(groupfile,concs,a_cons,num_wanted,HNF,params,True),out)
+    # def test9(self):
+    #     from phenum.phonons import enum_sys
+    #     from numpy import array
+    #     groupfile = None
+    #     concs = [2,5]
+    #     a_cons = [0.25,0.75]
+    #     num_wanted = 738
+    #     HNF = array([1,0,1,0,0,7])
+    #     params = {'bulk': True, 'nspecies': 2, 'concs': [[1.0, 6.0, 12.0, 0.25], [1.0, 9.0, 12.0, 0.75]], 'basis_vecs': [[0.0, 0.0, 0.0]], 'sizes': [7, 7], 'lat_vecs': [[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]], 'arrows': True, 'is_crestricted': True}
+    #     out = _read_output("enum_sys.out.9")
+    #     self.assertEqual(enum_sys(groupfile,concs,a_cons,num_wanted,HNF,params,True),out)
 
-    def test10(self):
-        from phenum.phonons import enum_sys
-        from numpy import array
-        groupfile = None
-        concs = [1,1,1,1]
-        a_cons = [0.0,0.0,1.0,1.0]
-        num_wanted = 36
-        HNF = array([1,0,2,0,0,2])
-        params = {'bulk': True, 'nspecies': 4, 'concs': [[0.0, 4.0, 4.0, 0.0], [0.0, 4.0, 4.0, 0.0], [0.0, 4.0, 4.0, 1.0], [0.0, 4.0, 4.0, 1.0]], 'basis_vecs': [[0.0, 0.0, 0.0]], 'sizes': [4, 4], 'lat_vecs': [[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]], 'arrows': True, 'is_crestricted': True}
-        out = _read_output("enum_sys.out.10")
-        self.assertEqual(enum_sys(groupfile,concs,a_cons,num_wanted,HNF,params,True),out)
+    # def test10(self):
+    #     from phenum.phonons import enum_sys
+    #     from numpy import array
+    #     groupfile = None
+    #     concs = [1,1,1,1]
+    #     a_cons = [0.0,0.0,1.0,1.0]
+    #     num_wanted = 36
+    #     HNF = array([1,0,2,0,0,2])
+    #     params = {'bulk': True, 'nspecies': 4, 'concs': [[0.0, 4.0, 4.0, 0.0], [0.0, 4.0, 4.0, 0.0], [0.0, 4.0, 4.0, 1.0], [0.0, 4.0, 4.0, 1.0]], 'basis_vecs': [[0.0, 0.0, 0.0]], 'sizes': [4, 4], 'lat_vecs': [[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]], 'arrows': True, 'is_crestricted': True}
+    #     out = _read_output("enum_sys.out.10")
+    #     self.assertEqual(enum_sys(groupfile,concs,a_cons,num_wanted,HNF,params,True),out)
 
-    def test11(self):
-        from phenum.phonons import enum_sys
-        from numpy import array
-        groupfile = None
-        concs = [1,0,1,1,1]
-        a_cons = [0.0,0.0,0.0,1.0,1.0]
-        num_wanted = 36
-        HNF = array([1,0,2,0,0,2])
-        params = {'bulk': True, 'nspecies': 4, 'concs': [[0.0, 4.0, 4.0, 0.0], [0.0, 4.0, 4.0, 0.0], [0.0, 4.0, 4.0, 1.0], [0.0, 4.0, 4.0, 1.0]], 'basis_vecs': [[0.0, 0.0, 0.0]], 'sizes': [4, 4], 'lat_vecs': [[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]], 'arrows': True, 'is_crestricted': True}
-        out = _read_output("enum_sys.out.11")
+    # def test11(self):
+    #     from phenum.phonons import enum_sys
+    #     from numpy import array
+    #     groupfile = None
+    #     concs = [1,0,1,1,1]
+    #     a_cons = [0.0,0.0,0.0,1.0,1.0]
+    #     num_wanted = 36
+    #     HNF = array([1,0,2,0,0,2])
+    #     params = {'bulk': True, 'nspecies': 4, 'concs': [[0.0, 4.0, 4.0, 0.0], [0.0, 4.0, 4.0, 0.0], [0.0, 4.0, 4.0, 1.0], [0.0, 4.0, 4.0, 1.0]], 'basis_vecs': [[0.0, 0.0, 0.0]], 'sizes': [4, 4], 'lat_vecs': [[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]], 'arrows': True, 'is_crestricted': True}
+    #     out = _read_output("enum_sys.out.11")
 
-        self.assertEqual(enum_sys(groupfile,concs,a_cons,num_wanted,HNF,params,True),out)
+    #     self.assertEqual(enum_sys(groupfile,concs,a_cons,num_wanted,HNF,params,True),out)
 
-    def test12(self):
-        from phenum.phonons import enum_sys
-        from numpy import array
-        groupfile = None
-        concs = [2,0,5]
-        a_cons = [0.25,0.0,0.75]
-        num_wanted = 738
-        HNF = array([1,0,1,0,0,7])
-        params = {'bulk': True, 'nspecies': 2, 'concs': [[1.0, 6.0, 12.0, 0.25], [1.0, 9.0, 12.0, 0.75]], 'basis_vecs': [[0.0, 0.0, 0.0]], 'sizes': [7, 7], 'lat_vecs': [[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]], 'arrows': True, 'is_crestricted': True}
-        out = _read_output("enum_sys.out.12")
+    # def test12(self):
+    #     from phenum.phonons import enum_sys
+    #     from numpy import array
+    #     groupfile = None
+    #     concs = [2,0,5]
+    #     a_cons = [0.25,0.0,0.75]
+    #     num_wanted = 738
+    #     HNF = array([1,0,1,0,0,7])
+    #     params = {'bulk': True, 'nspecies': 2, 'concs': [[1.0, 6.0, 12.0, 0.25], [1.0, 9.0, 12.0, 0.75]], 'basis_vecs': [[0.0, 0.0, 0.0]], 'sizes': [7, 7], 'lat_vecs': [[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]], 'arrows': True, 'is_crestricted': True}
+    #     out = _read_output("enum_sys.out.12")
 
-        self.assertEqual(enum_sys(groupfile,concs,a_cons,num_wanted,HNF,params,True),out)
+    #     self.assertEqual(enum_sys(groupfile,concs,a_cons,num_wanted,HNF,params,True),out)
 
-    def test13(self):
-        from phenum.phonons import enum_sys
-        from numpy import array
-        groupfile = None
-        concs = [0,0,7]
-        a_cons = [0.0,0.0,0.0]
-        num_wanted = 738
-        HNF = array([1,0,1,0,0,7])
-        params = {'bulk': True, 'nspecies': 2, 'concs': [[1.0, 6.0, 12.0, 0.25], [1.0, 9.0, 12.0, 0.75]], 'basis_vecs': [[0.0, 0.0, 0.0]], 'sizes': [7, 7], 'lat_vecs': [[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]], 'arrows': True, 'is_crestricted': True}
-        out = []
+    # def test13(self):
+    #     from phenum.phonons import enum_sys
+    #     from numpy import array
+    #     groupfile = None
+    #     concs = [0,0,7]
+    #     a_cons = [0.0,0.0,0.0]
+    #     num_wanted = 738
+    #     HNF = array([1,0,1,0,0,7])
+    #     params = {'bulk': True, 'nspecies': 2, 'concs': [[1.0, 6.0, 12.0, 0.25], [1.0, 9.0, 12.0, 0.75]], 'basis_vecs': [[0.0, 0.0, 0.0]], 'sizes': [7, 7], 'lat_vecs': [[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]], 'arrows': True, 'is_crestricted': True}
+    #     out = []
 
-        self.assertEqual(enum_sys(groupfile,concs,a_cons,num_wanted,HNF,params,False),out)
+    #     self.assertEqual(enum_sys(groupfile,concs,a_cons,num_wanted,HNF,params,False),out)
 
-    def test14(self):
-        from phenum.phonons import enum_sys
-        from numpy import array
-        groupfile = None
-        concs = [1,0,1,1,1]
-        a_cons = [0.0,0.0,0.0,1.0,1.0]
-        num_wanted = 36
-        HNF = array([1,0,2,0,0,2])
-        params = {'bulk': True, 'nspecies': 4, 'concs': [[0.0, 4.0, 4.0, 0.0], [0.0, 4.0, 4.0, 0.0], [0.0, 4.0, 4.0, 1.0], [0.0, 4.0, 4.0, 1.0]], 'basis_vecs': [[0.0, 0.0, 0.0]], 'sizes': [4, 4], 'lat_vecs': [[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]], 'arrows': True, 'is_crestricted': True}
-        out = _read_output("enum_sys.out.14")
+    # def test14(self):
+    #     from phenum.phonons import enum_sys
+    #     from numpy import array
+    #     groupfile = None
+    #     concs = [1,0,1,1,1]
+    #     a_cons = [0.0,0.0,0.0,1.0,1.0]
+    #     num_wanted = 36
+    #     HNF = array([1,0,2,0,0,2])
+    #     params = {'bulk': True, 'nspecies': 4, 'concs': [[0.0, 4.0, 4.0, 0.0], [0.0, 4.0, 4.0, 0.0], [0.0, 4.0, 4.0, 1.0], [0.0, 4.0, 4.0, 1.0]], 'basis_vecs': [[0.0, 0.0, 0.0]], 'sizes': [4, 4], 'lat_vecs': [[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]], 'arrows': True, 'is_crestricted': True}
+    #     out = _read_output("enum_sys.out.14")
 
-        self.assertEqual(enum_sys(groupfile,concs,a_cons,num_wanted,HNF,params,False),out)
+    #     self.assertEqual(enum_sys(groupfile,concs,a_cons,num_wanted,HNF,params,False),out)
 
-    def test15(self):
-        from phenum.phonons import enum_sys
-        from numpy import array
-        groupfile = "tests/phonons/test_group.5"
-        concs = [4,4]
-        a_cons = [0,0]
-        num_wanted = 10
-        HNF = array([1,0,2,0,0,4])
-        params = {'bulk': True, 'nspecies': 2, 'concs': [], 'basis_vecs': [[0.0, 0.0, 0.0]], 'sizes': [1, 11], 'lat_vecs': [[0.5, 0.5, 0.0], [0.5, 0.0, 0.5], [0.0, 0.5, 0.5]], 'arrows': False, 'is_crestricted': False}
-        out = _read_output("enum_sys.out.15")
+    # def test15(self):
+    #     from phenum.phonons import enum_sys
+    #     from numpy import array
+    #     groupfile = "tests/phonons/test_group.5"
+    #     concs = [4,4]
+    #     a_cons = [0,0]
+    #     num_wanted = 10
+    #     HNF = array([1,0,2,0,0,4])
+    #     params = {'bulk': True, 'nspecies': 2, 'concs': [], 'basis_vecs': [[0.0, 0.0, 0.0]], 'sizes': [1, 11], 'lat_vecs': [[0.5, 0.5, 0.0], [0.5, 0.0, 0.5], [0.0, 0.5, 0.5]], 'arrows': False, 'is_crestricted': False}
+    #     out = _read_output("enum_sys.out.15")
 
-        self.assertEqual(enum_sys(groupfile,concs,a_cons,num_wanted,HNF,params,False),out)
+    #     self.assertEqual(enum_sys(groupfile,concs,a_cons,num_wanted,HNF,params,False),out)
 
 class TestAddArrows(ut.TestCase):
     """Tests of the add_arrows subroutine."""

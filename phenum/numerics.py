@@ -22,25 +22,6 @@ def factorial(num):
             fact *= i
     return fact
 
-#This method finds a binomial coefficient that is it calculates n
-#choose r The method calls for two integer values n and r and the
-#method factorial The method returns the binomial factorial as result
-def binomial_coefficient_old(n,r):
-    """Finds the binomial coefficient, n choose r, for a given set of
-    integers.
-    
-    :arg n: an integer
-    :arg r: an integer
-    """
-    #If r is less than zero then the binomial coefficient is zero
-    if r < 0:
-        result = 0
-    #Otherwise use the factorial method to calculate the binomial
-    #coefficient n!/r!/(n-r)!
-    else:
-        result = factorial(n) // factorial(r) // factorial(n-r)
-    return result
-
 def binomial_coefficient(n, k):
 
     if k < 0 or k > n:

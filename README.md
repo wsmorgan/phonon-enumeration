@@ -8,6 +8,8 @@ and cell size ranges. The code uses a newly developed group theoretic
 approach that is extremely efficient and can include the enumeration
 of displacement directions, or arrow directions, within a system.
 
+Full API Documentation available at: [github pages](https://wsmorgan.github.io/phenum/).
+
 ## Prerequisites
 
 The code currently requires a modified version of the previous
