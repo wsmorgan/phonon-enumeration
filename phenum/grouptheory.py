@@ -256,7 +256,8 @@ def SmithNormalForm(HNF):
         itCnt += 1
         if (itCnt >=100): 
             raise RuntimeError("Bad programming in SmithNormalForm")
-
+        print("mt",type(M))
+        print("ct",type([M[0][j],M[1][j],M[2][j]].count(0)))
         while (3-[M[0][j],M[1][j],M[2][j]].count(0)) > 1:
             (minidx,maxidx) = _find_minmax_indices([M[0][j],M[1][j],M[2][j]])
             minm = M[minidx][j]
@@ -326,14 +327,14 @@ def SmithNormalForm(HNF):
                 for k in range(1,3):
                     local[i][k] = abs(M[i][k]%M[0][0])
             nondividx = local.index(max(local))
-            M[0] = map(operator.add,M[0],M[nondividx+1])
-            A[0] = map(operator.add,A[0],A[nondividx+1])
+            M[0] = list(map(operator.add,M[0],M[nondividx+1]))
+            A[0] = list(map(operator.add,A[0],A[nondividx+1]))
             continue
 
         if j == 1:
             if M[2][2]%M[1][1] != 0:
-                M[1] = map(operator.add,M[1],M[2])
-                A[1] = map(operator.add,A[1],A[2])
+                M[1] = list(map(operator.add,M[1],M[2]))
+                A[1] = list(map(operator.add,A[1],A[2]))
                 continue
         else:
             j = 1
@@ -668,7 +669,7 @@ def get_sym_group(par_lat,bas_vecs,HNF,LatDim,arrows=True):
     for i in range(len(bas_vecs)):
         bas_vecs[i] = bring_into_cell(bas_vecs[i],par_lat_inv,par_lat,eps)
         if not allclose(bas_vecs[i], temp_basis[i], rtol=0, atol=eps):
-            from msg import warn
+            from phenum.msg import warn
             warn("An atomic basis vector was not inside the unit cell. It has been "
                  "remapped.\n Original vector: {} \n Remapped vector: {}"
                  .format(" ".join([str(p) for p in temp_basis[i]]),

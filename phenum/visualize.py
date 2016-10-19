@@ -24,6 +24,11 @@ def HNF_shapes(enum,lattice,show,testmode=False):
     from operator import mul
     from numpy import array, mgrid, dot
     from itertools import product
+
+    try:
+        from functools import reduce
+    except ImportError:
+        import numpy as np
     
     lattice_data = read_lattice(lattice)
     system = _convert_read_lat_to_system_dat(lattice_data)
@@ -120,6 +125,11 @@ def HNF_atoms(enum,lattice,show,testmode=False):
     from numpy import array, mgrid, dot
     from itertools import product
     
+    try:
+        from functools import reduce
+    except ImportError:
+        import numpy as np
+
     lattice_data = read_lattice(lattice)
     system = _convert_read_lat_to_system_dat(lattice_data)
     

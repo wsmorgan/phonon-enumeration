@@ -94,7 +94,7 @@ def map_enumStr_to_real_space(system_data,structure_data,minkowskiReduce):
     else:
         for iAt in range(0, n*nD):
             i = int(labeling[gIndx[iAt]])
-            spin.append(i-k/2)
+            spin.append(i-k//2)
             x[i] += 1 # Keep track of the concentration of each atom type
 
     x = [i/float(n*nD) for i in x]
