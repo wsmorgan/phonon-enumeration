@@ -179,6 +179,7 @@ def _get_sLV_fixing_operations(HNF,pLV,nD,rot,shift,dPerm,eps):
     fixOp = opList(tmpOp_rot,tmpOp_shift) # Stuff the rotations into the permanent array
 
     # if nD > 1:
+    print("tIndex f",tIndex)
     rotPerm = RotPermList(v=tv,RotIndx=tIndex)
     # else:
     #     rotPerm = RotPermList(v=[tv],RotIndx=tIndex)

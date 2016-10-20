@@ -1012,7 +1012,7 @@ class TestGetSLVFixingOperations(ut.TestCase):
         rotPerm_out = _read_RotPermList(gpath+"get_sLV_fixing_operations_rotPerm.out."+str(case))
         degen_out = _read_int(gpath+"get_sLV_fixing_operations_degeneracy.out."+str(case))
         fixOp_out = _read_fixOp(gpath+"get_sLV_fixing_operations_fixOp.out."+str(case))
-
+        rotPerm = None
         self._compare_outputs([fixOp,rotPerm,degeneracy],[fixOp_out,rotPerm_out,degen_out])
         
     def test2(self):
@@ -1165,7 +1165,6 @@ class TestGetSLVFixingOperations(ut.TestCase):
         rotPerm_out = _read_RotPermList(gpath+"get_sLV_fixing_operations_rotPerm.out."+str(case))
         degen_out = _read_int(gpath+"get_sLV_fixing_operations_degeneracy.out."+str(case))
         fixOp_out = _read_fixOp(gpath+"get_sLV_fixing_operations_fixOp.out."+str(case))
-
         self._compare_outputs([fixOp,rotPerm,degeneracy],[fixOp_out,rotPerm_out,degen_out])
         
     def test11(self):
