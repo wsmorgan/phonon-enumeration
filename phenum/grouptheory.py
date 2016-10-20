@@ -183,7 +183,7 @@ def _get_sLV_fixing_operations(HNF,pLV,nD,rot,shift,dPerm,eps):
     rotPerm = RotPermList(v=tv,RotIndx=tIndex)
     # else:
     #     rotPerm = RotPermList(v=[tv],RotIndx=tIndex)
-
+    print("rotPerm.RotIndx",rotPerm.RotIndx)
     return(fixOp,rotPerm,degeneracy)
 
 def _map_dvector_permutation(rd,d,eps,n):
