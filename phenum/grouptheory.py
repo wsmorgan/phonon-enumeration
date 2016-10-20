@@ -146,22 +146,16 @@ def _get_sLV_fixing_operations(HNF,pLV,nD,rot,shift,dPerm,eps):
     for iRot in range(nRot):  # Loop over each rotation
         thisRot = rot[iRot] # Store the rotation
         origLat = np.matmul(pLV,HNF).tolist()  # Compute the superlattice
-        print("origLat",origLat)
         rotLat = np.matmul(thisRot,origLat).tolist() # Compute the rotated superlattice
-        print("rotLat",rotLat)
         if _is_equiv_lattice(rotLat,origLat,eps):
-            print("H1")
             # this operation fixes the lattice and should be recorded
             ic += 1
             tmpOp_rot.append(thisRot)
             tmpOp_shift.append(shift[iRot])
             tv.append(dPerm.v[iRot])
-            print("iRot",iRot)
             tIndex.append(iRot)
-            print("tIndex",tIndex)
             # Added by LN from here
         else:
-            print("H2")
             inList = False
             for iDegen in range(cDegen):
                 if _is_equiv_lattice(degen_lattices[iDegen],rotLat,eps):
@@ -179,11 +173,10 @@ def _get_sLV_fixing_operations(HNF,pLV,nD,rot,shift,dPerm,eps):
     fixOp = opList(tmpOp_rot,tmpOp_shift) # Stuff the rotations into the permanent array
 
     # if nD > 1:
-    print("tIndex f",tIndex)
     rotPerm = RotPermList(v=tv,RotIndx=tIndex)
     # else:
     #     rotPerm = RotPermList(v=[tv],RotIndx=tIndex)
-    print("rotPerm.RotIndx",rotPerm.RotIndx)
+
     return(fixOp,rotPerm,degeneracy)
 
 def _map_dvector_permutation(rd,d,eps,n):
