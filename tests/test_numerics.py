@@ -144,3 +144,24 @@ class TestBinomialCoefficient(ut.TestCase):
         r = 1
         out = 1 
         self.assertEqual(binomial_coefficient(n,r),out)
+
+    def test11(self):
+        from phenum.numerics import binomial_coefficient
+        n = 0
+        r = 0
+        out = 1 
+        self.assertEqual(binomial_coefficient(n,r),out)
+        
+    def test12(self):
+        from phenum.numerics import binomial_coefficient
+        n = 10
+        r = 0
+        out = 0 
+        self.assertEqual(binomial_coefficient(n,r),out)
+        
+    def test12(self):
+        from phenum.numerics import binomial_coefficient
+        n = 1
+        r = 10
+        out = 0 
+        self.assertEqual(binomial_coefficient(n,r),out)

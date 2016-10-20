@@ -55,7 +55,7 @@ class Sequence(object):
         self.varcount = len(targets)
 
     @property
-    def kidcount(self):
+    def kidcount(self): #pragma: no cover
         """Returns the number of children and grandchildren to the last generation."""
         if self._kidcount is None:
             _kidcount = sum([k.kidcount for k in self.kids])
@@ -77,12 +77,12 @@ class Sequence(object):
         if len(self.kids) == 0:
             if depth == self.varcount-1:
                 return [(self._root,)]
-            else:
+            else: #pragma: no cover
                 return [(self._root,) + (0,)*(self.varcount-(depth+1))]
         else:
             return sequences
 
-    def expand_noappend(self, sequences, start, varindex):
+    def expand_noappend(self, sequences, start, varindex): #pragma: no cover
         """Implements an expansion that doesn't use python's append."""
         if len(sequences) == 0:
             if self.kidcount == 0:
@@ -248,7 +248,7 @@ class Multinomial(object):
         December 2002. http://delab.csd.auth.gr/papers/SBI02m.pdf It is supposed to be robust 
         against large, intermediate values and to have optimal complexity.
         """
-        if k < 0 or k > n:
+        if k < 0 or k > n: #pragma: no cover
             return 0
         if k==0 and n == 0:
             return 1
@@ -262,7 +262,7 @@ class Multinomial(object):
 
         return t
 
-def group(gen):
+def group(gen): #pragma: no cover
     """Generates an entire group using the specified generators by applying generators
     to each other recursively.
 
@@ -309,10 +309,10 @@ def _group_to_cyclic(group, limit=None):
     """Determines the degeneracy of each r-cycle in the specified group operations."""
     result = []
     #We allow filtering so that the unit testing can access the cyclic form of the group.
-    if 0 not in group[0][0]:
+    if 0 not in group[0][0]: #pragma: no cover
         group = [[[j - 1 for j in i] for i in t] for t in group]
     
-    if limit is not None:
+    if limit is not None: #pragma: no cover
         filtered = group[limit[0]:limit[1]]
     else:
         filtered = group
@@ -398,17 +398,15 @@ def polya(concentrations, group, arrowings=None, debug=False):
     #operating on
     
     if sum(concentrations) != len(group[0][0]):
-        print("The concentrations don't sum to the number of things the group is acting on!")
-        exit()
+        raise ValueError("The concentrations don't sum to the number of things the group is acting on!")
             
     for k in range(2):
         for g in range(len(group)):
-            if 0 not in group[0][k]:
+            if 0 not in group[g][k]:
                 group[g][k] = [j-1 for j in group[g][k]]
-                
+    print("gf",group)
     polyndict = {}
     #The operations in the group are used to construct the unique polynomials for each operation.
-    # print('gtc', _group_to_cyclic(group))
     for polynomials in _group_to_cyclic(group):
         #Construct a product of multinomials for this group operation.
         p = Product(1,concentrations)
@@ -421,101 +419,9 @@ def polya(concentrations, group, arrowings=None, debug=False):
         else:
             polyndict[key].coefficient += 1
 
-    if debug:
+    if debug: #pragma: no cover
         for key in polyndict:
             print((str(polyndict[key]), " => ", polyndict[key].coeff()))
 
     rad = sum([p.coeff() for p in list(polyndict.values())])
     return int(rad/float(len(group)))             
-
-def _examples():
-    """Print some examples on how to use this python version of the code."""
-    helptext = ("For all the examples below, it is assumed that you know the fixed concentration "
-                "term T in advance. This term is the first, *positional* argument to the script. "
-                "In addition to the term T, you need to specify the group operations as permutation "
-                "lists. They can be either zero- or one-based. Group operations can be specified "
-                "with the group generators or as a 2D matrix with all the group operations; if the "
-                "lists of values were saved directly from python using a __repr__ or __str__ then "
-                "use the '-parse' argument to specify that.")
-    egs = [("Find the Polya Coefficient with Group Generators",
-            "The code below finds the number of unique ways to color a square with 4 corners using "
-            "2 different colors such that there are 2 corners with each color. "
-            "The group is specified using generators in a file called 'generators.in.paper'. The "
-            "contents of the generators file are:\n  4 3 2 1\n  2 3 4 1\nand are the generators "
-            "for the dihedral group of degree 4.", "./polya.py 2 2 -generators generators.in.paper"),
-           ("Find the Polya Coefficient with an Entire Group",
-            "This code also finds the coefficient, but for a larger group with 144 operations acting "
-            "on a finite set with 20 elements. The term T is specified as [4,4,4,2,2,2,2] so that we "
-            "want 4 of the first 3 colors and 2 of the last 4 colors with 7, the total number of "
-            "colors in the enumeration. The group file 'group.out.cr6' can be viewed in the repo at "
-            "'polya/fortran/tests/'.", "./polya.py 4 4 4 2 2 2 2 -group group.out.cr6")]
-
-    print("POLYA ENUMERATION THEOREM SOLVER\n")
-    for eg in egs:
-        title, desc, code = eg
-        print(("--" + title + '--\n'))
-        print((desc + '\n'))
-        print(('  ' + code + '\n'))
-
-def _parser_options():
-    """Parses the options and arguments from the command line."""
-    import argparse
-    parser = argparse.ArgumentParser(description="Polya Coefficient Calculator")
-    parser.add_argument("-generators",
-                        help=("Specify the name/path to a file that lists the generators for "
-                              "the symmetry group defining uniqueness on the lattice."))
-    parser.add_argument("-group",
-                        help=("Specify the name/path to a file listing the *entire* set of group "
-                              "symmetry operations defining uniqueness on the lattice."))
-    parser.add_argument("-parse", choices=["python", "text"], default="text",
-                        help=("Choose how the group files will be interpreted by the script:\n"
-                              "- 'python': the text is assumed to be a valid python expression, \n"
-                              "\tsuch as a list, and is interpreted using eval(). \n"
-                              "- 'text': text values are split on whitespace and converted to \n"
-                              "\tintegers. One group operation/generator per line."))
-    parser.add_argument("concentrations", type=int, nargs="*", default=[0],
-                        help=("The number of each type of coloring in the concentration restricted "
-                              "enumeration on a lattice."))
-    parser.add_argument("-debug", action="store_true",
-                        help="Print verbose polya polynomial information for debugging.")
-    parser.add_argument("-examples", action="store_true",
-                        help="Print some examples for how to use the Polya solver.")
-
-    vardict = vars(parser.parse_args())
-    if vardict["examples"]:
-        _examples()
-        exit(0)
-    return vardict
-
-def _read_file(args, filepath):
-    """Parses the contents of the specified file using the 'parse' arguments from script args."""
-    from os import path
-    contents = []
-    with open(path.expanduser(filepath)) as f:
-        if args["parse"] == "text":
-            for line in f:
-                contents.append(list(map(int, line.split())))
-        else:
-            contents = eval(f.read())
-
-    return contents
-
-def script_polya(args):
-    """Calculates the number of unique ways to enumerate a fixed set of colorings on a lattice
-    subject to a set of symmetry operations.
-    """
-    if not args["generators"] and not args["group"]:
-        raise ValueError("You must specify either the generators or the group.")
-
-    if args["generators"]:
-        gens = _read_file(args, args["generators"])
-        grpops = group(gens)
-    elif args["group"]:
-        grpops = _read_file(args, args["group"])
-
-    coeff = polya(args["concentrations"], grpops, args["debug"])
-    print(coeff)
-    return coeff
-
-if __name__ == '__main__':
-    script_polya(_parser_options())

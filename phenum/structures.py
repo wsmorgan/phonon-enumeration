@@ -3,7 +3,7 @@
 """Generates a random subset of possible structures weighted by the
 Polya distribution for superstructures.
 """
-def enum_data(cellsize, args, params):
+def enum_data(cellsize, args, params): #pragma: no cover
     """Returns a list of dictionaries with the HNF, SNF, Left Transform
     and permutation group file names for the given cell size.
     """
@@ -58,7 +58,7 @@ def enum_data(cellsize, args, params):
         
     return result   
 
-def _read_struct_enum():
+def _read_struct_enum(): #pragma: no cover
     """Reads in the struct_enum.out file and returns a dictionary with key
     for each cell size, and value a dictionary keyed by HNF with the number
     of unique structures.
@@ -85,7 +85,7 @@ def _read_struct_enum():
                         structs[sN][HNF][concs] = 1
     return structs
 
-def _write_struct_summary(structs):
+def _write_struct_summary(structs): # pragma: no cover
     """Writes the summary of unique structure counts by HNF and cell size
     to file for verification of polya.
     """
@@ -202,7 +202,7 @@ def _distribute(cellsizes, ftype, n=None, dataformat="cells.{}",seed=None, res_t
                         break
                 recount += 1
 
-            if recount == 3 and rtotal[0] < n:
+            if recount == 3 and rtotal[0] < n: #pragma: no cover
                 from .msg import warn
                 warn("Reached maximum recursion limit in random assignment.")
                 
@@ -240,7 +240,7 @@ def _distribute(cellsizes, ftype, n=None, dataformat="cells.{}",seed=None, res_t
     #number of structures.
     assign(relvals, f, rtotal, gtotal, n, result, ftype,seed_val=seed)
     #Make sure we are returning exactly how many they asked for.
-    if rtotal[0] > n:
+    if rtotal[0] > n: #pragma: no cover
         from .msg import warn
         warn("More structures were returned than asked for, should not be possible.")
 
@@ -289,9 +289,8 @@ def _distribution(ftype, dataset, gtotal, cast=float, cellsizes=None, dataformat
                 elif res_type == "conc":
                     (dataset, gtotal) = _distribution_summary(cellsizes, dataformat=dataformat, wanted_concs=res_values)
                 else:
-                    from .msg import err
-                    err("Cannot filter the distribution using {}. Please use 'shape' or 'conc'.".format(res_type))
-                    exit()
+                    raise ValueError("Cannot filter the distribution using {}. Please use 'shape' or 'conc'.".format(res_type))
+
             else:
                 (dataset, gtotal) = _distribution_summary(cellsizes, dataformat=dataformat)
         else:
@@ -312,10 +311,8 @@ def _distribution(ftype, dataset, gtotal, cast=float, cellsizes=None, dataformat
     elif ftype == "size":
         f = lambda n, size: cast(dataset[size]["gtotal"]/ftotal*n)
     else:
-        from .msg import err
-        err("The parameter {} is not a valid parameter for the distribution. Please use "
-            " size, shape, conc, or all.".format(ftype))
-        exit()
+        raise ValueError("The parameter {} is not a valid parameter for the distribution. "
+                         "Please use size, shape, conc, or all.".format(ftype))
 
     return (f, dataset, gtotal)
         
@@ -494,11 +491,9 @@ def make_enum_in(distribution,directory,outfile,number=None,dataformat="cells.{}
         ready = True
                 
     if ready == False:
-        from .msg import err
-        err("The files {} don't exist in this directory. You either need to run"
+        raise ValueError("The files {} don't exist in this directory. You either need to run"
             " the -polya option or else navigate into the folder that contains "
             "the output {} folders.".format(dataformat))
-        exit()
 
     if restrict is not None:
         # from numpy import loadtxt

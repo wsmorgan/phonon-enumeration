@@ -102,8 +102,8 @@ def add_arrows(col,agroup,dim,accept=None,nested=False,num_wanted=None, small=Fa
 
     maxpossible = _ahash(largest_arrow,dim)
     from phenum.msg import verbosity
-    if verbosity is not None and verbosity >= 1 and not nested:
-        from tqdm import tqdm
+    if verbosity is not None and verbosity >= 1 and not nested: #pragma: no cover
+        from tqdm import tqdm 
         #If accept is specified, then we should get on average that many out.
         if num_wanted is not None:
             ntotal = num_wanted
@@ -173,7 +173,7 @@ def add_arrows(col,agroup,dim,accept=None,nested=False,num_wanted=None, small=Fa
 
                 if accept is None or random() < accept:
                     arsurvivors.append(coloring_with_arrows)
-                    if verbosity is not None and verbosity >= 1 and not nested:
+                    if verbosity is not None and verbosity >= 1 and not nested: #pragma: no cover
                         pbar.update(1)
                     if num_wanted is not None and len(arsurvivors) == num_wanted:
                         break
@@ -241,12 +241,12 @@ def add_arrows(col,agroup,dim,accept=None,nested=False,num_wanted=None, small=Fa
 
                 arsurvivors.append(coloring_with_arrows)
                 
-                if verbosity is not None and verbosity >= 1 and not nested:
+                if verbosity is not None and verbosity >= 1 and not nested: #pragma: no cover
                     pbar.update(1)
                 # if num_wanted is not None and len(arsurvivors) == num_wanted:
                 #     break
                         
-    if verbosity is not None and verbosity >= 1 and not nested:
+    if verbosity is not None and verbosity >= 1 and not nested: #pragma: no cover
         pbar.close()
 
     return(arsurvivors)
@@ -342,7 +342,7 @@ def enum_sys(groupfile, concs, a_concs, num_wanted, HNF, params, supers, accept=
     # we need to know the concentrations of the species with and
     # without arrows, we also need to know the number of arrows and
     # their species so we can undo the previous step later
-    (n_arrows, arrow_types,sorted_concs) = how_many_arrows(decorations)
+    (n_arrows, arrow_types, sorted_concs) = how_many_arrows(decorations)
 
     # now find the number of unique arrangements using
     # polya
@@ -400,11 +400,11 @@ def enum_sys(groupfile, concs, a_concs, num_wanted, HNF, params, supers, accept=
         configs = brancher(sorted_concs, agroup, decorations, 6, supers, cellsize, total, subset, accept)
 
     if len(configs) != num_wanted and not super:              
-        from .msg import err
-        err("Warning the enumeration code returned {} structures when {} were asked for."
-            " This should not happen. Please submit a bug report on "
-            "https://github.com/wsmorgan/phonon-enumeration including your input files so "
-            "that this error may be corrected.".format(str(len(configs)),str(num_wanted)))
+        raise ValueError("Warning the enumeration code returned {} structures when {} "
+                         "were asked for. This should not happen. Please submit a bug "
+                         "report on https://github.com/wsmorgan/phonon-enumeration "
+                         "including your input files so that this error may be "
+                         "corrected.".format(str(len(configs)),str(num_wanted)))
         if len(configs) == 0:
             exit()
 
@@ -423,16 +423,16 @@ def _ahash(coloring,dim):
 #anum is a unique number that is associated with an array of arrows.
 #num_of_arrows in the number of arrows that are in the array.
 #dim is the number of directions the arrows can point.
-def _ainvhash(anum,num_of_arrrows,dim):
+def _ainvhash(anum,num_of_arrows,dim):
     """Turns an arrow hash back into the array of arrow directions.
 
     :arg anum: the arrow hash number
     :arg num_of_arrows: the number of arrows in the system
     :arg dim: the number of directions the arrows can point
     """
-    arrows = [0]*num_of_arrrows
-    for i in range(num_of_arrrows):
-        base = dim**(num_of_arrrows-1-i)
-        arrows[num_of_arrrows-1-i] = anum//base
-        anum -= base*arrows[num_of_arrrows-1-i]
+    arrows = [0]*num_of_arrows
+    for i in range(num_of_arrows):
+        base = dim**(num_of_arrows-1-i)
+        arrows[num_of_arrows-1-i] = anum//base
+        anum -= base*arrows[num_of_arrows-1-i]
     return(arrows)

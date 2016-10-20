@@ -1,4 +1,4 @@
-[![PyPI](https://img.shields.io/pypi/v/phenum.svg)](https://pypi.python.org/pypi/phenum/) [![Build Status](https://travis-ci.org/wsmorgan/phonon-enumeration.svg?branch=master)](https://travis-ci.org/wsmorgan/phonon-enumeration)
+[![PyPI](https://img.shields.io/pypi/v/phenum.svg)](https://pypi.python.org/pypi/phenum/) [![Build Status](https://travis-ci.org/wsmorgan/phonon-enumeration.svg?branch=master)](https://travis-ci.org/wsmorgan/phonon-enumeration)[![Coverage Status](https://coveralls.io/repos/github/wsmorgan/phonon_enumeration/badge.svg?branch=master)](https://coveralls.io/github/wsmorgan/phonon_enumeration?branch=master)
 
 # phonon-enumeration
 
@@ -7,6 +7,8 @@ system within a crystalographic system within specified concentration
 and cell size ranges. The code uses a newly developed group theoretic
 approach that is extremely efficient and can include the enumeration
 of displacement directions, or arrow directions, within a system.
+
+Full API Documentation available at: [github pages](https://wsmorgan.github.io/phenum/).
 
 ## Prerequisites
 

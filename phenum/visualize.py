@@ -1,8 +1,17 @@
 """This module contains methods used for visualizing the enuerated structures."""
 
-import matplotlib.pyplot as plt
+from phenum.base import testmode
+from matplotlib import cm
+import matplotlib
 
-def HNF_shapes(enum,lattice,show):
+import os
+if os.name != "nt":
+    matplotlib.use("Agg" if testmode else "TkAgg")    
+
+import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
+
+def HNF_shapes(enum,lattice,show,testmode=False):
     """Plots the shape of each HNF.
 
     :arg enum: The enum.in style input file.
@@ -13,10 +22,13 @@ def HNF_shapes(enum,lattice,show):
     from phenum.grouptheory import SmithNormalForm, get_full_HNF
     from phenum.vector_utils import map_enumStr_to_real_space, cartesian2direct
     from operator import mul
-    from mpl_toolkits.mplot3d import Axes3D
-    from matplotlib import cm
     from numpy import array, mgrid, dot
     from itertools import product
+
+    try:
+        from functools import reduce
+    except ImportError:
+        import numpy as np
     
     lattice_data = read_lattice(lattice)
     system = _convert_read_lat_to_system_dat(lattice_data)
@@ -28,6 +40,8 @@ def HNF_shapes(enum,lattice,show):
             else:
                 structure = {}
                 HNF_name = [int(i) for i in line.strip().split()[:-1]]
+                if len(HNF_name) != 6:
+                    HNF_name = HNF_name[0:6]
                 structure["HNF"] = get_full_HNF(HNF_name)
                 (SNF,L,R) = SmithNormalForm(structure["HNF"])
                 structure["diag"] = [SNF[0][0],SNF[1][1],SNF[2][2]]
@@ -90,11 +104,14 @@ def HNF_shapes(enum,lattice,show):
                 for xb, yb, zb in zip(Xb,Yb,Zb):
                     ax.plot([xb],[yb],[zb],'w')
 
-                fig.savefig("{}.pdf".format("".join([str(i) for i in HNF_name])))
-                if show:
+                if not testmode: # pragma: no cover
+                    fig.savefig("{}.pdf".format("".join([str(i) for i in HNF_name])))
+                if show and not testmode: #pragma: no cover
                     plt.show()
+                else:
+                    plt.close()
     
-def HNF_atoms(enum,lattice,show):
+def HNF_atoms(enum,lattice,show,testmode=False):
     """Plots the atomic positions of the atoms in the cells.
 
     :arg enum: The enum.in style input file.
@@ -105,11 +122,14 @@ def HNF_atoms(enum,lattice,show):
     from phenum.grouptheory import SmithNormalForm, get_full_HNF
     from phenum.vector_utils import map_enumStr_to_real_space, cartesian2direct
     from operator import mul
-    from mpl_toolkits.mplot3d import Axes3D
-    from matplotlib import cm
     from numpy import array, mgrid, dot
     from itertools import product
     
+    try:
+        from functools import reduce
+    except ImportError:
+        import numpy as np
+
     lattice_data = read_lattice(lattice)
     system = _convert_read_lat_to_system_dat(lattice_data)
     
@@ -120,6 +140,8 @@ def HNF_atoms(enum,lattice,show):
             else:
                 structure = {}
                 HNF_name = [int(i) for i in line.strip().split()[:-1]]
+                if len(HNF_name) != 6:
+                    HNF_name = HNF_name[0:6]
                 structure["HNF"] = get_full_HNF(HNF_name)
                 (SNF,L,R) = SmithNormalForm(structure["HNF"])
                 structure["diag"] = [SNF[0][0],SNF[1][1],SNF[2][2]]
@@ -152,9 +174,12 @@ def HNF_atoms(enum,lattice,show):
                 for xb, yb, zb in zip(Xb,Yb,Zb):
                     ax.plot([xb],[yb],[zb],'w')
 
-                fig.savefig("{}.pdf".format("".join([str(i) for i in HNF_name])))
-                if show:
+                if not testmode: #pragma: no cover
+                    fig.savefig("{}.pdf".format("".join([str(i) for i in HNF_name])))
+                if show and not testmode:#pragma: no cover
                     plt.show()
+                else:
+                    plt.close()
 
 def _convert_read_lat_to_system_dat(lattice):
     """This method converts the lattice_data dictionary returned by

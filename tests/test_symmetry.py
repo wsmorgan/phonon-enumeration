@@ -1,5 +1,85 @@
 """Methods for testing the subroutines in the symmetry module."""
 import unittest as ut
+import numpy as np
+
+gpath =  "tests/symmetry/"
+
+def _read_float_3D(fname):
+    array = []
+    parray = []
+    lc = 0
+    dc = 0
+    with open(fname,"r") as f1:
+        for line in f1:
+            lc +=1
+            if lc == 2:
+                d1 = int(line.strip().split()[1])
+                d2 = int(line.strip().split()[2])
+                d3 = int(line.strip().split()[3])
+            elif lc > 3:
+                if "#" not in line:
+                    dc +=1
+                    parray.append([float(i) for i in line.strip().split()])
+
+                    if dc == 3:
+                        array.append(list(map(list,zip(*parray))))
+                        parray = []
+                        dc = 0
+    array2 = []
+    for i in range(d3):
+        array2.append(list(map(list,zip(*[array[0][i],array[1][i],array[2][i]]))))
+    return array2
+
+def _read_float_2D(fname):
+    array = []
+    with open(fname,"r") as f1:
+        for line in f1:
+            if "#" not in line:
+                array.append([float(i) for i in line.strip().split()])
+    return array
+
+def _read_float_1D(fname):
+    array = []
+    with open(fname,"r") as f1:
+        for line in f1:
+            if "#" not in line:
+                array = [float(i) for i in line.strip().split()]
+    return array
+
+def _read_int_1D(fname):
+    array = []
+    with open(fname,"r") as f1:
+        for line in f1:
+            if "#" not in line:
+                array = [int(i) for i in line.strip().split()]
+    return array
+
+def _read_int(fname):
+    with open(fname,"r") as f1:
+        line = f1.readline()
+        if "#" in line:
+            line = f1.readline()
+        val = int(line.strip())
+    return val
+    
+def _read_float(fname):
+    with open(fname,"r") as f1:
+        line = f1.readline()
+        if "#" in line:
+            line = f1.readline()
+        val = float(line.strip())
+    return val    
+
+def _read_logical(fname):
+    with open(fname,"r") as f1:
+        line = f1.readline()
+        if "#" in line:
+            line = f1.readline()
+    if "t" in line.lower():
+        val = True
+    else:
+        val = False
+    return val
 
 def _read_output(test):
     values = []
@@ -8,6 +88,12 @@ def _read_output(test):
             values.append(eval(line))
     return values
 
+def _read_spaceGroup(case):
+    sg_ops = _read_float_3D(gpath+"get_spaceGroup_sg_op.out."+str(case))
+    sg_fracts = list(map(list,zip(*_read_float_2D(gpath+"get_spaceGroup_sg_fract.out."+str(case)))))
+        
+    return [sg_ops,sg_fracts]
+    
 class TestGetConcsForSize(ut.TestCase):
     """Tests of the get_concs_for_size subroutine."""
 
@@ -114,6 +200,27 @@ class TestGetConcsForSize(ut.TestCase):
 class TestGetSpaceGroup(ut.TestCase):
     """Tests of the get_spaceGroup subroutine."""
 
+    def _compare_space_group(self,out1,out2):
+        ops1 = out1[0]
+        ops2 = out2[0]
+        fract1 = out1[1]
+        fract2 = out2[1]
+
+        if len(ops1) == len(ops2):
+            for i in range(len(ops1)):
+                for j in range(3):
+                    for k in range(3):
+                        self.assertAlmostEqual(ops1[i][j][k],ops2[i][j][k],places=12)
+        else:
+            self.assertEqual(len(ops1),len(ops2))
+
+        if len(fract1) == len(fract2):
+            for i in range(len(ops1)):
+                for j in range(3):
+                    self.assertAlmostEqual(fract1[i][j],fract2[i][j],places=12)
+        else:
+            self.assertEqual(len(fract1),len(fract2))
+
     def test1(self):
         from phenum.symmetry import get_spaceGroup
         par_lat =  [[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]]
@@ -213,8 +320,153 @@ class TestGetSpaceGroup(ut.TestCase):
         lattcoords =  False
         out =  ([[[1.0, 0.0, 0.0], [0.0, -1.0, 0.0], [0.0, 0.0, -1.0]], [[1.0, 0.0, 0.0], [0.0, 0.0, -1.0], [0.0, -1.0, 0.0]], [[-1.0, 0.0, 0.0], [0.0, -1.0, 0.0], [0.0, 0.0, -1.0]], [[-1.0, 0.0, 0.0], [0.0, 0.0, -1.0], [0.0, -1.0, 0.0]], [[0.0, 0.0, -1.0], [0.0, -1.0, 0.0], [1.0, 0.0, 0.0]], [[0.0, 0.0, -1.0], [1.0, 0.0, 0.0], [0.0, -1.0, 0.0]], [[0.0, 0.0, 1.0], [0.0, -1.0, 0.0], [1.0, 0.0, 0.0]], [[0.0, 0.0, 1.0], [1.0, 0.0, 0.0], [0.0, -1.0, 0.0]], [[0.0, -1.0, 0.0], [0.0, 0.0, -1.0], [1.0, 0.0, 0.0]], [[0.0, -1.0, 0.0], [1.0, 0.0, 0.0], [0.0, 0.0, -1.0]], [[0.0, 1.0, 0.0], [0.0, 0.0, -1.0], [1.0, 0.0, 0.0]], [[0.0, 1.0, 0.0], [1.0, 0.0, 0.0], [0.0, 0.0, -1.0]], [[0.0, 0.0, -1.0], [0.0, -1.0, 0.0], [-1.0, 0.0, 0.0]], [[0.0, 0.0, 1.0], [0.0, -1.0, 0.0], [-1.0, 0.0, 0.0]], [[0.0, 0.0, -1.0], [-1.0, 0.0, 0.0], [0.0, -1.0, 0.0]], [[0.0, 0.0, 1.0], [-1.0, 0.0, 0.0], [0.0, -1.0, 0.0]], [[1.0, 0.0, 0.0], [0.0, -1.0, 0.0], [0.0, 0.0, 1.0]], [[-1.0, 0.0, 0.0], [0.0, -1.0, 0.0], [0.0, 0.0, 1.0]], [[1.0, 0.0, 0.0], [0.0, 0.0, 1.0], [0.0, -1.0, 0.0]], [[-1.0, 0.0, 0.0], [0.0, 0.0, 1.0], [0.0, -1.0, 0.0]], [[0.0, -1.0, 0.0], [0.0, 0.0, -1.0], [-1.0, 0.0, 0.0]], [[0.0, -1.0, 0.0], [-1.0, 0.0, 0.0], [0.0, 0.0, -1.0]], [[0.0, 1.0, 0.0], [0.0, 0.0, -1.0], [-1.0, 0.0, 0.0]], [[0.0, 1.0, 0.0], [-1.0, 0.0, 0.0], [0.0, 0.0, -1.0]], [[0.0, -1.0, 0.0], [1.0, 0.0, 0.0], [0.0, 0.0, 1.0]], [[0.0, -1.0, 0.0], [0.0, 0.0, 1.0], [1.0, 0.0, 0.0]], [[0.0, 1.0, 0.0], [1.0, 0.0, 0.0], [0.0, 0.0, 1.0]], [[0.0, 1.0, 0.0], [0.0, 0.0, 1.0], [1.0, 0.0, 0.0]], [[1.0, 0.0, 0.0], [0.0, 0.0, -1.0], [0.0, 1.0, 0.0]], [[-1.0, 0.0, 0.0], [0.0, 0.0, -1.0], [0.0, 1.0, 0.0]], [[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, -1.0]], [[-1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, -1.0]], [[0.0, 0.0, -1.0], [1.0, 0.0, 0.0], [0.0, 1.0, 0.0]], [[0.0, 0.0, 1.0], [1.0, 0.0, 0.0], [0.0, 1.0, 0.0]], [[0.0, 0.0, -1.0], [0.0, 1.0, 0.0], [1.0, 0.0, 0.0]], [[0.0, 0.0, 1.0], [0.0, 1.0, 0.0], [1.0, 0.0, 0.0]], [[0.0, -1.0, 0.0], [-1.0, 0.0, 0.0], [0.0, 0.0, 1.0]], [[0.0, -1.0, 0.0], [0.0, 0.0, 1.0], [-1.0, 0.0, 0.0]], [[0.0, 1.0, 0.0], [-1.0, 0.0, 0.0], [0.0, 0.0, 1.0]], [[0.0, 1.0, 0.0], [0.0, 0.0, 1.0], [-1.0, 0.0, 0.0]], [[0.0, 0.0, -1.0], [-1.0, 0.0, 0.0], [0.0, 1.0, 0.0]], [[0.0, 0.0, -1.0], [0.0, 1.0, 0.0], [-1.0, 0.0, 0.0]], [[0.0, 0.0, 1.0], [-1.0, 0.0, 0.0], [0.0, 1.0, 0.0]], [[0.0, 0.0, 1.0], [0.0, 1.0, 0.0], [-1.0, 0.0, 0.0]], [[1.0, 0.0, 0.0], [0.0, 0.0, 1.0], [0.0, 1.0, 0.0]], [[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]], [[-1.0, 0.0, 0.0], [0.0, 0.0, 1.0], [0.0, 1.0, 0.0]], [[-1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]]], [[0.0, 0.0, 0.0], [0.0, 0.0, 0.0], [0.0, 0.0, 0.0], [0.0, 0.0, 0.0], [0.0, 0.0, 0.0], [0.0, 0.0, 0.0], [0.0, 0.0, 0.0], [0.0, 0.0, 0.0], [0.0, 0.0, 0.0], [0.0, 0.0, 0.0], [0.0, 0.0, 0.0], [0.0, 0.0, 0.0], [0.0, 0.0, 0.0], [0.0, 0.0, 0.0], [0.0, 0.0, 0.0], [0.0, 0.0, 0.0], [0.0, 0.0, 0.0], [0.0, 0.0, 0.0], [0.0, 0.0, 0.0], [0.0, 0.0, 0.0], [0.0, 0.0, 0.0], [0.0, 0.0, 0.0], [0.0, 0.0, 0.0], [0.0, 0.0, 0.0], [0.0, 0.0, 0.0], [0.0, 0.0, 0.0], [0.0, 0.0, 0.0], [0.0, 0.0, 0.0], [0.0, 0.0, 0.0], [0.0, 0.0, 0.0], [0.0, 0.0, 0.0], [0.0, 0.0, 0.0], [0.0, 0.0, 0.0], [0.0, 0.0, 0.0], [0.0, 0.0, 0.0], [0.0, 0.0, 0.0], [0.0, 0.0, 0.0], [0.0, 0.0, 0.0], [0.0, 0.0, 0.0], [0.0, 0.0, 0.0], [0.0, 0.0, 0.0], [0.0, 0.0, 0.0], [0.0, 0.0, 0.0], [0.0, 0.0, 0.0], [0.0, 0.0, 0.0], [0.0, 0.0, 0.0], [0.0, 0.0, 0.0], [0.0, 0.0, 0.0]])
         self.assertEqual(get_spaceGroup(par_lat,atomType,bas_vecs,eps,lattcoords),out)
+
+    def test_getsg11(self):
+        from phenum.symmetry import get_spaceGroup
+        case = 1
+        par_lat =  list(map(list,zip(*_read_float_2D(gpath+"get_spaceGroup_aVecs.in."+str(case)))))
+        atomType =  _read_int_1D(gpath+"get_spaceGroup_atomType.in."+str(case))
+        bas_vecs =  list(map(list,zip(*_read_float_2D(gpath+"get_spaceGroup_input_pos.in."+str(case)))))
+        eps =  _read_float(gpath+"get_spaceGroup_eps.in."+str(case))
+        lattcoords =  _read_logical(gpath+"get_spaceGroup_lattcoords.in."+str(case))
+
+        out = _read_spaceGroup(case)
+        ops, fract = get_spaceGroup(par_lat,atomType,bas_vecs,eps,lattcoords)
+        self._compare_space_group(out,[ops,fract])
+
+    def test_getsg12(self):
+        from phenum.symmetry import get_spaceGroup
+        case = 2
+        par_lat =  list(map(list,zip(*_read_float_2D(gpath+"get_spaceGroup_aVecs.in."+str(case)))))
+        atomType =  _read_int_1D(gpath+"get_spaceGroup_atomType.in."+str(case))
+        bas_vecs =  list(map(list,zip(*_read_float_2D(gpath+"get_spaceGroup_input_pos.in."+str(case)))))
+        eps =  _read_float(gpath+"get_spaceGroup_eps.in."+str(case))
+        lattcoords =  _read_logical(gpath+"get_spaceGroup_lattcoords.in."+str(case))
+
+        out = _read_spaceGroup(case)
+        ops, fract = get_spaceGroup(par_lat,atomType,bas_vecs,eps,lattcoords)
+        self._compare_space_group(out,[ops,fract])
+
+    def test_getsg13(self):
+        from phenum.symmetry import get_spaceGroup
+        case = 3
+        par_lat =  list(map(list,zip(*_read_float_2D(gpath+"get_spaceGroup_aVecs.in."+str(case)))))
+        atomType =  _read_int_1D(gpath+"get_spaceGroup_atomType.in."+str(case))
+        bas_vecs =  list(map(list,zip(*_read_float_2D(gpath+"get_spaceGroup_input_pos.in."+str(case)))))
+        eps =  _read_float(gpath+"get_spaceGroup_eps.in."+str(case))
+        lattcoords =  _read_logical(gpath+"get_spaceGroup_lattcoords.in."+str(case))
+
+        out = _read_spaceGroup(case)
+        ops, fract = get_spaceGroup(par_lat,atomType,bas_vecs,eps,lattcoords)
+        self._compare_space_group(out,[ops,fract])
+
+    def test_getsg14(self):
+        from phenum.symmetry import get_spaceGroup
+        case = 4
+        par_lat =  list(map(list,zip(*_read_float_2D(gpath+"get_spaceGroup_aVecs.in."+str(case)))))
+        atomType =  _read_int_1D(gpath+"get_spaceGroup_atomType.in."+str(case))
+        bas_vecs =  list(map(list,zip(*_read_float_2D(gpath+"get_spaceGroup_input_pos.in."+str(case)))))
+        eps =  _read_float(gpath+"get_spaceGroup_eps.in."+str(case))
+        lattcoords =  _read_logical(gpath+"get_spaceGroup_lattcoords.in."+str(case))
+
+        out = _read_spaceGroup(case)
+        ops, fract = get_spaceGroup(par_lat,atomType,bas_vecs,eps,lattcoords)
+        self._compare_space_group(out,[ops,fract])
+
+    def test_getsg15(self):
+        from phenum.symmetry import get_spaceGroup
+        case = 5
+        par_lat =  list(map(list,zip(*_read_float_2D(gpath+"get_spaceGroup_aVecs.in."+str(case)))))
+        atomType =  _read_int_1D(gpath+"get_spaceGroup_atomType.in."+str(case))
+        bas_vecs =  list(map(list,zip(*_read_float_2D(gpath+"get_spaceGroup_input_pos.in."+str(case)))))
+        eps =  _read_float(gpath+"get_spaceGroup_eps.in."+str(case))
+        lattcoords =  _read_logical(gpath+"get_spaceGroup_lattcoords.in."+str(case))
+
+        out = _read_spaceGroup(case)
+        ops, fract = get_spaceGroup(par_lat,atomType,bas_vecs,eps,lattcoords)
+        self._compare_space_group(out,[ops,fract])
+
+    def test_getsg16(self):
+        from phenum.symmetry import get_spaceGroup
+        case = 6
+        par_lat =  list(map(list,zip(*_read_float_2D(gpath+"get_spaceGroup_aVecs.in."+str(case)))))
+        atomType =  _read_int_1D(gpath+"get_spaceGroup_atomType.in."+str(case))
+        bas_vecs =  list(map(list,zip(*_read_float_2D(gpath+"get_spaceGroup_input_pos.in."+str(case)))))
+        eps =  _read_float(gpath+"get_spaceGroup_eps.in."+str(case))
+        lattcoords =  _read_logical(gpath+"get_spaceGroup_lattcoords.in."+str(case))
+
+        out = _read_spaceGroup(case)
+        ops, fract = get_spaceGroup(par_lat,atomType,bas_vecs,eps,lattcoords)
+        self._compare_space_group(out,[ops,fract])
+
+    def test_getsg17(self):
+        from phenum.symmetry import get_spaceGroup
+        case = 7
+        par_lat =  list(map(list,zip(*_read_float_2D(gpath+"get_spaceGroup_aVecs.in."+str(case)))))
+        atomType =  _read_int_1D(gpath+"get_spaceGroup_atomType.in."+str(case))
+        bas_vecs =  list(map(list,zip(*_read_float_2D(gpath+"get_spaceGroup_input_pos.in."+str(case)))))
+        eps =  _read_float(gpath+"get_spaceGroup_eps.in."+str(case))
+        lattcoords =  _read_logical(gpath+"get_spaceGroup_lattcoords.in."+str(case))
+
+        out = _read_spaceGroup(case)
+
+        ops, fract = get_spaceGroup(par_lat,atomType,bas_vecs,eps=eps,lattcoords=lattcoords)
+
+        self._compare_space_group(out,[ops,fract])
+
+    def test_getsg18(self):
+        from phenum.symmetry import get_spaceGroup
+        case = 8
+        par_lat =  list(map(list,zip(*_read_float_2D(gpath+"get_spaceGroup_aVecs.in."+str(case)))))
+        atomType =  _read_int_1D(gpath+"get_spaceGroup_atomType.in."+str(case))
+        bas_vecs =  list(map(list,zip(*_read_float_2D(gpath+"get_spaceGroup_input_pos.in."+str(case)))))
+        eps =  _read_float(gpath+"get_spaceGroup_eps.in."+str(case))
+        lattcoords =  _read_logical(gpath+"get_spaceGroup_lattcoords.in."+str(case))
+
+        out = _read_spaceGroup(case)
+        ops, fract = get_spaceGroup(par_lat,atomType,bas_vecs,eps,lattcoords)
+        self._compare_space_group(out,[ops,fract])
+
+    def test_getsg19(self):
+        from phenum.symmetry import get_spaceGroup
+        case = 9
+        par_lat =  list(map(list,zip(*_read_float_2D(gpath+"get_spaceGroup_aVecs.in."+str(case)))))
+        atomType =  _read_int_1D(gpath+"get_spaceGroup_atomType.in."+str(case))
+        bas_vecs =  list(map(list,zip(*_read_float_2D(gpath+"get_spaceGroup_input_pos.in."+str(case)))))
+        eps =  _read_float(gpath+"get_spaceGroup_eps.in."+str(case))
+        lattcoords =  _read_logical(gpath+"get_spaceGroup_lattcoords.in."+str(case))
+
+        out = _read_spaceGroup(case)
+        ops, fract = get_spaceGroup(par_lat,atomType,bas_vecs,eps,lattcoords)
+        self._compare_space_group(out,[ops,fract])
+            
+    def test_getsg20(self):
+        from phenum.symmetry import get_spaceGroup
+        from numpy.testing import assert_allclose
+        from numpy import array 
+        case = 10
+        par_lat =  list(map(list,zip(*_read_float_2D(gpath+"get_spaceGroup_aVecs.in."+str(case)))))
+        atomType =  _read_int_1D(gpath+"get_spaceGroup_atomType.in."+str(case))
+        bas_vecs =  list(map(list,zip(*_read_float_2D(gpath+"get_spaceGroup_input_pos.in."+str(case)))))
+        eps =  _read_float(gpath+"get_spaceGroup_eps.in."+str(case))
+        lattcoords =  _read_logical(gpath+"get_spaceGroup_lattcoords.in."+str(case))
+
+        out = _read_spaceGroup(case)
+        ops, fract = get_spaceGroup(par_lat,atomType,bas_vecs,eps,lattcoords)
+        self._compare_space_group(out,[ops,fract])
         
-        
+    def test_getsg21(self):
+        from phenum.symmetry import get_spaceGroup, _get_transformations
+        par_lat =  [[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]]
+        (prim_to_cart, cart_to_prim) = _get_transformations(par_lat)
+        atomType =  [1, 1, 1]
+        bas_vecs =  [[0.0, 0.0, 0.0], [0.25, 0.25, 0.75], [0.5, 0.5, 0.25]]
+        bas_vecs = [np.matmul(cart_to_prim, i).tolist() for i in bas_vecs]
+        eps =  1e-10
+        lattcoords =  True
+        out =  ([[[0.0, 1.0, 0.0], [1.0, 0.0, 0.0], [0.0, 0.0, 1.0]], [[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]]], [[0.0, 0.0, 0.0], [0.0, 0.0, 0.0]])
+        self.assertEqual(get_spaceGroup(par_lat,atomType,bas_vecs,eps,lattcoords),out)
+
 class TestBringIntoCell(ut.TestCase):
     """Tests of the bring_into_cell subroutine."""
 
@@ -361,3 +613,644 @@ class TestBringIntoCell(ut.TestCase):
         eps =  1e-10
         out =  [0.0, 0.0, 0.0]
         self.assertEqual(bring_into_cell(bas_vecs,cart_to_latt,latt_to_cart,eps),out)
+
+    def test16(self):
+        from phenum.symmetry import bring_into_cell
+        bas_vecs = [1.0,0.0,1.0]
+        cart_to_latt = [[1.0, -1.0, 0.1], [1.0, 1.0, -0.1], [-1.0, 1.0, 0.1]]
+        latt_to_cart = [[0.5, 0.5, 0.0], [0.0, 0.5, 0.5], [5.0, 0.0, 5.0]]
+        eps = 1e-3
+        out = [1.0,0.0,1.0]
+        self.assertEqual(bring_into_cell(bas_vecs,cart_to_latt,latt_to_cart,eps),out)
+
+    def test17(self):
+        from phenum.symmetry import bring_into_cell
+        bas_vecs = [2.0,0.0,2.0]
+        cart_to_latt = [[1.0, -1.0, 0.1], [1.0, 1.0, -0.1], [-1.0, 1.0, 0.1]]
+        latt_to_cart = [[0.5, 0.5, 0.0], [0.0, 0.5, 0.5], [5.0, 0.0, 5.0]]
+        eps = 1e-3
+        out = [2.0,0.0,2.0]
+        self.assertEqual(bring_into_cell(bas_vecs,cart_to_latt,latt_to_cart,eps),out)
+
+    def test18(self):
+        from phenum.symmetry import bring_into_cell
+        bas_vecs = [3.0,0.0,3.0]
+        cart_to_latt = [[1.0, -1.0, 0.1], [1.0, 1.0, -0.1], [-1.0, 1.0, 0.1]]
+        latt_to_cart = [[0.5, 0.5, 0.0], [0.0, 0.5, 0.5], [5.0, 0.0, 5.0]]
+        eps = 1e-3
+        out = [3.0000000000000004, 0.0, 3.0000000000000004]
+        self.assertEqual(bring_into_cell(bas_vecs,cart_to_latt,latt_to_cart,eps),out)
+
+    def test19(self):
+        from phenum.symmetry import bring_into_cell
+        bas_vecs = [0.0, 0.5779502399999998, 1.6329931599999998]
+        cart_to_latt = [[1.0, 0.0, 0.0], [-0.5773502717125849, 1.1547005434251698, 0.0], [0.0, 0.0, 0.6123724213915893]]
+        latt_to_cart = [[1.0, 0.0, 0.0], [0.5, 0.8660254, 0.0], [0.0, 0.0, 1.6329932]]
+        eps = 1e-3
+        out = [1.0000000000000000, 0.57795023999999980, -4.0000000416390380E-008]
+        self.assertEqual(bring_into_cell(bas_vecs,cart_to_latt,latt_to_cart,eps),out)
+       
+class TestGetLatticePointGroup(ut.TestCase):
+    def test_getpg1(self):
+        from phenum.symmetry import _get_lattice_pointGroup
+        case = 1
+        avecs = _read_float_2D(gpath+"get_lattice_pointGroup_aVecs.in."+str(case))
+        eps = _read_float(gpath+"get_lattice_pointGroup_eps.in."+str(case))
+
+        out = _read_float_3D(gpath+"get_lattice_pointGroup_lattpg_op.out."+str(case))
+
+        self.assertEqual(_get_lattice_pointGroup(avecs,eps),out)
+
+    def test_getpg2(self):
+        from phenum.symmetry import _get_lattice_pointGroup
+        case = 2
+        avecs = _read_float_2D(gpath+"get_lattice_pointGroup_aVecs.in."+str(case))
+        eps = _read_float(gpath+"get_lattice_pointGroup_eps.in."+str(case))
+
+        out = _read_float_3D(gpath+"get_lattice_pointGroup_lattpg_op.out."+str(case))
+
+        self.assertEqual(_get_lattice_pointGroup(avecs,eps),out)
+
+    def test_getpg3(self):
+        from phenum.symmetry import _get_lattice_pointGroup
+        case = 3
+        avecs = _read_float_2D(gpath+"get_lattice_pointGroup_aVecs.in."+str(case))
+        eps = _read_float(gpath+"get_lattice_pointGroup_eps.in."+str(case))
+
+        out = _read_float_3D(gpath+"get_lattice_pointGroup_lattpg_op.out."+str(case))
+
+        self.assertEqual(_get_lattice_pointGroup(avecs,eps),out)
+
+    def test_getpg4(self):
+        from phenum.symmetry import _get_lattice_pointGroup
+        case = 4
+        avecs = _read_float_2D(gpath+"get_lattice_pointGroup_aVecs.in."+str(case))
+        eps = _read_float(gpath+"get_lattice_pointGroup_eps.in."+str(case))
+
+        out = _read_float_3D(gpath+"get_lattice_pointGroup_lattpg_op.out."+str(case))
+
+        self.assertEqual(_get_lattice_pointGroup(avecs,eps),out)
+
+    def test_getpg5(self):
+        from phenum.symmetry import _get_lattice_pointGroup
+        case = 5
+        avecs = _read_float_2D(gpath+"get_lattice_pointGroup_aVecs.in."+str(case))
+        eps = _read_float(gpath+"get_lattice_pointGroup_eps.in."+str(case))
+
+        out = _read_float_3D(gpath+"get_lattice_pointGroup_lattpg_op.out."+str(case))
+
+        self.assertEqual(_get_lattice_pointGroup(avecs,eps),out)
+
+    def test_getpg6(self):
+        from phenum.symmetry import _get_lattice_pointGroup
+        case = 6
+        avecs = _read_float_2D(gpath+"get_lattice_pointGroup_aVecs.in."+str(case))
+        eps = _read_float(gpath+"get_lattice_pointGroup_eps.in."+str(case))
+
+        out = _read_float_3D(gpath+"get_lattice_pointGroup_lattpg_op.out."+str(case))
+
+        self.assertEqual(_get_lattice_pointGroup(avecs,eps),out)
+
+    def test_getpg7(self):
+        from phenum.symmetry import _get_lattice_pointGroup
+        case = 7
+        avecs = _read_float_2D(gpath+"get_lattice_pointGroup_aVecs.in."+str(case))
+        eps = _read_float(gpath+"get_lattice_pointGroup_eps.in."+str(case))
+
+        out = _read_float_3D(gpath+"get_lattice_pointGroup_lattpg_op.out."+str(case))
+
+        self.assertEqual(_get_lattice_pointGroup(avecs,eps),out)
+
+    def test_getpg8(self):
+        from phenum.symmetry import _get_lattice_pointGroup
+        case = 8
+        avecs = _read_float_2D(gpath+"get_lattice_pointGroup_aVecs.in."+str(case))
+        eps = _read_float(gpath+"get_lattice_pointGroup_eps.in."+str(case))
+
+        out = _read_float_3D(gpath+"get_lattice_pointGroup_lattpg_op.out."+str(case))
+
+        self.assertEqual(_get_lattice_pointGroup(avecs,eps),out)
+
+    def test_getpg9(self):
+        from phenum.symmetry import _get_lattice_pointGroup
+        case = 9
+        avecs = _read_float_2D(gpath+"get_lattice_pointGroup_aVecs.in."+str(case))
+        eps = _read_float(gpath+"get_lattice_pointGroup_eps.in."+str(case))
+
+        out = _read_float_3D(gpath+"get_lattice_pointGroup_lattpg_op.out."+str(case))
+
+        self.assertEqual(_get_lattice_pointGroup(avecs,eps),out)
+
+    def test_getpg10(self):
+        from phenum.symmetry import _get_lattice_pointGroup
+        case = 10
+        avecs = _read_float_2D(gpath+"get_lattice_pointGroup_aVecs.in."+str(case))
+        eps = _read_float(gpath+"get_lattice_pointGroup_eps.in."+str(case))
+
+        out = _read_float_3D(gpath+"get_lattice_pointGroup_lattpg_op.out."+str(case))
+
+        self.assertEqual(_get_lattice_pointGroup(avecs,eps),out)
+
+    def test_getpg11(self):
+        from phenum.symmetry import _get_lattice_pointGroup
+        case = 11
+        avecs = _read_float_2D(gpath+"get_lattice_pointGroup_aVecs.in."+str(case))
+        eps = _read_float(gpath+"get_lattice_pointGroup_eps.in."+str(case))
+
+        out = _read_float_3D(gpath+"get_lattice_pointGroup_lattpg_op.out."+str(case))
+
+        self.assertEqual(_get_lattice_pointGroup(avecs,eps),out)
+
+    def test_getpg12(self):
+        from phenum.symmetry import _get_lattice_pointGroup
+        case = 12
+        avecs = _read_float_2D(gpath+"get_lattice_pointGroup_aVecs.in."+str(case))
+        eps = _read_float(gpath+"get_lattice_pointGroup_eps.in."+str(case))
+
+        out = _read_float_3D(gpath+"get_lattice_pointGroup_lattpg_op.out."+str(case))
+
+        self.assertEqual(_get_lattice_pointGroup(avecs,eps),out)
+
+    def test_getpg13(self):
+        from phenum.symmetry import _get_lattice_pointGroup
+        case = 13
+        avecs = _read_float_2D(gpath+"get_lattice_pointGroup_aVecs.in."+str(case))
+        eps = _read_float(gpath+"get_lattice_pointGroup_eps.in."+str(case))
+
+        out = _read_float_3D(gpath+"get_lattice_pointGroup_lattpg_op.out."+str(case))
+
+        self.assertEqual(_get_lattice_pointGroup(avecs,eps),out)
+
+    def test_getpg14(self):
+        from phenum.symmetry import _get_lattice_pointGroup
+        case = 14
+        avecs = _read_float_2D(gpath+"get_lattice_pointGroup_aVecs.in."+str(case))
+        eps = _read_float(gpath+"get_lattice_pointGroup_eps.in."+str(case))
+
+        out = _read_float_3D(gpath+"get_lattice_pointGroup_lattpg_op.out."+str(case))
+
+        self.assertEqual(_get_lattice_pointGroup(avecs,eps),out)
+
+    def test_getpg15(self):
+        from phenum.symmetry import _get_lattice_pointGroup
+        case = 15
+        avecs = _read_float_2D(gpath+"get_lattice_pointGroup_aVecs.in."+str(case))
+        eps = _read_float(gpath+"get_lattice_pointGroup_eps.in."+str(case))
+
+        out = _read_float_3D(gpath+"get_lattice_pointGroup_lattpg_op.out."+str(case))
+
+        self.assertEqual(_get_lattice_pointGroup(avecs,eps),out)
+
+    def test_getpg16(self):
+        from phenum.symmetry import _get_lattice_pointGroup
+        case = 16
+        avecs = _read_float_2D(gpath+"get_lattice_pointGroup_aVecs.in."+str(case))
+        eps = _read_float(gpath+"get_lattice_pointGroup_eps.in."+str(case))
+
+        out = _read_float_3D(gpath+"get_lattice_pointGroup_lattpg_op.out."+str(case))
+
+        self.assertEqual(_get_lattice_pointGroup(avecs,eps),out)
+
+    def test_getpg17(self):
+        from phenum.symmetry import _get_lattice_pointGroup
+        case = 17
+        avecs = _read_float_2D(gpath+"get_lattice_pointGroup_aVecs.in."+str(case))
+        eps = _read_float(gpath+"get_lattice_pointGroup_eps.in."+str(case))
+
+        out = _read_float_3D(gpath+"get_lattice_pointGroup_lattpg_op.out."+str(case))
+
+        self.assertEqual(_get_lattice_pointGroup(avecs,eps),out)
+
+    def test_getpg18(self):
+        from phenum.symmetry import _get_lattice_pointGroup
+        case = 18
+        avecs = _read_float_2D(gpath+"get_lattice_pointGroup_aVecs.in."+str(case))
+        eps = _read_float(gpath+"get_lattice_pointGroup_eps.in."+str(case))
+
+        out = _read_float_3D(gpath+"get_lattice_pointGroup_lattpg_op.out."+str(case))
+
+        self.assertEqual(_get_lattice_pointGroup(avecs,eps),out)
+
+    def test_getpg19(self):
+        from phenum.symmetry import _get_lattice_pointGroup
+        case = 19
+        avecs = _read_float_2D(gpath+"get_lattice_pointGroup_aVecs.in."+str(case))
+        eps = _read_float(gpath+"get_lattice_pointGroup_eps.in."+str(case))
+
+        out = _read_float_3D(gpath+"get_lattice_pointGroup_lattpg_op.out."+str(case))
+
+        self.assertEqual(_get_lattice_pointGroup(avecs,eps),out)
+
+    def test_getpg20(self):
+        from phenum.symmetry import _get_lattice_pointGroup
+        case = 20
+        avecs = _read_float_2D(gpath+"get_lattice_pointGroup_aVecs.in."+str(case))
+        eps = _read_float(gpath+"get_lattice_pointGroup_eps.in."+str(case))
+
+        out = _read_float_3D(gpath+"get_lattice_pointGroup_lattpg_op.out."+str(case))
+
+        self.assertEqual(_get_lattice_pointGroup(avecs,eps),out)
+        
+class TestGetTransformations(ut.TestCase):
+    """Tests of the _get_transformations subroutine."""
+
+    def _compare_outputs(self,out1,out2):
+
+        ptc1 = out1[0]
+        ctp1 = out1[1]
+        ptc2 = out2[0]
+        ctp2 = out2[1]
+        
+        for i in range(3):
+            for j in range(3):
+                self.assertAlmostEqual(ptc1[i][j],ptc2[i][j])
+                self.assertAlmostEqual(ctp1[i][j],ctp2[i][j])
+    
+    def _trans_out(self,case):
+        ctp = _read_float_2D(gpath+"get_transformations_cart_to_prim.out."+str(case))
+        ptc = _read_float_2D(gpath+"get_transformations_prim_to_cart.out."+str(case))
+        return (ptc,ctp)
+    
+    def test1(self):
+        from phenum.symmetry import _get_transformations
+        case = 1
+        aVecs = _read_float_2D(gpath+"get_transformations_aVecs.in."+str(case))
+
+        out = self._trans_out(case)
+        self._compare_outputs(_get_transformations(aVecs),out)
+    
+    def test2(self):
+        from phenum.symmetry import _get_transformations
+        case = 2
+        aVecs = _read_float_2D(gpath+"get_transformations_aVecs.in."+str(case))
+
+        out = self._trans_out(case)
+        self._compare_outputs(_get_transformations(aVecs),out)
+    
+    def test3(self):
+        from phenum.symmetry import _get_transformations
+        case = 3
+        aVecs = _read_float_2D(gpath+"get_transformations_aVecs.in."+str(case))
+
+        out = self._trans_out(case)
+        self._compare_outputs(_get_transformations(aVecs),out)
+    
+    def test4(self):
+        from phenum.symmetry import _get_transformations
+        case = 4
+        aVecs = _read_float_2D(gpath+"get_transformations_aVecs.in."+str(case))
+
+        out = self._trans_out(case)
+        self._compare_outputs(_get_transformations(aVecs),out)
+    
+    def test5(self):
+        from phenum.symmetry import _get_transformations
+        case = 5
+        aVecs = _read_float_2D(gpath+"get_transformations_aVecs.in."+str(case))
+
+        out = self._trans_out(case)
+        self._compare_outputs(_get_transformations(aVecs),out)
+    
+    def test6(self):
+        from phenum.symmetry import _get_transformations
+        case = 6
+        aVecs = _read_float_2D(gpath+"get_transformations_aVecs.in."+str(case))
+
+        out = self._trans_out(case)
+        self._compare_outputs(_get_transformations(aVecs),out)
+    
+    def test7(self):
+        from phenum.symmetry import _get_transformations
+        case = 7
+        aVecs = _read_float_2D(gpath+"get_transformations_aVecs.in."+str(case))
+
+        out = self._trans_out(case)
+        self._compare_outputs(_get_transformations(aVecs),out)
+    
+    def test8(self):
+        from phenum.symmetry import _get_transformations
+        case = 8
+        aVecs = _read_float_2D(gpath+"get_transformations_aVecs.in."+str(case))
+
+        out = self._trans_out(case)
+        self._compare_outputs(_get_transformations(aVecs),out)
+    
+    def test9(self):
+        from phenum.symmetry import _get_transformations
+        case = 9
+        aVecs = _read_float_2D(gpath+"get_transformations_aVecs.in."+str(case))
+
+        out = self._trans_out(case)
+        self._compare_outputs(_get_transformations(aVecs),out)
+    
+    def test10(self):
+        from phenum.symmetry import _get_transformations
+        case = 10
+        aVecs = _read_float_2D(gpath+"get_transformations_aVecs.in."+str(case))
+
+        out = self._trans_out(case)
+        self._compare_outputs(_get_transformations(aVecs),out)
+    
+    def test11(self):
+        from phenum.symmetry import _get_transformations
+        case = 11
+        aVecs = _read_float_2D(gpath+"get_transformations_aVecs.in."+str(case))
+
+        out = self._trans_out(case)
+        self._compare_outputs(_get_transformations(aVecs),out)
+    
+    def test12(self):
+        from phenum.symmetry import _get_transformations
+        case = 12
+        aVecs = _read_float_2D(gpath+"get_transformations_aVecs.in."+str(case))
+
+        out = self._trans_out(case)
+        self._compare_outputs(_get_transformations(aVecs),out)
+    
+    def test13(self):
+        from phenum.symmetry import _get_transformations
+        case = 13
+        aVecs = _read_float_2D(gpath+"get_transformations_aVecs.in."+str(case))
+
+        out = self._trans_out(case)
+        self._compare_outputs(_get_transformations(aVecs),out)
+    
+    def test14(self):
+        from phenum.symmetry import _get_transformations
+        case = 14
+        aVecs = _read_float_2D(gpath+"get_transformations_aVecs.in."+str(case))
+
+        out = self._trans_out(case)
+        self._compare_outputs(_get_transformations(aVecs),out)
+    
+    def test15(self):
+        from phenum.symmetry import _get_transformations
+        case = 15
+        aVecs = _read_float_2D(gpath+"get_transformations_aVecs.in."+str(case))
+
+        out = self._trans_out(case)
+        self._compare_outputs(_get_transformations(aVecs),out)
+    
+    def test16(self):
+        from phenum.symmetry import _get_transformations
+        case = 16
+        aVecs = _read_float_2D(gpath+"get_transformations_aVecs.in."+str(case))
+
+        out = self._trans_out(case)
+        self._compare_outputs(_get_transformations(aVecs),out)
+    
+    def test17(self):
+        from phenum.symmetry import _get_transformations
+        case = 17
+        aVecs = _read_float_2D(gpath+"get_transformations_aVecs.in."+str(case))
+
+        out = self._trans_out(case)
+        self._compare_outputs(_get_transformations(aVecs),out)
+    
+    def test18(self):
+        from phenum.symmetry import _get_transformations
+        case = 18
+        aVecs = _read_float_2D(gpath+"get_transformations_aVecs.in."+str(case))
+
+        out = self._trans_out(case)
+        self._compare_outputs(_get_transformations(aVecs),out)
+    
+    def test19(self):
+        from phenum.symmetry import _get_transformations
+        case = 19
+        aVecs = _read_float_2D(gpath+"get_transformations_aVecs.in."+str(case))
+
+        out = self._trans_out(case)
+        self._compare_outputs(_get_transformations(aVecs),out)
+    
+    def test20(self):
+        from phenum.symmetry import _get_transformations
+        case = 20
+        aVecs = _read_float_2D(gpath+"get_transformations_aVecs.in."+str(case))
+
+        out = self._trans_out(case)
+        self._compare_outputs(_get_transformations(aVecs),out)
+    
+class TestDoesMappingExist(ut.TestCase):
+    """Tests of the _does_mapping_exist subroutine."""
+
+    def test1(self):
+        from phenum.symmetry import _does_mapping_exist
+        case = 1
+        v = _read_float_1D(gpath+"does_mapping_exist_v.in."+str(case))
+        this_type = _read_int(gpath+"does_mapping_exist_this_type.in."+str(case))
+        atom_pos = list(map(list,zip(*_read_float_2D(gpath+"does_mapping_exist_atom_pos.in."+str(case)))))
+        atomType = _read_int_1D(gpath+"does_mapping_exist_atomType.in."+str(case))
+        eps = _read_float(gpath+"does_mapping_exist_eps.in."+str(case))
+        out = _read_logical(gpath+"does_mapping_exist_mapped.out."+str(case))
+        self.assertEqual(_does_mapping_exist(v,this_type,atom_pos,atomType,eps),out)
+        
+    def test2(self):
+        from phenum.symmetry import _does_mapping_exist
+        case = 2
+        v = _read_float_1D(gpath+"does_mapping_exist_v.in."+str(case))
+        this_type = _read_int(gpath+"does_mapping_exist_this_type.in."+str(case))
+        atom_pos = list(map(list,zip(*_read_float_2D(gpath+"does_mapping_exist_atom_pos.in."+str(case)))))
+        atomType = _read_int_1D(gpath+"does_mapping_exist_atomType.in."+str(case))
+        eps = _read_float(gpath+"does_mapping_exist_eps.in."+str(case))
+        out = _read_logical(gpath+"does_mapping_exist_mapped.out."+str(case))
+        self.assertEqual(_does_mapping_exist(v,this_type,atom_pos,atomType,eps),out)
+        
+    def test3(self):
+        from phenum.symmetry import _does_mapping_exist
+        case = 3
+        v = _read_float_1D(gpath+"does_mapping_exist_v.in."+str(case))
+        this_type = _read_int(gpath+"does_mapping_exist_this_type.in."+str(case))
+        atom_pos = list(map(list,zip(*_read_float_2D(gpath+"does_mapping_exist_atom_pos.in."+str(case)))))
+        atomType = _read_int_1D(gpath+"does_mapping_exist_atomType.in."+str(case))
+        eps = _read_float(gpath+"does_mapping_exist_eps.in."+str(case))
+        out = _read_logical(gpath+"does_mapping_exist_mapped.out."+str(case))
+        self.assertEqual(_does_mapping_exist(v,this_type,atom_pos,atomType,eps),out)
+        
+    def test4(self):
+        from phenum.symmetry import _does_mapping_exist
+        case = 4
+        v = _read_float_1D(gpath+"does_mapping_exist_v.in."+str(case))
+        this_type = _read_int(gpath+"does_mapping_exist_this_type.in."+str(case))
+        atom_pos = list(map(list,zip(*_read_float_2D(gpath+"does_mapping_exist_atom_pos.in."+str(case)))))
+        atomType = _read_int_1D(gpath+"does_mapping_exist_atomType.in."+str(case))
+        eps = _read_float(gpath+"does_mapping_exist_eps.in."+str(case))
+        out = _read_logical(gpath+"does_mapping_exist_mapped.out."+str(case))
+        self.assertEqual(_does_mapping_exist(v,this_type,atom_pos,atomType,eps),out)
+        
+    def test5(self):
+        from phenum.symmetry import _does_mapping_exist
+        case = 5
+        v = _read_float_1D(gpath+"does_mapping_exist_v.in."+str(case))
+        this_type = _read_int(gpath+"does_mapping_exist_this_type.in."+str(case))
+        atom_pos = list(map(list,zip(*_read_float_2D(gpath+"does_mapping_exist_atom_pos.in."+str(case)))))
+        atomType = _read_int_1D(gpath+"does_mapping_exist_atomType.in."+str(case))
+        eps = _read_float(gpath+"does_mapping_exist_eps.in."+str(case))
+        out = _read_logical(gpath+"does_mapping_exist_mapped.out."+str(case))
+        self.assertEqual(_does_mapping_exist(v,this_type,atom_pos,atomType,eps),out)
+        
+    def test6(self):
+        from phenum.symmetry import _does_mapping_exist
+        case = 6
+        v = _read_float_1D(gpath+"does_mapping_exist_v.in."+str(case))
+        this_type = _read_int(gpath+"does_mapping_exist_this_type.in."+str(case))
+        atom_pos = list(map(list,zip(*_read_float_2D(gpath+"does_mapping_exist_atom_pos.in."+str(case)))))
+        atomType = _read_int_1D(gpath+"does_mapping_exist_atomType.in."+str(case))
+        eps = _read_float(gpath+"does_mapping_exist_eps.in."+str(case))
+        out = _read_logical(gpath+"does_mapping_exist_mapped.out."+str(case))
+        self.assertEqual(_does_mapping_exist(v,this_type,atom_pos,atomType,eps),out)
+        
+    def test7(self):
+        from phenum.symmetry import _does_mapping_exist
+        case = 7
+        v = _read_float_1D(gpath+"does_mapping_exist_v.in."+str(case))
+        this_type = _read_int(gpath+"does_mapping_exist_this_type.in."+str(case))
+        atom_pos = list(map(list,zip(*_read_float_2D(gpath+"does_mapping_exist_atom_pos.in."+str(case)))))
+        atomType = _read_int_1D(gpath+"does_mapping_exist_atomType.in."+str(case))
+        eps = _read_float(gpath+"does_mapping_exist_eps.in."+str(case))
+        out = _read_logical(gpath+"does_mapping_exist_mapped.out."+str(case))
+        self.assertEqual(_does_mapping_exist(v,this_type,atom_pos,atomType,eps),out)
+        
+    def test8(self):
+        from phenum.symmetry import _does_mapping_exist
+        case = 8
+        v = _read_float_1D(gpath+"does_mapping_exist_v.in."+str(case))
+        this_type = _read_int(gpath+"does_mapping_exist_this_type.in."+str(case))
+        atom_pos = list(map(list,zip(*_read_float_2D(gpath+"does_mapping_exist_atom_pos.in."+str(case)))))
+        atomType = _read_int_1D(gpath+"does_mapping_exist_atomType.in."+str(case))
+        eps = _read_float(gpath+"does_mapping_exist_eps.in."+str(case))
+        out = _read_logical(gpath+"does_mapping_exist_mapped.out."+str(case))
+        self.assertEqual(_does_mapping_exist(v,this_type,atom_pos,atomType,eps),out)
+        
+    def test9(self):
+        from phenum.symmetry import _does_mapping_exist
+        case = 9
+        v = _read_float_1D(gpath+"does_mapping_exist_v.in."+str(case))
+        this_type = _read_int(gpath+"does_mapping_exist_this_type.in."+str(case))
+        atom_pos = list(map(list,zip(*_read_float_2D(gpath+"does_mapping_exist_atom_pos.in."+str(case)))))
+        atomType = _read_int_1D(gpath+"does_mapping_exist_atomType.in."+str(case))
+        eps = _read_float(gpath+"does_mapping_exist_eps.in."+str(case))
+        out = _read_logical(gpath+"does_mapping_exist_mapped.out."+str(case))
+        self.assertEqual(_does_mapping_exist(v,this_type,atom_pos,atomType,eps),out)
+        
+    def test10(self):
+        from phenum.symmetry import _does_mapping_exist
+        case = 10
+        v = _read_float_1D(gpath+"does_mapping_exist_v.in."+str(case))
+        this_type = _read_int(gpath+"does_mapping_exist_this_type.in."+str(case))
+        atom_pos = list(map(list,zip(*_read_float_2D(gpath+"does_mapping_exist_atom_pos.in."+str(case)))))
+        atomType = _read_int_1D(gpath+"does_mapping_exist_atomType.in."+str(case))
+        eps = _read_float(gpath+"does_mapping_exist_eps.in."+str(case))
+        out = _read_logical(gpath+"does_mapping_exist_mapped.out."+str(case))
+        self.assertEqual(_does_mapping_exist(v,this_type,atom_pos,atomType,eps),out)
+        
+    def test11(self):
+        from phenum.symmetry import _does_mapping_exist
+        case = 11
+        v = _read_float_1D(gpath+"does_mapping_exist_v.in."+str(case))
+        this_type = _read_int(gpath+"does_mapping_exist_this_type.in."+str(case))
+        atom_pos = list(map(list,zip(*_read_float_2D(gpath+"does_mapping_exist_atom_pos.in."+str(case)))))
+        atomType = _read_int_1D(gpath+"does_mapping_exist_atomType.in."+str(case))
+        eps = _read_float(gpath+"does_mapping_exist_eps.in."+str(case))
+        out = _read_logical(gpath+"does_mapping_exist_mapped.out."+str(case))
+        self.assertEqual(_does_mapping_exist(v,this_type,atom_pos,atomType,eps),out)
+        
+    def test12(self):
+        from phenum.symmetry import _does_mapping_exist
+        case = 12
+        v = _read_float_1D(gpath+"does_mapping_exist_v.in."+str(case))
+        this_type = _read_int(gpath+"does_mapping_exist_this_type.in."+str(case))
+        atom_pos = list(map(list,zip(*_read_float_2D(gpath+"does_mapping_exist_atom_pos.in."+str(case)))))
+        atomType = _read_int_1D(gpath+"does_mapping_exist_atomType.in."+str(case))
+        eps = _read_float(gpath+"does_mapping_exist_eps.in."+str(case))
+        out = _read_logical(gpath+"does_mapping_exist_mapped.out."+str(case))
+        self.assertEqual(_does_mapping_exist(v,this_type,atom_pos,atomType,eps),out)
+        
+    def test13(self):
+        from phenum.symmetry import _does_mapping_exist
+        case = 13
+        v = _read_float_1D(gpath+"does_mapping_exist_v.in."+str(case))
+        this_type = _read_int(gpath+"does_mapping_exist_this_type.in."+str(case))
+        atom_pos = list(map(list,zip(*_read_float_2D(gpath+"does_mapping_exist_atom_pos.in."+str(case)))))
+        atomType = _read_int_1D(gpath+"does_mapping_exist_atomType.in."+str(case))
+        eps = _read_float(gpath+"does_mapping_exist_eps.in."+str(case))
+        out = _read_logical(gpath+"does_mapping_exist_mapped.out."+str(case))
+        self.assertEqual(_does_mapping_exist(v,this_type,atom_pos,atomType,eps),out)
+        
+    def test14(self):
+        from phenum.symmetry import _does_mapping_exist
+        case = 14
+        v = _read_float_1D(gpath+"does_mapping_exist_v.in."+str(case))
+        this_type = _read_int(gpath+"does_mapping_exist_this_type.in."+str(case))
+        atom_pos = list(map(list,zip(*_read_float_2D(gpath+"does_mapping_exist_atom_pos.in."+str(case)))))
+        atomType = _read_int_1D(gpath+"does_mapping_exist_atomType.in."+str(case))
+        eps = _read_float(gpath+"does_mapping_exist_eps.in."+str(case))
+        out = _read_logical(gpath+"does_mapping_exist_mapped.out."+str(case))
+        self.assertEqual(_does_mapping_exist(v,this_type,atom_pos,atomType,eps),out)
+        
+    def test15(self):
+        from phenum.symmetry import _does_mapping_exist
+        case = 15
+        v = _read_float_1D(gpath+"does_mapping_exist_v.in."+str(case))
+        this_type = _read_int(gpath+"does_mapping_exist_this_type.in."+str(case))
+        atom_pos = list(map(list,zip(*_read_float_2D(gpath+"does_mapping_exist_atom_pos.in."+str(case)))))
+        atomType = _read_int_1D(gpath+"does_mapping_exist_atomType.in."+str(case))
+        eps = _read_float(gpath+"does_mapping_exist_eps.in."+str(case))
+        out = _read_logical(gpath+"does_mapping_exist_mapped.out."+str(case))
+        self.assertEqual(_does_mapping_exist(v,this_type,atom_pos,atomType,eps),out)
+        
+    def test16(self):
+        from phenum.symmetry import _does_mapping_exist
+        case = 16
+        v = _read_float_1D(gpath+"does_mapping_exist_v.in."+str(case))
+        this_type = _read_int(gpath+"does_mapping_exist_this_type.in."+str(case))
+        atom_pos = list(map(list,zip(*_read_float_2D(gpath+"does_mapping_exist_atom_pos.in."+str(case)))))
+        atomType = _read_int_1D(gpath+"does_mapping_exist_atomType.in."+str(case))
+        eps = _read_float(gpath+"does_mapping_exist_eps.in."+str(case))
+        out = _read_logical(gpath+"does_mapping_exist_mapped.out."+str(case))
+        self.assertEqual(_does_mapping_exist(v,this_type,atom_pos,atomType,eps),out)
+        
+    def test17(self):
+        from phenum.symmetry import _does_mapping_exist
+        case = 17
+        v = _read_float_1D(gpath+"does_mapping_exist_v.in."+str(case))
+        this_type = _read_int(gpath+"does_mapping_exist_this_type.in."+str(case))
+        atom_pos = list(map(list,zip(*_read_float_2D(gpath+"does_mapping_exist_atom_pos.in."+str(case)))))
+        atomType = _read_int_1D(gpath+"does_mapping_exist_atomType.in."+str(case))
+        eps = _read_float(gpath+"does_mapping_exist_eps.in."+str(case))
+        out = _read_logical(gpath+"does_mapping_exist_mapped.out."+str(case))
+        self.assertEqual(_does_mapping_exist(v,this_type,atom_pos,atomType,eps),out)
+        
+    def test18(self):
+        from phenum.symmetry import _does_mapping_exist
+        case = 18
+        v = _read_float_1D(gpath+"does_mapping_exist_v.in."+str(case))
+        this_type = _read_int(gpath+"does_mapping_exist_this_type.in."+str(case))
+        atom_pos = list(map(list,zip(*_read_float_2D(gpath+"does_mapping_exist_atom_pos.in."+str(case)))))
+        atomType = _read_int_1D(gpath+"does_mapping_exist_atomType.in."+str(case))
+        eps = _read_float(gpath+"does_mapping_exist_eps.in."+str(case))
+        out = _read_logical(gpath+"does_mapping_exist_mapped.out."+str(case))
+        self.assertEqual(_does_mapping_exist(v,this_type,atom_pos,atomType,eps),out)
+        
+    def test19(self):
+        from phenum.symmetry import _does_mapping_exist
+        case = 19
+        v = _read_float_1D(gpath+"does_mapping_exist_v.in."+str(case))
+        this_type = _read_int(gpath+"does_mapping_exist_this_type.in."+str(case))
+        atom_pos = list(map(list,zip(*_read_float_2D(gpath+"does_mapping_exist_atom_pos.in."+str(case)))))
+        atomType = _read_int_1D(gpath+"does_mapping_exist_atomType.in."+str(case))
+        eps = _read_float(gpath+"does_mapping_exist_eps.in."+str(case))
+        out = _read_logical(gpath+"does_mapping_exist_mapped.out."+str(case))
+        self.assertEqual(_does_mapping_exist(v,this_type,atom_pos,atomType,eps),out)
+        
+    def test20(self):
+        from phenum.symmetry import _does_mapping_exist
+        case = 20
+        v = _read_float_1D(gpath+"does_mapping_exist_v.in."+str(case))
+        this_type = _read_int(gpath+"does_mapping_exist_this_type.in."+str(case))
+        atom_pos = list(map(list,zip(*_read_float_2D(gpath+"does_mapping_exist_atom_pos.in."+str(case)))))
+        atomType = _read_int_1D(gpath+"does_mapping_exist_atomType.in."+str(case))
+        eps = _read_float(gpath+"does_mapping_exist_eps.in."+str(case))
+        out = _read_logical(gpath+"does_mapping_exist_mapped.out."+str(case))
+        self.assertEqual(_does_mapping_exist(v,this_type,atom_pos,atomType,eps),out)
+        

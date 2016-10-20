@@ -1,21 +1,22 @@
 #!/Users/trunks/envs/py3/bin/python3.4
+from phenum import msg
 
 """The methods needed to take input from the user and put it in useful
 forms. Also the actual executable for the code."""
 # hard coded error tolerance. This will need to go away and become
 # part of the input files later.
 
-def _plot_HNFs(args):
+def _plot_HNFs(args,testmode=False):
     """Makes plots of the shapes of the HNF's provided in the enum.in input file.
 
     :arg args: The command line inputs.
     """
     if args["shapes"]:
         from phenum.visualize import HNF_shapes
-        HNF_shapes(args["input"],args["lattice"],args["show"])
+        HNF_shapes(args["input"],args["lattice"],args["show"],testmode=testmode)
     else:
         from phenum.visualize import HNF_atoms
-        HNF_atoms(args["input"],args["lattice"],args["show"])    
+        HNF_atoms(args["input"],args["lattice"],args["show"],testmode=testmode)    
 
 def _enum_in(args):
     """Makes an enum.in file that contains the desired distribution of
@@ -196,18 +197,15 @@ def _enum_out(args):
             f.write(o)
             count_t += 1
 
-def _examples():
-    """Print some examples on how to use this python version of the code."""
-    helptext = ("For all the examples below, it is assumed that you have already "
-                "compiled the modified enumlib code as described in the "
-                "README or in some other manner obtained the HNFs (supercells) and "
-                "their symmetry groups. You will then need to specify if you are "
-                "obtaining the number of unique arrangements for each supercell and "
-                "concentration allowed for your system or enumerating (finding) the "
-                "desired number of configurations for each HNF and concentration. "
-                "Additionally you way change the default input file names to ones of "
-                "your own creation.")
-    egs = [("Find the Polya distribution",
+def examples():
+
+    """Prints examples of using the script to the console using colored output.
+    """
+    script = "PHENUM: Finds the symmetrically unique arrangements of atoms in a lattice."
+    explain = ("For simple 1D potentials such as the infinite square well, " 
+               "kronig-penny, ect. This code produces a numerical solution "
+               "using a bisis expansion.")
+    contents = [("Find the Polya distribution",
             "The code below finds the number of unique arrangements for each "
             "supercell (HNF) for a binary system on an fcc lattice which can have "
             "1 to 11 atoms in the supercell as described in the lattice.in found in "
@@ -236,112 +234,114 @@ def _examples():
             "arrangements for that HNF and concentration range the user desires."
             , "enumeration.py -enum")]
 
-    print("POLYA ENUMERATION THEOREM SOLVER\n")
-    for eg in egs:
-        title, desc, code = eg
-        print(("--" + title + '--\n'))
-        print((desc + '\n'))
-        print(('  ' + code + '\n'))
+    required = ("REQUIRED: the system to be enumerated in a `enum.in` file "
+                "and a `lattice.in` file that contains the lattice data.")
+    output = ("RETURNS: a file `struct_enum.out` for the full enumeration, "
+              "an `enum.in` file if the -distribution flag is used, or a "
+              "`polya.out` file for each cell size if the -polya flag is used.")
+    details = ("For all the examples below, it is assumed that you have already "
+                "compiled the modified enumlib code as described in the "
+                "README or in some other manner obtained the HNFs (supercells) and "
+                "their symmetry groups. You will then need to specify if you are "
+                "obtaining the number of unique arrangements for each supercell and "
+                "concentration allowed for your system or enumerating (finding) the "
+                "desired number of configurations for each HNF and concentration. "
+                "Additionally you way change the default input file names to ones of "
+                "your own creation.")
+    outputfmt = ("")
 
-def _parser_options(phelp=False):
-    """Parses the options and arguments from the command line."""
-    import argparse
-    parser = argparse.ArgumentParser(description="Partial Superstructure Enumeration Code")
-    parser.add_argument("-debug", action="store_true",
-                        help="Print verbose calculation information for debugging.")
-    parser.add_argument("-examples", action="store_true",
-                        help="Print some examples for how to use the enumeration code.")
-    parser.add_argument("-polya", action="store_true",
-                        help=("Predict the total number of unique superstructures for each "
-                              "cell shape and possible concentration."))
-    parser.add_argument("-enum", action="store_true",
-                        help=("Enumerate the number of superstructures of specific shape "
-                              "as specified in the 'enum.in' file."))
-    parser.add_argument("-lattice",
-                        help=("Override the default input file name: 'lattice.in' for "
-                              "enumeration parameters."))
-    parser.add_argument("-input",
-                        help=("Override the default 'enum.in' file name."))
-    parser.add_argument("-exec",
-                        help=("Override the default 'enum.x' executable with an executable "
-                              "name or path."))
-    parser.add_argument("-distribution", nargs= "+",
+    msg.example(script, explain, contents, required, output, outputfmt, details)
+
+script_options = {
+    "-polya": dict(action="store_true",
+                   help=("Predict the total number of unique superstructures for each "
+                         "cell shape and possible concentration.")),
+    "-enum": dict(action="store_true",
+                  help=("Enumerate the number of superstructures of specific shape "
+                        "as specified in the 'enum.in' file.")),
+    "-lattice": dict(default="lattice.in", type=str,
+                     help=("Override the default input file name: 'lattice.in' for "
+                           "enumeration parameters.")),
+    "-input": dict(default="enum.in", type=str,
+                   help=("Override the default 'enum.in' file name.")),
+    "-exec": dict(default="enum.x", type=str,
+                  help=("Override the default 'enum.x' executable with an executable "
+                        "name or path.")),
+    "-distribution": dict(default=None, nargs= "+", type=int,
                         help=("Makes an enum.in file when the distribution is 'all'. Otherwise "
                               "the distribution is printed to the screen for the user. "
                               " The distributions are built from the results of the polya "
-                              "run and contain the specified number of structures."))
-    parser.add_argument("-savedist", action="store_true",
-                        help=("Makes an enum.in file for the distribution over 'size', 'shape', or 'conc'."))    
-    parser.add_argument("-dataformat", default="cells.{}",
+                              "run and contain the specified number of structures.")),
+    "-savedist": dict(action="store_true",
+                      help=("Makes an enum.in file for the distribution over 'size', "
+                            "'shape', or 'conc'.")),
+    "-dataformat": dict(default="cells.{}", type=str,
                         help=("Specify the default folder name for any cell size that contains "
                               "the matrices and groups generated by 'enum.x'. Format is: cells.{} "
-                              "where {} is a placeholder for the integer cell size."))
-    parser.add_argument("-cellsdir", 
-                        help=("Specify the path to the cells.{} type folders for the run. This "
-                              "can be a relative or an absolute path."))
-    parser.add_argument("-verbose", type=int,
-                        help="Specify the verbosity level (1-3) for additional computation info.")
-    parser.add_argument("-outfile",
-                        help=("Override the default output file names: 'polya.out' for polya counting; "
-                              "'enum.out' for structure enumeration; 'enum.in' for the distributions."))
-    parser.add_argument("-sizes", nargs=2, type=int,
-                        help=("Specify the start and stop cell sizes over which to distribute the structure "
-                              "selection, weighted by the Polya distribution."))
-    parser.add_argument("-acceptrate", type=float,
-                        help=("For large numbers of unique arrangements, specify how often one should be "
-                              "kept in the final list."))
-    parser.add_argument("-profile",
-                        help=("Profile the code as it runs. Requires vprof (`pip install "
-                              "vprof`). Argument is a combination of 'c', 'm' and 'h'. See "
-                              "vprof docs."))
-    parser.add_argument("-seed", type=int,
-                        help=("The integer seed for the random number generator."))
+                              "where {} is a placeholder for the integer cell size.")),
+    "-cellsdir": dict(default="", type=int,
+                      help=("Specify the path to the cells.{} type folders for the run. This "
+                            "can be a relative or an absolute path.")),
+    "-outfile": dict(default=None, type=str,
+                     help=("Override the default output file names: 'polya.out' for "
+                           "polya counting; 'enum.out' for structure enumeration; "
+                           "'enum.in' for the distributions.")),
+    "-sizes": dict(default= None, nargs=2, type=int,
+                   help=("Specify the start and stop cell sizes over which to distribute "
+                         "the structure selection, weighted by the Polya distribution.")),
+    "-acceptrate": dict(default=None, type=float,
+                        help=("For large numbers of unique arrangements, specify how often "
+                              "one should be kept in the final list.")),
+    "-profile": dict(action="store_true",
+                     help=("Profile the code as it runs. Requires vprof (`pip install "
+                           "vprof`). Argument is a combination of 'c', 'm' and 'h'. See "
+                           "vprof docs.")),
+    "-seed": dict(default=None, type=int,
+                  help=("The integer seed for the random number generator.")),
     
-    parser.add_argument("-super", action="store_true",
-                        help=("Overrides the exclusion of the superperiodic cells from the output."))
-    parser.add_argument("-filter", nargs = 2,
-                        help=("Applys a filter over the 'shape' or the 'conc' option of the distributions. "
-                                "The first entry should specify the filter the second should be the name of the "
-                                "file containing the desired restrictions."))
-    parser.add_argument("-visualize", action="store_true",
-                        help=("Makes plots of the shapes of the HNF's in the provided enum.in style file."))
-    parser.add_argument("-shapes", action="store_true",
-                        help=("The visualization excludes the atoms showing just the shapes of the cells."))
-    parser.add_argument("-show", action="store_true",
-                        help=("If present then the visualization will loop through an interactive image for each HNF."))
+    "-super": dict(action="store_true",
+                   help=("Overrides the exclusion of the superperiodic cells from the output.")),
+    "-filter": dict(default=None, nargs = 2,
+                    help=("Applys a filter over the 'shape' or the 'conc' option of the "
+                          "distributions. The first entry should specify the filter the "
+                          "second should be the name of the file containing the desired "
+                          "restrictions.")),
+    "-visualize": dict(action="store_true",
+                       help=("Makes plots of the shapes of the HNF's in the provided "
+                             "enum.in style file.")),
+    "-shapes": dict(action="store_true",
+                    help=("The visualization excludes the atoms showing just the shapes "
+                          "of the cells.")),
+    "-show": dict(action="store_true",
+                  help=("If present then the visualization will loop through an interactive "
+                        "image for each HNF.")),
+}
+"""dict: default command-line arguments and their
+    :meth:`argparse.ArgumentParser.add_argument` keyword arguments.
+"""
+
+def _parser_options():
+    """Parses the options and arguments from the command line."""
+    #We have two options: get some of the details from the config file,
+    import argparse
+    from phenum import base
+    pdescr = "Numerical DFT code."
+    parser = argparse.ArgumentParser(parents=[base.bparser], description=pdescr)
+    for arg, options in script_options.items():
+        parser.add_argument(arg, **options)
         
-    vardict = vars(parser.parse_args())
-    if phelp or vardict["examples"]:
-        _examples()
-        exit(0)
+    args = base.exhandler(examples, parser)
+    if args is None:
+        return
 
-    if vardict["verbose"]:
-        from phenum.msg import set_verbosity
-        set_verbosity(vardict["verbose"])
+    return args # pragma: no cover
 
-    if not vardict["lattice"]:
-        vardict["lattice"] = "lattice.in"
-    if not vardict["input"]:
-        vardict["input"] = "enum.in"
-    if not vardict["exec"]:
-        vardict["exec"] = "enum.x"
-    if not vardict["outfile"]:
-        if vardict["polya"]:
-            vardict["outfile"] = "polya.out"
-        elif vardict["enum"]:
-            vardict["outfile"] = "enum.out"
-        else:
-            vardict["outfile"] = "enum.in"
-    if not vardict["cellsdir"]:
-        vardict["cellsdir"] = ""
-    if not vardict["seed"]:
-        vardict["seed"] = None
-    return vardict
-
-def _script_enum(args):
+def _script_enum(args, testmode=False):
     """Generates the 'polya.out' or 'enum.out' files depending on the script arguments.
     """
     from os import path, system
+    from phenum.base import set_testmode
+    set_testmode(testmode)
     if args["polya"]:
         #Perform validation for running polya.
         if not path.isfile(args["lattice"]):
@@ -412,7 +412,7 @@ def _script_enum(args):
     if args["distribution"]:
         _enum_in(args)
     if args["visualize"]:
-        _plot_HNFs(args)
+        _plot_HNFs(args,testmode=testmode)
         
 if __name__ == '__main__':
     args = _parser_options()

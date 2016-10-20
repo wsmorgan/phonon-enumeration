@@ -1,5 +1,22 @@
 """Tests of the makeStr.py module."""
 import unittest as ut
+import os
+import pytest
+
+def get_sargs(args):
+    """Returns the list of arguments parsed from sys.argv.
+    """
+    import sys
+    sys.argv = args
+    from phenum.makeStr import _parser_options
+    return _parser_options()    
+
+def test_examples():
+    """Makes sure the script examples work properly.
+    """
+    argv = ["py.test", "-examples"]
+    assert get_sargs(argv) is None
+
 
 class TestMakeStructures(ut.TestCase):
     """Tests of the _make_structures subroutine."""
@@ -265,4 +282,108 @@ class TestMakeStructures(ut.TestCase):
                 }
         _make_structures(args)
         self._compare_files("vasp.{}".format(args["structures"][0]),"tests/enumeration/fcc_1/vasp.3.HPt")
+        system("rm vasp*")
+
+    def test_str15(self):
+        from phenum.makeStr import run
+        from os import system
+        args = {"structures":[3],
+                "debug":False,
+                "examples":False,
+                "displace":0.0,
+                "input":"tests/enumeration/fcc_1/enum.out_2_6",
+                "mink":True,
+                "species":['H','Pt'],
+                "verbose":None,
+                "outfile":"vasp.{}",
+                "rattle":0.0
+                }
+        run(args)
+        self._compare_files("vasp.{}".format(args["structures"][0]),"tests/enumeration/fcc_1/vasp.3.HPt")
+        system("rm vasp*")
+
+    def test_str16(self):
+        from phenum.makeStr import run
+        from os import system
+        args = {"structures": None,
+                "debug":False,
+                "examples":False,
+                "displace":0.0,
+                "input":"tests/enumeration/fcc_1/enum.out_2_6",
+                "mink":True,
+                "species":['H','Pt'],
+                "verbose":None,
+                "outfile":"vasp.{}",
+                "rattle":0.0
+                }
+        with pytest.raises(ValueError):
+            run(args)
+        
+
+    def test_str17(self):
+        from phenum.makeStr import run
+        from os import system
+        args = {"structures": ['bite'],
+                "debug":False,
+                "examples":False,
+                "displace":0.0,
+                "input":"tests/enumeration/fcc_1/enum.out_2_6",
+                "mink":True,
+                "species":['H','Pt'],
+                "verbose":None,
+                "outfile":"vasp.{}",
+                "rattle":0.0
+                }
+        with pytest.raises(ValueError):
+            run(args)
+
+    # def test_str18(self):
+    #     from phenum.makeStr import run
+    #     from os import system
+    #     args = {"structures": ,
+    #             "debug":False,
+    #             "examples":False,
+    #             "displace":0.0,
+    #             "input":"tests/enumeration/fcc_1/enum.out_2_6",
+    #             "mink":True,
+    #             "species":['H','Pt'],
+    #             "verbose":None,
+    #             "outfile":"vasp.{}",
+    #             "rattle":0.0
+    #             }
+    #     with pytest.raises(ValueError):
+    #         run(args)
+
+    def test_str19(self):
+        from phenum.makeStr import run
+        from os import system
+        args = {"structures":['all'],
+                "debug":False,
+                "examples":False,
+                "displace":0.0,
+                "input":"tests/enumeration/fcc_1/enum.out_2_6",
+                "mink":True,
+                "species":['H','Pt'],
+                "verbose":None,
+                "outfile":"vasp.{}",
+                "rattle":0.0
+                }
+        run(args)
+        system("rm vasp*")
+
+    def test_str20(self):
+        from phenum.makeStr import run
+        from os import system
+        args = {"structures":['1','3'],
+                "debug":False,
+                "examples":False,
+                "displace":0.0,
+                "input":"tests/enumeration/fcc_1/enum.out_2_6",
+                "mink":True,
+                "species":['H','Pt'],
+                "verbose":None,
+                "outfile":"vasp.{}",
+                "rattle":0.0
+                }
+        run(args)
         system("rm vasp*")

@@ -1,6 +1,7 @@
 # """Methods for testing the subroutines in the polyaburnside module."""
 import unittest as ut
 from phenum.polyaburnside import polya
+import pytest
 
 class Testpolya(ut.TestCase):
     """Tests of the polya subroutine."""
@@ -310,6 +311,45 @@ class Testpolya(ut.TestCase):
         agroup = a_group(trans,rots)
         out = 18
         self.assertEqual(polya(Concs,agroup,arrowings=arrow_types),out)
+        
+    def test_r1(self):
+        from phenum.grouptheory import a_group
+        from phenum.phonons import how_many_arrows, how_many_arrows
+        dim = 4
+        col = [[-1,1],[-1,2],[0,3],[0,4]]
+        trans = [[0,1,2,3],[1,0,3,2],[2,3,0,1],[3,2,1,0]]
+        rots = [[[0,1,2,3],[0,1,2,3]],[[0,1,2,3],[2,1,0,3]],[[0,1,2,3],[0,3,2,1]],[[0,1,2,3],[2,3,0,1]],[[0,3,2,1],[1,0,3,2]],[[0,3,2,1],[3,0,1,2]],[[0,3,2,1],[1,2,3,0]],[[0,3,2,1],[3,2,1,0]]]
+        (narrows,arrow_types,Concs) = how_many_arrows(col)
+        temp_agroup = a_group(trans,rots)
+        agroup = []
+        print("ta",temp_agroup)
+        for i in temp_agroup:
+            sites = [j+1 for j in i[0]]
+            ars = [j+1 for j in i[1]]
+            agroup.append([sites,ars])
+        print("a",agroup)
+        out = 18
+        self.assertEqual(polya(Concs,agroup,arrowings=arrow_types),out)
+        
+    def test_r2(self):
+        from phenum.grouptheory import a_group
+        from phenum.phonons import how_many_arrows, how_many_arrows
+        dim = 4
+        col = [[-1,1],[-1,2],[0,3],[0,4]]
+        trans = [[0,1,2,3],[1,0,3,2],[2,3,0,1],[3,2,1,0]]
+        rots = [[[0,1,2,3],[0,1,2,3]],[[0,1,2,3],[2,1,0,3]],[[0,1,2,3],[0,3,2,1]],[[0,1,2,3],[2,3,0,1]],[[0,3,2,1],[1,0,3,2]],[[0,3,2,1],[3,0,1,2]],[[0,3,2,1],[1,2,3,0]],[[0,3,2,1],[3,2,1,0]]]
+        (narrows,arrow_types,Concs) = how_many_arrows(col)
+        Concs = [1]
+        temp_agroup = a_group(trans,rots)
+        agroup = []
+        for i in temp_agroup:
+            sites = [j+1 for j in i[0]]
+            ars = [j+1 for j in i[1]]
+            agroup.append([sites,ars])
+
+        out = 18
+        with pytest.raises(ValueError):
+            polya(Concs,agroup,arrowings=arrow_types)
 
 if __name__ == '__main__':
     untittest.main()

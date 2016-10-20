@@ -1,5 +1,6 @@
 """Methods for testing the subroutines in the vector_utils module."""
 import unittest as ut
+import pytest
 
 class TestMapEnumStrToRealSpace(ut.TestCase):
     """Tests of the map_enumStr_to_real_space subroutine."""
@@ -331,6 +332,17 @@ class TestMapEnumStrToRealSpace(ut.TestCase):
     def test_map20(self):
         from phenum.vector_utils import map_enumStr_to_real_space
         case = 20
+        path = "tests/vector_utils/"
+        minkowskiReduce = self._read_mink(path + "map_enumStr_to_real_space_minkowskiReduce.in."+str(case))
+        system_data = self._read_system_data(case)
+        structure_data = self._read_struct_data(case)
+        out_test = map_enumStr_to_real_space(system_data,structure_data,minkowskiReduce)
+        out = self._read_space_data(case)
+        self.assertEqual(out,out_test)
+
+    def test_map20(self):
+        from phenum.vector_utils import map_enumStr_to_real_space
+        case = 30
         path = "tests/vector_utils/"
         minkowskiReduce = self._read_mink(path + "map_enumStr_to_real_space_minkowskiReduce.in."+str(case))
         system_data = self._read_system_data(case)
@@ -1232,6 +1244,18 @@ class TestMinkowskiReduceBasis(ut.TestCase):
         out = self._read_output(case)
 
         self._compare(_minkowski_reduce_basis(inp,eps),out)
+
+    def test_minkr22(self):
+        from phenum.vector_utils import _minkowski_reduce_basis
+        case = 21
+        path = "tests/vector_utils/"
+
+        inp = [[1,0,0],[1,0,0],[1,0,0]]
+        eps = self._read_float(path+"minkowski_reduce_basis_eps.in."+str(case))
+
+        out = self._read_output(case)
+        with pytest.raises(ValueError):
+            self._compare(_minkowski_reduce_basis(inp,eps),out)
         
 class TestMinkowskiConditionsCheck(ut.TestCase):
     """Tests of the _minkowski_conditions_check subroutine."""
@@ -1506,6 +1530,51 @@ class TestMinkowskiConditionsCheck(ut.TestCase):
         eps = self._read_float(path+"minkowski_condition_check_eps.in."+str(case))
 
         out = self._read_output(case)
+
+        self.assertEqual(out,_minkowski_conditions_check(basis,eps))
+
+    def test_minkc21(self):
+        from phenum.vector_utils import _minkowski_conditions_check
+
+        basis = [[3,3,3],[1,2,3],[0,0,1]]
+        eps = 0.0
+        out = False
+
+        self.assertEqual(out,_minkowski_conditions_check(basis,eps))
+
+    def test_minkc22(self):
+        from phenum.vector_utils import _minkowski_conditions_check
+
+        basis = [[0,0,-1],[3,3,3],[1,2,3]]
+        eps = 0.0
+        out = False
+
+        self.assertEqual(out,_minkowski_conditions_check(basis,eps))
+
+    def test_minkc23(self):
+        from phenum.vector_utils import _minkowski_conditions_check
+
+        basis = [[3,1,0],[3,2,0],[3,3,1]]
+        eps = 0.0
+        out = False
+
+        self.assertEqual(out,_minkowski_conditions_check(basis,eps))
+
+    def test_minkc24(self):
+        from phenum.vector_utils import _minkowski_conditions_check
+
+        basis = [[0,0,-1],[0,0,-1],[3,3,3]]
+        eps = 0.0
+        out = False
+
+        self.assertEqual(out,_minkowski_conditions_check(basis,eps))
+
+    def test_minkc25(self):
+        from phenum.vector_utils import _minkowski_conditions_check
+
+        basis = [[0,0,1],[0,0,-1],[3,3,3]]
+        eps = 0.0
+        out = False
 
         self.assertEqual(out,_minkowski_conditions_check(basis,eps))
         

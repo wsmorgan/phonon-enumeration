@@ -8,7 +8,7 @@ inside the RotPermList class.
 """
 
 import itertools
-import numpy
+import numpy as np
 import operator
 
 class ArrowPerm(object):
@@ -27,9 +27,10 @@ class RotPermList(object):
     """
     def __init__(self,nL = None,v =None,perm = None,RotIndx = None,arrows=None):
         """Initializes the RotPermList.
-          :args nL: An integer indicating the number of operations
-          :args v: A 2D integer array containing the lattice vectors
-          :args perm: 
+        :args nL: An integer indicating the number of operations
+        :args v: A 2D integer array containing the lattice vectors
+        :args perm: 
+        :args RotIndx: 
         """
         self.nL = nL
         self.v = v
@@ -59,11 +60,11 @@ def _make_member_list(n):
     from operator import mul
     from functools import reduce
     
-    depth = reduce(mul,n,1)
+    depth = int(round(reduce(mul,n,1)))
     p = []
     for i in range(depth):
         p.append([0,0,0])
-    for im in range(1,reduce(mul,n,1)):  # Loop over the members of the translation group
+    for im in range(1,depth):  # Loop over the members of the translation group
         p[im] = list(p[im-1]) # Start with the same digits as in the previous increment        
         p[im][2] = (p[im-1][2]+1)%n[2]  # Increment the first cyclic group
         if (p[im][2]==0):             # If it rolled over then
@@ -106,31 +107,31 @@ def _is_equiv_lattice(lat1,lat2,eps):
       on the determinant. This is not mentioned by Santoro and Mighell
       (issue of opposite handedness---which doesn't matter to me).
 
-      :args lat1: 2D integer array containing the first lattice.
-      :args lat2: 2D integer array containing the second lattice.
+      :args lat1: 2D array containing the first lattice.
+      :args lat2: 2D array containing the second lattice.
       :args eps: The finite precision tolerance.
     """
+    from numpy import linalg, allclose, matmul
     is_equiv_lattice = False
-    lat1inv = numpy.linalg.inv(numpy.array(lat1)).tolist()
-    S = numpy.matmul(numpy.array(lat2),lat1inv).tolist()
-    if (numpy.allclose(abs(numpy.linalg.det(numpy.array(S))),1.0,rtol=eps,atol=eps) and
-        numpy.allclose(numpy.array(S),numpy.array([[int(round(S[i][j])) for j in range(3)] for i in range(3)]),rtol=eps,atol=eps)):
+    lat1inv = linalg.inv(lat1)
+    S = matmul(lat1inv,lat2).tolist()
+    if (allclose(abs(linalg.det(S)),1.0,rtol=0,atol=eps) and
+        allclose(S,[[int(round(S[i][j])) for j in range(3)] for i in range(3)],rtol=0,atol=eps)):
         is_equiv_lattice = True
     return is_equiv_lattice
         
 def _get_sLV_fixing_operations(HNF,pLV,nD,rot,shift,dPerm,eps):
     """
-      :args HNF:
-      :args pLV:
-      :args nD:
-      :args rot:
-      :args shift:
-      :args dPerm:
+      :args HNF: A 2D array containing the hermite normal form matrix.
+      :args pLV: A 2D array containing the parent lattice vectors.
+      :args nD: The number of atoms in the cell.
+      :args rot: A 3D array containing all the rotation matrices.
+      :args shift: A 2D array containing the translations. 
+      :args dPerm: 
       :args eps: Finite precision tolerance.
     """
-    
-    nRot = len(rot)
 
+    nRot = len(rot)
     degen_lattices = []
     for i in range(nRot):
         degen_lattices.append([[0,0,0],[0,0,0],[0,0,0]])
@@ -144,8 +145,8 @@ def _get_sLV_fixing_operations(HNF,pLV,nD,rot,shift,dPerm,eps):
     tIndex = [] # temp variables
     for iRot in range(nRot):  # Loop over each rotation
         thisRot = rot[iRot] # Store the rotation
-        origLat = numpy.matmul(HNF,pLV).tolist()  # Compute the superlattice
-        rotLat = numpy.matmul(numpy.array(origLat),numpy.array(thisRot)).tolist() # Compute the rotated superlattice
+        origLat = np.matmul(pLV,HNF).tolist()  # Compute the superlattice
+        rotLat = np.matmul(thisRot,origLat).tolist() # Compute the rotated superlattice
         if _is_equiv_lattice(rotLat,origLat,eps):
             # this operation fixes the lattice and should be recorded
             ic += 1
@@ -170,10 +171,11 @@ def _get_sLV_fixing_operations(HNF,pLV,nD,rot,shift,dPerm,eps):
     degeneracy = cDegen
     # Allocate the storage for them
     fixOp = opList(tmpOp_rot,tmpOp_shift) # Stuff the rotations into the permanent array
-    if nD > 1:
-        rotPerm = RotPermList(v=tv,RotIndx=tIndex)
-    else:
-        rotPerm = RotPermList(v=[tv],RotIndx=tIndex)
+
+    # if nD > 1:
+    rotPerm = RotPermList(v=tv,RotIndx=tIndex)
+    # else:
+    #     rotPerm = RotPermList(v=[tv],RotIndx=tIndex)
 
     return(fixOp,rotPerm,degeneracy)
 
@@ -194,12 +196,12 @@ def _map_dvector_permutation(rd,d,eps,n):
         for jD in range(nD):
             if found[jD]:
                 continue
-            if numpy.allclose(numpy.array(rd[iD]),numpy.array(d[jD]),atol=eps,rtol=eps):
+            if np.allclose(rd[iD],d[jD],atol=eps,rtol=0):
                 RP.append(jD)
                 found[jD] = True
                 break
 
-    if len(RP) != len(d):
+    if len(RP) != len(d): #pragma: no cover
         print("d-vector didn't permute in map_dvector_permutation "
               "This usually means that the d-set from the input structure and the d-set"
               " from the struct_enum.out have a different origin or don't live in the same"
@@ -218,7 +220,7 @@ def _find_minmax_indices(invec):
 
     vec = [abs(i) for i in invec]
     
-    this_min = invec.index(min([i for i in vec if i > 0]))
+    this_min = vec.index(min([i for i in vec if i > 0]))
 
     rvec = [i for i in reversed(vec)]
     
@@ -233,9 +235,10 @@ def SmithNormalForm(HNF):
     :args HNF: The integer matrix HNF for which the SNF is to be found.
     """
     from numpy import dot
-    if numpy.linalg.det(numpy.array(HNF)) < 1:
-        print("SmithNormalForm routine failed because the input matrix had a negative determinant")
-        exit()
+    if np.linalg.det(HNF) < 1:
+        raise ValueError("SmithNormalForm routine failed because the input matrix had a "
+                         "determinant less than 1.")
+
     
     A = [[0,0,0],[0,0,0],[0,0,0]]
     M = list(HNF)
@@ -251,10 +254,10 @@ def SmithNormalForm(HNF):
     stop_loop = False
     while not stop_loop:
         itCnt += 1
-        if (itCnt >=100):
-            print("Bad progromming in SmithNormalForm")
-            exit()
-
+        if (itCnt >=100): 
+            raise RuntimeError("Bad programming in SmithNormalForm")
+        print("mt",type(M))
+        print("ct",type([M[0][j],M[1][j],M[2][j]].count(0)))
         while (3-[M[0][j],M[1][j],M[2][j]].count(0)) > 1:
             (minidx,maxidx) = _find_minmax_indices([M[0][j],M[1][j],M[2][j]])
             minm = M[minidx][j]
@@ -262,7 +265,7 @@ def SmithNormalForm(HNF):
 
             M[maxidx] = list(map(operator.sub,M[maxidx],[mult*i for i in M[minidx]]))
             A[maxidx] = list(map(operator.sub,A[maxidx],[mult*i for i in A[minidx]]))
-            if dot(dot(A,HNF),B).any() != numpy.array(M).any():
+            if dot(dot(A,HNF),B).any() != np.array(M).any(): #pragma: no cover
                 print("ROW: Transformation matrices didn't work")
                 exit()
 
@@ -275,7 +278,7 @@ def SmithNormalForm(HNF):
             tmprow = list(M[j])
             M[j] = list(M[maxidx])
             M[maxidx] = tmprow    
-        if numpy.dot(numpy.dot(numpy.array(A),numpy.array(HNF)),numpy.array(B)).any() != numpy.array(M).any():
+        if np.dot(np.dot(A,HNF),B).any() != np.array(M).any(): #pragma: no cover
             print("ROWSWAP: Transformation matrices didn't work")
             exit()
 
@@ -288,7 +291,7 @@ def SmithNormalForm(HNF):
                 M[i][maxidx] = M[i][maxidx]-mult * M[i][minidx]
                 B[i][maxidx] = B[i][maxidx]-mult * B[i][minidx]
 
-            if numpy.dot(numpy.dot(numpy.array(A),numpy.array(HNF)),numpy.array(B)).any() != numpy.array(M).any():
+            if np.dot(np.dot(A,HNF),B).any() != np.array(M).any(): #pragma: no cover
                 print("COLS: Transformation matrices didn't work")
                 exit()
 
@@ -308,7 +311,7 @@ def SmithNormalForm(HNF):
 
         if ((3-M[j].count(0)) >1) or ((3-[M[0][j],M[1][j],M[2][j]].count(0)) >1):
             continue
-        if numpy.dot(numpy.dot(numpy.array(A),numpy.array(HNF)),numpy.array(B)).any() != numpy.array(M).any():
+        if np.dot(np.dot(A,HNF),B).any() != np.array(M).any(): #pragma: no cover
             print("COLSWAP: Transformation matrices didn't work")
             exit()
 
@@ -317,25 +320,27 @@ def SmithNormalForm(HNF):
             for k in range(1,3):
                 Ldiv[i-1][k-1] = (M[i][k]%M[0][0] == 0)
 
-        if j == 0 and any(Ldiv) == False:
-            local = [[0,0],[0,0]]
+        if j == 0 and any(Ldiv) == False: #pragma: no cover
+            # I literally could not trigger this section of code in my testse.
+            local = [[0,0],[0,0]] 
             for i in range(1,3):
                 for k in range(1,3):
                     local[i][k] = abs(M[i][k]%M[0][0])
             nondividx = local.index(max(local))
-            M[0] = map(operator.add,M[0],M[nondividx+1])
-            A[0] = map(operator.add,A[0],A[nondividx+1])
+            M[0] = list(map(operator.add,M[0],M[nondividx+1]))
+            A[0] = list(map(operator.add,A[0],A[nondividx+1]))
             continue
 
         if j == 1:
             if M[2][2]%M[1][1] != 0:
-                M[1] = map(operator.add,M[1],M[2])
-                A[1] = map(operator.add,A[1],A[2])
+                M[1] = list(map(operator.add,M[1],M[2]))
+                A[1] = list(map(operator.add,A[1],A[2]))
                 continue
         else:
             j = 1
             continue
-        if j == 1 and (M[2][1] != 0 or M[1][2] != 0):
+        if j == 1 and (M[2][1] != 0 or M[1][2] != 0): #pragma: no cover
+            # I literally could not trigger this section of code in my testse.
             continue
         stop_loop = True
          
@@ -344,14 +349,14 @@ def SmithNormalForm(HNF):
             M[i][2]=-M[i][2]
             B[i][2]=-B[i][2]
     
-    if numpy.dot(numpy.dot(numpy.array(A),numpy.array(HNF)),numpy.array(B)).any() != numpy.array(M).any():
+    if np.dot(np.dot(A,HNF),B).any() != np.array(M).any(): #pragma: no cover
         print("END: Transformation matrices didn't work.")
         exit()
     check = [M[0][1],M[0][2],M[1][0],M[1][2],M[2][0],M[2][1]]
-    if any(check) != 0:
+    if any(check) != 0: #pragma: no cover
         print("Not diagonal")
         exit()
-    if M[1][1] % M[0][0] != 0 or M[2][2] % M[1][1] != 0:
+    if M[1][1] % M[0][0] != 0 or M[2][2] % M[1][1] != 0: #pragma: no cover
         print("SNF conditions not met")
         exit()
 
@@ -363,7 +368,7 @@ def _get_dvector_permutations(par_lat,bas_vecs,LatDim,eps):
       equivalent. Labelings of the lattice points that are contain
       permutations only of labels on equivalant sites are physically
       equivalent and therefore redundant. We use these permutations to
-     eliminate those duplicate labelings
+      eliminate those duplicate labelings
 
       :args pLV: A 2D integer array containing the parent lattice vectors
       :args bas_vacs: A 2D integer array containing the basis vectors for the cell
@@ -372,20 +377,22 @@ def _get_dvector_permutations(par_lat,bas_vecs,LatDim,eps):
     """
 
     from phenum.symmetry import get_spaceGroup, bring_into_cell
+    from copy import deepcopy
     
     nD = len(bas_vecs)
     aTyp = []
     for i in range(nD):
         aTyp.append(1)
 
-    (rot,shift)= get_spaceGroup(par_lat,aTyp,bas_vecs)
+    bv_copy = deepcopy(bas_vecs)
+    (rot,shift) = get_spaceGroup(par_lat,aTyp,bv_copy,eps = eps)
 
     if LatDim==2:
         (rot,shift) = _rm_3D_operations(par_lat,rot,shift,eps)
 
     nOp = len(rot)
     
-    inv_par_lat = numpy.linalg.inv(numpy.array(par_lat)).tolist()
+    inv_par_lat = np.linalg.inv(par_lat).tolist()
     
     nL_temp= nOp  # Number of operations that fix the parent
 
@@ -399,26 +406,30 @@ def _get_dvector_permutations(par_lat,bas_vecs,LatDim,eps):
             temp_b = bas_vecs[0]
         else:
             temp_b = bas_vecs
-        rd_rot = numpy.matmul(temp_b,rot[iOp]).tolist()
+        rd_rot = np.matmul(temp_b,rot[iOp]).tolist()
+
         if nD > 1:
             rd_shift = [shift[iOp]]*nD
             rd =  [[rd_rot[i][j] + rd_shift[i][j] for j in range(len(rd_rot[i]))] for i in range(len(rd_rot))]
             
         else:
             rd = [rd_rot[i] + shift[iOp][i] for i in range(len(rd_rot))]
+            
         tRD = list(rd)
         if nD > 1:
             for iD in range(nD):
+                inv_par_lat = inv_par_lat
                 rd[iD] = bring_into_cell(rd[iD],inv_par_lat,par_lat,eps)
         else:
             rd = bring_into_cell(rd,inv_par_lat,par_lat,eps)
-
+            
         # The v vector is the vector that must be added (it's a lattice
         # vector) to move a rotated d-vector back into the parent cell.
+
         if nD > 1:
             v_temp.append([[rd[i][j] - tRD[i][j] for j in range(len(rd[i]))] for i in range(len(rd))])
         else:
-            v_temp.append([rd[i] - tRD[i] for i in range(len(rd))])
+            v_temp.append([[rd[i] - tRD[i] for i in range(len(rd))]])
         if nD > 1:
             perm_temp.append(_map_dvector_permutation(rd,bas_vecs,eps,nD))
         else:
@@ -430,10 +441,9 @@ def _get_dvector_permutations(par_lat,bas_vecs,LatDim,eps):
     # rotations that don't permute the d's could still permute the
     # g's. So we have to keep all the d permutations, even if they
     # look redundant here.
-
     return(dRPList)
     
-def _get_rotation_perms_lists(A,HNF,L,SNF,Op,RPlist,dperms,eps):
+def _get_rotation_perms_lists(A,HNF,L,SNF,Op,RPlist,dperms,eps, arrows=False):
     """For each HNF, we have a list of the operations (rotations + shifts,
       if present) that leave the superlattice fixed. Given this set of
       fixing operations, make a list of the permutations on the
@@ -446,15 +456,17 @@ def _get_rotation_perms_lists(A,HNF,L,SNF,Op,RPlist,dperms,eps):
       :args L: Left transforms matrix.
       :args SNF: SNF matrix.
       :args Op: A list of symmetry ops (rots and shifts) for the parent multilattice.
-      :args RlList:A list of permutations effected by the Ops.
+      :args RLlist:A list of permutations effected by the Ops.
       :args dperms:
       :args eps: Finite precision tolerance.d
+      :args arrows: True if arrow group is to be found as well.
     """
 
     # Index of the superlattices; Number of d-vectors in d set
-    n = int(round(numpy.linalg.det(numpy.array(HNF))))
-
-    nD = numpy.array(dperms.perm.site_perm).shape[-1]
+    n = int(round(np.linalg.det(HNF[0])))
+    nH = len(HNF)
+    
+    nD = np.array(dperms.perm.site_perm).shape[-1]
     # nD = len(RPlist.v[0])
 
     skip = []
@@ -468,174 +480,175 @@ def _get_rotation_perms_lists(A,HNF,L,SNF,Op,RPlist,dperms,eps):
     identT = []
     tperms_perm = []
     temp_rperms_perm = []
-    identT = [list(i) for i in zip(*[iter(list(range(0,n*nD)))]*n)]  # we could combine
-    # those two lines, but gfortran
-    ident  = numpy.transpose(identT).tolist()            # does some strange things then.
-    RPlist.nL=0  # initialize the number
+    identT = [list(i) for i in zip(*[iter(list(range(0,n*nD)))]*n)]  
+    ident  = np.transpose(identT).tolist()            
+    for i in range(len(RPlist)):
+        RPlist[i].nL=0  # initialize the number
 
     # Make the group member list for the first SNF
-    diag = [SNF[0][0],SNF[1][1],SNF[2][2]]
+    diag = [SNF[0][0][0],SNF[0][1][1],SNF[0][2][2]]
     g = _make_member_list(diag)
     # arrowg = make_arrow_list(diag)
-    Ainv = numpy.linalg.inv(A)
-    L = numpy.transpose(L).tolist()
-    # Make the transform matrices for taking the g's and rotating them
-    Tinv = numpy.matmul(L,Ainv).tolist()
-    T = numpy.linalg.inv(Tinv).tolist()
-       
-    nOp = len(Op.rot)
+    Ainv = np.linalg.inv(A)
 
-    naOp = len(arrowg)
+    for iH in range(nH):
+        if iH > 0:
+            if not (SNF[iH][0][0] == SNF[iH-1][0][0] and SNF[iH][1][1] == SNF[iH-1][1][1] and SNF[iH][2][2] == SNF[iH-1][2][2]):
+                diag = [SNF[iH][0][0],SNF[iH][1][1],SNF[iH][2][2]]
+                g = _make_member_list(diag)
+                # Make the transform matrices for taking the g's and rotating them
+        Tinv = np.matmul(Ainv,L[iH]).tolist()
+        T = np.linalg.inv(Tinv).tolist()
+        nOp = len(Op[iH].rot)
+
+        naOp = len(arrowg)
     
-    temp_rperm_perm = []
-    temp_arrow_perm = []
+        temp_rperms_perm = []
+        temp_arrow_perm = []
+        for iOp in range(nOp): # For each rotation, find the permutation
+            dap = []
+            dgp = []
+            for i in range(n):
+                tt = []
+                for j in range(nD):
+                    tt.append(0)
+                dgp.append(tt)
 
-    for iOp in range(nOp): # For each rotation, find the permutation
-        dap = []
-        dgp = []
-        for i in range(n):
-            tt = []
-            for j in range(nD):
-                tt.append(0)
-            dgp.append(tt)
+            for i in range(naOp):
+                dap.append(0)
 
-        for i in range(naOp):
-            dap.append(0)
+            for iD in range(nD): # Loop over each row in the (d,g) table
+                temp1 = np.array([RPlist[iH].v[iOp][iD]]*n)
+                temp2 = np.transpose(np.matmul(np.transpose(np.matmul(T,Op[iH].rot[iOp])),np.transpose(g)))
+                rag = np.transpose(np.matmul(Op[iH].rot[iOp],np.transpose(arrowg))).tolist()
+                rgp = np.matmul((-temp1+temp2),Tinv).tolist()
+                temp_gp = [[int(round(rgp[i][j])) for j in range(len(rgp[i]))] for i in range(len(rgp))] # Move the rotated group into an integer array
+                temp_ag = [[int(round(rag[i][j])) for j in range(len(rag[i]))] for i in range(len(rag))]
+                if not np.allclose(rgp,temp_gp,rtol=0,atol=eps): #pragma: no cover
+                    print("Transform left big fractional parts")
+                    exit()
 
-        for iD in range(nD): # Loop over each row in the (d,g) table
-            if nD == 1:
-                temp1 = [RPlist.v[iD][iOp]]*n
-            else:
-                temp1 = [RPlist.v[iOp][iD]]*n
+                gp = temp_gp
+                ag = temp_ag
+                temp_diag = [diag]*n
+                gp = [[gp[i][j] % temp_diag[i][j] for j in range(len(gp[i]))] for i in range(len(gp))] # Mod by each entry of
+                # the SNF to bring into group Now that the rotated group
+                # is known, find the mapping of the elements between the
+                # original group and the permuted group. This is the
+                # permutation.
+                skip = []
+                for mm in range(n):
+                    skip.append(False) # This is just for efficiency
+                for im in range(n):
+                    for jm in range(n):
+                        if skip[jm]:
+                            continue # Skip elements whose mapping is already known
+                        if gp[jm] == g[im]: # these elements
+                            # map to each other The list of operations that fix
+                            # the superlattice are a subset of those that fix
+                            # the parent lattice. RotIndx stores the indicies
+                            # of the parent lattice operations in a list with
+                            # as many entries as supercell fixing operations.
 
-            temp2 = numpy.transpose(numpy.matmul(numpy.matmul(Op.rot[iOp],T),numpy.transpose(g))).tolist()
-            # temp2a = numpy.transpose(numpy.matmul(numpy.matmul(Op.rot[iOp],T),numpy.transpose(arrowg))).tolist()
-            rag = numpy.transpose(numpy.matmul(Op.rot[iOp],numpy.transpose(arrowg))).tolist()
-            rgp = numpy.transpose(numpy.matmul(Tinv,numpy.transpose([[temp1[i][j]+temp2[i][j] for j in range(len(temp1[i]))] for i in range(len(temp1))]))).tolist()
-            # rag = numpy.transpose(numpy.matmul(Tinv,numpy.transpose([[temp1a[i][j]+temp2a[i][j] for j in range(len(temp1a[i]))] for i in range(len(temp1a))]))).tolist()
-            temp_gp = [[int(round(rgp[i][j])) for j in range(len(rgp[i]))] for i in range(len(rgp))] # Move the rotated group into an integer array
-            temp_ag = [[int(round(rag[i][j])) for j in range(len(rag[i]))] for i in range(len(rag))]
-            if not numpy.allclose(rgp,temp_gp,rtol=eps,atol=eps):
-                print("Transform left big fractional parts")
-                exit()
+                            # dperms%perm stores a list of d-vector
+                            # permutations, one permutation (an nD list) for
+                            # each operation in the parent lattice symmetries
+                            OpIndxInSuperCellList = RPlist[iH].RotIndx[iOp]
+                            RowInDxGTable = np.transpose(dperms.perm.site_perm).tolist()[iD][OpIndxInSuperCellList]
+                            dgp[im][RowInDxGTable] = jm+iD*n
+                            skip[jm] = True
+                            break
+                # do the some thing for the arrows
+                skip = []
+                for mm in range(naOp):
+                    skip.append(False)
+                for im in range(naOp):
+                    for jm in range(naOp):
+                        if skip[jm]:
+                            continue
+                        if ag[jm] == arrowg[im]:
+                            dap[im] = jm
+                            skip[jm] = True
+                            break
 
-            gp = temp_gp
-            ag = temp_ag
+                if dgp.count(0) > 1 or dap.count(0) > 1: #pragma: no cover
+                    print("(d,g)-->(d',g') mapping failed in get_rotation_perm_lists")
+                    exit()
+
+            # Now we have the (d',g') table for this rotation. Now
+            # record the permutation
+            # permutation in the "long form"
+            temp_rperms_perm.append(np.transpose(dgp).reshape(nD*n).tolist()) # store
+            temp_arrow_perm.append(dap)
+            temp_rperms_nL = nOp
+        # nomenclature:
+        # N+t = rotation (N) + fractional translation (t)  (me bethinks....)
+        # r = lattice translation
+
+        # Now that we have the permutations that are effected by N+t
+        # type of rotations (for each N in the point group), we need to
+        # compose them with the permutations effected by lattice
+        # translations, (parent) lattice translations contained inside the
+        # supercell (N+t+r, in Rod's nomenclature). Only when we have these
+        # two lists, and compose them, do we have a guarantee that the
+        # resulting list is actually a group. For efficiency, we reduce the
+        # N+t list (remove duplicates). Rod claims that the compositions
+        # (with the translations) will not have duplicates.
+        if len(temp_rperms_perm) > 1 and arrows == False:
+            temp_rperms_perm.sort()
+            temp_rperms_perm = list(temp_rperms_perm for temp_rperms_perm, _ in itertools.groupby(temp_rperms_perm))
+        # The rotations permutations list is now in "alphabetical"
+        # order and contains no duplicates
+    
+        # To get the permutations effected by the r's, we don't need
+        # the r's. We can merely take the member list, the group, and
+        # add each element of the group to the group itself and see
+        # what permutation happens. (This part is somewhat redundant
+        # with make_translation_group in labeling_related module.)
+        tperms_perm = []
+        for ig in range(n): # The number of r's inside the superlattice (the
+            # translation perms) is the same as the index n
+            temp_g = [g[ig]]*n
+            tg = [[g[i][j]+temp_g[i][j] for j in range(len(g[i]))] for i in range(len(g))] # Add the element to the group
             temp_diag = [diag]*n
-            gp = [[gp[i][j] % temp_diag[i][j] for j in range(len(gp[i]))] for i in range(len(gp))] # Mod by each entry of
-            # the SNF to bring into group Now that the rotated group
-            # is known, find the mapping of the elements between the
-            # original group and the permuted group. This is the
-            # permutation.
-            skip = []
-            for mm in range(n):
-                skip.append(False) # This is just for efficiency
-            for im in range(n):
-                for jm in range(n):
-                    if skip[jm]:
-                        continue # Skip elements whose mapping is already known
-                    if gp[jm] == g[im]: # these elements
-                        # map to each other The list of operations that fix
-                        # the superlattice are a subset of those that fix
-                        # the parent lattice. RotIndx stores the indicies
-                        # of the parent lattice operations in a list with
-                        # as many entries as supercell fixing operations.
+            tg = [[tg[i][j]%temp_diag[i][j] for j in range(len(tg[i]))] for i in range(len(tg))] # mod by the SNF entries to
+            # bring it back to the "primitive" representation
+            perm = _find_permutation_of_group(g,tg)
+            temp_ident = []
+            trans_ident = np.transpose(ident).tolist()
+            for il in range(len(ident[0])):
+                temp_ident.append([trans_ident[il][i] for i in perm])
+            tperms_perm.append(np.reshape(temp_ident,(n*nD)).tolist())
+            
+        RPlist_perm_sites = []
+        RPlist_perm_arrows = []
+        RPlist_nL = len(temp_rperms_perm)*n
+        for it in range(n): # Loop over translation perms (r type)
+            for iOp in range(len(temp_rperms_perm)): # Loop over unique rotation
+                # perms (N+t type) Form the permutation effected by
+                # composing the iOp-th one with the it-th one
+                RPlist_temp = [tperms_perm[it][i] for i in temp_rperms_perm[iOp]]
+                RPlist_perm_sites.append(RPlist_temp)
+                RPlist_perm_arrows.append(temp_arrow_perm[iOp])
+                # ^--- Having gotten both the rotations and the
+                # translation in the sections above (sort_permutations_list
+                # etc...), the "operators" of the rotation (one of them is
+                # R_i) and the translations (one of them is T_j) are now
+                # "scrambled", i.e., (T_j) o (R_i).  Since the *first*
+                # Rotation R_1 = Id, the *first* entries in the
+                # RPlist(iH)%perm are equivalent to pure translations only.
+                # The following entries are a combination of both.
 
-                        # dperms%perm stores a list of d-vector
-                        # permutations, one permutation (an nD list) for
-                        # each operation in the parent lattice symmetries
-                        OpIndxInSuperCellList = RPlist.RotIndx[iOp]
-                        RowInDxGTable = numpy.transpose(dperms.perm.site_perm).tolist()[iD][OpIndxInSuperCellList]
-                        dgp[im][RowInDxGTable] = jm+iD*n
-                        skip[jm] = True
-                        break
-            # do the some thing for the arrows
-            skip = []
-            for mm in range(naOp):
-                skip.append(False)
-            for im in range(naOp):
-                for jm in range(naOp):
-                    if skip[jm]:
-                        continue
-                    if ag[jm] == arrowg[im]:
-                        dap[im] = jm
-                        skip[jm] = True
-                        break
-
-            if dgp.count(0) > 1 or dap.count(0) > 1:
-                print("(d,g)-->(d',g') mapping failed in get_rotation_perm_lists")
-                exit()
-
-        # Now we have the (d',g') table for this rotation. Now
-        # record the permutation
-        temp_rperms_perm.append(numpy.transpose(dgp).reshape(nD*n).tolist()) # store
-        temp_arrow_perm.append(dap)
-        # permutation in the "long form"
-        temp_rperms_nL = nOp
-    # nomenclature:
-    # N+t = rotation (N) + fractional translation (t)  (me bethinks....)
-    # r = lattice translation
-
-    # Now that we have the permutations that are effected by N+t
-    # type of rotations (for each N in the point group), we need to
-    # compose them with the permutations effected by lattice
-    # translations, (parent) lattice translations contained inside the
-    # supercell (N+t+r, in Rod's nomenclature). Only when we have these
-    # two lists, and compose them, do we have a guarantee that the
-    # resulting list is actually a group. For efficiency, we reduce the
-    # N+t list (remove duplicates). Rod claims that the compositions
-    # (with the translations) will not have duplicates.
-    if len(temp_rperms_perm) > 1 and len(temp_arrow_perm) == 0:
-        temp_rperms_perm.sort()
-        temp_rperms_perm = list(temp_rperms_perm for temp_rperms_perm, _ in itertools.groupby(temp_rperms_perm))
-    # The rotations permutations list is now in "alphabetical"
-    # order and contains no duplicates
-    
-    # To get the permutations effected by the r's, we don't need
-    # the r's. We can merely take the member list, the group, and
-    # add each element of the group to the group itself and see
-    # what permutation happens. (This part is somewhat redundant
-    # with make_translation_group in labeling_related module.)
-    for ig in range(n): # The number of r's inside the superlattice (the
-        # translation perms) is the same as the index n
-        temp_g = [g[ig]]*n
-        tg = [[g[i][j]+temp_g[i][j] for j in range(len(g[i]))] for i in range(len(g))] # Add the element to the group
-        temp_diag = [diag]*n
-        tg = [[tg[i][j]%temp_diag[i][j] for j in range(len(tg[i]))] for i in range(len(tg))] # mod by the SNF entries to
-        # bring it back to the "primitive" representation
-        perm = _find_permutation_of_group(g,tg)
-        temp_ident = []
-        trans_ident = numpy.transpose(ident).tolist()
-        for il in range(len(numpy.transpose(ident).tolist())):
-            temp_ident.append([trans_ident[il][i] for i in perm])
-        tperms_perm.append(numpy.reshape(temp_ident,(n*nD)).tolist())
-
-    RPlist_perm_sites = []
-    RPlist_perm_arrows = []
-    RPlist_nL = len(temp_rperms_perm)*n
-    for it in range(n): # Loop over translation perms (r type)
-        for iOp in range(len(temp_rperms_perm)): # Loop over unique rotation
-            # perms (N+t type) Form the permutation effected by
-            # composing the iOp-th one with the it-th one
-            RPlist_temp = [tperms_perm[it][i] for i in temp_rperms_perm[iOp]]
-            RPlist_perm_sites.append(RPlist_temp)
-            RPlist_perm_arrows.append(temp_arrow_perm[iOp])
-            # ^--- Having gotten both the rotations and the
-            # translation in the sections above (sort_permutations_list
-            # etc...), the "operators" of the rotation (one of them is
-            # R_i) and the translations (one of them is T_j) are now
-            # "scrambled", i.e., (T_j) o (R_i).  Since the *first*
-            # Rotation R_1 = Id, the *first* entries in the
-            # RPlist(iH)%perm are equivalent to pure translations only.
-            # The following entries are a combination of both.
-
-    RPlist.perm.site_perm = RPlist_perm_sites
-    RPlist.perm.arrow_perm = RPlist_perm_arrows
-    RPlist.n = RPlist_nL
+        RPlist[iH].perm.site_perm = RPlist_perm_sites
+        if arrows: 
+            RPlist[iH].perm.arrow_perm = RPlist_perm_arrows
+        else:
+            RPlist[iH].perm.arrow_perm = None
+        RPlist[iH].n = RPlist_nL
     return (RPlist)
     
     
-def get_sym_group(par_lat,bas_vecs,HNF,LatDim):
+def get_sym_group(par_lat,bas_vecs,HNF,LatDim,arrows=True):
     """Generates the symmetry group for a given lattice and HNF
 
     :args par_lat: a 2D integer array that contains the parrent
@@ -649,15 +662,14 @@ def get_sym_group(par_lat,bas_vecs,HNF,LatDim):
     from phenum.symmetry import bring_into_cell, get_spaceGroup
     
     eps = 1E-10
-
     # map any atoms in the basis that aren't within the cell to be in
     # the cell
     par_lat_inv = linalg.inv(par_lat)
     temp_basis = list(bas_vecs)
     for i in range(len(bas_vecs)):
         bas_vecs[i] = bring_into_cell(bas_vecs[i],par_lat_inv,par_lat,eps)
-        if not allclose(bas_vecs[i], temp_basis[i], rtol=eps, atol=eps):
-            from msg import warn
+        if not allclose(bas_vecs[i], temp_basis[i], rtol=0, atol=eps):
+            from phenum.msg import warn
             warn("An atomic basis vector was not inside the unit cell. It has been "
                  "remapped.\n Original vector: {} \n Remapped vector: {}"
                  .format(" ".join([str(p) for p in temp_basis[i]]),
@@ -672,12 +684,12 @@ def get_sym_group(par_lat,bas_vecs,HNF,LatDim):
     (sgrots,sgshifts) = get_spaceGroup(par_lat,aTyp,bas_vecs,eps)
     (fixing_ops,RPList,degeneracy) = _get_sLV_fixing_operations(HNF,par_lat,len(bas_vecs),sgrots,
                                                     sgshifts,ParRPList,eps)
-    
-    (SNF,L,R) = SmithNormalForm(HNF)
 
-    sym_group = _get_rotation_perms_lists(par_lat,HNF,L,SNF,fixing_ops,RPList,ParRPList,eps)
-    
-    return(sym_group)
+    (SNF,L,R) = SmithNormalForm(HNF)
+    L = np.transpose(L).tolist()
+    sym_group = _get_rotation_perms_lists(par_lat,[HNF],[L],[SNF],[fixing_ops],[RPList],ParRPList,eps,arrows=arrows)
+
+    return(sym_group[0])
 
 #a_group take the set of translations of the lattice and the set of
 #rotations of the lattice paired with their effect on the arrows of
@@ -728,7 +740,7 @@ def a_group_gen(trans,rots):
     
     return(groupi)
 
-def _group(gen):
+def _group(gen): # pragma: no cover
     """This subroutine takes the generators of the group then uses them
     to form the entire group.
 
@@ -820,8 +832,7 @@ def get_full_HNF(HNF):
     :args HNF: The 1D integer numpy array that contains all the lower
     diagonal entries of the HNF matrix.
     """
-    import numpy as np
-    
+
     if type(HNF).__module__ == np.__name__:
         temp_HNF = HNF.tolist()
     else:
@@ -840,25 +851,24 @@ def _rm_3D_operations(aVecs,sgrots,sgshifts,eps):
     :args eps: Finite precisions tolerance.
     """
   
-    if not numpy.allclose(numpy.array(aVecs[0][1:3]),0.0,rtol=eps,
-                          atol=eps) or not numpy.allclose(numpy.array(aVecs[2][0:2])
-                                                          ,0.0,rtol=eps,atol=eps):
-        print("Error in rm_3d_operations: only allowed for primitive vectors x00,0xx,0xx")
-        exit()
+    if not np.allclose(
+            aVecs[0][1:3],0.0,rtol=0, atol=eps) or not np.allclose(aVecs[2][0:2]
+                                                                   ,0.0,rtol=0,atol=eps):
+        raise ValueError("Error in rm_3d_operations: only allowed for primitive vectors x00,0xx,0xx")
     
     nRot = len(sgrots)
     irot = 0
     tSGrots = []
     tSGshifts = []
     for i in range(nRot):
-        if (numpy.allclose(numpy.array(sgrots[i][0][1:3]),0.0,rtol=eps,atol=eps) and
-            numpy.allclose(numpy.array([sgrots[i][1][0],sgrots[i][2][0]]),0.0,rtol=eps,atol=eps)
-            and numpy.allclose(abs(sgrots[i][0][0]),1.0,rtol=eps,atol=eps)):
+        if (np.allclose(sgrots[i][0][1:3],0.0,rtol=0,atol=eps) and
+            np.allclose([sgrots[i][1][0],sgrots[i][2][0]],0.0,rtol=0,atol=eps)
+            and np.allclose(abs(sgrots[i][0][0]),1.0,rtol=0,atol=eps)):
             # this operation is "2D"         
             irot += 1
             tSGrots.append(sgrots[i])
             tSGshifts.append(sgshifts[i])
 
     nRot = irot
-
+    
     return(tSGrots,tSGshifts)

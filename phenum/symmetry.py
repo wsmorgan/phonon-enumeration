@@ -95,10 +95,10 @@ def _does_mapping_exist(v,this_type,atom_pos,atomType,eps):
       exists, then the logical "mapped" is returned .true., otherwise
       .false.
 
-      :args v: Integer array of the position to check mapping for
+      :args v: Array of the position to check mapping for
       :args this_type: Integer that indicates which type of atom that is
             being checked.
-      :args atom_pos: 2D integer array of the positions of the basis
+      :args atom_pos: 2D array of the positions of the basis
             atoms.
       :args atomType: Array of integers of the types of atoms in the
             basis.
@@ -110,10 +110,9 @@ def _does_mapping_exist(v,this_type,atom_pos,atomType,eps):
             # if the coordinates are the same, 
             # their difference will be zero for every component
             this_position = atom_pos[i]
-            if(numpy.allclose(numpy.array(v), numpy.array(this_position), rtol=eps,atol=eps)):
+            if(numpy.allclose(numpy.array(v), numpy.array(this_position), rtol=0,atol=eps)):
                 mapped = True
                 break
-
     return mapped
 
 
@@ -143,8 +142,7 @@ def bring_into_cell(vec,cart_to_latt,latt_to_cart,eps):
 
     from numpy import matmul
     # Put the representation of the point into lattice coordinates
-    vec = matmul(cart_to_latt,vec).tolist()
-
+    vec = matmul(vec,cart_to_latt).tolist()
     # counter to catch compiler bug
     c = 0
     maxc = max(math.ceil(abs(max(vec))),math.ceil(abs(min(vec))))*2
@@ -158,14 +156,12 @@ def bring_into_cell(vec,cart_to_latt,latt_to_cart,eps):
                 vec[i] -= 1
             elif vec[i] < 0-eps:
                 vec[i] += 1
-        if (c>maxc):
+        if (c>maxc): #pragma: no cover
             print("ERROR: loop does not end in bring_into_cell. Probably compiler bug.")
             exit()
 
-    
     # Put the point back into cartesion coordinate representation
-    vec = matmul(numpy.array(latt_to_cart), numpy.array(vec)).tolist()
-
+    vec = matmul(vec,latt_to_cart).tolist()
     return vec
 
 def _get_lattice_pointGroup(aVecs, eps=1E-10):
@@ -186,26 +182,26 @@ def _get_lattice_pointGroup(aVecs, eps=1E-10):
     # points in a sphere that contains all of the longest _primitive_ vectors
     cell_volume = abs(numpy.dot(aVecs[0],numpy.cross(aVecs[1],aVecs[2])))
     max_norm = max([numpy.linalg.norm(i) for i in aVecs])
-    n1 = math.ceil(max_norm*numpy.linalg.norm(numpy.cross(aVecs[1],aVecs[2]))/cell_volume+eps)
-    n2 = math.ceil(max_norm*numpy.linalg.norm(numpy.cross(aVecs[2],aVecs[0]))/cell_volume+eps)
-    n3 = math.ceil(max_norm*numpy.linalg.norm(numpy.cross(aVecs[0],aVecs[1]))/cell_volume+eps)
+    n1 = math.ceil(max_norm*numpy.linalg.norm(numpy.cross(aVecs[1],aVecs[2])/cell_volume+eps))
+    n2 = math.ceil(max_norm*numpy.linalg.norm(numpy.cross(aVecs[2],aVecs[0])/cell_volume+eps))
+    n3 = math.ceil(max_norm*numpy.linalg.norm(numpy.cross(aVecs[0],aVecs[1])/cell_volume+eps))
 
     Rvecs = []
     Rlengths = []
 
+    aVecs = numpy.array(aVecs)
     # Store the R vectors that lie within the sphere
     num_Rs = 0
     for i in range(-int(round(n1)), int(round(n1))+1):
         for j in range(-int(round(n2)), int(round(n2))+1):
             for k in range(-int(round(n3)), int(round(n3))+1):
-                this_vector = [i*z[0] + j*z[1] + k*z[2] for z in aVecs]
+                this_vector = i*aVecs[0] + j*aVecs[1] + k*aVecs[2]
                 length = numpy.linalg.norm(this_vector)
                 if (length > max_norm + eps):
                     continue # This vector is outside sphere
                 num_Rs += 1
-                Rvecs.append(this_vector)
+                Rvecs.append(this_vector.tolist())
                 Rlengths.append(length)
-
     # Try all R vector triplets in the sphere and see which ones are valid 
     # rotations of the original basis vectors.
     # 
@@ -229,7 +225,6 @@ def _get_lattice_pointGroup(aVecs, eps=1E-10):
             for k in range(num_Rs):
                 if (abs(Rlengths[k] - norm_avecs[2]) > eps):
                     continue
-             
                 if (k == i or k == j):
                     continue
                 if (abs(cell_volume - abs(numpy.linalg.det([Rvecs[i],Rvecs[j],Rvecs[k]]))) > eps):
@@ -241,7 +236,7 @@ def _get_lattice_pointGroup(aVecs, eps=1E-10):
                 rotation_matrix = numpy.matmul(inverse_aVecs,new_vectors).tolist()
                 # Check orthogonality of rotation matrix by [R][R]^T = [1]
                 test_matrix = numpy.matmul(rotation_matrix,numpy.transpose(rotation_matrix)).tolist()
-                if (numpy.allclose(test_matrix, [[1,0,0],[0,1,0],[0,0,1]], rtol=eps,atol=eps)): # Found valid rotation
+                if (numpy.allclose(test_matrix, [[1,0,0],[0,1,0],[0,0,1]], rtol=0,atol=eps)): # Found valid rotation
                     num_ops +=  1 # Count number of rotations
                     lattpg_op.append(rotation_matrix)
 
@@ -261,8 +256,7 @@ def get_spaceGroup(par_lat,atomType,bas_vecs,eps=1E-10,lattcoords = False):
       :args lattcoords: (Optional) True if vectors are in lattice
             coordinates rather than cartesian
     """
-    
-    # Get number of atoms in the basis
+    # Get number of atoms in the basis    
     nAtoms = len(atomType)
 
     # save original atomic input positions
@@ -273,18 +267,18 @@ def get_spaceGroup(par_lat,atomType,bas_vecs,eps=1E-10,lattcoords = False):
     # Get transformation matrices to take us back and forth
     (latt_to_cart,cart_to_latt) = _get_transformations(par_lat)
     
-    
     # If we're in lattice coordinates Convert the position of the
     # basis atoms from lattice coordinates.
     if lattcoords:
         for i in range(nAtoms):
-            atom_pos[i] = numpy.matmul(numpy.array(latt_to_cart),numpy.array(atom_pos[i])).tolist()
+            atom_pos[i] = numpy.matmul(latt_to_cart,atom_pos[i]).tolist()
 
     # bring all the basis atoms into the unit cell
-    for i in range(len(bas_vecs)):
-        bas_vecs[i] = bring_into_cell(bas_vecs[i],cart_to_latt,latt_to_cart,eps)
+    for i in range(len(atom_pos)):
+        atom_pos[i] = bring_into_cell(atom_pos[i],cart_to_latt,latt_to_cart,eps)
+
     # Now find the point group
-    lattpg_op = _get_lattice_pointGroup(par_lat)
+    lattpg_op = _get_lattice_pointGroup(par_lat,eps=eps)
 
     # **** Find the elements of the space group ****
     # Count the elements
@@ -294,20 +288,21 @@ def get_spaceGroup(par_lat,atomType,bas_vecs,eps=1E-10,lattcoords = False):
     # Apply each of the point operators in the point group to the crystal
     for iop in range(len(lattpg_op)):
         # rotate atom 1 and store its position in the vector v
-        v = numpy.matmul(numpy.array(lattpg_op[iop]),numpy.array(atom_pos[0])).tolist()
+        v = numpy.matmul(lattpg_op[iop],atom_pos[0]).tolist()
         # Loop over all possible fractional translations
         for jAtom in range(nAtoms):
             if (atomType[jAtom] != atomType[0]):
-                continue
+                continue #pragma: no cover
             fract = [atom_pos[jAtom][i] - v[i] for i in range(3)]
             fract = bring_into_cell(fract, cart_to_latt, latt_to_cart, eps)
             # Is each atom of every type mapped by this rotation + translation?
             for kAtom in range(nAtoms):
                 this_type = atomType[kAtom]
                 # Rotate and translate each atom        
-                v2 = numpy.matmul(numpy.array(lattpg_op[iop]),numpy.array(atom_pos[kAtom])).tolist()
+                v2 = numpy.matmul(lattpg_op[iop],atom_pos[kAtom]).tolist()
                 v2 = [v2[i] + fract[i] for i in range(3)]
                 v2 = bring_into_cell(v2, cart_to_latt, latt_to_cart, eps)
+                
                 # Try to map this rotated atom onto another the same type
                 mapped = _does_mapping_exist(v2, this_type, atom_pos, atomType, eps)
                 if not mapped:
@@ -322,4 +317,5 @@ def get_spaceGroup(par_lat,atomType,bas_vecs,eps=1E-10,lattcoords = False):
                 # loop over fractional translations and try next op
                 # By removing the preceding exit, we include fractional translations
                 # for non-primitive lattices. (GLWH 10/26/2009)
+
     return(sg_ops,sg_fracts)
