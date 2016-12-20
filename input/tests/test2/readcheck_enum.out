@@ -1,0 +1,15 @@
+Title: System                                                                          
+Lattice type (bulk or surface): BULK
+  0.500   0.500   0.000
+  0.500   0.000   0.500
+  0.000   0.500   0.500
+Number of labels:  2
+Number of d-vectors:   1
+  0.0000   0.0000   0.0000 0/1/
+Min and Max cell sizes:  6  6
+Epsilon:   0.1000E-04
+full/part mode: FULL
+Concentration ranges are *not* specified. Using  the full-conc-range algorithm (original enum algorithm).
+
+--<< Successfully read the struct_enum.in file >>--
+

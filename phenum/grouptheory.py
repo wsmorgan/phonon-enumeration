@@ -256,8 +256,6 @@ def SmithNormalForm(HNF):
         itCnt += 1
         if (itCnt >=100): 
             raise RuntimeError("Bad programming in SmithNormalForm")
-        print("mt",type(M))
-        print("ct",type([M[0][j],M[1][j],M[2][j]].count(0)))
         while (3-[M[0][j],M[1][j],M[2][j]].count(0)) > 1:
             (minidx,maxidx) = _find_minmax_indices([M[0][j],M[1][j],M[2][j]])
             minm = M[minidx][j]
@@ -472,7 +470,8 @@ def _get_rotation_perms_lists(A,HNF,L,SNF,Op,RPlist,dperms,eps, arrows=False):
     skip = []
     gp = []
 
-    arrowg = [[0,0,-1],[0,-1,0],[-1,0,0],[1,0,0],[0,1,0],[0,0,1]]
+    arrowg = [[1,0,0],[-1,0,0],[0,1,0],[0,-1,0],[0,0,1],[0,0,-1]]
+    # arrowg = [[0,0,-1],[0,-1,0],[-1,0,0],[1,0,0],[0,1,0],[0,0,1]]
     
     tg = []
     perm = []
@@ -524,6 +523,7 @@ def _get_rotation_perms_lists(A,HNF,L,SNF,Op,RPlist,dperms,eps, arrows=False):
                 rgp = np.matmul((-temp1+temp2),Tinv).tolist()
                 temp_gp = [[int(round(rgp[i][j])) for j in range(len(rgp[i]))] for i in range(len(rgp))] # Move the rotated group into an integer array
                 temp_ag = [[int(round(rag[i][j])) for j in range(len(rag[i]))] for i in range(len(rag))]
+                
                 if not np.allclose(rgp,temp_gp,rtol=0,atol=eps): #pragma: no cover
                     print("Transform left big fractional parts")
                     exit()
@@ -597,6 +597,17 @@ def _get_rotation_perms_lists(A,HNF,L,SNF,Op,RPlist,dperms,eps, arrows=False):
         if len(temp_rperms_perm) > 1 and arrows == False:
             temp_rperms_perm.sort()
             temp_rperms_perm = list(temp_rperms_perm for temp_rperms_perm, _ in itertools.groupby(temp_rperms_perm))
+        # elif len(temp_rperms_perm) > 1 and arrows == True:
+        #     perms = []
+        #     for i in range(len(temp_rperms_perm)):
+        #         perms.append([temp_rperms_perm[i],temp_arrow_perm[i]])
+        #     perms = list(perms for perms, _ in itertools.groupby(perms))
+        #     perms.sort()
+        #     temp_rperms_perm = []
+        #     temp_arrow_perm = []
+        #     for i in range(len(perms)):
+        #         temp_rperms_perm.append(perms[i][0])
+        #         temp_arrow_perm.append(perms[i][1])
         # The rotations permutations list is now in "alphabetical"
         # order and contains no duplicates
     
@@ -623,8 +634,8 @@ def _get_rotation_perms_lists(A,HNF,L,SNF,Op,RPlist,dperms,eps, arrows=False):
         RPlist_perm_sites = []
         RPlist_perm_arrows = []
         RPlist_nL = len(temp_rperms_perm)*n
-        for it in range(n): # Loop over translation perms (r type)
-            for iOp in range(len(temp_rperms_perm)): # Loop over unique rotation
+        for iOp in range(len(temp_rperms_perm)): # Loop over unique rotation
+            for it in range(n): # Loop over translation perms (r type)
                 # perms (N+t type) Form the permutation effected by
                 # composing the iOp-th one with the it-th one
                 RPlist_temp = [tperms_perm[it][i] for i in temp_rperms_perm[iOp]]

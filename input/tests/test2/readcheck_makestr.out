@@ -1,0 +1,56 @@
+
+
+
+
+
+This file echoes the input for the makestr.x program and
+prints some of the computed quantities as well. It is intended to
+be useful for debugging and fixing bad input
+***************************************************
+Title: Random structure enumeration: 2016-11-08 15:33:51.352323                        
+bulk/surf: b
+Parent lattice:
+  0.500  0.500  0.000
+  0.500  0.000  0.500
+  0.000  0.500  0.500
+
+Parent lattice inverse matrix:
+  1.000  1.000 -1.000
+  1.000 -1.000  1.000
+ -1.000  1.000  1.000
+
+d-vectors:
+  0.0000  0.0000  0.0000
+
+Spectators:
+
+Number of labels (k):  2
+Finite precision parameter (epsilon):  0.1000000000E-06
+Found "start" label. Now skipping lines to struct #:          1
+Skipped to the          1-nth line in enum.out                                                                        
+strN, hnfN, sizeN, n, pgOps, diag, a,b,c,d,e,f, L, labeling
+          1       1        1  6  1   1   1   6    1   0   1   0   0   6    1   0   0   0   1   0   0   0   1  000001                                  
+New labeling with spectators added: 000001                                  
+HNF from file   1   0   1   0   0   6
+
+
+New inverse after reduction
+  1.333   0.667   0.667
+ -0.167   0.167   0.167
+  0.667  -0.667   1.333
+
+Atom #:  1 given label # 1 label: 0
+Atom #:  2 given label # 2 label: 0
+Atom #:  3 given label # 3 label: 0
+Atom #:  4 given label # 4 label: 0
+Atom #:  5 given label # 5 label: 0
+  5 atoms of label type  0 found
+Atom #:  6 given label # 1 label: 1
+  1 atoms of label type  1 found
+Finished counting the atoms of each type
+At. #:  1 position:  0.000   0.000   0.000 <0>
+At. #:  2 position:  0.667   0.167   0.333 <0>
+At. #:  3 position:  0.333   0.333   0.667 <0>
+At. #:  4 position:  0.000   0.500   0.000 <0>
+At. #:  5 position:  0.667   0.667   0.333 <0>
+At. #:  6 position:  0.333   0.833   0.667 <1>

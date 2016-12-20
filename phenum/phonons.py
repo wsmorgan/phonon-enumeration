@@ -80,7 +80,7 @@ def _col_sort(col_list):
 #col is the initial configuration.
 #agroup is the group operations with their effects on the arrows.
 #dim is the number of arrow directions that are possible for this system.
-def add_arrows(col,agroup,dim,accept=None,nested=False,num_wanted=None, small=False):
+def add_arrows(col,agroup,dim, translations, accept=None,nested=False,num_wanted=None, small=False, supers = False):
     """Finds the unique arrangements of arrows for a given configuration.
 
     :arg col: a 2D integer array of the initial labeling
@@ -90,9 +90,10 @@ def add_arrows(col,agroup,dim,accept=None,nested=False,num_wanted=None, small=Fa
     :arg accept: acceptance rate of configurations for large enumerations.
     :arg nested: set to True if this is called from within the context
       of another progress bar.
+    :arg supers: True if we want to include super periodic arrangements in the enumeration.
+    :arg translations: The translations of the lattice.
     """
     from random import random
-
     #Find out how many arrows there are in the col array
     (narrows,arrow_types,conc_w_arrows) = how_many_arrows(col)
     #largest_arrow is largest value any arrow could have.
@@ -171,12 +172,28 @@ def add_arrows(col,agroup,dim,accept=None,nested=False,num_wanted=None, small=Fa
                         coloring_with_arrows[z][0] = arrow_config[i]
                         i += 1
 
+                # We need to check the superperiodic structures.
+                if not supers:
+                    for trans in translations:
+                        action = trans[0]
+                        permutation = trans[1]
+                        if action != list(range(len(action))) or permutation != list(range(len(permutation))):
+                            orig_sites = [i[1] for i in coloring_with_arrows]
+                            arrow_sites = [i[0] for i in coloring_with_arrows]
+                            perm_sites = [orig_sites[i] for i in action]
+                            rot_arrows = [arrow_sites[i] for i in action]
+                            perm_arrows = [permutation[site] for site in rot_arrows
+                                           if site >= 0]
+                            if orig_sites == perm_sites and perm_arrows == arrow_config:
+                                unique = False
+                                break
                 if accept is None or random() < accept:
-                    arsurvivors.append(coloring_with_arrows)
-                    if verbosity is not None and verbosity >= 1 and not nested: #pragma: no cover
-                        pbar.update(1)
-                    if num_wanted is not None and len(arsurvivors) == num_wanted:
-                        break
+                    if unique == True:
+                        arsurvivors.append(coloring_with_arrows)
+                        if verbosity is not None and verbosity >= 1 and not nested: #pragma: no cover
+                            pbar.update(1)
+                        if num_wanted is not None and len(arsurvivors) == num_wanted:
+                            break
             orighash += 1
     else:
         from random import randrange
@@ -239,7 +256,21 @@ def add_arrows(col,agroup,dim,accept=None,nested=False,num_wanted=None, small=Fa
                         coloring_with_arrows[z][0] = arrow_config[i]
                         i += 1
 
-                arsurvivors.append(coloring_with_arrows)
+                # We need to check the superperiodic structures.
+                if not supers:
+                    for trans in translations:
+                        action = trans[0]
+                        permutation = trans[1]
+                        orig_sites = [i[1] for i in coloring_with_arrows]
+                        perm_sites = [orig_sites[i] for i in action]
+                        perm_arrows = [permutation[site] for site in arrow_config
+                                         if site >= 0]
+                        if orig_sites == perm_sites and perm_arrows == arrow_config:
+                            if action != list(range(len(action))) and permutation != list(range(len(permutation))):
+                                unique == False
+
+                if unique == True:
+                    arsurvivors.append(coloring_with_arrows)
                 
                 if verbosity is not None and verbosity >= 1 and not nested: #pragma: no cover
                     pbar.update(1)
@@ -344,37 +375,43 @@ def enum_sys(groupfile, concs, a_concs, num_wanted, HNF, params, supers, accept=
     # their species so we can undo the previous step later
     (n_arrows, arrow_types, sorted_concs) = how_many_arrows(decorations)
 
-    # now find the number of unique arrangements using
-    # polya
-    if arrow_types != 0:
-        # Since enumlib doesn't write the arrow group out we have to
-        # recompute the group actions paired with their effects on the
-        # arrows
-        total = polya(sorted_concs, agroup, arrowings=arrow_types)
+    # if we're enumerating a relatively large system (n>=10) but only
+    # want a relatively small number of unique configurations (n<=100)
+    # then we don't need to run the polya algorithm.
+    if sum(concs) >=10 and num_wanted <= 100:
+        total = 1e10
     else:
-        total = polya(concs, agroup)
-
-    # generate the random subset to be used. WARNING! for phonon enumerations
-    #we have seen values that are *50* digits long! If the number exceeds
-    #1e9, we change the approach to randomization.
-    from phenum.msg import warn, err
-    if num_wanted < total:
-        if total < 1e6:
-            from random import shuffle
-            subset = list(range(1, total+1)) 
-            shuffle(subset)
-            subset = subset[0:num_wanted]
-        elif accept is not None and (not isinstance(accept, float) or accept > 1.0):
-            err("'-acceptrate' is to be a float less than 1.")
-            exit(0)
+        # now find the number of unique arrangements using
+        # polya
+        if arrow_types != 0:
+            # Since enumlib doesn't write the arrow group out we have to
+            # recompute the group actions paired with their effects on the
+            # arrows
+            total = polya(sorted_concs, agroup, arrowings=arrow_types)
         else:
-            subset = num_wanted
-    elif num_wanted == total:
-        subset = []
-    else:
-        warn("number of configurations requested exceeds the number of "
-            "unique configurations available.")
-        subset = []
+            total = polya(concs, agroup)
+    
+        # generate the random subset to be used. WARNING! for phonon enumerations
+        #we have seen values that are *50* digits long! If the number exceeds
+        #1e9, we change the approach to randomization.
+        from phenum.msg import warn, err
+        if num_wanted < total:
+            if total < 1e6:
+                from random import shuffle
+                subset = list(range(1, total+1)) 
+                shuffle(subset)
+                subset = subset[0:num_wanted]
+            elif accept is not None and (not isinstance(accept, float) or accept > 1.0):
+                err("'-acceptrate' is to be a float less than 1.")
+                exit(0)
+            else:
+                subset = num_wanted
+        elif num_wanted == total:
+            subset = []
+        else:
+            warn("number of configurations requested exceeds the number of "
+                 "unique configurations available.")
+            subset = []
 
     n_stabs = []
     # if we're doing a purely arrow enumeration then we don't need to
@@ -397,7 +434,10 @@ def enum_sys(groupfile, concs, a_concs, num_wanted, HNF, params, supers, accept=
                 configs.append(config)
             count += 1
     else:
-        configs = brancher(sorted_concs, agroup, decorations, 6, supers, cellsize, total, subset, accept)
+        if sum(concs) >= 10 and num_wanted <= 100:
+            configs = guess_and_check_brancher(sorted_concs, agroup, decorations, 6, supers, cellsize, num_wanted)
+        else:
+            configs = brancher(sorted_concs, agroup, decorations, 6, supers, cellsize, total, subset, accept)
 
     if len(configs) != num_wanted and not super:              
         raise ValueError("Warning the enumeration code returned {} structures when {} "

@@ -2699,7 +2699,7 @@ class TestGetSymGroup(ut.TestCase):
         symm = get_sym_group(par_lat,bas_vacs,HNF,LatDim)
         agroup = []
         for i in range(len(symm.perm.site_perm)):
-            agroup.append([symm.perm.site_perm[i],symm.perm.arrow_perm[i]])            
+            agroup.append([symm.perm.site_perm[i],symm.perm.arrow_perm[i]])
         self.assertEqual(agroup,out)
 
     def test2(self):
