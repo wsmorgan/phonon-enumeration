@@ -571,15 +571,14 @@ def guess_and_check_brancher(concs, group, colors_w_arrows, dim, supers, cellsiz
 
     nfound = 0
     while len(survivors) < num_wanted:
-        print(len(survivors))
         candidate = []
         # pick a random configuration to check against.
         for i in range(len(C)):
-            candidate.append(randint(0,C[i]))
+            candidate.append(randint(0,C[i]-1))
 
         while candidate in visited:
             for i in range(len(C)):
-                candidate.append(randint(0,C[i]))
+                candidate.append(randint(0,C[i]-1))
 
         visited.append(candidate)
         unique = True
@@ -638,4 +637,3 @@ def guess_and_check_brancher(concs, group, colors_w_arrows, dim, supers, cellsiz
         pbar.close()
     # done
     return survivors
-            

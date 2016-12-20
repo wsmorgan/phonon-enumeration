@@ -148,6 +148,7 @@ def _enum_out(args):
     def cellsize(sHNF):
         return sHNF[0]*sHNF[2]*sHNF[5]
     cellsizes = unique([cellsize(sys[0]) for sys in systems])
+
     datadicts = {}
     sfmt = ("{0: >10d}{1: >10d}{2: >8d}{3: >9d}{4: >9d}{5: >12d}{6: >4d}{7: >6d}"
             "{8: >10}  {9: >18}  {10: >44}    {11}    {12: >21}\n")
@@ -179,21 +180,24 @@ def _enum_out(args):
 
             for config in configs:
                 labeling, arrowing = io.create_labeling(config)
-                enumlist.append((sum(conc), HNF, SNF, LT, labeling, arrowing))
-                
+                enumlist.append(((HNF[0]*HNF[2]*HNF[5]), HNF, SNF, LT, labeling, arrowing))
+
             sortenum = sorted(enumlist, key=itemgetter(0, 4))
             if len(sortenum) > 0:
                 last_sz = sortenum[0][0]
-            
+
         for (size, HNF, SNF, LT, labeling, arrowing) in sortenum:
             if size != last_sz:
                 count_s = 1
                 last_sz = size
             else:
                 count_s += 1
+
             o = sfmt.format(count_t, 1, 1, 1, 1, count_s, size, 1, fmtn(SNF, 3), fmtn(HNF, 3),
                             fmtn(LT, 5), labeling, arrowing)
+
             f.write(o)
+
             count_t += 1
 
 def examples():

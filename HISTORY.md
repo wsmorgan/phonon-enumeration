@@ -1,9 +1,21 @@
 # Revision History for "phonon-enumeration"
 
+## Revision 1.8.3
+- Removed an error message from vector_utils.py that was causing the
+  code to die in cases where the code was behaving as it should.
+- Fixed the data being written out to file so that the number of unit
+  cells rather than the total number of atoms are written out for the
+  idx value in 'enum.out'.
+- Changed the largest allowed Coefficient of the
+  guess_and_check_brancher subroutine. The previous limit was causing
+  -1's to show up in the labeling.
+
+## Revision 1.8.2
+- Fixed the bug in tree.py that was causing the enumretation to hang. See Issue #48.
+
 ## Revision 1.8.1
 - Forgot to import the new guess_and_check_brancher into the enum_sys
   subgroutine. Fixed now.
-- Fixed the bug in tree.py that was causing the enumretation to hang. See Issue #48.
 
 ## Revision 1.8.0
 - Updated the unit test outputs and test cases to reflect the changes

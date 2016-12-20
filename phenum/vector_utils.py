@@ -49,10 +49,10 @@ def map_enumStr_to_real_space(system_data,structure_data,minkowskiReduce):
             for z2 in range(int((b*z1)/a), int(c+(b*z1)/a)):
                 for z3 in range(int(z1*(d-(e*b)/c)/a+(e*z2)/c), int(f+z1*(d-(e*b)/c)/a+(e*z2)/c)):
                     ic +=1
-                    if ic > n: #pragma: no cover
-                        from .msg import err
-                        err("Problem with basis atoms in map_enpStr_to_real_space...")
-                        exit()
+                    # if ic > n: #pragma: no cover
+                    #     from .msg import err
+                    #     err("Problem with basis atoms in map_enpStr_to_real_space...")
+                    #     exit()
                     # Atomic basis vector in Cartesian coordinates
                     temp = matmul(pLV,[z1,z2,z3]).tolist()
                     temp2 = [temp[i]+pBas[iD][i] for i in range(len(pBas[iD]))]
@@ -70,6 +70,7 @@ def map_enumStr_to_real_space(system_data,structure_data,minkowskiReduce):
                     # tells us which atom type is used at this position
 
                     gIndx.append((iD)*S[0]*S[1]*S[2]+g[0]*S[1]*S[2]+g[1]*S[2]+g[2])
+
     if ic != n*nD: #pragma: no cover
         from .msg import err
         err("ERROR: map_enumStr_to_real_space: Didn't find the correct # of basis atoms")
