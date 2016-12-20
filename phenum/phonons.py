@@ -352,7 +352,7 @@ def enum_sys(groupfile, concs, a_concs, num_wanted, HNF, params, supers, accept=
 
     from phenum.grouptheory import get_full_HNF, get_sym_group
     from phenum.polyaburnside import polya
-    from phenum.tree import brancher
+    from phenum.tree import brancher, guess_and_check_brancher
     import phenum.io_utils as io
 
     cellsize = sum(concs)/len(params["basis_vecs"])
