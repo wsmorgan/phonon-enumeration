@@ -3,6 +3,7 @@
 ## Revision 1.8.1
 - Forgot to import the new guess_and_check_brancher into the enum_sys
   subgroutine. Fixed now.
+- Fixed the bug in tree.py that was causing the enumretation to hang. See Issue #48.
 
 ## Revision 1.8.0
 - Updated the unit test outputs and test cases to reflect the changes

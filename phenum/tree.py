@@ -571,6 +571,7 @@ def guess_and_check_brancher(concs, group, colors_w_arrows, dim, supers, cellsiz
 
     nfound = 0
     while len(survivors) < num_wanted:
+        print(len(survivors))
         candidate = []
         # pick a random configuration to check against.
         for i in range(len(C)):
@@ -589,7 +590,7 @@ def guess_and_check_brancher(concs, group, colors_w_arrows, dim, supers, cellsiz
 
             new_config = []
             for j in perm:
-                new_config.append(candidate[perm])
+                new_config.append(config[j])
             new_config = list(new_config)
 
             new_location = _hash(new_config,concs)
@@ -597,22 +598,23 @@ def guess_and_check_brancher(concs, group, colors_w_arrows, dim, supers, cellsiz
             if new_location in visited and new_location != candidate:
                 unique = False
                 break
-
+            
+        # if there are no arrows and we don't want to store
+        # superperiodic structures then we need to see if any
+        # translations operations are stabilizers of the
+        # configuration to eliminate the unwanted structures.
+        if not supers and narrows == 0 and unique == True:
+            for trans in range(1,cellsize):
+                action = group[trans][0]
+                trans_config = []
+                for act in action:
+                    trans_config.append(config[act])
+                if trans_config == config and action != list(range(cellsize)):
+                    unique = False
+                    break
+                
         if unique == True:
-            # if there are no arrows and we don't want to store
-            # superperiodic structures then we need to see if any
-            # translations operations are stabilizers of the
-            # configuration to eliminate the unwanted structures.
-            if not supers and narrows == 0:
-                for trans in range(1,cellsize):
-                    action = group[trans][0]
-                    trans_config = []
-                    for act in action:
-                        trans_config.append(config[act])
-                    if trans_config == config and action != list(range(cellsize)):
-                        unique = False
-                        break
-            elif narrows > 0:
+            if narrows > 0:
                 # We need to make a copy of the branch with arrows on
                 # it to pass to the add_arrows code.
                 t_config = list(_invhash(candidate,concs,sum(concs)))
