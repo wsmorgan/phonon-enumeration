@@ -1,5 +1,9 @@
 # Revision History for "phonon-enumeration"
 
+## Revision 1.8.1
+- Forgot to import the new guess_and_check_brancher into the enum_sys
+  subgroutine. Fixed now.
+
 ## Revision 1.8.0
 - Updated the unit test outputs and test cases to reflect the changes
   in the code introduced by including the ability to eliminate
