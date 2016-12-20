@@ -1,5 +1,19 @@
 # Revision History for "phonon-enumeration"
 
+## Revision 1.8.0
+- Updated the unit test outputs and test cases to reflect the changes
+  in the code introduced by including the ability to eliminate
+  superperiodic structures.
+- Added the ability to include/exclude superperiodic structures from
+  the list of unique configurations.
+- Updated the fortran makefile to reflect the recent changes in enumlib.
+- Changed the code so that when we are looking for a very small number
+  of configurations within a very large number of possibilities the
+  code will no longer do the full tree search but will instead do a
+  'guess and check' method that picks a new configuration then checks
+  to make sure it's not a duplicate of those present in the survivors
+  list.
+
 ## Revision 1.7.1
 - Refactored the drivers (enumeration.py and makeStr.py) for ease of unit testing.
 - Changed some error messages to raise value erros instead.

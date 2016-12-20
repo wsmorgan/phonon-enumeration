@@ -389,6 +389,13 @@ def polya(concentrations, group, arrowings=None, debug=False):
       be present in each of the enumerated lists.
     :arg group: group operations for permuting the colorings.
     """
+    temp = [str(i) for i in concentrations]
+    for i in group:
+        temp = [str(j) for j in i[0]]
+
+    for i in group:
+        temp = [str(j) for j in i[1]]
+    
     if arrowings is None:
         arrowings = [False]*len(concentrations)
     elif isinstance(arrowings, int):
@@ -404,7 +411,7 @@ def polya(concentrations, group, arrowings=None, debug=False):
         for g in range(len(group)):
             if 0 not in group[g][k]:
                 group[g][k] = [j-1 for j in group[g][k]]
-    print("gf",group)
+
     polyndict = {}
     #The operations in the group are used to construct the unique polynomials for each operation.
     for polynomials in _group_to_cyclic(group):
@@ -422,6 +429,10 @@ def polya(concentrations, group, arrowings=None, debug=False):
     if debug: #pragma: no cover
         for key in polyndict:
             print((str(polyndict[key]), " => ", polyndict[key].coeff()))
-
+            
+    pp = 0
+    for p in list(polyndict.values()):
+        pp += p.coeff()
+        
     rad = sum([p.coeff() for p in list(polyndict.values())])
-    return int(rad/float(len(group)))             
+    return int(rad/float(len(group)))

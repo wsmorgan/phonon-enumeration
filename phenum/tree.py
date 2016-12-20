@@ -285,7 +285,7 @@ def brancher(concs,group,colors_w_arrows, dim, supers, cellsize, total=0, subset
     :arg accept: for large enumerations, how often to accept configurations.
     :arg supers: Logical that indicates if super periodic structures are to be kept.
     :arg cellsize: The number of cells in the system 
-	
+
     The method returns the list of unique configurations and the
     number of stabilizers for the last level of the tree.
 
@@ -298,7 +298,7 @@ def brancher(concs,group,colors_w_arrows, dim, supers, cellsize, total=0, subset
     from .phonons import how_many_arrows, add_arrows
     from copy import deepcopy
 
-    # initial setup	
+    # initial setup
 
     # redifine the colors so that the arrows are treated like
     # their own color
@@ -371,7 +371,7 @@ def brancher(concs,group,colors_w_arrows, dim, supers, cellsize, total=0, subset
 	# stabilizers for the arrow configurations
         (unique,stabalizer[i+1],order,ast) = _perm(branch,concs,n,i,group,stabalizer[i],order,ast)
 
-        if not supers:
+        if not supers and narrows == 0:
             from operator import mul
             # if we have a unique structure then we need to check if
             # it's super periodic before saving it.
@@ -382,7 +382,7 @@ def brancher(concs,group,colors_w_arrows, dim, supers, cellsize, total=0, subset
                     trans_branch = []
                     for act in action:
                         trans_branch.append(brancht[act])
-                    if trans_branch == brancht:
+                    if trans_branch == brancht and action != list(range(cellsize)):
                         unique = 1
                         if use_subset:
                             if count in subset:
@@ -394,7 +394,6 @@ def brancher(concs,group,colors_w_arrows, dim, supers, cellsize, total=0, subset
 
                             count += 1
                         break
-        
 	# if this array is unique then we may need to append it to the
 	# list of survivors
         if unique == 0:
@@ -408,10 +407,6 @@ def brancher(concs,group,colors_w_arrows, dim, supers, cellsize, total=0, subset
                 if narrows > 0:
 		    # first use invhash to turn the hash back to an array
                     brancht = list(_invhash(branch, concs, len(colors_w_arrows)))
-		    # create a temporary copy of the branch.
-                    tbrancht = []
-                    for tt in range(len(brancht)):
-                        tbrancht.append(colors[brancht[tt]-1][1])
 		    # make a coloring with arrows to be passed to the
 		    # arrow permutiation code by adding arrows back
 		    # into the array where needed.
@@ -420,7 +415,7 @@ def brancher(concs,group,colors_w_arrows, dim, supers, cellsize, total=0, subset
 		    # add_arrows from the phonon_brancher code returns
 		    # the unique configurations with the unique arrow
 		    # arrangements
-                    arsurvivors = add_arrows(brancht,ast, dim, accept, True)
+                    arsurvivors = add_arrows(brancht,ast, dim, group[0:cellsize], accept, True,supers=supers)
 		    #write the unique confgurations to file.
                     for z in arsurvivors:
 			# if we aren't using a subset write everything
@@ -525,3 +520,120 @@ def brancher(concs,group,colors_w_arrows, dim, supers, cellsize, total=0, subset
     # done
     return survivors
 
+def guess_and_check_brancher(concs, group, colors_w_arrows, dim, supers, cellsize, num_wanted):
+    """When the number of configurations wanted is sufficiently small
+    relative to the total number of unique configurations then it is
+    faster to 'pick' them from the list of possible configurations and
+    then verify that none of your selected configurations are
+    equivalent. 
+
+    :arg concs: the concentrations of the colors or atoms
+    :arg group: the symmetry group for the system, including the
+    effect on the arrows (displacement directions)
+    :arg colors_w_arrows: an integer 2D array that indiciates
+    which atoms are being displaced, i.e., where the arrows are.
+    :arg dim: the number of directions the arrows can point
+    :arg supers: Logical that indicates if super periodic structures are to be kept.
+    :arg cellsize: The number of cells in the system 
+
+    The method returns the list of unique configurations.
+
+    survivors: is the 3D array of the unique arrangements of
+    colors and arrows
+    """
+
+    from .phonons import how_many_arrows, add_arrows
+    from copy import deepcopy
+
+    # initial setup
+
+    # redifine the colors so that the arrows are treated like
+    # their own color
+    colors = _color_list(colors_w_arrows)
+    # find the total number of atoms
+    n = sum(concs)
+
+    # Find the mixed radix number counter for the system
+    C = _coefficients(concs,n)
+
+    # count how many arrows there are
+    (narrows,arrow_types,concs_w_arrows) = how_many_arrows(colors_w_arrows)
+    # prepare the stabalizer array to be the appropriate size
+
+    from random import random, randint
+    from phenum.msg import verbosity
+    if verbosity is not None and verbosity >= 1: #pragma: no cover
+        from tqdm import tqdm
+        pbar = tqdm(total=num_wanted)
+    
+    survivors = []
+    visited = []
+
+    nfound = 0
+    while len(survivors) < num_wanted:
+        candidate = []
+        # pick a random configuration to check against.
+        for i in range(len(C)):
+            candidate.append(randint(0,C[i]))
+
+        while candidate in visited:
+            for i in range(len(C)):
+                candidate.append(randint(0,C[i]))
+
+        visited.append(candidate)
+        unique = True
+
+        config = list(_invhash(candidate,concs,sum(concs)))
+        for perms in group:
+            perm = perms[0]
+
+            new_config = []
+            for j in perm:
+                new_config.append(candidate[perm])
+            new_config = list(new_config)
+
+            new_location = _hash(new_config,concs)
+
+            if new_location in visited and new_location != candidate:
+                unique = False
+                break
+
+        if unique == True:
+            # if there are no arrows and we don't want to store
+            # superperiodic structures then we need to see if any
+            # translations operations are stabilizers of the
+            # configuration to eliminate the unwanted structures.
+            if not supers and narrows == 0:
+                for trans in range(1,cellsize):
+                    action = group[trans][0]
+                    trans_config = []
+                    for act in action:
+                        trans_config.append(config[act])
+                    if trans_config == config and action != list(range(cellsize)):
+                        unique = False
+                        break
+            elif narrows > 0:
+                # We need to make a copy of the branch with arrows on
+                # it to pass to the add_arrows code.
+                t_config = list(_invhash(candidate,concs,sum(concs)))
+
+                for con in range(len(t_config)):
+                    t_config[con] = deepcopy(colors[t_config[z] -1])
+                    
+                arsurvivors = add_arrows(t_config, group, dim, group[0:cellsize], nested=True, num_wanted = num_wanted, supers = supers, small = True)
+
+                for survivor in arsurvivors:
+                    survivors.append(survivors)
+                    
+            else:
+                survivors.append([[-1,leaf] for leaf in config])
+            
+        if len(survivors) > nfound:
+            nfound = len(survivors)
+            if verbosity is not None and verbosity >= 1: #pragma: no cover
+                pbar.update(1)
+    if verbosity is not None and verbosity >= 1: #pragma: no cover
+        pbar.close()
+    # done
+    return survivors
+            

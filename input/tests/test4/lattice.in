@@ -1,0 +1,34 @@
+# Which cell-sizes do you want to search?
+2 2
+#---------------------------------------
+# Bulk or surface?
+bulk
+# List the primitive cell's lattice vectors
+0.5 0.5 -0.5 
+0.5 -0.5 0.5 
+-0.5 0.5 0.5  
+# number of atomic species in the cell
+3
+# basis atoms
+2
+0 0 0
+0.25 0.25 0.25
+#----------------------------------------
+# Concentrations
+#
+# - use specific concentration range (T/F)
+# - use arrows on some of the atoms (T/F)
+# The concentration ranges for each atom are specified by three
+# integers, which define 2 fractions. The third number is the
+# denominator for the fraction, the first two numbers are the
+# numerator. The first two numbers need not be listed in ascending
+# order.
+#
+# If displacement directions are to be used then a fourth number
+# follows the fractions the fourth number should be a decimal that
+# indicates the fractional amount of displaced atoms of that species.
+T
+T
+0 4 4 0.0
+0 2 4 1.0
+0 2 4 1.0

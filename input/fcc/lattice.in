@@ -1,5 +1,5 @@
 # Which cell-sizes do you want to search?
-1 11
+4 4
 #---------------------------------------
 # Bulk or surface?
 bulk
@@ -8,7 +8,7 @@ bulk
 0.5 0 0.5
 0 0.5 0.5
 # number of atomic species in the cell
-2
+3
 # basis atoms
 1
 0 0 0
@@ -26,7 +26,8 @@ bulk
 # If displacement directions are to be used then a fourth number
 # follows the fractions the fourth number should be a decimal that
 # indicates the fractional amount of displaced atoms of that species.
-F
-F
-1 6 12 0.0
-1 9 12 0.5
+T
+T
+0 4 4 0
+0 4 4 0.5
+0 4 4 0.5

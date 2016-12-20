@@ -266,6 +266,7 @@ class Testbrancher(ut.TestCase):
         (narrows,atypes,Concs) = how_many_arrows(col)
         agroup = a_group(trans,rots)
         out = _read_output("p2")
+        temp = tree.brancher(Concs,agroup,col,dim,False,8)
         self.assertEqual(tree.brancher(Concs,agroup,col,dim,False,8),out)
         
     def test_p1(self):
