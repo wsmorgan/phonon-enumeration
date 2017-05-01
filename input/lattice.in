@@ -1,11 +1,11 @@
 # Which cell-sizes do you want to search?
-1 2
+1 1
 #---------------------------------------
 # Bulk or surface?
 bulk
 # List the primitive cell's lattice vectors
 1 0 0
-0 1 0
+0.5 1 0
 0 0 1
 # number of atomic species in the cell
 3

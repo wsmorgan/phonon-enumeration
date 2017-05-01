@@ -288,8 +288,7 @@ def _reduce_C_in_ABC(A,B,C,eps):
         C = [C[i] - temp2[i] for i in range(len(C))]
     else: #pragma: no cover
         from .msg import err 
-        err("Case failed in reduce_C_in_ABC"
-            "Lattice coordinates in the A,B plane: ".format(' '.join([str(i) for i in LC])))
+        err("Case failed in reduce_C_in_ABC Lattice coordinates in the A,B plane: {}".format(' '.join([str(i) for i in LC])))
 
     ABC = [A,B,C]
     ABCinv = linalg.inv(ABC)

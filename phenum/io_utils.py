@@ -1,4 +1,5 @@
 """Methods for reading and writing enumeration and polya-counting results."""
+import numpy as np
 def read_group(fname):
     """Reads the symmetry group in from the 'rot_perms' styled group
     output by enum.x.
@@ -34,7 +35,7 @@ def read_lattice(filename='lattice.in', verbose=False):
         
     sizes = [int(el) for el in lines[0].split(' ')]
     bulk = lines[1].strip()[0].lower() == 'b'
-    lat_vecs = [list(map(float, l.split())) for l in lines[2:5]]
+    lat_vecs = np.transpose([list(map(float, l.split())) for l in lines[2:5]])
     nspecies = int(lines[5])
     nbas = int(lines[6])
     bas_vecs = [list(map(float, l.split())) for l in lines[7:7+nbas]]
@@ -218,6 +219,8 @@ def read_enum_out(args):
     :arg args: The makeStr.py input arguments
     """
 
+    from numpy import transpose
+    
     # which structures are wanted
     if args["structures"] == None:
         with open(args["input"],"r") as f:
@@ -278,6 +281,8 @@ def read_enum_out(args):
                 structure_data.append(this_struct)
         line_count += 1
 
+    system["plattice"] = transpose(system["plattice"])
+        
     return (system, structure_data)
 
 def write_POSCAR(system_data,space_data,structure_data,args):

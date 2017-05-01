@@ -60,7 +60,7 @@ def _invhash(branch,colors,n):
     """
 
     from .numerics import binomial_coefficient
-
+    from functools import reduce 
     new = [0 for y in range(n)]
     coluse = 1
     for i in range(0,len(branch)):
@@ -619,7 +619,7 @@ def guess_and_check_brancher(concs, group, colors_w_arrows, dim, supers, cellsiz
                 t_config = list(_invhash(candidate,concs,sum(concs)))
 
                 for con in range(len(t_config)):
-                    t_config[con] = deepcopy(colors[t_config[z] -1])
+                    t_config[con] = deepcopy(colors[t_config[con] -1])
                     
                 arsurvivors = add_arrows(t_config, group, dim, group[0:cellsize], nested=True, num_wanted = num_wanted, supers = supers, small = True)
 

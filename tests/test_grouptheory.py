@@ -2,6 +2,7 @@
 import unittest as ut
 from phenum.grouptheory import ArrowPerm, RotPermList, opList
 import pytest
+import numpy as np
 
 gpath =  "tests/grouptheory/"
 
@@ -455,140 +456,140 @@ class TestMakeMemberList(ut.TestCase):
         case = 1
         n = _read_float_1D(gpath+"make_member_list_n.in."+str(case))
         out = list(map(list,zip(*_read_float_2D(gpath+"make_member_list_p.out."+str(case)))))
-        self.assertEqual(_make_member_list(n),out)
+        self.assertTrue(np.allclose(_make_member_list(n),out))
 
     def test2(self):
         from phenum.grouptheory import _make_member_list
         case = 2
         n = _read_float_1D(gpath+"make_member_list_n.in."+str(case))
         out = list(map(list,zip(*_read_float_2D(gpath+"make_member_list_p.out."+str(case)))))
-        self.assertEqual(_make_member_list(n),out)
+        self.assertTrue(np.allclose(_make_member_list(n),out))
 
     def test3(self):
         from phenum.grouptheory import _make_member_list
         case = 3
         n = _read_float_1D(gpath+"make_member_list_n.in."+str(case))
         out = list(map(list,zip(*_read_float_2D(gpath+"make_member_list_p.out."+str(case)))))
-        self.assertEqual(_make_member_list(n),out)
+        self.assertTrue(np.allclose(_make_member_list(n),out))
 
     def test4(self):
         from phenum.grouptheory import _make_member_list
         case = 4
         n = _read_float_1D(gpath+"make_member_list_n.in."+str(case))
         out = list(map(list,zip(*_read_float_2D(gpath+"make_member_list_p.out."+str(case)))))
-        self.assertEqual(_make_member_list(n),out)
+        self.assertTrue(np.allclose(_make_member_list(n),out))
 
     def test5(self):
         from phenum.grouptheory import _make_member_list
         case = 5
         n = _read_float_1D(gpath+"make_member_list_n.in."+str(case))
         out = list(map(list,zip(*_read_float_2D(gpath+"make_member_list_p.out."+str(case)))))
-        self.assertEqual(_make_member_list(n),out)
+        self.assertTrue(np.allclose(_make_member_list(n),out))
 
     def test6(self):
         from phenum.grouptheory import _make_member_list
         case = 6
         n = _read_float_1D(gpath+"make_member_list_n.in."+str(case))
         out = list(map(list,zip(*_read_float_2D(gpath+"make_member_list_p.out."+str(case)))))
-        self.assertEqual(_make_member_list(n),out)
+        self.assertTrue(np.allclose(_make_member_list(n),out))
 
     def test7(self):
         from phenum.grouptheory import _make_member_list
         case = 7
         n = _read_float_1D(gpath+"make_member_list_n.in."+str(case))
         out = list(map(list,zip(*_read_float_2D(gpath+"make_member_list_p.out."+str(case)))))
-        self.assertEqual(_make_member_list(n),out)
+        self.assertTrue(np.allclose(_make_member_list(n),out))
 
     def test8(self):
         from phenum.grouptheory import _make_member_list
         case = 8
         n = _read_float_1D(gpath+"make_member_list_n.in."+str(case))
         out = list(map(list,zip(*_read_float_2D(gpath+"make_member_list_p.out."+str(case)))))
-        self.assertEqual(_make_member_list(n),out)
+        self.assertTrue(np.allclose(_make_member_list(n),out))
 
     def test9(self):
         from phenum.grouptheory import _make_member_list
         case = 9
         n = _read_float_1D(gpath+"make_member_list_n.in."+str(case))
         out = list(map(list,zip(*_read_float_2D(gpath+"make_member_list_p.out."+str(case)))))
-        self.assertEqual(_make_member_list(n),out)
+        self.assertTrue(np.allclose(_make_member_list(n),out))
 
     def test10(self):
         from phenum.grouptheory import _make_member_list
         case = 10
         n = _read_float_1D(gpath+"make_member_list_n.in."+str(case))
         out = list(map(list,zip(*_read_float_2D(gpath+"make_member_list_p.out."+str(case)))))
-        self.assertEqual(_make_member_list(n),out)
+        self.assertTrue(np.allclose(_make_member_list(n),out))
 
     def test11(self):
         from phenum.grouptheory import _make_member_list
         case = 11
         n = _read_float_1D(gpath+"make_member_list_n.in."+str(case))
         out = list(map(list,zip(*_read_float_2D(gpath+"make_member_list_p.out."+str(case)))))
-        self.assertEqual(_make_member_list(n),out)
+        self.assertTrue(np.allclose(_make_member_list(n),out))
 
     def test12(self):
         from phenum.grouptheory import _make_member_list
         case = 12
         n = _read_float_1D(gpath+"make_member_list_n.in."+str(case))
         out = list(map(list,zip(*_read_float_2D(gpath+"make_member_list_p.out."+str(case)))))
-        self.assertEqual(_make_member_list(n),out)
+        self.assertTrue(np.allclose(_make_member_list(n),out))
 
     def test13(self):
         from phenum.grouptheory import _make_member_list
         case = 13
         n = _read_float_1D(gpath+"make_member_list_n.in."+str(case))
         out = list(map(list,zip(*_read_float_2D(gpath+"make_member_list_p.out."+str(case)))))
-        self.assertEqual(_make_member_list(n),out)
+        self.assertTrue(np.allclose(_make_member_list(n),out))
 
     def test14(self):
         from phenum.grouptheory import _make_member_list
         case = 14
         n = _read_float_1D(gpath+"make_member_list_n.in."+str(case))
         out = list(map(list,zip(*_read_float_2D(gpath+"make_member_list_p.out."+str(case)))))
-        self.assertEqual(_make_member_list(n),out)
+        self.assertTrue(np.allclose(_make_member_list(n),out))
 
     def test15(self):
         from phenum.grouptheory import _make_member_list
         case = 15
         n = _read_float_1D(gpath+"make_member_list_n.in."+str(case))
         out = list(map(list,zip(*_read_float_2D(gpath+"make_member_list_p.out."+str(case)))))
-        self.assertEqual(_make_member_list(n),out)
+        self.assertTrue(np.allclose(_make_member_list(n),out))
 
     def test16(self):
         from phenum.grouptheory import _make_member_list
         case = 16
         n = _read_float_1D(gpath+"make_member_list_n.in."+str(case))
         out = list(map(list,zip(*_read_float_2D(gpath+"make_member_list_p.out."+str(case)))))
-        self.assertEqual(_make_member_list(n),out)
+        self.assertTrue(np.allclose(_make_member_list(n),out))
 
     def test17(self):
         from phenum.grouptheory import _make_member_list
         case = 17
         n = _read_float_1D(gpath+"make_member_list_n.in."+str(case))
         out = list(map(list,zip(*_read_float_2D(gpath+"make_member_list_p.out."+str(case)))))
-        self.assertEqual(_make_member_list(n),out)
+        self.assertTrue(np.allclose(_make_member_list(n),out))
 
     def test18(self):
         from phenum.grouptheory import _make_member_list
         case = 18
         n = _read_float_1D(gpath+"make_member_list_n.in."+str(case))
         out = list(map(list,zip(*_read_float_2D(gpath+"make_member_list_p.out."+str(case)))))
-        self.assertEqual(_make_member_list(n),out)
+        self.assertTrue(np.allclose(_make_member_list(n),out))
 
     def test19(self):
         from phenum.grouptheory import _make_member_list
         case = 19
         n = _read_float_1D(gpath+"make_member_list_n.in."+str(case))
         out = list(map(list,zip(*_read_float_2D(gpath+"make_member_list_p.out."+str(case)))))
-        self.assertEqual(_make_member_list(n),out)
+        self.assertTrue(np.allclose(_make_member_list(n),out))
 
     def test20(self):
         from phenum.grouptheory import _make_member_list
         case = 20
         n = _read_float_1D(gpath+"make_member_list_n.in."+str(case))
         out = list(map(list,zip(*_read_float_2D(gpath+"make_member_list_p.out."+str(case)))))
-        self.assertEqual(_make_member_list(n),out)
+        self.assertTrue(np.allclose(_make_member_list(n),out))
 
 class TestFindPermutationOfGroup(ut.TestCase):
     """Tests of the _find_permutation_of_group subroutine."""
@@ -2699,8 +2700,8 @@ class TestGetSymGroup(ut.TestCase):
         symm = get_sym_group(par_lat,bas_vacs,HNF,LatDim)
         agroup = []
         for i in range(len(symm.perm.site_perm)):
-            agroup.append([symm.perm.site_perm[i],symm.perm.arrow_perm[i]])
-        self.assertEqual(agroup,out)
+            agroup.append([symm.perm.site_perm[i],[int(j) for j in symm.perm.arrow_perm[i]]])
+        self.assertTrue((np.array(agroup) == np.array(out)).all())
 
     def test2(self):
         from phenum.grouptheory import get_sym_group
@@ -2712,8 +2713,8 @@ class TestGetSymGroup(ut.TestCase):
         symm = get_sym_group(par_lat,bas_vacs,HNF,LatDim)
         agroup = []
         for i in range(len(symm.perm.site_perm)):
-            agroup.append([symm.perm.site_perm[i],symm.perm.arrow_perm[i]])            
-        self.assertEqual(agroup,out)
+            agroup.append([symm.perm.site_perm[i],[int(j) for j in symm.perm.arrow_perm[i]]])
+        self.assertTrue((np.array(agroup) == np.array(out)).all())
 
     def test3(self):
         from phenum.grouptheory import get_sym_group
@@ -2725,8 +2726,8 @@ class TestGetSymGroup(ut.TestCase):
         symm = get_sym_group(par_lat,bas_vacs,HNF,LatDim)
         agroup = []
         for i in range(len(symm.perm.site_perm)):
-            agroup.append([symm.perm.site_perm[i],symm.perm.arrow_perm[i]])            
-        self.assertEqual(agroup,out)
+            agroup.append([symm.perm.site_perm[i],[int(j) for j in symm.perm.arrow_perm[i]]])
+        self.assertTrue((np.array(agroup) == np.array(out)).all())
 
     def test4(self):
         from phenum.grouptheory import get_sym_group
@@ -2738,8 +2739,8 @@ class TestGetSymGroup(ut.TestCase):
         symm = get_sym_group(par_lat,bas_vacs,HNF,LatDim)
         agroup = []
         for i in range(len(symm.perm.site_perm)):
-            agroup.append([symm.perm.site_perm[i],symm.perm.arrow_perm[i]])            
-        self.assertEqual(agroup,out)
+            agroup.append([symm.perm.site_perm[i],[int(j) for j in symm.perm.arrow_perm[i]]])
+        self.assertTrue((np.array(agroup) == np.array(out)).all())
 
     def test5(self):
         from phenum.grouptheory import get_sym_group
@@ -2751,8 +2752,8 @@ class TestGetSymGroup(ut.TestCase):
         symm = get_sym_group(par_lat,bas_vacs,HNF,LatDim)
         agroup = []
         for i in range(len(symm.perm.site_perm)):
-            agroup.append([symm.perm.site_perm[i],symm.perm.arrow_perm[i]])            
-        self.assertEqual(agroup,out)
+            agroup.append([symm.perm.site_perm[i],[int(j) for j in symm.perm.arrow_perm[i]]])
+        self.assertTrue((np.array(agroup) == np.array(out)).all())
 
     def test6(self):
         from phenum.grouptheory import get_sym_group
@@ -2764,8 +2765,8 @@ class TestGetSymGroup(ut.TestCase):
         symm = get_sym_group(par_lat,bas_vacs,HNF,LatDim)
         agroup = []
         for i in range(len(symm.perm.site_perm)):
-            agroup.append([symm.perm.site_perm[i],symm.perm.arrow_perm[i]])            
-        self.assertEqual(agroup,out)
+            agroup.append([symm.perm.site_perm[i],[int(j) for j in symm.perm.arrow_perm[i]]])
+        self.assertTrue((np.array(agroup) == np.array(out)).all())
 
     def test7(self):
         from phenum.grouptheory import get_sym_group
@@ -2777,8 +2778,8 @@ class TestGetSymGroup(ut.TestCase):
         symm = get_sym_group(par_lat,bas_vacs,HNF,LatDim)
         agroup = []
         for i in range(len(symm.perm.site_perm)):
-            agroup.append([symm.perm.site_perm[i],symm.perm.arrow_perm[i]])            
-        self.assertEqual(agroup,out)
+            agroup.append([symm.perm.site_perm[i],[int(j) for j in symm.perm.arrow_perm[i]]])
+        self.assertTrue((np.array(agroup) == np.array(out)).all())
 
     def test8(self):
         from phenum.grouptheory import get_sym_group
@@ -2790,8 +2791,8 @@ class TestGetSymGroup(ut.TestCase):
         symm = get_sym_group(par_lat,bas_vacs,HNF,LatDim)
         agroup = []
         for i in range(len(symm.perm.site_perm)):
-            agroup.append([symm.perm.site_perm[i],symm.perm.arrow_perm[i]])            
-        self.assertEqual(agroup,out)
+            agroup.append([symm.perm.site_perm[i],[int(j) for j in symm.perm.arrow_perm[i]]])
+        self.assertTrue((np.array(agroup) == np.array(out)).all())
 
     def test9(self):
         from phenum.grouptheory import get_sym_group
@@ -2803,8 +2804,8 @@ class TestGetSymGroup(ut.TestCase):
         symm = get_sym_group(par_lat,bas_vacs,HNF,LatDim)
         agroup = []
         for i in range(len(symm.perm.site_perm)):
-            agroup.append([symm.perm.site_perm[i],symm.perm.arrow_perm[i]])            
-        self.assertEqual(agroup,out)
+            agroup.append([symm.perm.site_perm[i],[int(j) for j in symm.perm.arrow_perm[i]]])
+        self.assertTrue((np.array(agroup) == np.array(out)).all())
 
     def test10(self):
         from phenum.grouptheory import get_sym_group
@@ -2816,8 +2817,8 @@ class TestGetSymGroup(ut.TestCase):
         symm = get_sym_group(par_lat,bas_vacs,HNF,LatDim)
         agroup = []
         for i in range(len(symm.perm.site_perm)):
-            agroup.append([symm.perm.site_perm[i],symm.perm.arrow_perm[i]])            
-        self.assertEqual(agroup,out)
+            agroup.append([symm.perm.site_perm[i],[int(j) for j in symm.perm.arrow_perm[i]]])
+        self.assertTrue((np.array(agroup) == np.array(out)).all())
 
 
     def test11(self):
@@ -2830,6 +2831,6 @@ class TestGetSymGroup(ut.TestCase):
         symm = get_sym_group(par_lat,bas_vacs,HNF,LatDim)
         agroup = []
         for i in range(len(symm.perm.site_perm)):
-            agroup.append([symm.perm.site_perm[i],symm.perm.arrow_perm[i]])            
-        self.assertEqual(agroup,out)
+            agroup.append([symm.perm.site_perm[i],[int(j) for j in symm.perm.arrow_perm[i]]])
+        self.assertTrue((np.array(agroup) == np.array(out)).all())
 

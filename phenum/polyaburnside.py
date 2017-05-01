@@ -162,7 +162,6 @@ class Product(object):
         """
         from itertools import product
         from operator import mul
-        from functools import reduce
         #We can also filter the sequences by enforcing the constraints that the exponents
         #correctly reproduce the target across all the multionmials in the product. Get hold
         #of all the combinations of sequences across the multinomials and check each for
@@ -340,9 +339,9 @@ def _group_to_cyclic(group, limit=None):
             visitedc[cursor] = 1
             cursor = operation[1][cursor]
             while cursor != vindex:
-                visitedc[cursor] = 1
+                visitedc[int(cursor)] = 1
                 cyc_len += 1
-                cursor = operation[1][cursor]
+                cursor = int(operation[1][int(cursor)])
             arrow_cycle_len.append(cyc_len)
 
         while 0 in visitedp:

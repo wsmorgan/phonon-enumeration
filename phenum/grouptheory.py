@@ -61,9 +61,7 @@ def _make_member_list(n):
     from functools import reduce
     
     depth = int(round(reduce(mul,n,1)))
-    p = []
-    for i in range(depth):
-        p.append([0,0,0])
+    p = np.zeros([depth,3])
     for im in range(1,depth):  # Loop over the members of the translation group
         p[im] = list(p[im-1]) # Start with the same digits as in the previous increment        
         p[im][2] = (p[im-1][2]+1)%n[2]  # Increment the first cyclic group
@@ -81,14 +79,12 @@ def _find_permutation_of_group(g,gp):
     """
     n = len(g)
     perm = []
-    skip = []
-    for i in range(n):
-        skip.append(False) # This is just for efficiency
+    skip = [False]*n
     for im in range(n):
         for jm in range(n):
             if skip[jm]:
                 continue # This is just for efficiency
-            if gp[jm]==g[im]:
+            if np.allclose(gp[jm],g[im]):
                 perm.append(jm)
                 skip[jm] = True
                 break # don't keep looking if you already found the match
@@ -132,9 +128,7 @@ def _get_sLV_fixing_operations(HNF,pLV,nD,rot,shift,dPerm,eps):
     """
 
     nRot = len(rot)
-    degen_lattices = []
-    for i in range(nRot):
-        degen_lattices.append([[0,0,0],[0,0,0],[0,0,0]])
+    degen_lattices = np.zeros([nRot,3,3])
         
     cDegen = 0
     ic = 0 # Counter for the fixing operations
@@ -172,11 +166,8 @@ def _get_sLV_fixing_operations(HNF,pLV,nD,rot,shift,dPerm,eps):
     # Allocate the storage for them
     fixOp = opList(tmpOp_rot,tmpOp_shift) # Stuff the rotations into the permanent array
 
-    # if nD > 1:
     rotPerm = RotPermList(v=tv,RotIndx=tIndex)
-    # else:
-    #     rotPerm = RotPermList(v=[tv],RotIndx=tIndex)
-
+    
     return(fixOp,rotPerm,degeneracy)
 
 def _map_dvector_permutation(rd,d,eps,n):
@@ -187,10 +178,8 @@ def _map_dvector_permutation(rd,d,eps,n):
       :args n: number of basis vectors
     """
 
-    found = []
-    for i in range(len(rd)):
-        found.append(False)
     nD = len(rd) # of d-vectors
+    found = [False]*nD
     RP = []
     for iD in range(nD):
         for jD in range(nD):
@@ -378,9 +367,7 @@ def _get_dvector_permutations(par_lat,bas_vecs,LatDim,eps):
     from copy import deepcopy
     
     nD = len(bas_vecs)
-    aTyp = []
-    for i in range(nD):
-        aTyp.append(1)
+    aTyp = [1]*nD
 
     bv_copy = deepcopy(bas_vecs)
     (rot,shift) = get_spaceGroup(par_lat,aTyp,bv_copy,eps = eps)
@@ -460,9 +447,12 @@ def _get_rotation_perms_lists(A,HNF,L,SNF,Op,RPlist,dperms,eps, arrows=False):
       :args arrows: True if arrow group is to be found as well.
     """
 
-    # Index of the superlattices; Number of d-vectors in d set
+    # Index of the superlattices; Number of d-vectors in d set    
     n = int(round(np.linalg.det(HNF[0])))
     nH = len(HNF)
+    if n < 0:
+        print("HNF",HNF)
+        exit()
     
     nD = np.array(dperms.perm.site_perm).shape[-1]
     # nD = len(RPlist.v[0])
@@ -505,16 +495,13 @@ def _get_rotation_perms_lists(A,HNF,L,SNF,Op,RPlist,dperms,eps, arrows=False):
         temp_rperms_perm = []
         temp_arrow_perm = []
         for iOp in range(nOp): # For each rotation, find the permutation
-            dap = []
+            dap = np.zeros(naOp)
             dgp = []
             for i in range(n):
                 tt = []
                 for j in range(nD):
                     tt.append(0)
                 dgp.append(tt)
-
-            for i in range(naOp):
-                dap.append(0)
 
             for iD in range(nD): # Loop over each row in the (d,g) table
                 temp1 = np.array([RPlist[iH].v[iOp][iD]]*n)
@@ -536,14 +523,12 @@ def _get_rotation_perms_lists(A,HNF,L,SNF,Op,RPlist,dperms,eps, arrows=False):
                 # is known, find the mapping of the elements between the
                 # original group and the permuted group. This is the
                 # permutation.
-                skip = []
-                for mm in range(n):
-                    skip.append(False) # This is just for efficiency
+                skip = [False]*n
                 for im in range(n):
                     for jm in range(n):
                         if skip[jm]:
                             continue # Skip elements whose mapping is already known
-                        if gp[jm] == g[im]: # these elements
+                        if np.allclose(gp[jm],g[im]): # these elements
                             # map to each other The list of operations that fix
                             # the superlattice are a subset of those that fix
                             # the parent lattice. RotIndx stores the indicies
@@ -571,7 +556,7 @@ def _get_rotation_perms_lists(A,HNF,L,SNF,Op,RPlist,dperms,eps, arrows=False):
                             skip[jm] = True
                             break
 
-                if dgp.count(0) > 1 or dap.count(0) > 1: #pragma: no cover
+                if np.count_nonzero(dgp == 0) > 1 or np.count_nonzero(dap == 0) > 1: #pragma: no cover
                     print("(d,g)-->(d',g') mapping failed in get_rotation_perm_lists")
                     exit()
 
@@ -580,7 +565,7 @@ def _get_rotation_perms_lists(A,HNF,L,SNF,Op,RPlist,dperms,eps, arrows=False):
             # permutation in the "long form"
             temp_rperms_perm.append(np.transpose(dgp).reshape(nD*n).tolist()) # store
             temp_arrow_perm.append(dap)
-            temp_rperms_nL = nOp
+
         # nomenclature:
         # N+t = rotation (N) + fractional translation (t)  (me bethinks....)
         # r = lattice translation
@@ -671,7 +656,8 @@ def get_sym_group(par_lat,bas_vecs,HNF,LatDim,arrows=True):
 
     from numpy import linalg, allclose
     from phenum.symmetry import bring_into_cell, get_spaceGroup
-    
+    from copy import deepcopy
+
     eps = 1E-10
     # map any atoms in the basis that aren't within the cell to be in
     # the cell
@@ -696,7 +682,7 @@ def get_sym_group(par_lat,bas_vecs,HNF,LatDim,arrows=True):
     (fixing_ops,RPList,degeneracy) = _get_sLV_fixing_operations(HNF,par_lat,len(bas_vecs),sgrots,
                                                     sgshifts,ParRPList,eps)
 
-    (SNF,L,R) = SmithNormalForm(HNF)
+    (SNF,L,R) = SmithNormalForm(deepcopy(HNF))
     L = np.transpose(L).tolist()
     sym_group = _get_rotation_perms_lists(par_lat,[HNF],[L],[SNF],[fixing_ops],[RPList],ParRPList,eps,arrows=arrows)
 

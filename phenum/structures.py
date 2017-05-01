@@ -85,37 +85,37 @@ def _read_struct_enum(): #pragma: no cover
                         structs[sN][HNF][concs] = 1
     return structs
 
-def _write_struct_summary(structs): # pragma: no cover
-    """Writes the summary of unique structure counts by HNF and cell size
-    to file for verification of polya.
-    """
-    from numpy import zeros
-    for sN, HNFS in list(structs.items()):
-        out = open('enum_'+str(sN)+'.out', 'w+')
-        out.write('{0: <28}'.format("# HNF"))
-        first = sorted(next(iter(HNFS.values())))
-        for conc in first:
-            out.write("{0: <10}".format(':'.join(map(str, conc))))
-        out.write('{0: <10}\n'.format("Total"))
+# def _write_struct_summary(structs): # pragma: no cover
+#     """Writes the summary of unique structure counts by HNF and cell size
+#     to file for verification of polya.
+#     """
+#     from numpy import zeros
+#     for sN, HNFS in list(structs.items()):
+#         out = open('enum_'+str(sN)+'.out', 'w+')
+#         out.write('{0: <28}'.format("# HNF"))
+#         first = sorted(next(iter(HNFS.values())))
+#         for conc in first:
+#             out.write("{0: <10}".format(':'.join(map(str, conc))))
+#         out.write('{0: <10}\n'.format("Total"))
 
-        conc_totals = {conc: 0 for conc in first}
-        sHNFs = sorted(HNFS.values)
-        for HNF in sHNFs:
-            out.write("  {0: <26}".format(' '.join(map(str, HNF))))
-            for conc in first:
-                if conc in dHNF:
-                    out.write("{0: <10d}".format(dHNF[conc]))
-                    conc_totals[conc] += dHNF[conc]
-                else:
-                    out.write("{0: <10d}".format(0))
-            out.write('{0: <10d}\n'.format(sum(dHNF.values())))
+#         conc_totals = {conc: 0 for conc in first}
+#         sHNFs = sorted(HNFS.values)
+#         for HNF in sHNFs:
+#             out.write("  {0: <26}".format(' '.join(map(str, HNF))))
+#             for conc in first:
+#                 if conc in dHNF:
+#                     out.write("{0: <10d}".format(dHNF[conc]))
+#                     conc_totals[conc] += dHNF[conc]
+#                 else:
+#                     out.write("{0: <10d}".format(0))
+#             out.write('{0: <10d}\n'.format(sum(dHNF.values())))
             
-        out.write("# " + ''.join(['-' for i in range(len(first)*10 + 10 + 30)]) + '\n')
-        out.write("{0: <28}".format(""))
-        for conc in first:
-            out.write("{0: <10d}".format(conc_totals[conc]))
-        out.write("{0: <10d}\n".format(sum(conc_totals.values())))
-        out.close()
+#         out.write("# " + ''.join(['-' for i in range(len(first)*10 + 10 + 30)]) + '\n')
+#         out.write("{0: <28}".format(""))
+#         for conc in first:
+#             out.write("{0: <10d}".format(conc_totals[conc]))
+#         out.write("{0: <10d}\n".format(sum(conc_totals.values())))
+#         out.close()
 
 def _distribute(cellsizes, ftype, n=None, dataformat="cells.{}",seed=None, res_type=None, res_values=None):
     """Returns a dictionary specifying how many of each cell shape, size and concentration
@@ -491,9 +491,7 @@ def make_enum_in(distribution,directory,outfile,number=None,dataformat="cells.{}
         ready = True
                 
     if ready == False:
-        raise ValueError("The files {} don't exist in this directory. You either need to run"
-            " the -polya option or else navigate into the folder that contains "
-            "the output {} folders.".format(dataformat))
+        raise ValueError("The files {} don't exist in this directory. You either need to run the -polya option or else navigate into the folder that contains the output {} folders.".format(dataformat))
 
     if restrict is not None:
         # from numpy import loadtxt

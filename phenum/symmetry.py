@@ -165,11 +165,12 @@ def bring_into_cell(vec,cart_to_latt,latt_to_cart,eps):
     return vec
 
 def _get_lattice_pointGroup(aVecs, eps=1E-10):
-    """This routine returns only the point group of the rather than the
-      space group of the given crystal structure.
+    """This routine returns only the point group of the lattite rather
+      than the space group of the given crystal structure.
 
       :args aVecs: The 2D integer array that contains the parent lattice vectors
       :args eps: (Optional) Finite precision tolerance
+
     """
 
     inverse_aVecs = numpy.linalg.inv(numpy.array(aVecs)).tolist()

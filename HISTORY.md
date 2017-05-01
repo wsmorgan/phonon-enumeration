@@ -1,5 +1,9 @@
 # Revision History for "phonon-enumeration"
 
+## Revision 1.9.0
+- Added HNFs.py to the repo which finds the unique HNFs.
+- updated the driver so that the polya mode is now stand alone.
+
 ## Revision 1.8.3
 - Removed an error message from vector_utils.py that was causing the
   code to die in cases where the code was behaving as it should.
