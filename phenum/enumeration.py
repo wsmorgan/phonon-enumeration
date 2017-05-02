@@ -29,24 +29,24 @@ def _enum_in(args):
         sizes = list(range(*args["sizes"]))
     else:
         sizes = None
+
     if args["distribution"][1].lower() == "all":
-        make_enum_in(distribution,args["cellsdir"],dataformat=args["dataformat"],sizes=sizes,
-                     outfile=args["outfile"],save= True if args["savedist"] else False,seed=args["seed"],
+        make_enum_in(distribution,sizes=sizes, outfile=args["outfile"],
+                     save= True if args["savedist"] else False,seed=args["seed"],
                      restrict=args["filter"])
     else:
-        make_enum_in(distribution,args["cellsdir"],number=int(args["distribution"][1]),
-                     dataformat=args["dataformat"],sizes=sizes,outfile=args["outfile"],
-                     save= True if args["savedist"] else False,seed=args["seed"],restrict=args["filter"])
+        make_enum_in(distribution,number=int(args["distribution"][1]),sizes=sizes,
+                     outfile=args["outfile"], save= True if args["savedist"] else False,
+                     seed=args["seed"],restrict=args["filter"])
 
 def _polya_out(args):
     """Generates the 'polya.out' files for the cell sizes specified in 'lattice.in'
     (or other specified input file).
     """
-    from os import path
     from phenum.HNFs import get_HNFs
-    from phenum.grouptheory import get_sym_group, get_full_HNF, SmithNormalForm
+    from phenum.grouptheory import get_sym_group, SmithNormalForm
     from phenum.symmetry import get_concs_for_size
-    from phenum.io_utils import read_lattice, read_group
+    from phenum.io_utils import read_lattice
     import phenum.phonons as pb
     from phenum.polyaburnside import polya
     params = read_lattice(args["lattice"])
@@ -150,27 +150,13 @@ def _enum_out(args):
         return (''.join(["{{{0:d}: >{1:d}d}}".format(i, n) for i in range(len(l))])).format(*l)
     
     with open(args["outfile"], 'a') as f:
-        if not params["arrows"]:
-            for s in cellsizes:
-                dataset = enum_data(s,args,params)
-                datadicts.update({tuple(d["HNF"]): d for d in dataset})
-
         enumlist = []    
         for HNF, conc, num_wanted in systems:
-            if not params["arrows"]:
-                edata = datadicts[tuple(HNF)]
-                SNF = edata["SNF"]
-                LT = edata["L"]
-            
-                a_concs = pb.get_arrow_concs(params)
-                configs = pb.enum_sys(edata["group"], list(conc), a_concs, num_wanted,HNF,params,
-                                      keep_supers, args["acceptrate"])
-            else:
-                (SNF,L,R) = SmithNormalForm(get_full_HNF(HNF))
-                SNF = [SNF[0][0],SNF[1][1],SNF[2][2]]
-                LT = [item for row in L for item in row]
-                a_concs = pb.get_arrow_concs(params)
-                configs = pb.enum_sys(None, list(conc), a_concs, num_wanted,HNF,params, keep_supers, args["acceptrate"])
+            (SNF,L,R) = SmithNormalForm(get_full_HNF(HNF))
+            SNF = [SNF[0][0],SNF[1][1],SNF[2][2]]
+            LT = [item for row in L for item in row]
+            a_concs = pb.get_arrow_concs(params)
+            configs = pb.enum_sys(None, list(conc), a_concs, num_wanted,HNF,params, keep_supers, args["acceptrate"])
 
             for config in configs:
                 labeling, arrowing = io.create_labeling(config)
@@ -330,7 +316,7 @@ def _parser_options():
 def _script_enum(args, testmode=False):
     """Generates the 'polya.out' or 'enum.out' files depending on the script arguments.
     """
-    from os import path, system
+    from os import path
     from phenum.base import set_testmode
     set_testmode(testmode)
     if args["polya"]:

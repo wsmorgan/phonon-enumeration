@@ -181,8 +181,8 @@ def _perm(casei,colors,length,index,gen,stab,order,ast):
 	    # if the original hash is larger than the new one then
 	    # this configuration isn't unique so we set unique to be 1
 	    # and reset the other variables
-            elif casei[0] > rtest: #pragma: no cover
-                unique = 1
+            elif casei[0] > rtest:
+                unique += 1
                 st = []
                 ast = []
                 break
@@ -263,7 +263,7 @@ def _perm(casei,colors,length,index,gen,stab,order,ast):
                 ast = []
                 st = []
                 break
-    else: #pragma: no cover
+    else:
         unique = 1
 		
     return(unique,st,order,ast)

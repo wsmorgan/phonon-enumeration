@@ -25,7 +25,7 @@ def HNF_shapes(enum,lattice,show,testmode=False):
     from numpy import array, mgrid, dot
     from itertools import product
 
-    try:
+    try: #pragma: no cover
         from functools import reduce
     except ImportError:
         import numpy as np
@@ -125,7 +125,7 @@ def HNF_atoms(enum,lattice,show,testmode=False):
     from numpy import array, mgrid, dot
     from itertools import product
     
-    try:
+    try: #pragma: no cover
         from functools import reduce
     except ImportError:
         import numpy as np

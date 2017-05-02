@@ -1,8 +1,13 @@
 # Revision History for "phonon-enumeration"
 
-## Revision 1.9.0
+## Revision 2.0.0
 - Added HNFs.py to the repo which finds the unique HNFs.
-- updated the driver so that the polya mode is now stand alone.
+- Updated the driver so that the polya mode is now stand alone.
+- Updated the driver so that the distribution mode is now stand alone.
+- Updated the driver so that the enumeration mode is now stand alone.
+- Implemented new unit tests.
+- Fixed bug in makeStr.py, the lattice vectors weren't being
+  transposed after being read in.
 
 ## Revision 1.8.3
 - Removed an error message from vector_utils.py that was causing the

@@ -168,9 +168,14 @@ def _get_lattice_pointGroup(aVecs, eps=1E-10):
     """This routine returns only the point group of the lattite rather
       than the space group of the given crystal structure.
 
-      :args aVecs: The 2D integer array that contains the parent lattice vectors
-      :args eps: (Optional) Finite precision tolerance
+    Args:
+        aVecs (array-like): The 2D integer array that contains the parent lattice 
+            vectors as row vectors.
+        eps (float, optional): Finite precision tolerance
 
+    Returns:
+        lattpg_op (array-like): The point group for the lattice in 
+            cartesian coordinates.
     """
 
     inverse_aVecs = numpy.linalg.inv(numpy.array(aVecs)).tolist()

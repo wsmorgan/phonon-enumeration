@@ -55,214 +55,270 @@ class TestEnumIn(ut.TestCase):
 
     def test_EnumIn1(self):
         from phenum.enumeration import _enum_in
-        from os import system
-        args = {'profile': None, 'savedist': False, 'verbose': None, 'exec': 'enum.x',
-                'outfile': 'test_enum.in', 'enum': False, 'cellsdir': 'tests/enumeration/fcc_1/',
-                'lattice': 'lattice.in', 'dataformat': 'cells.{}', 'acceptrate': None,
-                'examples': False, 'sizes': [2,6], 'debug': False, 'input': 'enum.in',
-                'polya': False, 'super': False, 'distribution': ['all','all'],'seed':None,
-                'filter':None}
+        from os import system, chdir, getcwd
+        curdir = getcwd()
+        chdir('tests/enumeration/fcc_1/')
+        args = {'profile': None, 'savedist': False, 'verbose': None,
+                'outfile': 'test_enum.in', 'enum': False,'lattice': 'lattice.in',
+                'acceptrate': None, 'examples': False, 'sizes': [2,6], 'debug': False,
+                'input': 'enum.in', 'polya': False, 'super': False,
+                'distribution': ['all','all'],'seed':None,'filter':None}
         _enum_in(args)
-        self._compare_files('test_enum.in','tests/enumeration/fcc_1/enum.in_2_6')
-        system("rm test_enum.in")
+        chdir(curdir)
+        self._compare_files('tests/enumeration/fcc_1/test_enum.in',
+                            'tests/enumeration/fcc_1/enum.in_2_6')
+        system("rm tests/enumeration/fcc_1/test_enum.in")
 
     def test_EnumIn2(self):
         from phenum.enumeration import _enum_in
-        from os import system
-        args = {'profile': None, 'savedist': False, 'verbose': None, 'exec': 'enum.x',
-                'outfile': 'test_enum.in', 'enum': False, 'cellsdir': 'tests/enumeration/fcc_2/',
-                'lattice': 'lattice.in', 'dataformat': 'cells.{}', 'acceptrate': None,
+        from os import system, chdir, getcwd
+        curdir = getcwd()
+        chdir('tests/enumeration/fcc_2/')
+        args = {'profile': None, 'savedist': False, 'verbose': None,
+                'outfile': 'test_enum.in', 'enum': False,
+                'lattice': 'lattice.in', 'acceptrate': None,
                 'examples': False, 'sizes': [3,4], 'debug': False, 'input': 'enum.in',
                 'polya': False, 'super': False, 'distribution': ['all','all'],'seed':None,
                 'filter':None}
         _enum_in(args)
-        self._compare_files('test_enum.in','tests/enumeration/fcc_2/enum.in_3_4')
-        system("rm test_enum.in")
+        chdir(curdir)
+        self._compare_files('tests/enumeration/fcc_2/test_enum.in',
+                            'tests/enumeration/fcc_2/enum.in_3_4')
+        system("rm tests/enumeration/fcc_2/test_enum.in")
 
     def test_EnumIn3(self):
         from phenum.enumeration import _enum_in
-        from os import system
         import sys
-        args = {'profile': None, 'savedist': False, 'verbose': None, 'exec': 'enum.x',
-
-        'outfile': 'test_enum.in', 'enum': False, 'cellsdir': 'tests/enumeration/fcc_1/',
-                'lattice': 'lattice.in', 'dataformat': 'cells.{}', 'acceptrate': None,
+        from os import system, chdir, getcwd
+        curdir = getcwd()
+        chdir('tests/enumeration/fcc_1/')
+        args = {'profile': None, 'savedist': False, 'verbose': None,
+                'outfile': 'test_enum.in', 'enum': False,
+                'lattice': 'lattice.in', 'acceptrate': None,
                 'examples': False, 'sizes': None, 'debug': False, 'input': 'enum.in',
                 'polya': False, 'super': False, 'distribution': ['all','100'],'seed':999,
                 'filter':None}
         _enum_in(args)
+        chdir(curdir)
         if sys.version_info[0] < 3:
-            self._compare_files('test_enum.in','tests/enumeration/fcc_1/enum.in_100_p2')
+            self._compare_files('tests/enumeration/fcc_1/test_enum.in',
+                                'tests/enumeration/fcc_1/enum.in_100_p2')
         else:
-            self._compare_files('test_enum.in','tests/enumeration/fcc_1/enum.in_100_p3')
-        system("rm test_enum.in")
+            self._compare_files('tests/enumeration/fcc_1/test_enum.in',
+                                'tests/enumeration/fcc_1/enum.in_100_p3')
+        system("rm tests/enumeration/fcc_1/test_enum.in")
 
     def test_EnumIn4(self):
         from phenum.enumeration import _enum_in
         from os import system, getcwd, chdir
-        direct = getcwd()
         import sys
-        args = {'profile': None, 'savedist': False, 'verbose': None, 'exec': 'enum.x',
-                'outfile': 'test_enum.in', 'enum': False, 'cellsdir': 'tests/enumeration/fcc_2/',
-                'lattice': 'lattice.in', 'dataformat': 'cells.{}', 'acceptrate': None,
+        curdir = getcwd()
+        chdir('tests/enumeration/fcc_2/')
+        args = {'profile': None, 'savedist': False, 'verbose': None,
+                'outfile': 'test_enum.in', 'enum': False,
+                'lattice': 'lattice.in', 'acceptrate': None,
                 'examples': False, 'sizes': None, 'debug': False, 'input': 'enum.in',
                 'polya': False, 'super': False, 'distribution': ['all','50'],'seed':2461,
                 'filter':None}
         _enum_in(args)
+        chdir(curdir)
         if sys.version_info[0] < 3:
-            self._compare_files('test_enum.in','tests/enumeration/fcc_2/enum.in_50_p2')
+            self._compare_files('tests/enumeration/fcc_2/test_enum.in',
+                                'tests/enumeration/fcc_2/enum.in_50_p2')
         else:
-            self._compare_files('test_enum.in','tests/enumeration/fcc_2/enum.in_50_p3')
-        system("rm test_enum.in")
-        chdir(direct)
+            self._compare_files('tests/enumeration/fcc_2/test_enum.in',
+                                'tests/enumeration/fcc_2/enum.in_50_p3')
+        system("rm tests/enumeration/fcc_2/test_enum.in")
 
     def test_EnumIn5(self):
         from phenum.enumeration import _enum_in
         from os import system, getcwd, chdir
-        direct = getcwd()
-        args = {'profile': None, 'savedist': False, 'verbose': None, 'exec': 'enum.x',
-                'outfile': 'test_enum.in', 'enum': False, 'cellsdir': 'tests/enumeration/sc_1/',
-                'lattice': 'lattice.in', 'dataformat': 'cells.{}', 'acceptrate': None,
+        curdir = getcwd()
+        chdir('tests/enumeration/sc_1/')
+        args = {'profile': None, 'savedist': False, 'verbose': None,
+                'outfile': 'test_enum.in', 'enum': False,
+                'lattice': 'lattice.in', 'acceptrate': None,
                 'examples': False, 'sizes': None, 'debug': False, 'input': 'enum.in',
                 'polya': False, 'super': False, 'distribution': ['all','100'],'seed':None,
                 'filter':None}
         _enum_in(args)
-        self._compare_files('test_enum.in','tests/enumeration/sc_1/enum.in_100')
-        system("rm test_enum.in")
-        chdir(direct)
+        chdir(curdir)
+        self._compare_files('tests/enumeration/sc_1/test_enum.in',
+                            'tests/enumeration/sc_1/enum.in_100')
+        system("rm tests/enumeration/sc_1/test_enum.in")
 
     def test_EnumIn6(self):
         from phenum.enumeration import _enum_in
-        from os import system
-        args = {'profile': None, 'savedist': True, 'verbose': None, 'exec': 'enum.x',
-                'outfile': 'test_enum.in', 'enum': False, 'cellsdir': 'tests/enumeration/sc_1/',
-                'lattice': 'lattice.in', 'dataformat': 'cells.{}', 'acceptrate': None,
+        from os import system, getcwd, chdir
+        curdir = getcwd()
+        chdir('tests/enumeration/sc_1/')
+        args = {'profile': None, 'savedist': True, 'verbose': None,
+                'outfile': 'test_enum.in', 'enum': False,
+                'lattice': 'lattice.in', 'acceptrate': None,
                 'examples': False, 'sizes': None, 'debug': False, 'input': 'enum.in',
                 'polya': False, 'super': False, 'distribution': ['shape','all'],'seed':None,
                 'filter':None}
         _enum_in(args)
-        self._compare_files('test_enum.in','tests/enumeration/sc_1/enum.in_shape')
-        system("rm test_enum.in")
+        chdir(curdir)
+        self._compare_files('tests/enumeration/sc_1/test_enum.in',
+                            'tests/enumeration/sc_1/enum.in_shape')
+        system("rm tests/enumeration/sc_1/test_enum.in")
 
     def test_EnumIn7(self):
         from phenum.enumeration import _enum_in
-        from os import system
-        args = {'profile': None, 'savedist': True, 'verbose': None, 'exec': 'enum.x',
-                'outfile': 'test_enum.in', 'enum': False, 'cellsdir': 'tests/enumeration/sc_1/',
-                'lattice': 'lattice.in', 'dataformat': 'cells.{}', 'acceptrate': None,
+        from os import system, getcwd, chdir
+        curdir = getcwd()
+        chdir('tests/enumeration/sc_1/')
+        args = {'profile': None, 'savedist': True, 'verbose': None,
+                'outfile': 'test_enum.in', 'enum': False,
+                'lattice': 'lattice.in', 'acceptrate': None,
                 'examples': False, 'sizes': None, 'debug': False, 'input': 'enum.in',
                 'polya': False, 'super': False, 'distribution': ['size','all'],'seed':None,
                 'filter':None}
         _enum_in(args)
-        self._compare_files('test_enum.in','tests/enumeration/sc_1/enum.in_size')
-        system("rm test_enum.in")
+        chdir(curdir)
+        self._compare_files('tests/enumeration/sc_1/test_enum.in',
+                            'tests/enumeration/sc_1/enum.in_size')
+        system("rm tests/enumeration/sc_1/test_enum.in")
 
     def test_EnumIn8(self):
         from phenum.enumeration import _enum_in
-        from os import system
-        args = {'profile': None, 'savedist': True, 'verbose': None, 'exec': 'enum.x',
-                'outfile': 'test_enum.in', 'enum': False, 'cellsdir': 'tests/enumeration/sc_1/',
-                'lattice': 'lattice.in', 'dataformat': 'cells.{}', 'acceptrate': None,
+        from os import system, getcwd, chdir
+        curdir = getcwd()
+        chdir('tests/enumeration/sc_1/')
+        args = {'profile': None, 'savedist': True, 'verbose': None,
+                'outfile': 'test_enum.in', 'enum': False,
+                'lattice': 'lattice.in', 'acceptrate': None,
                 'examples': False, 'sizes': None, 'debug': False, 'input': 'enum.in',
                 'polya': False, 'super': False, 'distribution': ['conc','all'],'seed':None,
                 'filter':None}
         _enum_in(args)
-        self._compare_files('test_enum.in','tests/enumeration/sc_1/enum.in_conc')
-        system("rm test_enum.in")
+        chdir(curdir)
+        self._compare_files('tests/enumeration/sc_1/test_enum.in',
+                            'tests/enumeration/sc_1/enum.in_conc')
+        system("rm tests/enumeration/sc_1/test_enum.in")
 
     def test_EnumIn9(self):
         from phenum.enumeration import _enum_in
-        from os import system
-        args = {'profile': None, 'savedist': False, 'verbose': None, 'exec': 'enum.x',
-                'outfile': 'test_enum.in', 'enum': False, 'cellsdir': 'tests/enumeration/sc_1/',
-                'lattice': 'lattice.in', 'dataformat': 'cells.{}', 'acceptrate': None,
+        from os import system, getcwd, chdir
+        curdir = getcwd()
+        chdir('tests/enumeration/sc_1/')
+        args = {'profile': None, 'savedist': False, 'verbose': None,
+                'outfile': 'test_enum.in', 'enum': False,
+                'lattice': 'lattice.in', 'acceptrate': None,
                 'examples': False, 'sizes': None, 'debug': False, 'input': 'enum.in',
                 'polya': False, 'super': False, 'distribution': ['all','all'],'seed':None,
                 'filter':['shape','enum.in_shape']}
         _enum_in(args)
-        self._compare_files('test_enum.in','tests/enumeration/sc_1/enum.in_100')
-        system("rm test_enum.in")
+        chdir(curdir)
+        self._compare_files('tests/enumeration/sc_1/test_enum.in',
+                            'tests/enumeration/sc_1/enum.in_100')
+        system("rm tests/enumeration/sc_1/test_enum.in")
 
     def test_EnumIn10(self):
         from phenum.enumeration import _enum_in
-        from os import system
-        args = {'profile': None, 'savedist': False, 'verbose': None, 'exec': 'enum.x',
-                'outfile': 'test_enum.in', 'enum': False, 'cellsdir': 'tests/enumeration/sc_1/',
-                'lattice': 'lattice.in', 'dataformat': 'cells.{}', 'acceptrate': None,
+        from os import system, getcwd, chdir
+        curdir = getcwd()
+        chdir('tests/enumeration/sc_1/')
+        args = {'profile': None, 'savedist': False, 'verbose': None,
+                'outfile': 'test_enum.in', 'enum': False,
+                'lattice': 'lattice.in', 'acceptrate': None,
                 'examples': False, 'sizes': None, 'debug': False, 'input': 'enum.in',
                 'polya': False, 'super': False, 'distribution': ['all','all'],'seed':None,
                 'filter':['conc','enum.in_conc']}
         _enum_in(args)
-        self._compare_files('test_enum.in','tests/enumeration/sc_1/enum.in_100')
-        system("rm test_enum.in")
+        chdir(curdir)
+        self._compare_files('tests/enumeration/sc_1/test_enum.in',
+                            'tests/enumeration/sc_1/enum.in_100')
+        system("rm tests/enumeration/sc_1/test_enum.in")
 
     def test_EnumIn11(self):
         from phenum.enumeration import _enum_in
-        from os import system
         import sys
-        args = {'profile': None, 'savedist': False, 'verbose': None, 'exec': 'enum.x',
-                'outfile': 'test_enum.in', 'enum': False, 'cellsdir': 'tests/enumeration/sc_1/',
-                'lattice': 'lattice.in', 'dataformat': 'cells.{}', 'acceptrate': None,
+        from os import system, getcwd, chdir
+        curdir = getcwd()
+        chdir('tests/enumeration/sc_1/')
+        args = {'profile': None, 'savedist': False, 'verbose': None,
+                'outfile': 'test_enum.in', 'enum': False,
+                'lattice': 'lattice.in', 'acceptrate': None,
                 'examples': False, 'sizes': None, 'debug': False, 'input': 'enum.in',
                 'polya': False, 'super': False, 'distribution': ['all','10'],'seed':1010,
                 'filter':['conc','enum.in_conc']}
         _enum_in(args)
+        chdir(curdir)
         if sys.version_info[0] < 3:
-            self._compare_files('test_enum.in','tests/enumeration/sc_1/enum.in_conc_10_p2')
+            self._compare_files('tests/enumeration/sc_1/test_enum.in',
+                                'tests/enumeration/sc_1/enum.in_conc_10_p2')
         else:
-            self._compare_files('test_enum.in','tests/enumeration/sc_1/enum.in_conc_10_p3')
-        system("rm test_enum.in")
+            self._compare_files('tests/enumeration/sc_1/test_enum.in',
+                                'tests/enumeration/sc_1/enum.in_conc_10_p3')
+        system("rm tests/enumeration/sc_1/test_enum.in")
 
     def test_EnumIn12(self):
         from phenum.enumeration import _enum_in
-        from os import system
         import sys
-        args = {'profile': None, 'savedist': False, 'verbose': None, 'exec': 'enum.x',
-                'outfile': 'test_enum.in', 'enum': False, 'cellsdir': 'tests/enumeration/sc_1/',
-                'lattice': 'lattice.in', 'dataformat': 'cells.{}', 'acceptrate': None,
+        from os import system, getcwd, chdir
+        curdir = getcwd()
+        chdir('tests/enumeration/sc_1/')
+        args = {'profile': None, 'savedist': False, 'verbose': None,
+                'outfile': 'test_enum.in', 'enum': False,
+                'lattice': 'lattice.in', 'acceptrate': None,
                 'examples': False, 'sizes': None, 'debug': False, 'input': 'enum.in',
                 'polya': False, 'super': False, 'distribution': ['all','10'],'seed':1010,
                 'filter':['shape','enum.in_shape']}
         _enum_in(args)
+        chdir(curdir)
         if sys.version_info[0] < 3:
-            self._compare_files('test_enum.in','tests/enumeration/sc_1/enum.in_shape_10_p2')
+            self._compare_files('tests/enumeration/sc_1/test_enum.in',
+                                'tests/enumeration/sc_1/enum.in_shape_10_p2')
         else:
-            self._compare_files('test_enum.in','tests/enumeration/sc_1/enum.in_shape_10_p3')
-        system("rm test_enum.in")
+            self._compare_files('tests/enumeration/sc_1/test_enum.in',
+                                'tests/enumeration/sc_1/enum.in_shape_10_p3')
+        system("rm tests/enumeration/sc_1/test_enum.in")
 
     def test_EnumIn13(self):
         from phenum.enumeration import _enum_in
-        from os import system
         import sys
-        args = {'profile': None, 'savedist': False, 'verbose': None, 'exec': 'enum.x',
-                'outfile': 'test_enum.in', 'enum': False, 'cellsdir': 'tests/enumeration/sc_1/',
-                'lattice': 'lattice.in', 'dataformat': 'cells.{}', 'acceptrate': None,
+        from os import system, getcwd, chdir
+        curdir = getcwd()
+        chdir('tests/enumeration/sc_1/')
+        args = {'profile': None, 'savedist': False, 'verbose': None,
+                'outfile': 'test_enum.in', 'enum': False,
+                'lattice': 'lattice.in', 'acceptrate': None,
                 'examples': False, 'sizes': [3,4], 'debug': False, 'input': 'enum.in',
                 'polya': False, 'super': False, 'distribution': ['all','10'],'seed':1010,
                 'filter':['conc','enum.in_conc']}
         _enum_in(args)
+        chdir(curdir)
         if sys.version_info[0] < 3:
-            self._compare_files('test_enum.in','tests/enumeration/sc_1/enum.in_conc_34_10_p2')
+            self._compare_files('tests/enumeration/sc_1/test_enum.in',
+                                'tests/enumeration/sc_1/enum.in_conc_34_10_p2')
         else:
-            self._compare_files('test_enum.in','tests/enumeration/sc_1/enum.in_conc_34_10_p3')
-        system("rm test_enum.in")
+            self._compare_files('tests/enumeration/sc_1/test_enum.in',
+                                'tests/enumeration/sc_1/enum.in_conc_34_10_p3')
+        system("rm tests/enumeration/sc_1/test_enum.in")
 
     def test_EnumIn14(self):
         from phenum.enumeration import _enum_in
-        from os import system
         import sys
-        args = {'profile': None, 'savedist': False, 'verbose': None, 'exec': 'enum.x',
-                'outfile': 'test_enum.in', 'enum': False, 'cellsdir': 'tests/enumeration/sc_1/',
-                'lattice': 'lattice.in', 'dataformat': 'cells.{}', 'acceptrate': None,
+        from os import system, getcwd, chdir
+        curdir = getcwd()
+        chdir('tests/enumeration/sc_1/')
+        args = {'profile': None, 'savedist': False, 'verbose': None,
+                'outfile': 'test_enum.in', 'enum': False,
+                'lattice': 'lattice.in', 'acceptrate': None,
                 'examples': False, 'sizes': [3, 5], 'debug': False, 'input': 'enum.in',
                 'polya': False, 'super': False, 'distribution': ['all','10'],'seed':1010,
                 'filter':['shape','enum.in_shape2']}
         _enum_in(args)
+        chdir(curdir)
         if sys.version_info[0] < 3:
-            self._compare_files('test_enum.in','tests/enumeration/sc_1/enum.in_shape2_10_p2')
+            self._compare_files('tests/enumeration/sc_1/test_enum.in',
+                                'tests/enumeration/sc_1/enum.in_shape2_10_p2')
         else:
-            self._compare_files('test_enum.in','tests/enumeration/sc_1/enum.in_shape2_10_p3')
-        system("rm test_enum.in")
+            self._compare_files('tests/enumeration/sc_1/test_enum.in',
+                                'tests/enumeration/sc_1/enum.in_shape2_10_p3')
+        system("rm tests/enumeration/sc_1/test_enum.in")
 
 class TestPlotHNFs(ut.TestCase):
     """Tests of the _enum_in subroutine."""
@@ -270,9 +326,9 @@ class TestPlotHNFs(ut.TestCase):
     def test_visualize1(self):
         from phenum.enumeration import _script_enum
         from os import system
-        args = {'profile': None, 'savedist': False, 'verbose': None, 'exec': 'enum.x',
-                'outfile': None, 'enum': False, 'cellsdir': 'tests/enumeration/sc_1/',
-                'lattice': 'input/fcc/lattice.in', 'dataformat': 'cells.{}', 'acceptrate': None,
+        args = {'profile': None, 'savedist': False, 'verbose': None,
+                'outfile': None, 'enum': False,
+                'lattice': 'input/fcc/lattice.in', 'acceptrate': None,
                 'examples': False, 'sizes': None, 'debug': False,
                 'input': 'tests/enumeration/sc_1/enum.in_100',
                 'polya': False, 'super': False, 'distribution': None,'seed':None,
@@ -282,9 +338,9 @@ class TestPlotHNFs(ut.TestCase):
     def test_visualize2(self):
         from phenum.enumeration import _script_enum
         from os import system
-        args = {'profile': None, 'savedist': False, 'verbose': None, 'exec': 'enum.x',
-                'outfile': None, 'enum': False, 'cellsdir': 'tests/enumeration/sc_1/',
-                'lattice': 'input/fcc/lattice.in', 'dataformat': 'cells.{}', 'acceptrate': None,
+        args = {'profile': None, 'savedist': False, 'verbose': None,
+                'outfile': None, 'enum': False,
+                'lattice': 'input/fcc/lattice.in', 'acceptrate': None,
                 'examples': False, 'sizes': None, 'debug': False,
                 'input': 'tests/enumeration/sc_1/enum.in_100',
                 'polya': False, 'super': False, 'distribution': None,'seed':None,

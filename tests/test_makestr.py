@@ -337,22 +337,22 @@ class TestMakeStructures(ut.TestCase):
         with pytest.raises(ValueError):
             run(args)
 
-    # def test_str18(self):
-    #     from phenum.makeStr import run
-    #     from os import system
-    #     args = {"structures": ,
-    #             "debug":False,
-    #             "examples":False,
-    #             "displace":0.0,
-    #             "input":"tests/enumeration/fcc_1/enum.out_2_6",
-    #             "mink":True,
-    #             "species":['H','Pt'],
-    #             "verbose":None,
-    #             "outfile":"vasp.{}",
-    #             "rattle":0.0
-    #             }
-    #     with pytest.raises(ValueError):
-    #         run(args)
+    def test_str18(self):
+        from phenum.makeStr import run
+        from os import system
+        args = {"structures": None,
+                "debug":False,
+                "examples":False,
+                "displace":0.0,
+                "input":"tests/enumeration/fcc_1/enum.out_2_6",
+                "mink":True,
+                "species":['H','Pt'],
+                "verbose":None,
+                "outfile":"vasp.{}",
+                "rattle":0.0
+                }
+        with pytest.raises(ValueError):
+            run(args)
 
     def test_str19(self):
         from phenum.makeStr import run
@@ -406,3 +406,12 @@ class TestMakeStructures(ut.TestCase):
         for i in [1,45,90,175]:
             self._compare_files("vasp.{}".format(i),"tests/enumeration/hcp_1/vasp.{}.fin".format(i))
         system("rm vasp*")
+
+
+    def test_str22(self):
+        from phenum.makeStr import run
+        from os import system
+        args = None
+        with pytest.raises(ValueError):
+            run(args)
+        

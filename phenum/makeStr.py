@@ -122,8 +122,10 @@ def run(args):
     """
 
     if args == None:
-        exit()
-    if args["structures"] != None :
+        raise ValueError("Please enter a single structure number, two structures that "
+                         "indicate the first and last structure to be used in the input "
+                         "file, or all.")
+    elif args["structures"] != None :
         if not RepresentsInt(args["structures"][0]) and args["structures"][0].lower() == "all":
             args["structures"] = None
         elif len(args["structures"])  == 1 and RepresentsInt(args["structures"][0]):

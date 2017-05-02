@@ -450,9 +450,6 @@ def _get_rotation_perms_lists(A,HNF,L,SNF,Op,RPlist,dperms,eps, arrows=False):
     # Index of the superlattices; Number of d-vectors in d set    
     n = int(round(np.linalg.det(HNF[0])))
     nH = len(HNF)
-    if n < 0:
-        print("HNF",HNF)
-        exit()
     
     nD = np.array(dperms.perm.site_perm).shape[-1]
     # nD = len(RPlist.v[0])

@@ -4,6 +4,19 @@ import numpy as np
 
 gpath =  "tests/symmetry/"
 
+def _read_pg(fname):
+    pg = []
+    array = []
+    with open(fname,"r") as f:
+        for line in f:
+            temp = line.strip().split()
+            if len(temp)==3:
+                array.append([float(i) for i in temp])
+            else:
+                pg.append(array)
+                array = []
+    return pg                
+
 def _read_float_3D(fname):
     array = []
     parray = []
@@ -653,204 +666,229 @@ class TestBringIntoCell(ut.TestCase):
 class TestGetLatticePointGroup(ut.TestCase):
     def test_getpg1(self):
         from phenum.symmetry import _get_lattice_pointGroup
-        case = 1
-        avecs = _read_float_2D(gpath+"get_lattice_pointGroup_aVecs.in."+str(case))
-        eps = _read_float(gpath+"get_lattice_pointGroup_eps.in."+str(case))
+        avecs = [[1,1,0],[1,0,1],[0,1,1]]
+        eps = 1E-6
+        out = _read_pg(gpath+"fcc_pg.out")
 
-        out = _read_float_3D(gpath+"get_lattice_pointGroup_lattpg_op.out."+str(case))
-
-        self.assertEqual(_get_lattice_pointGroup(avecs,eps),out)
+        pg = _get_lattice_pointGroup(avecs,eps)
+        present = []
+        for p in pg:
+            for g in out:
+                if np.allclose(p,g):
+                    present.append(True)
+                    
+        self.assertEqual(len(out),len(present))
 
     def test_getpg2(self):
         from phenum.symmetry import _get_lattice_pointGroup
-        case = 2
-        avecs = _read_float_2D(gpath+"get_lattice_pointGroup_aVecs.in."+str(case))
-        eps = _read_float(gpath+"get_lattice_pointGroup_eps.in."+str(case))
+        avecs = [[1,0,0],[0.5,-0.86602540378444,0],[0,0,2]]
+        eps = 1E-6
+        out = _read_pg(gpath+"hex_pg.out")
 
-        out = _read_float_3D(gpath+"get_lattice_pointGroup_lattpg_op.out."+str(case))
-
-        self.assertEqual(_get_lattice_pointGroup(avecs,eps),out)
+        pg = _get_lattice_pointGroup(avecs,eps)
+        present = []
+        for p in pg:
+            for g in out:
+                if np.allclose(p,g):
+                    present.append(True)
+                    
+        self.assertEqual(len(out),len(present))
 
     def test_getpg3(self):
         from phenum.symmetry import _get_lattice_pointGroup
-        case = 3
-        avecs = _read_float_2D(gpath+"get_lattice_pointGroup_aVecs.in."+str(case))
-        eps = _read_float(gpath+"get_lattice_pointGroup_eps.in."+str(case))
+        avecs = [[1,0,0],[0,1,0],[0,0,1]]
+        eps = 1E-6
+        out = _read_pg(gpath+"sc_pg.out")
 
-        out = _read_float_3D(gpath+"get_lattice_pointGroup_lattpg_op.out."+str(case))
-
-        self.assertEqual(_get_lattice_pointGroup(avecs,eps),out)
+        pg = _get_lattice_pointGroup(avecs,eps)
+        present = []
+        for p in pg:
+            for g in out:
+                if np.allclose(p,g):
+                    present.append(True)
+                    
+        self.assertEqual(len(out),len(present))
 
     def test_getpg4(self):
         from phenum.symmetry import _get_lattice_pointGroup
-        case = 4
-        avecs = _read_float_2D(gpath+"get_lattice_pointGroup_aVecs.in."+str(case))
-        eps = _read_float(gpath+"get_lattice_pointGroup_eps.in."+str(case))
+        avecs = [[1,-1,1],[-1,1,1],[1,1,-1]]
+        eps = 1E-6
+        out = _read_pg(gpath+"bcc_pg.out")
 
-        out = _read_float_3D(gpath+"get_lattice_pointGroup_lattpg_op.out."+str(case))
-
-        self.assertEqual(_get_lattice_pointGroup(avecs,eps),out)
+        pg = _get_lattice_pointGroup(avecs,eps)
+        present = []
+        for p in pg:
+            for g in out:
+                if np.allclose(p,g):
+                    present.append(True)
+                    
+        self.assertEqual(len(out),len(present))
 
     def test_getpg5(self):
         from phenum.symmetry import _get_lattice_pointGroup
-        case = 5
-        avecs = _read_float_2D(gpath+"get_lattice_pointGroup_aVecs.in."+str(case))
-        eps = _read_float(gpath+"get_lattice_pointGroup_eps.in."+str(case))
+        avecs = [[1,2,2],[2,1,2],[2,2,1]]
+        eps = 1E-6
+        out = _read_pg(gpath+"trig_pg.out")
 
-        out = _read_float_3D(gpath+"get_lattice_pointGroup_lattpg_op.out."+str(case))
-
-        self.assertEqual(_get_lattice_pointGroup(avecs,eps),out)
+        pg = _get_lattice_pointGroup(avecs,eps)
+        present = []
+        for p in pg:
+            for g in out:
+                if np.allclose(p,g):
+                    present.append(True)
+                    
+        self.assertEqual(len(out),len(present))
 
     def test_getpg6(self):
         from phenum.symmetry import _get_lattice_pointGroup
-        case = 6
-        avecs = _read_float_2D(gpath+"get_lattice_pointGroup_aVecs.in."+str(case))
-        eps = _read_float(gpath+"get_lattice_pointGroup_eps.in."+str(case))
+        avecs = [[1,0,0],[0.15,1,0],[0.25,0,1]]
+        eps = 1E-6
+        out = _read_pg(gpath+"tric_pg.out")
 
-        out = _read_float_3D(gpath+"get_lattice_pointGroup_lattpg_op.out."+str(case))
-
-        self.assertEqual(_get_lattice_pointGroup(avecs,eps),out)
+        pg = _get_lattice_pointGroup(avecs,eps)
+        present = []
+        for p in pg:
+            for g in out:
+                if np.allclose(p,g):
+                    present.append(True)
+                    
+        self.assertEqual(len(out),len(present))
 
     def test_getpg7(self):
         from phenum.symmetry import _get_lattice_pointGroup
-        case = 7
-        avecs = _read_float_2D(gpath+"get_lattice_pointGroup_aVecs.in."+str(case))
-        eps = _read_float(gpath+"get_lattice_pointGroup_eps.in."+str(case))
+        avecs = [[1,0,0],[0,1,0],[0,0,2]]
+        eps = 1E-6
+        out = _read_pg(gpath+"st_pg.out")
 
-        out = _read_float_3D(gpath+"get_lattice_pointGroup_lattpg_op.out."+str(case))
-
-        self.assertEqual(_get_lattice_pointGroup(avecs,eps),out)
+        pg = _get_lattice_pointGroup(avecs,eps)
+        present = []
+        for p in pg:
+            for g in out:
+                if np.allclose(p,g):
+                    present.append(True)
+                    
+        self.assertEqual(len(out),len(present))
 
     def test_getpg8(self):
         from phenum.symmetry import _get_lattice_pointGroup
-        case = 8
-        avecs = _read_float_2D(gpath+"get_lattice_pointGroup_aVecs.in."+str(case))
-        eps = _read_float(gpath+"get_lattice_pointGroup_eps.in."+str(case))
+        avecs = [[-0.5,0.5,1],[0.5,-0.5,1],[0.5,0.5,-1]]
+        eps = 1E-6
+        out = _read_pg(gpath+"bct_pg.out")
 
-        out = _read_float_3D(gpath+"get_lattice_pointGroup_lattpg_op.out."+str(case))
-
-        self.assertEqual(_get_lattice_pointGroup(avecs,eps),out)
+        pg = _get_lattice_pointGroup(avecs,eps)
+        present = []
+        for p in pg:
+            for g in out:
+                if np.allclose(p,g):
+                    present.append(True)
+                    
+        self.assertEqual(len(out),len(present))
 
     def test_getpg9(self):
         from phenum.symmetry import _get_lattice_pointGroup
-        case = 9
-        avecs = _read_float_2D(gpath+"get_lattice_pointGroup_aVecs.in."+str(case))
-        eps = _read_float(gpath+"get_lattice_pointGroup_eps.in."+str(case))
+        avecs = [[1,0,0],[0,2,0],[0,0,3]]
+        eps = 1E-6
+        out = _read_pg(gpath+"so_pg.out")
 
-        out = _read_float_3D(gpath+"get_lattice_pointGroup_lattpg_op.out."+str(case))
-
-        self.assertEqual(_get_lattice_pointGroup(avecs,eps),out)
+        pg = _get_lattice_pointGroup(avecs,eps)
+        present = []
+        for p in pg:
+            for g in out:
+                if np.allclose(p,g):
+                    present.append(True)
+                    
+        self.assertEqual(len(out),len(present))
 
     def test_getpg10(self):
         from phenum.symmetry import _get_lattice_pointGroup
-        case = 10
-        avecs = _read_float_2D(gpath+"get_lattice_pointGroup_aVecs.in."+str(case))
-        eps = _read_float(gpath+"get_lattice_pointGroup_eps.in."+str(case))
+        avecs = [[0.5,1,0],[0.5,-1,0],[0,0,3]]
+        eps = 1E-6
+        out = _read_pg(gpath+"cco_pg.out")
 
-        out = _read_float_3D(gpath+"get_lattice_pointGroup_lattpg_op.out."+str(case))
-
-        self.assertEqual(_get_lattice_pointGroup(avecs,eps),out)
+        pg = _get_lattice_pointGroup(avecs,eps)
+        present = []
+        for p in pg:
+            for g in out:
+                if np.allclose(p,g):
+                    present.append(True)
+                    
+        self.assertEqual(len(out),len(present))
 
     def test_getpg11(self):
         from phenum.symmetry import _get_lattice_pointGroup
-        case = 11
-        avecs = _read_float_2D(gpath+"get_lattice_pointGroup_aVecs.in."+str(case))
-        eps = _read_float(gpath+"get_lattice_pointGroup_eps.in."+str(case))
+        avecs = [[-0.5,1,1.5],[0.5,-1,1.5],[0.5,1,-1.5]]
+        eps = 1E-6
+        out = _read_pg(gpath+"bco_pg.out")
 
-        out = _read_float_3D(gpath+"get_lattice_pointGroup_lattpg_op.out."+str(case))
-
-        self.assertEqual(_get_lattice_pointGroup(avecs,eps),out)
-
-    def test_getpg12(self):
-        from phenum.symmetry import _get_lattice_pointGroup
-        case = 12
-        avecs = _read_float_2D(gpath+"get_lattice_pointGroup_aVecs.in."+str(case))
-        eps = _read_float(gpath+"get_lattice_pointGroup_eps.in."+str(case))
-
-        out = _read_float_3D(gpath+"get_lattice_pointGroup_lattpg_op.out."+str(case))
-
-        self.assertEqual(_get_lattice_pointGroup(avecs,eps),out)
+        pg = _get_lattice_pointGroup(avecs,eps)
+        present = []
+        for p in pg:
+            for g in out:
+                if np.allclose(p,g):
+                    present.append(True)
+                    
+        self.assertEqual(len(out),len(present))
 
     def test_getpg13(self):
         from phenum.symmetry import _get_lattice_pointGroup
-        case = 13
-        avecs = _read_float_2D(gpath+"get_lattice_pointGroup_aVecs.in."+str(case))
-        eps = _read_float(gpath+"get_lattice_pointGroup_eps.in."+str(case))
+        avecs = [[0.5,1,0],[0.5,0,1.5],[0,1,1.5]]
+        eps = 1E-6
+        out = _read_pg(gpath+"fco_pg.out")
 
-        out = _read_float_3D(gpath+"get_lattice_pointGroup_lattpg_op.out."+str(case))
-
-        self.assertEqual(_get_lattice_pointGroup(avecs,eps),out)
+        pg = _get_lattice_pointGroup(avecs,eps)
+        present = []
+        for p in pg:
+            for g in out:
+                if np.allclose(p,g):
+                    present.append(True)
+                    
+        self.assertEqual(len(out),len(present))
 
     def test_getpg14(self):
         from phenum.symmetry import _get_lattice_pointGroup
-        case = 14
-        avecs = _read_float_2D(gpath+"get_lattice_pointGroup_aVecs.in."+str(case))
-        eps = _read_float(gpath+"get_lattice_pointGroup_eps.in."+str(case))
+        avecs = [[1,0,0],[0,1,0],[0.25,0,1]]
+        eps = 1E-6
+        out = _read_pg(gpath+"sm_pg.out")
 
-        out = _read_float_3D(gpath+"get_lattice_pointGroup_lattpg_op.out."+str(case))
+        pg = _get_lattice_pointGroup(avecs,eps)
+        present = []
+        for p in pg:
+            for g in out:
+                if np.allclose(p,g):
+                    present.append(True)
+                    
+        self.assertEqual(len(out),len(present))
 
-        self.assertEqual(_get_lattice_pointGroup(avecs,eps),out)
+    def test_getpg12(self):
+        from phenum.symmetry import _get_lattice_pointGroup
+        avecs = [[0.5,0.5,0],[0.5,-0.5,0],[0.25,0,1]]
+        eps = 1E-6
+        out = _read_pg(gpath+"ccm_pg.out")
+
+        pg = _get_lattice_pointGroup(avecs,eps)
+        present = []
+        for p in pg:
+            for g in out:
+                if np.allclose(p,g):
+                    present.append(True)
+                    
+        self.assertEqual(len(out),len(present))
 
     def test_getpg15(self):
         from phenum.symmetry import _get_lattice_pointGroup
-        case = 15
-        avecs = _read_float_2D(gpath+"get_lattice_pointGroup_aVecs.in."+str(case))
-        eps = _read_float(gpath+"get_lattice_pointGroup_eps.in."+str(case))
+        avecs = [[1,1,0],[1,0,1],[0,0,2]]
+        eps = 1E-6
+        out = _read_pg(gpath+"fcc2_pg.out")
 
-        out = _read_float_3D(gpath+"get_lattice_pointGroup_lattpg_op.out."+str(case))
+        pg = _get_lattice_pointGroup(avecs,eps)
+        present = []
+        for p in pg:
+            for g in out:
+                if np.allclose(p,g):
+                    present.append(True)
+                    
+        self.assertEqual(len(out),len(present))
 
-        self.assertEqual(_get_lattice_pointGroup(avecs,eps),out)
-
-    def test_getpg16(self):
-        from phenum.symmetry import _get_lattice_pointGroup
-        case = 16
-        avecs = _read_float_2D(gpath+"get_lattice_pointGroup_aVecs.in."+str(case))
-        eps = _read_float(gpath+"get_lattice_pointGroup_eps.in."+str(case))
-
-        out = _read_float_3D(gpath+"get_lattice_pointGroup_lattpg_op.out."+str(case))
-
-        self.assertEqual(_get_lattice_pointGroup(avecs,eps),out)
-
-    def test_getpg17(self):
-        from phenum.symmetry import _get_lattice_pointGroup
-        case = 17
-        avecs = _read_float_2D(gpath+"get_lattice_pointGroup_aVecs.in."+str(case))
-        eps = _read_float(gpath+"get_lattice_pointGroup_eps.in."+str(case))
-
-        out = _read_float_3D(gpath+"get_lattice_pointGroup_lattpg_op.out."+str(case))
-
-        self.assertEqual(_get_lattice_pointGroup(avecs,eps),out)
-
-    def test_getpg18(self):
-        from phenum.symmetry import _get_lattice_pointGroup
-        case = 18
-        avecs = _read_float_2D(gpath+"get_lattice_pointGroup_aVecs.in."+str(case))
-        eps = _read_float(gpath+"get_lattice_pointGroup_eps.in."+str(case))
-
-        out = _read_float_3D(gpath+"get_lattice_pointGroup_lattpg_op.out."+str(case))
-
-        self.assertEqual(_get_lattice_pointGroup(avecs,eps),out)
-
-    def test_getpg19(self):
-        from phenum.symmetry import _get_lattice_pointGroup
-        case = 19
-        avecs = _read_float_2D(gpath+"get_lattice_pointGroup_aVecs.in."+str(case))
-        eps = _read_float(gpath+"get_lattice_pointGroup_eps.in."+str(case))
-
-        out = _read_float_3D(gpath+"get_lattice_pointGroup_lattpg_op.out."+str(case))
-
-        self.assertEqual(_get_lattice_pointGroup(avecs,eps),out)
-
-    def test_getpg20(self):
-        from phenum.symmetry import _get_lattice_pointGroup
-        case = 20
-        avecs = _read_float_2D(gpath+"get_lattice_pointGroup_aVecs.in."+str(case))
-        eps = _read_float(gpath+"get_lattice_pointGroup_eps.in."+str(case))
-
-        out = _read_float_3D(gpath+"get_lattice_pointGroup_lattpg_op.out."+str(case))
-
-        self.assertEqual(_get_lattice_pointGroup(avecs,eps),out)
-        
 class TestGetTransformations(ut.TestCase):
     """Tests of the _get_transformations subroutine."""
 

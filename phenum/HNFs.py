@@ -16,7 +16,7 @@ def _get_HNF_diagonals(n):
         if not n%i == 0:
             continue
         else:
-            q = n/i
+            q = int(n/i)
             for j in range(1,q+1):
                 if not q%j == 0:
                     continue
@@ -148,68 +148,3 @@ def get_HNFs(n,pLV,base_vecs,LatDim,eps_=None):
                                                                    LatDim,base_perms,eps_=eps)
 
     return HNFs
-
-def get_SNFs(HNFs,fix_ops,RPList):
-    """Finds the unique SNFs, and right and left transforms. It also reorders all the inputs.
-
-    Args:
-        HNFs (array-like): A list of the unique HNFs.
-        fix_ops (opList): The lattice fixing operations.
-        RPList (RotPermList): The permutations of the basis vectors.
-
-    Returns:
-        HNFs (array-like): A list of unique HNFs.
-        SNFs (array-like): A list of unique SNFs.
-        Ls (array-like): A list of the left Transforms.
-        SNF_labels (list): The integer SNF labels.
-        fix_ops (opList): The lattice fixing operations.
-        RPList (opList): The permutations of the basis set.
-    """
-
-    from .grouptheory import SmithNormalForm
-    
-    nfound = 0
-
-    uSNFs = []
-    SNFs = []
-    Ls = []
-    SNF_labels = np.zeros(len(HNFs))
-    for ihnf in range(len(HNFs)):
-        (SNF,L,R) = SmithNormalForm(HNF[ihnf])
-        SNFs.append(SNF)
-        Ls.append(L)
-        duplicate = False
-        for ifound in range(nfound):
-            if SNF == uSNFs[ifound]:
-                duplicate = True
-                SNF_labels[ihnf] = ifound
-                break
-
-        if not duplicate:
-            nfound += 1
-            uSNFs.append(SNF)
-            SNF_labels[ihnf] = nfound
-
-    # Now we want to reorder the groups so that they each come in the
-    # same order and in actual groups instead of scattered.
-    idx = []
-    for i in range(nfound):
-        for j in range(len(SNF_labels)):
-            if SNF_labels[j] == i:
-                idx.append(j)
-
-    HNFs = np.array(HNFs)
-    SNFs = np.array(SNFs)
-    Ls = np.array(Ls)
-    SNF_labels = np.array(SNF_labels)
-    fix_ops = np.array(fix_ops)
-    RPList = np.array(RPlist)
-
-    HNFs = HNFs[idx]
-    SNFs = SNFs[idx]
-    Ls = Ls[idx]
-    SNF_labels = SNF_labels[idx]
-    fix_ops = fix_ops[idx]
-    RPList = RPList[idx]
-
-    return(HNFs,SNFs,Ls,SNF_labels,fix_ops,RPList)
