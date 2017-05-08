@@ -117,7 +117,7 @@ def _read_struct_enum(): #pragma: no cover
 #         out.write("{0: <10d}\n".format(sum(conc_totals.values())))
 #         out.close()
 
-def _distribute(cellsizes, ftype, n=None,seed=None, res_type=None, res_values=None):
+def _distribute(infile, cellsizes, ftype, n=None,seed=None, res_type=None, res_values=None):
     """Returns a dictionary specifying how many of each cell shape, size and concentration
     to enumerate in order to obtain a grand total of 'n' unique cells, distributed according
     to the abundance of unique structures predicted by Polya. See the calling signature for
@@ -125,16 +125,22 @@ def _distribute(cellsizes, ftype, n=None,seed=None, res_type=None, res_values=No
     this one does; if it is short a few at the end, it tops up the list according to the
     abundances across all cell sizes, shapes, etc.
 
-    :arg cellsizes: a list of the cell sizes to include in the data set summary.
-    :arg ftype: one of ['shape', 'conc', 'size', 'all']; determines the number of 
-      arguments that the distr. function will accept and average over, thus controlling
-      the granularity of the predictions.
-    :arg n: the number of structure types to return, weighted by their polya distribution.
-      If this value is None, then *all* structure types are returned with their unique
-      number.
-    :arg seed: The seed for the random number generator.
+    Args:
+        inlfile (str): The polya.out style input file.
+        cellsizes (list): a list of the cell sizes to include in the data set summary.
+        ftype (str): one of ['shape', 'conc', 'size', 'all']; determines the number of 
+            arguments that the distr. function will accept and average over, thus controlling
+            the granularity of the predictions.
+        n (int): the number of structure types to return, weighted by their polya distribution.
+            If this value is None, then *all* structure types are returned with their unique
+            number.
+        seed (float): The seed for the random number generator.
+    
+    Returns:
+        result (dict): A dictionary specifying how many of each cell shape, size and
+            concentration to enumerate.
     """
-    (f, dataset, gtotal) = _distribution(ftype, None, None, cellsizes=cellsizes,
+    (f, dataset, gtotal) = _distribution(infile, ftype, None, None, cellsizes=cellsizes,
                                          res_values=res_values,res_type=res_type)
     #If they didn't specify an 'n', then we also return all the structures.
     if n is None:
@@ -246,7 +252,7 @@ def _distribute(cellsizes, ftype, n=None,seed=None, res_type=None, res_values=No
     from operator import itemgetter
     return result
 
-def _distribution(ftype, dataset, gtotal, cast=float, cellsizes=None,res_type = None,
+def _distribution(infile, ftype, dataset, gtotal, cast=float, cellsizes=None,res_type = None,
                   res_values=None):
     """Returns the Polya-weighted distribution function for the specified cell sizes.
     If dataset is None, a dataset and total are loaded using the specified cell sizes.
@@ -269,30 +275,40 @@ def _distribution(ftype, dataset, gtotal, cast=float, cellsizes=None,res_type = 
     structure type should be selected according to the total distribution across
     all structures included in cellsizes.
 
-    :arg dataset: the dictionary returned by method:_distribution_summary().
-    :arg gtotal: the total number of unique structures corresponding to the
-      dictionary 'dataset'.
-    :arg ftype: one of ['shape', 'conc', 'size', 'all']; determines the number of 
-      arguments that the distr. function will accept and average over, thus controlling
-      the granularity of the predictions.
-    :arg cellsizes: a list of the cell sizes to include in the data set summary.
-    :arg res_type: 'shape' if shapes are being restricted, or 'conc' if concentrations are  being restricted.
-    :arg res_values: The allowed values of the restricted parameter.
+    Args:
+        inlfile (str): The polya.out style input file.
+        dataset (dict): the dictionary returned by method: _distribution_summary().
+        gtotal (int): the total number of unique structures corresponding to the
+            dictionary 'dataset'.
+        ftype (str): one of ['shape', 'conc', 'size', 'all']; determines the number of 
+            arguments that the distr. function will accept and average over, thus controlling
+            the granularity of the predictions.
+        cellsizes (list): a list of the cell sizes to include in the data set summary.
+        res_type (str): 'shape' if shapes are being restricted, or 'conc' if 
+            concentrations are  being restricted.
+        res_values (list): The allowed values of the restricted parameter.
+
+    Returns:
+        f (function): The Polya-weighted distribution function.
+        dataset (dict): The dictionary returned by method: _distribution_summary().
+        gtotal (int): The total number of unique structures.
     """
     if dataset is None:
         if cellsizes is not None:
             if res_type is not None:
                 if res_type == "shape":
-                    (dataset, gtotal) = _distribution_summary(cellsizes, HNFs=res_values)
+                    (dataset, gtotal) = _distribution_summary(infile, cellsizes, HNFs=res_values)
                 elif res_type == "conc":
-                    (dataset, gtotal) = _distribution_summary(cellsizes, wanted_concs=res_values)
+                    (dataset, gtotal) = _distribution_summary(infile, cellsizes,
+                                                              wanted_concs=res_values)
                 else:
                     raise ValueError("Cannot filter the distribution using {}. Please use 'shape' or 'conc'.".format(res_type))
 
             else:
-                (dataset, gtotal) = _distribution_summary(cellsizes)
-        else:
-            raise ValueError("No dataset or cell sizes specified.")
+                (dataset, gtotal) = _distribution_summary(infile, cellsizes)
+        else: #pragma: no cover
+            from .msg import err
+            err("No dataset or cell sizes specified.")
             return None
         
     #We just need to sum up the total number of unique structures across all the
@@ -313,23 +329,28 @@ def _distribution(ftype, dataset, gtotal, cast=float, cellsizes=None,res_type = 
 
     return (f, dataset, gtotal)
         
-def _distribution_summary(cellsizes, HNFs = None, wanted_concs = None):
+def _distribution_summary(infile, cellsizes, HNFs = None, wanted_concs = None):
     """Returns a dictionary that summarizes the Polya predictions for unique structures
     by cell size, shape and concentration for use by a distribution function. Returns
     a tuple (summary dict, grand total), where grand total is the total number of structures
     predicted for *all* cell sizes.
 
-    :arg cellsizes: a list of the cell sizes to include in the data set summary.
-    :arg dataformat: the name of the directories to search for 'polya.out' files in.
-    :arg HNFs: a list of the allowed HNFs.
-    :arg wanted_concs: a list of the allowed concentrations.
+    Args:
+        inlfile (str): The polya.out style input file.
+        cellsizes (list): a list of the cell sizes to include in the data set summary.
+        HNFs (list): a list of the allowed HNFs.
+        wanted_concs (list): a list of the allowed concentrations.
+
+    Returns:
+        dataset (dict): The data retreived from the polya.out style files.
+        gtotal (int): The total number of structures.u
     """
     from os import path
     from numpy import loadtxt
     gtotal = 0
     dataset = {}
     for s in cellsizes:
-        source = "polya.out.{}".format(s)
+        source = infile+"."+str(s)
         if not path.isfile(source): #pragma: no cover
             from .msg import err
             err("Cannot find polya distribution for size {} at {}".format(s, source))
@@ -444,21 +465,24 @@ def _print_distribution(distr, distribution, filename=None, header=True, append=
                 else:
                     f.write("  {0: <6}  {1:d}\n".format(size, value))
                     
-def make_enum_in(distribution,outfile,number=None,sizes=None,save=True,seed=None,
+def make_enum_in(infile,distribution,outfile,number=None,sizes=None,save=True,seed=None,
                  restrict=None):
     """Makes an enum.in file if the distrubiton type is all with the
     desired number of structures. Otherwise prints the distribution
     information to the screen for the user.
 
-    :arg distribution: The parameters that the distribution is over
-    ('shape', 'conc', 'size', 'all').
-    :arg n: The number of structures or 'all'.
-    :arg sizes: when specified, limit the distribution to these integer cell sizes;
-      otherwise, look for all cell sizes we have data for.
-    :arg outfile: The name of the output file for the distribution
-    :arg save: True if the data is to be saved to file.
-    :arg seed: The seed for the random number generator.
-    :arg restrict: A list containing the restriction type ('shape','conc') and the file of allowed values.
+    Args:
+        infile (str): The name of the 'polya.out' style input file.
+        distribution (list): The parameters that the distribution is over
+            ('shape', 'conc', 'size', 'all').
+        n (int): The number of structures or 'all'.
+        sizes (list): when specified, limit the distribution to these integer cell sizes;
+            otherwise, look for all cell sizes we have data for.
+        outfile (str): The name of the output file for the distribution
+        save (bool): True if the data is to be saved to file.
+        seed (float): The seed for the random number generator.
+        restrict (list): A list containing the restriction type ('shape','conc') 
+            and the file of allowed values.
     """
 
     from os import listdir
@@ -466,22 +490,25 @@ def make_enum_in(distribution,outfile,number=None,sizes=None,save=True,seed=None
     files = listdir(".")
     if sizes is None:
         sizes = []
-        form = 'polya.out'
+        form = infile
 
         ready = False
         for f in files:
             if form in f:
-                sizes.append(int(f.split(".")[2]))
+                sizes.append(int(f.split(".")[-1]))
                 ready = True
+
     else:
         for i in sizes:
-            sizedir = 'polya.out.{}'.format(i)
+            sizedir = infile+'.'+str(i)
             if sizedir not in files:
                 raise ValueError("Cannot find '{}' in current directory.".format(sizedir))
         ready = True
                 
     if ready == False:
-        raise ValueError("The files {0} don't exist in this directory. You either need to run the -polya option or else navigate into the folder that contains the output {0} folders.".format('polya.out'))
+        raise ValueError("The files {0} don't exist in this directory. You either "
+                         "need to run the -polya option or else navigate into the "
+                         "folder that contains the output {0} folders.".format(infile))
 
     if restrict is not None:
         # from numpy import loadtxt
@@ -495,9 +522,9 @@ def make_enum_in(distribution,outfile,number=None,sizes=None,save=True,seed=None
                 elif restrict[0] == "conc":
                     res_values.append(tuple([int(i) for i in values.split()[1:3]]))
 
-        distr = _distribute(sizes,distribution,n=number,seed=seed,res_type=restrict[0],res_values=res_values)        
+        distr = _distribute(infile, sizes,distribution,n=number,seed=seed,res_type=restrict[0],res_values=res_values)        
     else:
-        distr = _distribute(sizes,distribution,n=number,seed=seed)
+        distr = _distribute(infile, sizes,distribution,n=number,seed=seed)
         
     if distribution.lower() == "all":
         _print_distribution(distr,distribution,filename=outfile)

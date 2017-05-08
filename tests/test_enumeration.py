@@ -61,7 +61,7 @@ class TestEnumIn(ut.TestCase):
         args = {'profile': None, 'savedist': False, 'verbose': None,
                 'outfile': 'test_enum.in', 'enum': False,'lattice': 'lattice.in',
                 'acceptrate': None, 'examples': False, 'sizes': [2,6], 'debug': False,
-                'input': 'enum.in', 'polya': False, 'super': False,
+                'input': 'polya.out', 'polya': False, 'super': False,
                 'distribution': ['all','all'],'seed':None,'filter':None}
         _enum_in(args)
         chdir(curdir)
@@ -77,7 +77,7 @@ class TestEnumIn(ut.TestCase):
         args = {'profile': None, 'savedist': False, 'verbose': None,
                 'outfile': 'test_enum.in', 'enum': False,
                 'lattice': 'lattice.in', 'acceptrate': None,
-                'examples': False, 'sizes': [3,4], 'debug': False, 'input': 'enum.in',
+                'examples': False, 'sizes': [3,4], 'debug': False, 'input': 'polya.out',
                 'polya': False, 'super': False, 'distribution': ['all','all'],'seed':None,
                 'filter':None}
         _enum_in(args)
@@ -95,7 +95,7 @@ class TestEnumIn(ut.TestCase):
         args = {'profile': None, 'savedist': False, 'verbose': None,
                 'outfile': 'test_enum.in', 'enum': False,
                 'lattice': 'lattice.in', 'acceptrate': None,
-                'examples': False, 'sizes': None, 'debug': False, 'input': 'enum.in',
+                'examples': False, 'sizes': None, 'debug': False, 'input': 'polya.out',
                 'polya': False, 'super': False, 'distribution': ['all','100'],'seed':999,
                 'filter':None}
         _enum_in(args)
@@ -117,7 +117,7 @@ class TestEnumIn(ut.TestCase):
         args = {'profile': None, 'savedist': False, 'verbose': None,
                 'outfile': 'test_enum.in', 'enum': False,
                 'lattice': 'lattice.in', 'acceptrate': None,
-                'examples': False, 'sizes': None, 'debug': False, 'input': 'enum.in',
+                'examples': False, 'sizes': None, 'debug': False, 'input': 'polya.out',
                 'polya': False, 'super': False, 'distribution': ['all','50'],'seed':2461,
                 'filter':None}
         _enum_in(args)
@@ -138,7 +138,7 @@ class TestEnumIn(ut.TestCase):
         args = {'profile': None, 'savedist': False, 'verbose': None,
                 'outfile': 'test_enum.in', 'enum': False,
                 'lattice': 'lattice.in', 'acceptrate': None,
-                'examples': False, 'sizes': None, 'debug': False, 'input': 'enum.in',
+                'examples': False, 'sizes': None, 'debug': False, 'input': 'polya.out',
                 'polya': False, 'super': False, 'distribution': ['all','100'],'seed':None,
                 'filter':None}
         _enum_in(args)
@@ -155,7 +155,7 @@ class TestEnumIn(ut.TestCase):
         args = {'profile': None, 'savedist': True, 'verbose': None,
                 'outfile': 'test_enum.in', 'enum': False,
                 'lattice': 'lattice.in', 'acceptrate': None,
-                'examples': False, 'sizes': None, 'debug': False, 'input': 'enum.in',
+                'examples': False, 'sizes': None, 'debug': False, 'input': 'polya.out',
                 'polya': False, 'super': False, 'distribution': ['shape','all'],'seed':None,
                 'filter':None}
         _enum_in(args)
@@ -172,7 +172,7 @@ class TestEnumIn(ut.TestCase):
         args = {'profile': None, 'savedist': True, 'verbose': None,
                 'outfile': 'test_enum.in', 'enum': False,
                 'lattice': 'lattice.in', 'acceptrate': None,
-                'examples': False, 'sizes': None, 'debug': False, 'input': 'enum.in',
+                'examples': False, 'sizes': None, 'debug': False, 'input': 'polya.out',
                 'polya': False, 'super': False, 'distribution': ['size','all'],'seed':None,
                 'filter':None}
         _enum_in(args)
@@ -189,7 +189,7 @@ class TestEnumIn(ut.TestCase):
         args = {'profile': None, 'savedist': True, 'verbose': None,
                 'outfile': 'test_enum.in', 'enum': False,
                 'lattice': 'lattice.in', 'acceptrate': None,
-                'examples': False, 'sizes': None, 'debug': False, 'input': 'enum.in',
+                'examples': False, 'sizes': None, 'debug': False, 'input': 'polya.out',
                 'polya': False, 'super': False, 'distribution': ['conc','all'],'seed':None,
                 'filter':None}
         _enum_in(args)
@@ -206,7 +206,7 @@ class TestEnumIn(ut.TestCase):
         args = {'profile': None, 'savedist': False, 'verbose': None,
                 'outfile': 'test_enum.in', 'enum': False,
                 'lattice': 'lattice.in', 'acceptrate': None,
-                'examples': False, 'sizes': None, 'debug': False, 'input': 'enum.in',
+                'examples': False, 'sizes': None, 'debug': False, 'input': 'polya.out',
                 'polya': False, 'super': False, 'distribution': ['all','all'],'seed':None,
                 'filter':['shape','enum.in_shape']}
         _enum_in(args)
@@ -223,7 +223,7 @@ class TestEnumIn(ut.TestCase):
         args = {'profile': None, 'savedist': False, 'verbose': None,
                 'outfile': 'test_enum.in', 'enum': False,
                 'lattice': 'lattice.in', 'acceptrate': None,
-                'examples': False, 'sizes': None, 'debug': False, 'input': 'enum.in',
+                'examples': False, 'sizes': None, 'debug': False, 'input': 'polya.out',
                 'polya': False, 'super': False, 'distribution': ['all','all'],'seed':None,
                 'filter':['conc','enum.in_conc']}
         _enum_in(args)
@@ -241,7 +241,7 @@ class TestEnumIn(ut.TestCase):
         args = {'profile': None, 'savedist': False, 'verbose': None,
                 'outfile': 'test_enum.in', 'enum': False,
                 'lattice': 'lattice.in', 'acceptrate': None,
-                'examples': False, 'sizes': None, 'debug': False, 'input': 'enum.in',
+                'examples': False, 'sizes': None, 'debug': False, 'input': 'polya.out',
                 'polya': False, 'super': False, 'distribution': ['all','10'],'seed':1010,
                 'filter':['conc','enum.in_conc']}
         _enum_in(args)
@@ -263,7 +263,7 @@ class TestEnumIn(ut.TestCase):
         args = {'profile': None, 'savedist': False, 'verbose': None,
                 'outfile': 'test_enum.in', 'enum': False,
                 'lattice': 'lattice.in', 'acceptrate': None,
-                'examples': False, 'sizes': None, 'debug': False, 'input': 'enum.in',
+                'examples': False, 'sizes': None, 'debug': False, 'input': 'polya.out',
                 'polya': False, 'super': False, 'distribution': ['all','10'],'seed':1010,
                 'filter':['shape','enum.in_shape']}
         _enum_in(args)
@@ -285,7 +285,7 @@ class TestEnumIn(ut.TestCase):
         args = {'profile': None, 'savedist': False, 'verbose': None,
                 'outfile': 'test_enum.in', 'enum': False,
                 'lattice': 'lattice.in', 'acceptrate': None,
-                'examples': False, 'sizes': [3,4], 'debug': False, 'input': 'enum.in',
+                'examples': False, 'sizes': [3,4], 'debug': False, 'input': 'polya.out',
                 'polya': False, 'super': False, 'distribution': ['all','10'],'seed':1010,
                 'filter':['conc','enum.in_conc']}
         _enum_in(args)
@@ -307,7 +307,7 @@ class TestEnumIn(ut.TestCase):
         args = {'profile': None, 'savedist': False, 'verbose': None,
                 'outfile': 'test_enum.in', 'enum': False,
                 'lattice': 'lattice.in', 'acceptrate': None,
-                'examples': False, 'sizes': [3, 5], 'debug': False, 'input': 'enum.in',
+                'examples': False, 'sizes': [3, 5], 'debug': False, 'input': 'polya.out',
                 'polya': False, 'super': False, 'distribution': ['all','10'],'seed':1010,
                 'filter':['shape','enum.in_shape2']}
         _enum_in(args)
@@ -346,3 +346,70 @@ class TestPlotHNFs(ut.TestCase):
                 'polya': False, 'super': False, 'distribution': None,'seed':None,
                 'filter':None,'visualize':True,'shapes':False,'show':False}
         _script_enum(args,testmode=True)   
+
+class TestEnumOut(ut.TestCase):
+    "Tests the _enum_out subroutine."""
+    def _assertMultiLineEqual(self, first, second, msg=None):
+        import difflib
+        """Assert that two multi-line strings are equal.
+
+        If they aren't, show a nice diff.
+        code contributed by Ned Batchelder: http://stackoverflow.com/questions/3942820/how-to-do-unit-testing-of-functions-writing-files-using-python-unittest
+        """
+        self.assertTrue(isinstance(first, str),
+                'First argument is not a string')
+        self.assertTrue(isinstance(second, str),
+                'Second argument is not a string')
+
+        if first != second:
+            message = ''.join(difflib.ndiff(first.splitlines(True),
+                                                second.splitlines(True)))
+            if msg:
+                message += " : " + msg
+            self.fail("Multi-line strings are unequal:\n" + message)
+
+    def _compare_files(self,f1,f2):
+        with open(f1,"r") as f:
+            f1_content = f.readlines()
+        with open(f2,"r") as f:
+            f2_content = f.readlines()
+
+        if len(f1_content) == len(f2_content):
+            for i in range(1,len(f1_content)):
+                self._assertMultiLineEqual(f1_content[i],f2_content[i])
+        else:
+            self.assertEqual(len(f1_content),len(f2_content))
+            
+    
+    def test_enum_out1(self):
+        from phenum.enumeration import _script_enum
+        from os import system
+
+        args = {'profile': None, 'savedist': False, 'verbose': None,
+                'outfile': "enum.out", 'enum': True,
+                'lattice': 'tests/enumeration/enum_out/lattice.in_hcp', 'acceptrate': None,
+                'examples': False, 'sizes': None, 'debug': False,
+                'input': 'enum.in',
+                'polya': False, 'super': False, 'distribution': None,'seed':None,
+                'filter':None,'visualize':False,'shapes':False,'show':False}
+
+        _script_enum(args)
+        self._compare_files("enum.out","tests/enumeration/enum_out/enum.out_hcp")
+        system("rm enum.out enum.in polya.out.2 polya.out.1")
+
+    def test_enum_out2(self):
+        from phenum.enumeration import _script_enum
+        from os import system
+        args = {'profile': None, 'savedist': False, 'verbose': None,
+                'outfile': "enum.out", 'enum': True,
+                'lattice': 'tests/enumeration/enum_out/lattice.in_sub1', 'acceptrate': None,
+                'examples': False, 'sizes': None, 'debug': False,
+                'input': 'tests/enumeration/enum_out/enum.in_sub1',
+                'polya': False, 'super': False, 'distribution': None,'seed':0,
+                'filter':None,'visualize':False,'shapes':False,'show':False}
+
+        _script_enum(args)
+        self._compare_files("enum.out","tests/enumeration/enum_out/enum.out_sub1")
+        system("rm enum.out")
+        
+        

@@ -23,7 +23,14 @@ def _enum_in(args):
     """
 
     from phenum.structures import make_enum_in
+    from glob import glob
+    from copy import deepcopy
 
+    if not len(glob(args["input"]+".*")) >= 1:
+        temp_args = deepcopy(args)
+        temp_args["outfile"] = "polya.out"
+        _polya_out(temp_args)
+    
     distribution = args["distribution"][0].lower()
     if args["sizes"]:
         sizes = list(range(*args["sizes"]))
@@ -31,20 +38,21 @@ def _enum_in(args):
         sizes = None
 
     if args["distribution"][1].lower() == "all":
-        make_enum_in(distribution,sizes=sizes, outfile=args["outfile"],
-                     save= True if args["savedist"] else False,seed=args["seed"],
+        make_enum_in(args["input"], distribution, sizes=sizes, outfile=args["outfile"],
+                     save= True if args["savedist"] else False, seed=args["seed"],
                      restrict=args["filter"])
     else:
-        make_enum_in(distribution,number=int(args["distribution"][1]),sizes=sizes,
-                     outfile=args["outfile"], save= True if args["savedist"] else False,
-                     seed=args["seed"],restrict=args["filter"])
+        make_enum_in(args["input"], distribution, number=int(args["distribution"][1]),
+                     sizes=sizes, outfile=args["outfile"],
+                     save= True if args["savedist"] else False,
+                     seed=args["seed"], restrict=args["filter"])
 
 def _polya_out(args):
     """Generates the 'polya.out' files for the cell sizes specified in 'lattice.in'
     (or other specified input file).
     """
     from phenum.HNFs import get_HNFs
-    from phenum.grouptheory import get_sym_group, SmithNormalForm
+    from phenum.grouptheory import get_sym_group
     from phenum.symmetry import get_concs_for_size
     from phenum.io_utils import read_lattice
     import phenum.phonons as pb
@@ -52,12 +60,9 @@ def _polya_out(args):
     params = read_lattice(args["lattice"])
 
     for s in range(params["sizes"][0], params["sizes"][1]+1):
+        # get HNFs
         HNFs = get_HNFs(s,params["lat_vecs"],params["basis_vecs"],3)
-        # celldir = "{}{}".format(args["cellsdir"],args["dataformat"].format(s))
-        # get HNFs, SNFs, and LTs
-        # edata = enum_data(s,args,params)
         out = open(args["outfile"]+"."+str(s), 'w+')
-            
         # find the concentrations available for the desired cell sizes.
         cList = get_concs_for_size(s, params["nspecies"], params["is_crestricted"],
                                    len(params["basis_vecs"]), params["concs"])
@@ -71,10 +76,8 @@ def _polya_out(args):
         a_concs = pb.get_arrow_concs(params)
         conc_totals = [0 for i in range(len(cList))]
         for tHNF in HNFs:
-            # (SNF, L, R) = SmithNormalForm(tHNF)
             HNF = [tHNF[0][0],tHNF[1][0],tHNF[1][1],tHNF[2][0],tHNF[2][1],tHNF[2][2]]
             out.write("  {0: <26}".format(' '.join(map(str, HNF))))
-
             sym_g = get_sym_group(params["lat_vecs"],params["basis_vecs"],tHNF,3)
             agroup = []
             for i in range(len(sym_g.perm.site_perm)):
@@ -85,7 +88,6 @@ def _polya_out(args):
             total = 0
             for iconc, conc in enumerate(cList):
                 if len(conc) > 0:
-
                     decorations = pb.arrow_concs(conc,a_concs)
                 
                     # we need to know the concentrations of the
@@ -96,9 +98,6 @@ def _polya_out(args):
 
                     # now find the number of unique arrangements using Polya.
                     if arrow_types != 0:
-                        # Since enumlib doesn't write the arrow group
-                        # out we have to recompute the group actions
-                        # paired with their effects on the arrows
                         total_num = polya(concs_w_arrows,agroup,arrowings=arrow_types)
                     else:
                         total_num = polya(conc, agroup)
@@ -123,27 +122,38 @@ def _enum_out(args):
     """
 
     import phenum.io_utils as io
-    from phenum.structures import enum_data
     import phenum.phonons as pb
     from numpy import unique
     from phenum.grouptheory import get_full_HNF, SmithNormalForm
-
+    from os.path import isfile
+    from glob import glob
+    from copy import deepcopy
+    
     keep_supers = False
     if args["super"]:
         keep_supers = True
     
     params = io.read_lattice(args["lattice"])
+
+    if not isfile(args["input"]):
+        if not len(glob("polya.out.*")) >= 1:
+            temp_args = deepcopy(args)
+            temp_args["outfile"] = "polya.out"
+            _polya_out(temp_args)
+
+        temp_args = deepcopy(args)
+        temp_args["input"] = "polya.out"
+        temp_args["outfile"] = args["input"]
+        temp_args["distribution"] = ["all","all"]
+        _enum_in(temp_args)
+            
+        
     systems = io.read_enum(args["input"])
     io.write_enum(params, outfile=args["outfile"])    
 
     count_t = 1
     count_s = 0
     from operator import itemgetter
-    def cellsize(sHNF):
-        return sHNF[0]*sHNF[2]*sHNF[5]
-    cellsizes = unique([cellsize(sys[0]) for sys in systems])
-
-    datadicts = {}
     sfmt = ("{0: >10d}{1: >10d}{2: >8d}{3: >9d}{4: >9d}{5: >12d}{6: >4d}{7: >6d}"
             "{8: >10}  {9: >18}  {10: >44}    {11}    {12: >21}\n")
     def fmtn(l, n):
@@ -245,7 +255,7 @@ script_options = {
     "-lattice": dict(default="lattice.in", type=str,
                      help=("Override the default input file name: 'lattice.in' for "
                            "enumeration parameters.")),
-    "-input": dict(default="enum.in", type=str,
+    "-input": dict(default=None, type=str,
                    help=("Override the default 'enum.in' file name.")),
     "-distribution": dict(default=None, nargs= "+", 
                         help=("Makes an enum.in file when the distribution is 'all'. Otherwise "
@@ -255,10 +265,6 @@ script_options = {
     "-savedist": dict(action="store_true",
                       help=("Makes an enum.in file for the distribution over 'size', "
                             "'shape', or 'conc'.")),
-    "-dataformat": dict(default="cells.{}", type=str,
-                        help=("Specify the default folder name for any cell size that contains "
-                              "the matrices and groups generated by 'enum.x'. Format is: cells.{} "
-                              "where {} is a placeholder for the integer cell size.")),
     "-outfile": dict(default=None, type=str,
                      help=("Override the default output file names: 'polya.out' for "
                            "polya counting; 'enum.out' for structure enumeration; "
@@ -329,15 +335,19 @@ def _script_enum(args, testmode=False):
             exit()
             
     if args["enum"]:
+        if args["input"] == None:
+            args["input"] = "enum.in"
         if args["outfile"] == None:
               args["outfile"] = "enum.out"
         #Perform validation for running enum.
         if not path.isfile(args["input"]):
-            from phenum.msg import err
-            err("The input file {} does not exist.".format(args["input"]))
-            exit()
+            from phenum.msg import warn
+            warn("The input file {} does not exist. Assuming you want full "
+                 "enumeration.".format(args["input"]))
 
     if args["distribution"]:
+        if args["input"] == None:
+            args["input"] = "polya.out"
         if args["outfile"] == None:
               args["outfile"] = "enum.in"
         if len(args["distribution"]) != 2:

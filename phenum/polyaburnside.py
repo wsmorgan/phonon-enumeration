@@ -402,7 +402,6 @@ def polya(concentrations, group, arrowings=None, debug=False):
         
     #This is to check that the concentrations sum to the number of sites the group is
     #operating on
-    
     if sum(concentrations) != len(group[0][0]):
         raise ValueError("The concentrations don't sum to the number of things the group is acting on!")
             

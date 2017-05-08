@@ -147,6 +147,7 @@ def _perm(casei,colors,length,index,gen,stab,order,ast):
 
     # if we're on the first level of the tree then we need to
     # follow a special procedure
+    # print("i",index,"l",len(stab),"gl",len(gen))
     if index == 0:
 	# first apply all the symmetry operations one at a time, a
 	# is a single operation
@@ -300,6 +301,8 @@ def brancher(concs,group,colors_w_arrows, dim, supers, cellsize, total=0, subset
     from functools import reduce 
 
     # initial setup
+    # print("gl1",len(group))
+    # print(group)
 
     # redifine the colors so that the arrows are treated like
     # their own color
@@ -363,6 +366,7 @@ def brancher(concs,group,colors_w_arrows, dim, supers, cellsize, total=0, subset
     # Now we loop through the different possible hash arrays until
     # they have all been considered
     ncurrent = 0
+
     while branch[0] < C[0] and ((subset is not None and isinstance(subset, list) and len(survivors) < len(subset))
                                 or use_subset == False
                                 or (accept is not None and isinstance(subset, int) and len(survivors) == subset)):
@@ -370,7 +374,9 @@ def brancher(concs,group,colors_w_arrows, dim, supers, cellsize, total=0, subset
 	# 0, if no then unique = 1, perm also outputs the stabilizers
 	# for each level, the order for the first level, and the
 	# stabilizers for the arrow configurations
+        # print("label",list(_invhash(branch, concs, len(colors_w_arrows))))
         (unique,stabalizer[i+1],order,ast) = _perm(branch,concs,n,i,group,stabalizer[i],order,ast)
+        # print("unique",unique)
 
         if not supers and narrows == 0:
             from operator import mul

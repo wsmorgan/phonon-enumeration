@@ -1,14 +1,14 @@
 # Which cell-sizes do you want to search?
-1 1
+1 5
 #---------------------------------------
 # Bulk or surface?
 bulk
 # List the primitive cell's lattice vectors
 1 0 0
-0.5 1 0
-0 0 1
+0 1 0
+0.25 0 2
 # number of atomic species in the cell
-3
+2
 # basis atoms
 1
 0 0 0
@@ -26,8 +26,7 @@ bulk
 # If displacement directions are to be used then a fourth number
 # follows the fractions the fourth number should be a decimal that
 # indicates the fractional amount of displaced atoms of that species.
-T
-T
-0 4 4 0.0
-0 4 4 0.0
-0 4 4 1.0
+F
+F
+0 5 5 1.0
+0 5 5 1.0

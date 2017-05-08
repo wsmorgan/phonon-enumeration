@@ -177,7 +177,7 @@ def add_arrows(col,agroup,dim, translations, accept=None,nested=False,num_wanted
                     for trans in translations:
                         action = trans[0]
                         permutation = trans[1]
-                        if action != list(range(len(action))) or permutation != list(range(len(permutation))):
+                        if action != list(range(len(action))) or (permutation != list(range(len(permutation)))):
                             orig_sites = [i[1] for i in coloring_with_arrows]
                             arrow_sites = [i[0] for i in coloring_with_arrows]
                             perm_sites = [orig_sites[i] for i in action]
@@ -360,7 +360,14 @@ def enum_sys(groupfile, concs, a_concs, num_wanted, HNF, params, supers, accept=
     # get the symmetry group for this HNF. Assumes the group can be
     # found in the file labeled by (this_HNF)_sym_group.out
     if groupfile == None:
-        sym_g = get_sym_group(params["lat_vecs"],params["basis_vecs"],get_full_HNF(HNF),3)
+        if sum(a_concs) == 0:
+            arrows = False
+        else:
+            arrows = True
+
+        sym_g = get_sym_group(params["lat_vecs"],params["basis_vecs"],
+                              get_full_HNF(HNF),3,arrows=arrows)
+
         agroup = []
         for i in range(len(sym_g.perm.site_perm)):
             agroup.append([sym_g.perm.site_perm[i],sym_g.perm.arrow_perm[i]])
@@ -384,9 +391,6 @@ def enum_sys(groupfile, concs, a_concs, num_wanted, HNF, params, supers, accept=
         # now find the number of unique arrangements using
         # polya
         if arrow_types != 0:
-            # Since enumlib doesn't write the arrow group out we have to
-            # recompute the group actions paired with their effects on the
-            # arrows
             total = polya(sorted_concs, agroup, arrowings=arrow_types)
         else:
             total = polya(concs, agroup)

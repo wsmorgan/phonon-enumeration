@@ -44,8 +44,8 @@ def find_all_HNFs(n):
         f = diag[2]
         
         for b in range(c):
-            for e in range(f):
-                for d in range(f):
+            for d in range(f):
+                for e in range(f):
                     HNF = [[a,0,0],[b,c,0],[d,e,f]]
                     HNFs.append(HNF)
 
@@ -72,7 +72,6 @@ def remove_duplicate_lattices(HNFs,pLV,base_vecs,LatDim,base_perms,eps_=None):
 
     from .symmetry import get_spaceGroup
     from .grouptheory import _is_equiv_lattice, _get_sLV_fixing_operations
-    from copy import deepcopy
 
     if eps_:
         eps = eps_
@@ -80,21 +79,20 @@ def remove_duplicate_lattices(HNFs,pLV,base_vecs,LatDim,base_perms,eps_=None):
         eps = 1E-7
 
     aType = [1]*len(base_vecs)
-    
+
     (rots, shifts) = get_spaceGroup(pLV,aType,base_vecs,eps=eps)
-
-    temp_hnf = deepcopy(HNFs)
-
+    A = np.transpose(pLV)
+    
     uHNFs = []
     if len(HNFs) == 1:
         uHNFs = HNFs
     else:
-        for i in range(1,len(HNFs)):
+        for i in range(len(HNFs)):
             duplicate = False
             for j in range(len(uHNFs)):
                 for r in range(len(rots)):
-                    test_latticei = np.matmul(rots[r],np.matmul(pLV,HNFs[i]))
-                    test_latticej = np.matmul(pLV,uHNFs[j])
+                    test_latticei = np.matmul(rots[r],np.matmul(A,HNFs[i]))
+                    test_latticej = np.matmul(A,uHNFs[j])
                     
                     if _is_equiv_lattice(test_latticei,test_latticej,eps):
                         duplicate = True
@@ -102,8 +100,8 @@ def remove_duplicate_lattices(HNFs,pLV,base_vecs,LatDim,base_perms,eps_=None):
                 if duplicate == True:
                     break
 
-        if not duplicate:
-            uHNFs.append(HNFs[i])
+            if not duplicate:
+                uHNFs.append(HNFs[i])
 
     latts = []
     fix_Ops = []
@@ -120,7 +118,6 @@ def remove_duplicate_lattices(HNFs,pLV,base_vecs,LatDim,base_perms,eps_=None):
 
     return (uHNFs,latts,fix_Ops,RPList,degens)
 
-
 def get_HNFs(n,pLV,base_vecs,LatDim,eps_=None):
     """Finds the unique HNFs for the system.
 
@@ -136,15 +133,29 @@ def get_HNFs(n,pLV,base_vecs,LatDim,eps_=None):
     """
 
     from .grouptheory import _get_dvector_permutations
+    from .symmetry import bring_into_cell
+    from copy import deepcopy
+
     if eps_:
         eps = eps_
     else:
         eps = 1E-7
 
     HNFs = find_all_HNFs(n)
+    temp_basis = deepcopy(base_vecs)
+    pLVinv = np.linalg.inv(pLV)
+    for i in range(len(base_vecs)):
+        # par_lat_inv = linalg.inv(np.transpose(par_lat))
+        base_vecs[i] = bring_into_cell(base_vecs[i],pLVinv,pLV,eps)
+        if not np.allclose(base_vecs[i], temp_basis[i], rtol=0, atol=eps):
+            from phenum.msg import warn
+            warn("An atomic basis vector was not inside the unit cell. It has been "
+                 "remapped.\n Original vector: {} \n Remapped vector: {}"
+                 .format(" ".join([str(p) for p in temp_basis[i]]),
+                         " ".join([str(p) for p in base_vecs[i]])))
+            
     base_perms = _get_dvector_permutations(pLV,base_vecs,LatDim,eps)
 
     (HNFs,latts,fix_Ops,RPList,degens) = remove_duplicate_lattices(HNFs,pLV,base_vecs,
                                                                    LatDim,base_perms,eps_=eps)
-
     return HNFs

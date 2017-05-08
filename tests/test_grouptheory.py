@@ -19,7 +19,7 @@ def _read_fixOp_1D(fname):
 
     for j in range(1,i):
         if os.path.isfile(fname+"/_-"+str(j)+"-rot"):
-            rot = _read_float_3D(fname+"/_-"+str(j)+"-rot")
+            rot = [np.transpose(t) for t in _read_float_3D(fname+"/_-"+str(j)+"-rot")]
         else:
             rot = None
         if os.path.isfile(fname+"/_-"+str(j)+"-shift"):
@@ -154,7 +154,7 @@ def _read_int_3D(fname):
             out_t = []
             for j in range(sizes[1]):
                 out_t.append([k[j][i] for k in in_data])
-            out.append(out_t)
+            out.append(np.transpose(out_t))
 
         return(out)
 
@@ -356,7 +356,7 @@ class TestSmithNormalForm(ut.TestCase):
     def test13(self):
         from phenum.grouptheory import SmithNormalForm
         HNF =  [[1, -1, -2], [1, 2, -3], [1, 2, 4]]
-        out =  ([[1, 0, 0], [0, -1, 0], [0, 0, 21]], [[1, 0, 0], [-1, 1, 0], [-7, 6, 1]], [[1, 2, 7], [0, 0, 1], [0, 1, 3]])
+        out =  ([[1, 0, 0], [0, 1, 0], [0, 0, 21]], [[1, 0, 0], [-1, 1, 0], [-7, 6, 1]], [[1, -2, 7], [0, 0, 1], [0, -1, 3]])
         self.assertEqual(SmithNormalForm(HNF),out)
 
     def test14(self):
@@ -371,6 +371,13 @@ class TestSmithNormalForm(ut.TestCase):
         out =  ([[0.5, 0.0, 0.0], [0.0, 0.5, 0.0], [0.0, 0.0, 16.5]], [[-1.0, 0.0, 1.0], [3.0, -3.0, -2.0], [-9.0, 10.0, 6.0]], [[1, 2.5, 23.25], [0, 1.0, 10.5], [0, 0.0, 1.0]])
         with pytest.raises(RuntimeError):
             SmithNormalForm(HNF)
+
+    def test16(self):
+        from phenum.grouptheory import SmithNormalForm
+        HNF =  [[2, 0, 0], [0, 2, 0], [0, 0, 1]]
+        out =  ([[1, 0, 0], [0, 2, 0], [0, 0, 2]], [[1, 0, 1], [0, 1, 0], [-1, 0, 0]], [[0, 0, -1], [0, 1, 0], [1, 0, 2]])
+        self.assertEqual(SmithNormalForm(HNF),out)
+
 
 class TestAGroup(ut.TestCase):
     """ Tests of the a_group subroutine."""
@@ -1003,7 +1010,7 @@ class TestGetSLVFixingOperations(ut.TestCase):
         from phenum.grouptheory import _get_sLV_fixing_operations
         case = 1
         HNF = _read_int_2D(gpath+"get_sLV_fixing_operations_HNF.in."+str(case))
-        pLV = _read_float_2D(gpath+"get_sLV_fixing_operations_pLV.in."+str(case))
+        pLV = np.transpose(_read_float_2D(gpath+"get_sLV_fixing_operations_pLV.in."+str(case)))
         nD = _read_int(gpath+"get_sLV_fixing_operations_nD.in."+str(case))
         rot = _read_float_3D(gpath+"get_sLV_fixing_operations_rot.in."+str(case))
         shift = list(map(list,zip(*_read_float_2D(gpath+"get_sLV_fixing_operations_shift.in."+str(case)))))
@@ -1020,7 +1027,7 @@ class TestGetSLVFixingOperations(ut.TestCase):
         from phenum.grouptheory import _get_sLV_fixing_operations
         case = 10
         HNF = _read_int_2D(gpath+"get_sLV_fixing_operations_HNF.in."+str(case))
-        pLV = _read_float_2D(gpath+"get_sLV_fixing_operations_pLV.in."+str(case))
+        pLV = np.transpose(_read_float_2D(gpath+"get_sLV_fixing_operations_pLV.in."+str(case)))
         nD = _read_int(gpath+"get_sLV_fixing_operations_nD.in."+str(case))
         rot = _read_float_3D(gpath+"get_sLV_fixing_operations_rot.in."+str(case))
         shift = list(map(list,zip(*_read_float_2D(gpath+"get_sLV_fixing_operations_shift.in."+str(case)))))
@@ -1037,7 +1044,7 @@ class TestGetSLVFixingOperations(ut.TestCase):
         from phenum.grouptheory import _get_sLV_fixing_operations
         case = 20
         HNF = _read_int_2D(gpath+"get_sLV_fixing_operations_HNF.in."+str(case))
-        pLV = _read_float_2D(gpath+"get_sLV_fixing_operations_pLV.in."+str(case))
+        pLV = np.transpose(_read_float_2D(gpath+"get_sLV_fixing_operations_pLV.in."+str(case)))
         nD = _read_int(gpath+"get_sLV_fixing_operations_nD.in."+str(case))
         rot = _read_float_3D(gpath+"get_sLV_fixing_operations_rot.in."+str(case))
         shift = list(map(list,zip(*_read_float_2D(gpath+"get_sLV_fixing_operations_shift.in."+str(case)))))
@@ -1054,7 +1061,7 @@ class TestGetSLVFixingOperations(ut.TestCase):
         from phenum.grouptheory import _get_sLV_fixing_operations
         case = 30
         HNF = _read_int_2D(gpath+"get_sLV_fixing_operations_HNF.in."+str(case))
-        pLV = _read_float_2D(gpath+"get_sLV_fixing_operations_pLV.in."+str(case))
+        pLV = np.transpose(_read_float_2D(gpath+"get_sLV_fixing_operations_pLV.in."+str(case)))
         nD = _read_int(gpath+"get_sLV_fixing_operations_nD.in."+str(case))
         rot = _read_float_3D(gpath+"get_sLV_fixing_operations_rot.in."+str(case))
         shift = list(map(list,zip(*_read_float_2D(gpath+"get_sLV_fixing_operations_shift.in."+str(case)))))
@@ -1071,7 +1078,7 @@ class TestGetSLVFixingOperations(ut.TestCase):
         from phenum.grouptheory import _get_sLV_fixing_operations
         case = 40
         HNF = _read_int_2D(gpath+"get_sLV_fixing_operations_HNF.in."+str(case))
-        pLV = _read_float_2D(gpath+"get_sLV_fixing_operations_pLV.in."+str(case))
+        pLV = np.transpose(_read_float_2D(gpath+"get_sLV_fixing_operations_pLV.in."+str(case)))
         nD = _read_int(gpath+"get_sLV_fixing_operations_nD.in."+str(case))
         rot = _read_float_3D(gpath+"get_sLV_fixing_operations_rot.in."+str(case))
         shift = list(map(list,zip(*_read_float_2D(gpath+"get_sLV_fixing_operations_shift.in."+str(case)))))
@@ -1088,7 +1095,7 @@ class TestGetSLVFixingOperations(ut.TestCase):
         from phenum.grouptheory import _get_sLV_fixing_operations
         case = 50
         HNF = _read_int_2D(gpath+"get_sLV_fixing_operations_HNF.in."+str(case))
-        pLV = _read_float_2D(gpath+"get_sLV_fixing_operations_pLV.in."+str(case))
+        pLV = np.transpose(_read_float_2D(gpath+"get_sLV_fixing_operations_pLV.in."+str(case)))
         nD = _read_int(gpath+"get_sLV_fixing_operations_nD.in."+str(case))
         rot = _read_float_3D(gpath+"get_sLV_fixing_operations_rot.in."+str(case))
         shift = list(map(list,zip(*_read_float_2D(gpath+"get_sLV_fixing_operations_shift.in."+str(case)))))
@@ -1105,7 +1112,7 @@ class TestGetSLVFixingOperations(ut.TestCase):
         from phenum.grouptheory import _get_sLV_fixing_operations
         case = 60
         HNF = _read_int_2D(gpath+"get_sLV_fixing_operations_HNF.in."+str(case))
-        pLV = _read_float_2D(gpath+"get_sLV_fixing_operations_pLV.in."+str(case))
+        pLV = np.transpose(_read_float_2D(gpath+"get_sLV_fixing_operations_pLV.in."+str(case)))
         nD = _read_int(gpath+"get_sLV_fixing_operations_nD.in."+str(case))
         rot = _read_float_3D(gpath+"get_sLV_fixing_operations_rot.in."+str(case))
         shift = list(map(list,zip(*_read_float_2D(gpath+"get_sLV_fixing_operations_shift.in."+str(case)))))
@@ -1122,7 +1129,7 @@ class TestGetSLVFixingOperations(ut.TestCase):
         from phenum.grouptheory import _get_sLV_fixing_operations
         case = 70
         HNF = _read_int_2D(gpath+"get_sLV_fixing_operations_HNF.in."+str(case))
-        pLV = _read_float_2D(gpath+"get_sLV_fixing_operations_pLV.in."+str(case))
+        pLV = np.transpose(_read_float_2D(gpath+"get_sLV_fixing_operations_pLV.in."+str(case)))
         nD = _read_int(gpath+"get_sLV_fixing_operations_nD.in."+str(case))
         rot = _read_float_3D(gpath+"get_sLV_fixing_operations_rot.in."+str(case))
         shift = list(map(list,zip(*_read_float_2D(gpath+"get_sLV_fixing_operations_shift.in."+str(case)))))
@@ -1139,7 +1146,7 @@ class TestGetSLVFixingOperations(ut.TestCase):
         from phenum.grouptheory import _get_sLV_fixing_operations
         case = 80
         HNF = _read_int_2D(gpath+"get_sLV_fixing_operations_HNF.in."+str(case))
-        pLV = _read_float_2D(gpath+"get_sLV_fixing_operations_pLV.in."+str(case))
+        pLV = np.transpose(_read_float_2D(gpath+"get_sLV_fixing_operations_pLV.in."+str(case)))
         nD = _read_int(gpath+"get_sLV_fixing_operations_nD.in."+str(case))
         rot = _read_float_3D(gpath+"get_sLV_fixing_operations_rot.in."+str(case))
         shift = list(map(list,zip(*_read_float_2D(gpath+"get_sLV_fixing_operations_shift.in."+str(case)))))
@@ -1156,7 +1163,7 @@ class TestGetSLVFixingOperations(ut.TestCase):
         from phenum.grouptheory import _get_sLV_fixing_operations
         case = 90
         HNF = _read_int_2D(gpath+"get_sLV_fixing_operations_HNF.in."+str(case))
-        pLV = _read_float_2D(gpath+"get_sLV_fixing_operations_pLV.in."+str(case))
+        pLV = np.transpose(_read_float_2D(gpath+"get_sLV_fixing_operations_pLV.in."+str(case)))
         nD = _read_int(gpath+"get_sLV_fixing_operations_nD.in."+str(case))
         rot = _read_float_3D(gpath+"get_sLV_fixing_operations_rot.in."+str(case))
         shift = list(map(list,zip(*_read_float_2D(gpath+"get_sLV_fixing_operations_shift.in."+str(case)))))
@@ -1172,7 +1179,7 @@ class TestGetSLVFixingOperations(ut.TestCase):
         from phenum.grouptheory import _get_sLV_fixing_operations
         case = 100
         HNF = _read_int_2D(gpath+"get_sLV_fixing_operations_HNF.in."+str(case))
-        pLV = _read_float_2D(gpath+"get_sLV_fixing_operations_pLV.in."+str(case))
+        pLV = np.transpose(_read_float_2D(gpath+"get_sLV_fixing_operations_pLV.in."+str(case)))
         nD = _read_int(gpath+"get_sLV_fixing_operations_nD.in."+str(case))
         rot = _read_float_3D(gpath+"get_sLV_fixing_operations_rot.in."+str(case))
         shift = list(map(list,zip(*_read_float_2D(gpath+"get_sLV_fixing_operations_shift.in."+str(case)))))
@@ -1189,7 +1196,7 @@ class TestGetSLVFixingOperations(ut.TestCase):
         from phenum.grouptheory import _get_sLV_fixing_operations
         case = 110
         HNF = _read_int_2D(gpath+"get_sLV_fixing_operations_HNF.in."+str(case))
-        pLV = _read_float_2D(gpath+"get_sLV_fixing_operations_pLV.in."+str(case))
+        pLV = np.transpose(_read_float_2D(gpath+"get_sLV_fixing_operations_pLV.in."+str(case)))
         nD = _read_int(gpath+"get_sLV_fixing_operations_nD.in."+str(case))
         rot = _read_float_3D(gpath+"get_sLV_fixing_operations_rot.in."+str(case))
         shift = list(map(list,zip(*_read_float_2D(gpath+"get_sLV_fixing_operations_shift.in."+str(case)))))
@@ -1206,7 +1213,7 @@ class TestGetSLVFixingOperations(ut.TestCase):
         from phenum.grouptheory import _get_sLV_fixing_operations
         case = 120
         HNF = _read_int_2D(gpath+"get_sLV_fixing_operations_HNF.in."+str(case))
-        pLV = _read_float_2D(gpath+"get_sLV_fixing_operations_pLV.in."+str(case))
+        pLV = np.transpose(_read_float_2D(gpath+"get_sLV_fixing_operations_pLV.in."+str(case)))
         nD = _read_int(gpath+"get_sLV_fixing_operations_nD.in."+str(case))
         rot = _read_float_3D(gpath+"get_sLV_fixing_operations_rot.in."+str(case))
         shift = list(map(list,zip(*_read_float_2D(gpath+"get_sLV_fixing_operations_shift.in."+str(case)))))
@@ -1223,7 +1230,7 @@ class TestGetSLVFixingOperations(ut.TestCase):
         from phenum.grouptheory import _get_sLV_fixing_operations
         case = 130
         HNF = _read_int_2D(gpath+"get_sLV_fixing_operations_HNF.in."+str(case))
-        pLV = _read_float_2D(gpath+"get_sLV_fixing_operations_pLV.in."+str(case))
+        pLV = np.transpose(_read_float_2D(gpath+"get_sLV_fixing_operations_pLV.in."+str(case)))
         nD = _read_int(gpath+"get_sLV_fixing_operations_nD.in."+str(case))
         rot = _read_float_3D(gpath+"get_sLV_fixing_operations_rot.in."+str(case))
         shift = list(map(list,zip(*_read_float_2D(gpath+"get_sLV_fixing_operations_shift.in."+str(case)))))
@@ -1240,7 +1247,7 @@ class TestGetSLVFixingOperations(ut.TestCase):
         from phenum.grouptheory import _get_sLV_fixing_operations
         case = 140
         HNF = _read_int_2D(gpath+"get_sLV_fixing_operations_HNF.in."+str(case))
-        pLV = _read_float_2D(gpath+"get_sLV_fixing_operations_pLV.in."+str(case))
+        pLV = np.transpose(_read_float_2D(gpath+"get_sLV_fixing_operations_pLV.in."+str(case)))
         nD = _read_int(gpath+"get_sLV_fixing_operations_nD.in."+str(case))
         rot = _read_float_3D(gpath+"get_sLV_fixing_operations_rot.in."+str(case))
         shift = list(map(list,zip(*_read_float_2D(gpath+"get_sLV_fixing_operations_shift.in."+str(case)))))
@@ -1257,7 +1264,7 @@ class TestGetSLVFixingOperations(ut.TestCase):
         from phenum.grouptheory import _get_sLV_fixing_operations
         case = 150
         HNF = _read_int_2D(gpath+"get_sLV_fixing_operations_HNF.in."+str(case))
-        pLV = _read_float_2D(gpath+"get_sLV_fixing_operations_pLV.in."+str(case))
+        pLV = np.transpose(_read_float_2D(gpath+"get_sLV_fixing_operations_pLV.in."+str(case)))
         nD = _read_int(gpath+"get_sLV_fixing_operations_nD.in."+str(case))
         rot = _read_float_3D(gpath+"get_sLV_fixing_operations_rot.in."+str(case))
         shift = list(map(list,zip(*_read_float_2D(gpath+"get_sLV_fixing_operations_shift.in."+str(case)))))
@@ -1531,8 +1538,7 @@ class TestMapDvectorPermutation(ut.TestCase):
         out = [i-1 for i in out]
 
         self._compare_outputs(_map_dvector_permutation(rd,d,eps,n),out)
-        
-        
+                
 class TestFindMinmaxIndices(ut.TestCase):
     """Tests of the _find_minmax_indices subroutine."""
 
@@ -1960,15 +1966,17 @@ class TestGetRotationPermsLists(ut.TestCase):
     def test1(self):
         from phenum.grouptheory import _get_rotation_perms_lists
         case = 1
-        A = list(map(list,zip(*_read_float_2D(gpath+"get_rotation_perms_lists_A.in."+str(case)))))
-        HNF = _read_int_3D(gpath+"get_rotation_perms_lists_HNF.in."+str(case))
-        L = _read_int_3D(gpath+"get_rotation_perms_lists_L.in."+str(case))
-        SNF = _read_int_3D(gpath+"get_rotation_perms_lists_SNF.in."+str(case))
+        A = [[10,0,0],[0,10,0],[0,0,10]]
+        HNF = [[[1,0,0],[0,1,0],[0,0,1]]]
+        L = [[[1,0,0],[0,1,0],[0,0,1]]]
+        SNF = [[[1,0,0],[0,1,0],[0,0,1]]]
         Op = _read_fixOp_1D(gpath+"get_rotation_perms_lists_Op.in."+str(case))
         dperms = _read_RotPermList(gpath+"get_rotation_perms_lists_dperms.in."+str(case))
         RPlist = _read_RotPermList_1D(gpath+"get_rotation_perms_lists_RPlist.in."+str(case))
         eps = _read_float(gpath+"get_rotation_perms_lists_eps.in."+str(case))
         out1 = _get_rotation_perms_lists(A,HNF,L,SNF,Op,RPlist,dperms,eps)
+        for out in out1:
+            out.perm.arrow_perm = None
         out2 = _read_RotPermList_1D(gpath+"get_rotation_perms_lists_RPlist.out."+str(case))
         self._compare_outputs(out1,out2)
 
@@ -1984,6 +1992,8 @@ class TestGetRotationPermsLists(ut.TestCase):
         RPlist = _read_RotPermList_1D(gpath+"get_rotation_perms_lists_RPlist.in."+str(case))
         eps = _read_float(gpath+"get_rotation_perms_lists_eps.in."+str(case))
         out1 = _get_rotation_perms_lists(A,HNF,L,SNF,Op,RPlist,dperms,eps)
+        for out in out1:
+            out.perm.arrow_perm = None
         out2 = _read_RotPermList_1D(gpath+"get_rotation_perms_lists_RPlist.out."+str(case))
         self._compare_outputs(out1,out2)
 
@@ -2000,6 +2010,8 @@ class TestGetRotationPermsLists(ut.TestCase):
         eps = _read_float(gpath+"get_rotation_perms_lists_eps.in."+str(case))
         out1 = _get_rotation_perms_lists(A,HNF,L,SNF,Op,RPlist,dperms,eps)
         out2 = _read_RotPermList_1D(gpath+"get_rotation_perms_lists_RPlist.out."+str(case))
+        for out in out1:
+            out.perm.arrow_perm = None
         self._compare_outputs(out1,out2)
 
     def test4(self):
@@ -2015,6 +2027,8 @@ class TestGetRotationPermsLists(ut.TestCase):
         eps = _read_float(gpath+"get_rotation_perms_lists_eps.in."+str(case))
         out1 = _get_rotation_perms_lists(A,HNF,L,SNF,Op,RPlist,dperms,eps)
         out2 = _read_RotPermList_1D(gpath+"get_rotation_perms_lists_RPlist.out."+str(case))
+        for out in out1:
+            out.perm.arrow_perm = None
         self._compare_outputs(out1,out2)
 
     def test5(self):
@@ -2030,6 +2044,8 @@ class TestGetRotationPermsLists(ut.TestCase):
         eps = _read_float(gpath+"get_rotation_perms_lists_eps.in."+str(case))
         out1 = _get_rotation_perms_lists(A,HNF,L,SNF,Op,RPlist,dperms,eps)
         out2 = _read_RotPermList_1D(gpath+"get_rotation_perms_lists_RPlist.out."+str(case))
+        for out in out1:
+            out.perm.arrow_perm = None
         self._compare_outputs(out1,out2)
 
     def test6(self):
@@ -2045,9 +2061,10 @@ class TestGetRotationPermsLists(ut.TestCase):
         eps = _read_float(gpath+"get_rotation_perms_lists_eps.in."+str(case))
         out1 = _get_rotation_perms_lists(A,HNF,L,SNF,Op,RPlist,dperms,eps)
         out2 = _read_RotPermList_1D(gpath+"get_rotation_perms_lists_RPlist.out."+str(case))
+        for out in out1:
+            out.perm.arrow_perm = None
         self._compare_outputs(out1,out2)
         
-
     def test7(self):
         from phenum.grouptheory import _get_rotation_perms_lists
         case = 7
@@ -2061,6 +2078,8 @@ class TestGetRotationPermsLists(ut.TestCase):
         eps = _read_float(gpath+"get_rotation_perms_lists_eps.in."+str(case))
         out1 = _get_rotation_perms_lists(A,HNF,L,SNF,Op,RPlist,dperms,eps)
         out2 = _read_RotPermList_1D(gpath+"get_rotation_perms_lists_RPlist.out."+str(case))
+        for out in out1:
+            out.perm.arrow_perm = None
         self._compare_outputs(out1,out2)
 
     def test8(self):
@@ -2076,6 +2095,8 @@ class TestGetRotationPermsLists(ut.TestCase):
         eps = _read_float(gpath+"get_rotation_perms_lists_eps.in."+str(case))
         out1 = _get_rotation_perms_lists(A,HNF,L,SNF,Op,RPlist,dperms,eps)
         out2 = _read_RotPermList_1D(gpath+"get_rotation_perms_lists_RPlist.out."+str(case))
+        for out in out1:
+            out.perm.arrow_perm = None
         self._compare_outputs(out1,out2)
 
     def test9(self):
@@ -2091,6 +2112,8 @@ class TestGetRotationPermsLists(ut.TestCase):
         eps = _read_float(gpath+"get_rotation_perms_lists_eps.in."+str(case))
         out1 = _get_rotation_perms_lists(A,HNF,L,SNF,Op,RPlist,dperms,eps)
         out2 = _read_RotPermList_1D(gpath+"get_rotation_perms_lists_RPlist.out."+str(case))
+        for out in out1:
+            out.perm.arrow_perm = None
         self._compare_outputs(out1,out2)
 
     def test10(self):
@@ -2106,6 +2129,8 @@ class TestGetRotationPermsLists(ut.TestCase):
         eps = _read_float(gpath+"get_rotation_perms_lists_eps.in."+str(case))
         out1 = _get_rotation_perms_lists(A,HNF,L,SNF,Op,RPlist,dperms,eps)
         out2 = _read_RotPermList_1D(gpath+"get_rotation_perms_lists_RPlist.out."+str(case))
+        for out in out1:
+            out.perm.arrow_perm = None
         self._compare_outputs(out1,out2)
 
     def test11(self):
@@ -2121,6 +2146,8 @@ class TestGetRotationPermsLists(ut.TestCase):
         eps = _read_float(gpath+"get_rotation_perms_lists_eps.in."+str(case))
         out1 = _get_rotation_perms_lists(A,HNF,L,SNF,Op,RPlist,dperms,eps)
         out2 = _read_RotPermList_1D(gpath+"get_rotation_perms_lists_RPlist.out."+str(case))
+        for out in out1:
+            out.perm.arrow_perm = None
         self._compare_outputs(out1,out2)
 
     def test12(self):
@@ -2136,6 +2163,8 @@ class TestGetRotationPermsLists(ut.TestCase):
         eps = _read_float(gpath+"get_rotation_perms_lists_eps.in."+str(case))
         out1 = _get_rotation_perms_lists(A,HNF,L,SNF,Op,RPlist,dperms,eps)
         out2 = _read_RotPermList_1D(gpath+"get_rotation_perms_lists_RPlist.out."+str(case))
+        for out in out1:
+            out.perm.arrow_perm = None
         self._compare_outputs(out1,out2)
 
     def test13(self):
@@ -2151,6 +2180,8 @@ class TestGetRotationPermsLists(ut.TestCase):
         eps = _read_float(gpath+"get_rotation_perms_lists_eps.in."+str(case))
         out1 = _get_rotation_perms_lists(A,HNF,L,SNF,Op,RPlist,dperms,eps)
         out2 = _read_RotPermList_1D(gpath+"get_rotation_perms_lists_RPlist.out."+str(case))
+        for out in out1:
+            out.perm.arrow_perm = None
         self._compare_outputs(out1,out2)
 
     def test14(self):
@@ -2166,6 +2197,8 @@ class TestGetRotationPermsLists(ut.TestCase):
         eps = _read_float(gpath+"get_rotation_perms_lists_eps.in."+str(case))
         out1 = _get_rotation_perms_lists(A,HNF,L,SNF,Op,RPlist,dperms,eps)
         out2 = _read_RotPermList_1D(gpath+"get_rotation_perms_lists_RPlist.out."+str(case))
+        for out in out1:
+            out.perm.arrow_perm = None
         self._compare_outputs(out1,out2)
 
     def test15(self):
@@ -2181,6 +2214,8 @@ class TestGetRotationPermsLists(ut.TestCase):
         eps = _read_float(gpath+"get_rotation_perms_lists_eps.in."+str(case))
         out1 = _get_rotation_perms_lists(A,HNF,L,SNF,Op,RPlist,dperms,eps)
         out2 = _read_RotPermList_1D(gpath+"get_rotation_perms_lists_RPlist.out."+str(case))
+        for out in out1:
+            out.perm.arrow_perm = None
         self._compare_outputs(out1,out2)
 
     def test16(self):
@@ -2196,6 +2231,8 @@ class TestGetRotationPermsLists(ut.TestCase):
         eps = _read_float(gpath+"get_rotation_perms_lists_eps.in."+str(case))
         out1 = _get_rotation_perms_lists(A,HNF,L,SNF,Op,RPlist,dperms,eps)
         out2 = _read_RotPermList_1D(gpath+"get_rotation_perms_lists_RPlist.out."+str(case))
+        for out in out1:
+            out.perm.arrow_perm = None
         self._compare_outputs(out1,out2)
 
     def test17(self):
@@ -2211,6 +2248,8 @@ class TestGetRotationPermsLists(ut.TestCase):
         eps = _read_float(gpath+"get_rotation_perms_lists_eps.in."+str(case))
         out1 = _get_rotation_perms_lists(A,HNF,L,SNF,Op,RPlist,dperms,eps)
         out2 = _read_RotPermList_1D(gpath+"get_rotation_perms_lists_RPlist.out."+str(case))
+        for out in out1:
+            out.perm.arrow_perm = None
         self._compare_outputs(out1,out2)
 
     def test18(self):
@@ -2226,6 +2265,8 @@ class TestGetRotationPermsLists(ut.TestCase):
         eps = _read_float(gpath+"get_rotation_perms_lists_eps.in."+str(case))
         out1 = _get_rotation_perms_lists(A,HNF,L,SNF,Op,RPlist,dperms,eps)
         out2 = _read_RotPermList_1D(gpath+"get_rotation_perms_lists_RPlist.out."+str(case))
+        for out in out1:
+            out.perm.arrow_perm = None
         self._compare_outputs(out1,out2)
 
     def test19(self):
@@ -2241,6 +2282,8 @@ class TestGetRotationPermsLists(ut.TestCase):
         eps = _read_float(gpath+"get_rotation_perms_lists_eps.in."+str(case))
         out1 = _get_rotation_perms_lists(A,HNF,L,SNF,Op,RPlist,dperms,eps)
         out2 = _read_RotPermList_1D(gpath+"get_rotation_perms_lists_RPlist.out."+str(case))
+        for out in out1:
+            out.perm.arrow_perm = None
         self._compare_outputs(out1,out2)
 
     def test20(self):
@@ -2256,6 +2299,8 @@ class TestGetRotationPermsLists(ut.TestCase):
         eps = _read_float(gpath+"get_rotation_perms_lists_eps.in."+str(case))
         out1 = _get_rotation_perms_lists(A,HNF,L,SNF,Op,RPlist,dperms,eps)
         out2 = _read_RotPermList_1D(gpath+"get_rotation_perms_lists_RPlist.out."+str(case))
+        for out in out1:
+            out.perm.arrow_perm = None
         self._compare_outputs(out1,out2)
 
     def test21(self):
@@ -2271,6 +2316,8 @@ class TestGetRotationPermsLists(ut.TestCase):
         eps = _read_float(gpath+"get_rotation_perms_lists_eps.in."+str(case))
         out1 = _get_rotation_perms_lists(A,HNF,L,SNF,Op,RPlist,dperms,eps)
         out2 = _read_RotPermList_1D(gpath+"get_rotation_perms_lists_RPlist.out."+str(case))
+        for out in out1:
+            out.perm.arrow_perm = None
         self._compare_outputs(out1,out2)
 
     def test22(self):
@@ -2286,6 +2333,8 @@ class TestGetRotationPermsLists(ut.TestCase):
         eps = _read_float(gpath+"get_rotation_perms_lists_eps.in."+str(case))
         out1 = _get_rotation_perms_lists(A,HNF,L,SNF,Op,RPlist,dperms,eps)
         out2 = _read_RotPermList_1D(gpath+"get_rotation_perms_lists_RPlist.out."+str(case))
+        for out in out1:
+            out.perm.arrow_perm = None
         self._compare_outputs(out1,out2)
 
     def test23(self):
@@ -2301,6 +2350,8 @@ class TestGetRotationPermsLists(ut.TestCase):
         eps = _read_float(gpath+"get_rotation_perms_lists_eps.in."+str(case))
         out1 = _get_rotation_perms_lists(A,HNF,L,SNF,Op,RPlist,dperms,eps)
         out2 = _read_RotPermList_1D(gpath+"get_rotation_perms_lists_RPlist.out."+str(case))
+        for out in out1:
+            out.perm.arrow_perm = None
         self._compare_outputs(out1,out2)
 
     def test24(self):
@@ -2316,6 +2367,8 @@ class TestGetRotationPermsLists(ut.TestCase):
         eps = _read_float(gpath+"get_rotation_perms_lists_eps.in."+str(case))
         out1 = _get_rotation_perms_lists(A,HNF,L,SNF,Op,RPlist,dperms,eps)
         out2 = _read_RotPermList_1D(gpath+"get_rotation_perms_lists_RPlist.out."+str(case))
+        for out in out1:
+            out.perm.arrow_perm = None
         self._compare_outputs(out1,out2)
 
     def test25(self):
@@ -2331,6 +2384,8 @@ class TestGetRotationPermsLists(ut.TestCase):
         eps = _read_float(gpath+"get_rotation_perms_lists_eps.in."+str(case))
         out1 = _get_rotation_perms_lists(A,HNF,L,SNF,Op,RPlist,dperms,eps)
         out2 = _read_RotPermList_1D(gpath+"get_rotation_perms_lists_RPlist.out."+str(case))
+        for out in out1:
+            out.perm.arrow_perm = None
         self._compare_outputs(out1,out2)
 
     def test26(self):
@@ -2346,6 +2401,8 @@ class TestGetRotationPermsLists(ut.TestCase):
         eps = _read_float(gpath+"get_rotation_perms_lists_eps.in."+str(case))
         out1 = _get_rotation_perms_lists(A,HNF,L,SNF,Op,RPlist,dperms,eps)
         out2 = _read_RotPermList_1D(gpath+"get_rotation_perms_lists_RPlist.out."+str(case))
+        for out in out1:
+            out.perm.arrow_perm = None
         self._compare_outputs(out1,out2)
 
     def test27(self):
@@ -2361,6 +2418,8 @@ class TestGetRotationPermsLists(ut.TestCase):
         eps = _read_float(gpath+"get_rotation_perms_lists_eps.in."+str(case))
         out1 = _get_rotation_perms_lists(A,HNF,L,SNF,Op,RPlist,dperms,eps)
         out2 = _read_RotPermList_1D(gpath+"get_rotation_perms_lists_RPlist.out."+str(case))
+        for out in out1:
+            out.perm.arrow_perm = None
         self._compare_outputs(out1,out2)
 
     def test28(self):
@@ -2376,6 +2435,8 @@ class TestGetRotationPermsLists(ut.TestCase):
         eps = _read_float(gpath+"get_rotation_perms_lists_eps.in."+str(case))
         out1 = _get_rotation_perms_lists(A,HNF,L,SNF,Op,RPlist,dperms,eps)
         out2 = _read_RotPermList_1D(gpath+"get_rotation_perms_lists_RPlist.out."+str(case))
+        for out in out1:
+            out.perm.arrow_perm = None
         self._compare_outputs(out1,out2)
 
     def test29(self):
@@ -2391,6 +2452,8 @@ class TestGetRotationPermsLists(ut.TestCase):
         eps = _read_float(gpath+"get_rotation_perms_lists_eps.in."+str(case))
         out1 = _get_rotation_perms_lists(A,HNF,L,SNF,Op,RPlist,dperms,eps)
         out2 = _read_RotPermList_1D(gpath+"get_rotation_perms_lists_RPlist.out."+str(case))
+        for out in out1:
+            out.perm.arrow_perm = None
         self._compare_outputs(out1,out2)
 
     def test30(self):
@@ -2406,6 +2469,8 @@ class TestGetRotationPermsLists(ut.TestCase):
         eps = _read_float(gpath+"get_rotation_perms_lists_eps.in."+str(case))
         out1 = _get_rotation_perms_lists(A,HNF,L,SNF,Op,RPlist,dperms,eps)
         out2 = _read_RotPermList_1D(gpath+"get_rotation_perms_lists_RPlist.out."+str(case))
+        for out in out1:
+            out.perm.arrow_perm = None
         self._compare_outputs(out1,out2)
 
     def test31(self):
@@ -2421,6 +2486,8 @@ class TestGetRotationPermsLists(ut.TestCase):
         eps = _read_float(gpath+"get_rotation_perms_lists_eps.in."+str(case))
         out1 = _get_rotation_perms_lists(A,HNF,L,SNF,Op,RPlist,dperms,eps)
         out2 = _read_RotPermList_1D(gpath+"get_rotation_perms_lists_RPlist.out."+str(case))
+        for out in out1:
+            out.perm.arrow_perm = None
         self._compare_outputs(out1,out2)
 
     def test32(self):
@@ -2436,6 +2503,8 @@ class TestGetRotationPermsLists(ut.TestCase):
         eps = _read_float(gpath+"get_rotation_perms_lists_eps.in."+str(case))
         out1 = _get_rotation_perms_lists(A,HNF,L,SNF,Op,RPlist,dperms,eps)
         out2 = _read_RotPermList_1D(gpath+"get_rotation_perms_lists_RPlist.out."+str(case))
+        for out in out1:
+            out.perm.arrow_perm = None
         self._compare_outputs(out1,out2)
 
     def test33(self):
@@ -2451,6 +2520,8 @@ class TestGetRotationPermsLists(ut.TestCase):
         eps = _read_float(gpath+"get_rotation_perms_lists_eps.in."+str(case))
         out1 = _get_rotation_perms_lists(A,HNF,L,SNF,Op,RPlist,dperms,eps)
         out2 = _read_RotPermList_1D(gpath+"get_rotation_perms_lists_RPlist.out."+str(case))
+        for out in out1:
+            out.perm.arrow_perm = None
         self._compare_outputs(out1,out2)
 
     def test34(self):
@@ -2466,6 +2537,8 @@ class TestGetRotationPermsLists(ut.TestCase):
         eps = _read_float(gpath+"get_rotation_perms_lists_eps.in."+str(case))
         out1 = _get_rotation_perms_lists(A,HNF,L,SNF,Op,RPlist,dperms,eps)
         out2 = _read_RotPermList_1D(gpath+"get_rotation_perms_lists_RPlist.out."+str(case))
+        for out in out1:
+            out.perm.arrow_perm = None
         self._compare_outputs(out1,out2)
 
     def test35(self):
@@ -2481,6 +2554,8 @@ class TestGetRotationPermsLists(ut.TestCase):
         eps = _read_float(gpath+"get_rotation_perms_lists_eps.in."+str(case))
         out1 = _get_rotation_perms_lists(A,HNF,L,SNF,Op,RPlist,dperms,eps)
         out2 = _read_RotPermList_1D(gpath+"get_rotation_perms_lists_RPlist.out."+str(case))
+        for out in out1:
+            out.perm.arrow_perm = None
         self._compare_outputs(out1,out2)
 
     def test36(self):
@@ -2496,6 +2571,8 @@ class TestGetRotationPermsLists(ut.TestCase):
         eps = _read_float(gpath+"get_rotation_perms_lists_eps.in."+str(case))
         out1 = _get_rotation_perms_lists(A,HNF,L,SNF,Op,RPlist,dperms,eps)
         out2 = _read_RotPermList_1D(gpath+"get_rotation_perms_lists_RPlist.out."+str(case))
+        for out in out1:
+            out.perm.arrow_perm = None
         self._compare_outputs(out1,out2)
 
     def test37(self):
@@ -2511,6 +2588,8 @@ class TestGetRotationPermsLists(ut.TestCase):
         eps = _read_float(gpath+"get_rotation_perms_lists_eps.in."+str(case))
         out1 = _get_rotation_perms_lists(A,HNF,L,SNF,Op,RPlist,dperms,eps)
         out2 = _read_RotPermList_1D(gpath+"get_rotation_perms_lists_RPlist.out."+str(case))
+        for out in out1:
+            out.perm.arrow_perm = None
         self._compare_outputs(out1,out2)
 
     def test38(self):
@@ -2526,6 +2605,8 @@ class TestGetRotationPermsLists(ut.TestCase):
         eps = _read_float(gpath+"get_rotation_perms_lists_eps.in."+str(case))
         out1 = _get_rotation_perms_lists(A,HNF,L,SNF,Op,RPlist,dperms,eps)
         out2 = _read_RotPermList_1D(gpath+"get_rotation_perms_lists_RPlist.out."+str(case))
+        for out in out1:
+            out.perm.arrow_perm = None
         self._compare_outputs(out1,out2)
 
     def test39(self):
@@ -2541,6 +2622,8 @@ class TestGetRotationPermsLists(ut.TestCase):
         eps = _read_float(gpath+"get_rotation_perms_lists_eps.in."+str(case))
         out1 = _get_rotation_perms_lists(A,HNF,L,SNF,Op,RPlist,dperms,eps)
         out2 = _read_RotPermList_1D(gpath+"get_rotation_perms_lists_RPlist.out."+str(case))
+        for out in out1:
+            out.perm.arrow_perm = None
         self._compare_outputs(out1,out2)
 
     def test50(self):
@@ -2556,6 +2639,8 @@ class TestGetRotationPermsLists(ut.TestCase):
         eps = _read_float(gpath+"get_rotation_perms_lists_eps.in."+str(case))
         out1 = _get_rotation_perms_lists(A,HNF,L,SNF,Op,RPlist,dperms,eps)
         out2 = _read_RotPermList_1D(gpath+"get_rotation_perms_lists_RPlist.out."+str(case))
+        for out in out1:
+            out.perm.arrow_perm = None
         self._compare_outputs(out1,out2)
 
     def test51(self):
@@ -2571,6 +2656,8 @@ class TestGetRotationPermsLists(ut.TestCase):
         eps = _read_float(gpath+"get_rotation_perms_lists_eps.in."+str(case))
         out1 = _get_rotation_perms_lists(A,HNF,L,SNF,Op,RPlist,dperms,eps)
         out2 = _read_RotPermList_1D(gpath+"get_rotation_perms_lists_RPlist.out."+str(case))
+        for out in out1:
+            out.perm.arrow_perm = None
         self._compare_outputs(out1,out2)
 
     def test52(self):
@@ -2586,6 +2673,8 @@ class TestGetRotationPermsLists(ut.TestCase):
         eps = _read_float(gpath+"get_rotation_perms_lists_eps.in."+str(case))
         out1 = _get_rotation_perms_lists(A,HNF,L,SNF,Op,RPlist,dperms,eps)
         out2 = _read_RotPermList_1D(gpath+"get_rotation_perms_lists_RPlist.out."+str(case))
+        for out in out1:
+            out.perm.arrow_perm = None
         self._compare_outputs(out1,out2)
 
     def test53(self):
@@ -2601,6 +2690,8 @@ class TestGetRotationPermsLists(ut.TestCase):
         eps = _read_float(gpath+"get_rotation_perms_lists_eps.in."+str(case))
         out1 = _get_rotation_perms_lists(A,HNF,L,SNF,Op,RPlist,dperms,eps)
         out2 = _read_RotPermList_1D(gpath+"get_rotation_perms_lists_RPlist.out."+str(case))
+        for out in out1:
+            out.perm.arrow_perm = None
         self._compare_outputs(out1,out2)
 
     def test54(self):
@@ -2616,6 +2707,8 @@ class TestGetRotationPermsLists(ut.TestCase):
         eps = _read_float(gpath+"get_rotation_perms_lists_eps.in."+str(case))
         out1 = _get_rotation_perms_lists(A,HNF,L,SNF,Op,RPlist,dperms,eps)
         out2 = _read_RotPermList_1D(gpath+"get_rotation_perms_lists_RPlist.out."+str(case))
+        for out in out1:
+            out.perm.arrow_perm = None
         self._compare_outputs(out1,out2)
 
     def test55(self):
@@ -2631,6 +2724,8 @@ class TestGetRotationPermsLists(ut.TestCase):
         eps = _read_float(gpath+"get_rotation_perms_lists_eps.in."+str(case))
         out1 = _get_rotation_perms_lists(A,HNF,L,SNF,Op,RPlist,dperms,eps)
         out2 = _read_RotPermList_1D(gpath+"get_rotation_perms_lists_RPlist.out."+str(case))
+        for out in out1:
+            out.perm.arrow_perm = None
         self._compare_outputs(out1,out2)
 
     def test56(self):
@@ -2646,6 +2741,8 @@ class TestGetRotationPermsLists(ut.TestCase):
         eps = _read_float(gpath+"get_rotation_perms_lists_eps.in."+str(case))
         out1 = _get_rotation_perms_lists(A,HNF,L,SNF,Op,RPlist,dperms,eps)
         out2 = _read_RotPermList_1D(gpath+"get_rotation_perms_lists_RPlist.out."+str(case))
+        for out in out1:
+            out.perm.arrow_perm = None
         self._compare_outputs(out1,out2)
 
     def test57(self):
@@ -2661,6 +2758,8 @@ class TestGetRotationPermsLists(ut.TestCase):
         eps = _read_float(gpath+"get_rotation_perms_lists_eps.in."+str(case))
         out1 = _get_rotation_perms_lists(A,HNF,L,SNF,Op,RPlist,dperms,eps)
         out2 = _read_RotPermList_1D(gpath+"get_rotation_perms_lists_RPlist.out."+str(case))
+        for out in out1:
+            out.perm.arrow_perm = None
         self._compare_outputs(out1,out2)
 
     def test58(self):
@@ -2676,6 +2775,8 @@ class TestGetRotationPermsLists(ut.TestCase):
         eps = _read_float(gpath+"get_rotation_perms_lists_eps.in."+str(case))
         out1 = _get_rotation_perms_lists(A,HNF,L,SNF,Op,RPlist,dperms,eps)
         out2 = _read_RotPermList_1D(gpath+"get_rotation_perms_lists_RPlist.out."+str(case))
+        for out in out1:
+            out.perm.arrow_perm = None
         self._compare_outputs(out1,out2)
 
 class TestRM3DOperations(ut.TestCase):
@@ -2701,7 +2802,8 @@ class TestGetSymGroup(ut.TestCase):
         agroup = []
         for i in range(len(symm.perm.site_perm)):
             agroup.append([symm.perm.site_perm[i],[int(j) for j in symm.perm.arrow_perm[i]]])
-        self.assertTrue((np.array(agroup) == np.array(out)).all())
+        for perm in agroup:
+            self.assertIn(perm,out)
 
     def test2(self):
         from phenum.grouptheory import get_sym_group
@@ -2714,7 +2816,8 @@ class TestGetSymGroup(ut.TestCase):
         agroup = []
         for i in range(len(symm.perm.site_perm)):
             agroup.append([symm.perm.site_perm[i],[int(j) for j in symm.perm.arrow_perm[i]]])
-        self.assertTrue((np.array(agroup) == np.array(out)).all())
+        for perm in agroup:
+            self.assertIn(perm,out)
 
     def test3(self):
         from phenum.grouptheory import get_sym_group
@@ -2727,7 +2830,8 @@ class TestGetSymGroup(ut.TestCase):
         agroup = []
         for i in range(len(symm.perm.site_perm)):
             agroup.append([symm.perm.site_perm[i],[int(j) for j in symm.perm.arrow_perm[i]]])
-        self.assertTrue((np.array(agroup) == np.array(out)).all())
+        for perm in agroup:
+            self.assertIn(perm,out)
 
     def test4(self):
         from phenum.grouptheory import get_sym_group
@@ -2740,7 +2844,8 @@ class TestGetSymGroup(ut.TestCase):
         agroup = []
         for i in range(len(symm.perm.site_perm)):
             agroup.append([symm.perm.site_perm[i],[int(j) for j in symm.perm.arrow_perm[i]]])
-        self.assertTrue((np.array(agroup) == np.array(out)).all())
+        for perm in agroup:
+            self.assertIn(perm,out)
 
     def test5(self):
         from phenum.grouptheory import get_sym_group
@@ -2753,7 +2858,8 @@ class TestGetSymGroup(ut.TestCase):
         agroup = []
         for i in range(len(symm.perm.site_perm)):
             agroup.append([symm.perm.site_perm[i],[int(j) for j in symm.perm.arrow_perm[i]]])
-        self.assertTrue((np.array(agroup) == np.array(out)).all())
+        for perm in agroup:
+            self.assertIn(perm,out)
 
     def test6(self):
         from phenum.grouptheory import get_sym_group
@@ -2766,7 +2872,8 @@ class TestGetSymGroup(ut.TestCase):
         agroup = []
         for i in range(len(symm.perm.site_perm)):
             agroup.append([symm.perm.site_perm[i],[int(j) for j in symm.perm.arrow_perm[i]]])
-        self.assertTrue((np.array(agroup) == np.array(out)).all())
+        for perm in agroup:
+            self.assertIn(perm,out)
 
     def test7(self):
         from phenum.grouptheory import get_sym_group
@@ -2779,7 +2886,8 @@ class TestGetSymGroup(ut.TestCase):
         agroup = []
         for i in range(len(symm.perm.site_perm)):
             agroup.append([symm.perm.site_perm[i],[int(j) for j in symm.perm.arrow_perm[i]]])
-        self.assertTrue((np.array(agroup) == np.array(out)).all())
+        for perm in agroup:
+            self.assertIn(perm,out)
 
     def test8(self):
         from phenum.grouptheory import get_sym_group
@@ -2792,7 +2900,8 @@ class TestGetSymGroup(ut.TestCase):
         agroup = []
         for i in range(len(symm.perm.site_perm)):
             agroup.append([symm.perm.site_perm[i],[int(j) for j in symm.perm.arrow_perm[i]]])
-        self.assertTrue((np.array(agroup) == np.array(out)).all())
+        for perm in agroup:
+            self.assertIn(perm,out)
 
     def test9(self):
         from phenum.grouptheory import get_sym_group
@@ -2805,7 +2914,8 @@ class TestGetSymGroup(ut.TestCase):
         agroup = []
         for i in range(len(symm.perm.site_perm)):
             agroup.append([symm.perm.site_perm[i],[int(j) for j in symm.perm.arrow_perm[i]]])
-        self.assertTrue((np.array(agroup) == np.array(out)).all())
+        for perm in agroup:
+            self.assertIn(perm,out)
 
     def test10(self):
         from phenum.grouptheory import get_sym_group
@@ -2818,8 +2928,8 @@ class TestGetSymGroup(ut.TestCase):
         agroup = []
         for i in range(len(symm.perm.site_perm)):
             agroup.append([symm.perm.site_perm[i],[int(j) for j in symm.perm.arrow_perm[i]]])
-        self.assertTrue((np.array(agroup) == np.array(out)).all())
-
+        for perm in agroup:
+            self.assertIn(perm,out)
 
     def test11(self):
         from phenum.grouptheory import get_sym_group
@@ -2832,5 +2942,5 @@ class TestGetSymGroup(ut.TestCase):
         agroup = []
         for i in range(len(symm.perm.site_perm)):
             agroup.append([symm.perm.site_perm[i],[int(j) for j in symm.perm.arrow_perm[i]]])
-        self.assertTrue((np.array(agroup) == np.array(out)).all())
-
+        for perm in agroup:
+            self.assertIn(perm,out)
