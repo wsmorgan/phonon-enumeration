@@ -39,9 +39,9 @@ def find_all_HNFs(n):
 
     HNFs = []
     for diag in diags:
-        a = diag[0]
-        c = diag[1]
-        f = diag[2]
+        a = int(diag[0])
+        c = int(diag[1])
+        f = int(diag[2])
         
         for b in range(c):
             for d in range(f):
@@ -75,7 +75,7 @@ def remove_duplicate_lattices(HNFs,pLV,base_vecs,LatDim,base_perms,eps_=None):
 
     if eps_:
         eps = eps_
-    else:
+    else: #pragma: no cover
         eps = 1E-7
 
     aType = [1]*len(base_vecs)

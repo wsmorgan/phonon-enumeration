@@ -379,29 +379,33 @@ class TestEnumOut(ut.TestCase):
                 self._assertMultiLineEqual(f1_content[i],f2_content[i])
         else:
             self.assertEqual(len(f1_content),len(f2_content))
-            
-    
+                
     def test_enum_out1(self):
         from phenum.enumeration import _script_enum
+        import sys
         from os import system
 
         args = {'profile': None, 'savedist': False, 'verbose': None,
                 'outfile': "enum.out", 'enum': True,
                 'lattice': 'tests/enumeration/enum_out/lattice.in_hcp', 'acceptrate': None,
                 'examples': False, 'sizes': None, 'debug': False,
-                'input': 'enum.in',
+                'input': None,
                 'polya': False, 'super': False, 'distribution': None,'seed':None,
                 'filter':None,'visualize':False,'shapes':False,'show':False}
 
         _script_enum(args)
-        self._compare_files("enum.out","tests/enumeration/enum_out/enum.out_hcp")
-        system("rm enum.out enum.in polya.out.2 polya.out.1")
+        if sys.version_info[0] < 3:
+            self._compare_files("enum.out","tests/enumeration/enum_out/enum.out_hcp_p2")
+        else:
+            self._compare_files("enum.out","tests/enumeration/enum_out/enum.out_hcp_p3")
+        system("rm enum.in polya.out.2 polya.out.1")
 
     def test_enum_out2(self):
         from phenum.enumeration import _script_enum
         from os import system
+        import sys
         args = {'profile': None, 'savedist': False, 'verbose': None,
-                'outfile': "enum.out", 'enum': True,
+                'outfile': None, 'enum': True,
                 'lattice': 'tests/enumeration/enum_out/lattice.in_sub1', 'acceptrate': None,
                 'examples': False, 'sizes': None, 'debug': False,
                 'input': 'tests/enumeration/enum_out/enum.in_sub1',
@@ -409,7 +413,71 @@ class TestEnumOut(ut.TestCase):
                 'filter':None,'visualize':False,'shapes':False,'show':False}
 
         _script_enum(args)
-        self._compare_files("enum.out","tests/enumeration/enum_out/enum.out_sub1")
+        if sys.version_info[0] < 3:
+            self._compare_files("enum.out","tests/enumeration/enum_out/enum.out_sub1_p2")
+        else:
+            self._compare_files("enum.out","tests/enumeration/enum_out/enum.out_sub1_p3")
         system("rm enum.out")
-        
-        
+
+class TestPolyaOut(ut.TestCase):
+    """Tests the _polya_out subroutine."""
+
+    def _assertMultiLineEqual(self, first, second, msg=None):
+        import difflib
+        """Assert that two multi-line strings are equal.
+
+        If they aren't, show a nice diff.
+        code contributed by Ned Batchelder: http://stackoverflow.com/questions/3942820/how-to-do-unit-testing-of-functions-writing-files-using-python-unittest
+        """
+        self.assertTrue(isinstance(first, str),
+                'First argument is not a string')
+        self.assertTrue(isinstance(second, str),
+                'Second argument is not a string')
+
+        if first != second:
+            message = ''.join(difflib.ndiff(first.splitlines(True),
+                                                second.splitlines(True)))
+            if msg:
+                message += " : " + msg
+            self.fail("Multi-line strings are unequal:\n" + message)
+
+    def _compare_files(self,f1,f2):
+        with open(f1,"r") as f:
+            f1_content = f.readlines()
+        with open(f2,"r") as f:
+            f2_content = f.readlines()
+
+        if len(f1_content) == len(f2_content):
+            for i in range(1,len(f1_content)):
+                self._assertMultiLineEqual(f1_content[i],f2_content[i])
+        else:
+            self.assertEqual(len(f1_content),len(f2_content))
+                
+    def test_polya1(self):
+        from phenum.enumeration import _script_enum
+
+        args = {'profile': None, 'savedist': False, 'verbose': None,
+                'outfile': None, 'enum': False,
+                'lattice': "stuff", 'acceptrate': None,
+                'examples': False, 'sizes': None, 'debug': False,
+                'input': None,'polya': True, 'super': False, 'distribution': None,'seed':0,
+                'filter':None,'visualize':False,'shapes':False,'show':False}
+        with pytest.raises(IOError):
+            _script_enum(args)
+
+    def test_polya2(self):
+        from phenum.enumeration import _script_enum
+        from os import system
+
+        args = {'profile': None, 'savedist': False, 'verbose': None,
+                'outfile': None, 'enum': False,
+                'lattice': "tests/enumeration/enum_out/lattice.in_hcp", 'acceptrate': None,
+                'examples': False, 'sizes': None, 'debug': False,
+                'input': 'tests/enumeration/enum_out/enum.in_sub1',
+                'polya': True, 'super': False, 'distribution': None,'seed':0,
+                'filter':None,'visualize':False,'shapes':False,'show':False}
+
+        _script_enum(args)
+        self._compare_files("polya.out.1","tests/enumeration/enum_out/hcp_polya.out.1")
+        self._compare_files("polya.out.2","tests/enumeration/enum_out/hcp_polya.out.2")
+        system("rm polya.out.1 polya.out.2")

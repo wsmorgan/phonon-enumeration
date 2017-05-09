@@ -128,7 +128,7 @@ def _enum_out(args):
     from os.path import isfile
     from glob import glob
     from copy import deepcopy
-    
+
     keep_supers = False
     if args["super"]:
         keep_supers = True
@@ -147,7 +147,6 @@ def _enum_out(args):
         temp_args["distribution"] = ["all","all"]
         _enum_in(temp_args)
             
-        
     systems = io.read_enum(args["input"])
     io.write_enum(params, outfile=args["outfile"])    
 
@@ -157,6 +156,7 @@ def _enum_out(args):
     sfmt = ("{0: >10d}{1: >10d}{2: >8d}{3: >9d}{4: >9d}{5: >12d}{6: >4d}{7: >6d}"
             "{8: >10}  {9: >18}  {10: >44}    {11}    {12: >21}\n")
     def fmtn(l, n):
+        l = [int(i) for i in l]
         return (''.join(["{{{0:d}: >{1:d}d}}".format(i, n) for i in range(len(l))])).format(*l)
     
     with open(args["outfile"], 'a') as f:
@@ -330,9 +330,7 @@ def _script_enum(args, testmode=False):
         if args["outfile"] == None:
               args["outfile"] = "polya.out"
         if not path.isfile(args["lattice"]):
-            from phenum.msg import err
-            err("The input file {} does not exist.".format(args["lattice"]))
-            exit()
+            raise IOError("The input file {} does not exist.".format(args["lattice"]))
             
     if args["enum"]:
         if args["input"] == None:
@@ -356,7 +354,7 @@ def _script_enum(args, testmode=False):
                 " is over ('shape', 'conc', 'size', 'all') and the number of structures desired."
                 "If all the structures are wanted then the second argument should be 'all'.")
             exit()
-            
+
     if args["polya"]:
         _polya_out(args)
     if args["enum"]:

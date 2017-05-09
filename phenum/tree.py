@@ -389,7 +389,7 @@ def brancher(concs,group,colors_w_arrows, dim, supers, cellsize, total=0, subset
                     trans_branch = []
                     for act in action:
                         trans_branch.append(brancht[act])
-                    if trans_branch == brancht and action != list(range(cellsize)):
+                    if trans_branch == brancht and action != list(range(int(cellsize))):
                         unique = 1
                         if use_subset:
                             if count in subset:
