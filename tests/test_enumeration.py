@@ -320,6 +320,39 @@ class TestEnumIn(ut.TestCase):
                                 'tests/enumeration/sc_1/enum.in_shape2_10_p3')
         system("rm tests/enumeration/sc_1/test_enum.in")
 
+    def test_EnumIn15(self):
+        from phenum.enumeration import _script_enum
+
+        args = {'profile': None, 'savedist': False, 'verbose': None,
+                'outfile': None, 'enum': False,
+                'lattice': 'lattice.in', 'acceptrate': None,
+                'examples': False, 'sizes': None, 'debug': False, 'input': None,
+                'polya': False, 'super': False, 'distribution': ['all'],'seed':1010,
+                'filter':None}
+
+        with pytest.raises(ValueError):
+            _script_enum(args)
+
+    def test_EnumIn16(self):
+        from phenum.enumeration import _script_enum
+        import sys
+        from os import system
+
+        args = {'profile': None, 'savedist': False, 'verbose': None,
+                'outfile': "enum.in", 'enum': False,
+                'lattice': 'tests/enumeration/enum_out/lattice.in_hcp', 'acceptrate': None,
+                'examples': False, 'sizes': None, 'debug': False,
+                'input': None,
+                'polya': False, 'super': False, 'distribution': ['all','all'],'seed':None,
+                'filter':None,'visualize':False,'shapes':False,'show':False}
+
+        _script_enum(args)
+        if sys.version_info[0] < 3:
+            self._compare_files("enum.in","tests/enumeration/enum_out/enum.in_hcp_p2")
+        else:
+            self._compare_files("enum.in","tests/enumeration/enum_out/enum.in_hcp_p3")
+        system("rm enum.in polya.out.2 polya.out.1")
+            
 class TestPlotHNFs(ut.TestCase):
     """Tests of the _enum_in subroutine."""
 
@@ -419,6 +452,135 @@ class TestEnumOut(ut.TestCase):
             self._compare_files("enum.out","tests/enumeration/enum_out/enum.out_sub1_p3")
         system("rm enum.out")
 
+    def test_enum_out3(self):
+        from phenum.enumeration import _script_enum
+        from os import system
+        import sys
+        args = {'profile': None, 'savedist': False, 'verbose': None,
+                'outfile': None, 'enum': True,
+                'lattice': 'tests/enumeration/enum_out/lattice.in_ar', 'acceptrate': None,
+                'examples': False, 'sizes': None, 'debug': False,
+                'input': None,
+                'polya': False, 'super': True, 'distribution': None,'seed': None,
+                'filter':None,'visualize':False,'shapes':False,'show':False}
+
+        _script_enum(args)
+        if sys.version_info[0] < 3:
+            self._compare_files("enum.out","tests/enumeration/enum_out/enum.out_ar_p2")
+        else:
+            self._compare_files("enum.out","tests/enumeration/enum_out/enum.out_ar_p3")
+        system("rm enum.out enum.in polya.out.*")
+
+    def test_enum_out4(self):
+        from phenum.enumeration import _script_enum
+        from os import system
+        import sys
+        args = {'profile': None, 'savedist': False, 'verbose': None,
+                'outfile': None, 'enum': True,
+                'lattice': 'tests/enumeration/enum_out/lattice.in_sub_ar', 'acceptrate': 0.5,
+                'examples': False, 'sizes': None, 'debug': False,
+                'input': "tests/enumeration/enum_out/enum.in_sub_ar",
+                'polya': False, 'super': False, 'distribution': None,'seed': 0,
+                'filter':None,'visualize':False,'shapes':False,'show':False}
+
+        _script_enum(args)
+        if sys.version_info[0] < 3:
+            self._compare_files("enum.out","tests/enumeration/enum_out/enum.out_sub_ar_p2")
+        else:
+            self._compare_files("enum.out","tests/enumeration/enum_out/enum.out_sub_ar_p3")
+        system("rm enum.out")
+
+    def test_enum_out5(self):
+        from phenum.enumeration import _script_enum
+        from os import system
+        import sys
+        args = {'profile': None, 'savedist': False, 'verbose': None,
+                'outfile': None, 'enum': True,
+                'lattice': 'tests/enumeration/enum_out/lattice.in_guess_ar', 'acceptrate': None,
+                'examples': False, 'sizes': None, 'debug': False,
+                'input': "tests/enumeration/enum_out/enum.in_guess_ar",
+                'polya': False, 'super': False, 'distribution': None,'seed': 0,
+                'filter':None,'visualize':False,'shapes':False,'show':False}
+
+        _script_enum(args)
+        if sys.version_info[0] < 3:
+            self._compare_files("enum.out","tests/enumeration/enum_out/enum.out_guess_ar_p2")
+        else:
+            self._compare_files("enum.out","tests/enumeration/enum_out/enum.out_guess_ar_p3")
+        system("rm enum.out")
+        
+    def test_enum_out6(self):
+        from phenum.enumeration import _script_enum
+        from os import system
+        import sys
+        args = {'profile': None, 'savedist': False, 'verbose': None,
+                'outfile': None, 'enum': True,
+                'lattice': 'tests/enumeration/enum_out/lattice.in_guess_ar', 'acceptrate': 2.0,
+                'examples': False, 'sizes': None, 'debug': False,
+                'input': "tests/enumeration/enum_out/enum.in_guess_ar",
+                'polya': False, 'super': False, 'distribution': None,'seed': 0,
+                'filter':None,'visualize':False,'shapes':False,'show':False}
+
+        with pytest.raises(ValueError):
+            _script_enum(args)
+
+    def test_enum_out7(self):
+        from phenum.enumeration import _script_enum
+        from os import system
+        import sys
+        args = {'profile': None, 'savedist': False, 'verbose': None,
+                'outfile': None, 'enum': True,
+                'lattice': 'tests/enumeration/enum_out/lattice.in_guess', 'acceptrate': None,
+                'examples': False, 'sizes': None, 'debug': False,
+                'input': "tests/enumeration/enum_out/enum.in_guess",
+                'polya': False, 'super': False, 'distribution': None,'seed': 0,
+                'filter':None,'visualize':False,'shapes':False,'show':False}
+
+        _script_enum(args)
+        if sys.version_info[0] < 3:
+            self._compare_files("enum.out","tests/enumeration/enum_out/enum.out_guess_p2")
+        else:
+            self._compare_files("enum.out","tests/enumeration/enum_out/enum.out_guess_p3")
+        system("rm enum.out")
+
+    def test_enum_out8(self):
+        from phenum.enumeration import _script_enum
+        from os import system
+        import sys
+        args = {'profile': None, 'savedist': False, 'verbose': None,
+                'outfile': None, 'enum': True,
+                'lattice': 'tests/enumeration/enum_out/lattice.in_ar_sm', 'acceptrate': None,
+                'examples': False, 'sizes': None, 'debug': False,
+                'input': "tests/enumeration/enum_out/enum.in_ar_sm",
+                'polya': False, 'super': False, 'distribution': None,'seed': 0,
+                'filter':None,'visualize':False,'shapes':False,'show':False}
+
+        _script_enum(args)
+        if sys.version_info[0] < 3:
+            self._compare_files("enum.out","tests/enumeration/enum_out/enum.out_ar_sm_p2")
+        else:
+            self._compare_files("enum.out","tests/enumeration/enum_out/enum.out_ar_sm_p3")
+        system("rm enum.out")
+
+    def test_enum_out9(self):
+        from phenum.enumeration import _script_enum
+        from os import system
+        import sys
+        args = {'profile': None, 'savedist': False, 'verbose': None,
+                'outfile': None, 'enum': True,
+                'lattice': 'tests/enumeration/enum_out/lattice.in_ar_sm2', 'acceptrate': None,
+                'examples': False, 'sizes': None, 'debug': False,
+                'input': "tests/enumeration/enum_out/enum.in_ar_sm2",
+                'polya': False, 'super': False, 'distribution': None,'seed': 0,
+                'filter':None,'visualize':False,'shapes':False,'show':False}
+
+        _script_enum(args)
+        if sys.version_info[0] < 3:
+            self._compare_files("enum.out","tests/enumeration/enum_out/enum.out_ar_sm2_p2")
+        else:
+            self._compare_files("enum.out","tests/enumeration/enum_out/enum.out_ar_sm2_p3")
+        system("rm enum.out")
+        
 class TestPolyaOut(ut.TestCase):
     """Tests the _polya_out subroutine."""
 

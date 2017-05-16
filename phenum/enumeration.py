@@ -28,7 +28,7 @@ def _enum_in(args):
 
     if not len(glob(args["input"]+".*")) >= 1:
         temp_args = deepcopy(args)
-        temp_args["outfile"] = "polya.out"
+        temp_args["outfile"] = args["input"]
         _polya_out(temp_args)
     
     distribution = args["distribution"][0].lower()
@@ -124,15 +124,18 @@ def _enum_out(args):
     import phenum.io_utils as io
     import phenum.phonons as pb
     from numpy import unique
+    from random import seed
     from phenum.grouptheory import get_full_HNF, SmithNormalForm
     from os.path import isfile
     from glob import glob
     from copy import deepcopy
 
+    if args["seed"] is not None:
+        seed(a=args["seed"])
     keep_supers = False
     if args["super"]:
         keep_supers = True
-    
+        
     params = io.read_lattice(args["lattice"])
 
     if not isfile(args["input"]):
@@ -349,11 +352,13 @@ def _script_enum(args, testmode=False):
         if args["outfile"] == None:
               args["outfile"] = "enum.in"
         if len(args["distribution"]) != 2:
-            from phenum.msg import err
-            err("The distribution option takes two arguments. The parameters the distribution "
-                " is over ('shape', 'conc', 'size', 'all') and the number of structures desired."
-                "If all the structures are wanted then the second argument should be 'all'.")
-            exit()
+            raise ValueError("The distribution option takes two arguments. The parameters the "
+                             "distribution is over ('shape', 'conc', 'size', 'all') and the "
+                             "number of structures desired. If all the structures are wanted "
+                             "then the second argument should be 'all'.")
+    if args["acceptrate"]:
+        if args["acceptrate"] is not None and (not isinstance(args["acceptrate"], float) or args["acceptrate"] > 1.0):
+            raise ValueError("'-acceptrate' is to be a float less than 1.")
 
     if args["polya"]:
         _polya_out(args)

@@ -574,17 +574,19 @@ def _get_rotation_perms_lists(A,HNF,L,SNF,Op,RPlist,dperms,eps, arrows=False):
         if len(temp_rperms_perm) > 1 and arrows == False:
             temp_rperms_perm.sort()
             temp_rperms_perm = list(temp_rperms_perm for temp_rperms_perm, _ in itertools.groupby(temp_rperms_perm))
-        # elif len(temp_rperms_perm) > 1 and arrows == True:
-        #     perms = []
-        #     for i in range(len(temp_rperms_perm)):
-        #         perms.append([temp_rperms_perm[i],temp_arrow_perm[i]])
-        #     perms = list(perms for perms, _ in itertools.groupby(perms))
-        #     perms.sort()
-        #     temp_rperms_perm = []
-        #     temp_arrow_perm = []
-        #     for i in range(len(perms)):
-        #         temp_rperms_perm.append(perms[i][0])
-        #         temp_arrow_perm.append(perms[i][1])
+        elif len(temp_rperms_perm) > 1 and arrows == True:
+            perms = []
+            nr = len(temp_rperms_perm[0])
+            na = len(temp_arrow_perm[0])
+            for i in range(len(temp_rperms_perm)):
+                perms.append(list(temp_rperms_perm[i])+list(temp_arrow_perm[i]))
+            perms = list(perms for perms, _ in itertools.groupby(perms))
+            perms.sort()
+            temp_rperms_perm = []
+            temp_arrow_perm = []
+            for i in range(len(perms)):
+                temp_rperms_perm.append(perms[i][:nr])
+                temp_arrow_perm.append(perms[i][-na:])
         # The rotations permutations list is now in "alphabetical"
         # order and contains no duplicates
     

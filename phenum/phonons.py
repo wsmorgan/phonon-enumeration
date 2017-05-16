@@ -239,7 +239,8 @@ def add_arrows(col,agroup,dim, translations, accept=None,nested=False,num_wanted
                 #the current configuration then we have seen it before and
                 #it is not unique.
                 permhash = _ahash(new_arrow_config,dim)
-                if permhash in visited and permhash != orighash:
+                if permhash in visited and permhash != orighash: #pragma: no cover
+                    #This happens rarely and so it's really hard to access in tests.
                     unique = False
                     break
                 #if none of the permutations have had a smaller hash number
@@ -266,7 +267,8 @@ def add_arrows(col,agroup,dim, translations, accept=None,nested=False,num_wanted
                         perm_arrows = [permutation[site] for site in arrow_config
                                          if site >= 0]
                         if orig_sites == perm_sites and perm_arrows == arrow_config:
-                            if action != list(range(len(action))) and permutation != list(range(len(permutation))):
+                            if action != list(range(len(action))) and permutation != list(range(len(permutation))): #pragma: no cover
+                                #This happens rarely and so it's really hard to access in tests.
                                 unique == False
 
                 if unique == True:
@@ -293,7 +295,6 @@ def arrow_concs(cList,aconcs):
     :arg aconcs: an array of floats of the fractional number of arrows
     for each color
     """
-
     aconcs = [int(cList[i]*aconcs[i]) for i in range(len(cList))]
     
     decoration_w_arrows = []
@@ -310,7 +311,9 @@ def arrow_concs(cList,aconcs):
                 decoration_w_arrows.append([-1,labels[i]])
                 ns -= 1
         else:
-            while ns > 0:
+            while ns > 0:#pragma: no cover
+                #I've never been able to access this code without
+                #something going wrong before this
                 decoration_w_arrows.append([-1,labels[i]])
                 ns -= 1
 
@@ -405,10 +408,8 @@ def enum_sys(groupfile, concs, a_concs, num_wanted, HNF, params, supers, accept=
                 subset = list(range(1, total+1)) 
                 shuffle(subset)
                 subset = subset[0:num_wanted]
-            elif accept is not None and (not isinstance(accept, float) or accept > 1.0):
-                err("'-acceptrate' is to be a float less than 1.")
-                exit(0)
-            else:
+            else: # pragma: no cover
+                # only used for data sets to large for test cases.
                 subset = num_wanted
         elif num_wanted == total:
             subset = []
@@ -426,15 +427,18 @@ def enum_sys(groupfile, concs, a_concs, num_wanted, HNF, params, supers, accept=
         configs = []
         if float(num_wanted)/total < 0.001 and accept is None:
             small = True
-            a_configs = add_arrows(decorations, agroup, 6, accept, num_wanted=num_wanted,small=True)
+            a_configs = add_arrows(decorations, agroup, 6, agroup[0:int(cellsize)], accept=accept,
+                                   num_wanted=num_wanted, small=small,supers=supers)
         else:
-            a_configs = add_arrows(decorations, agroup, 6, accept, num_wanted=num_wanted)
+            small = False
+            a_configs = add_arrows(decorations, agroup, 6, agroup[0:int(cellsize)], accept=accept,
+                                   num_wanted=num_wanted, supers=supers)
             
         count = 1
         for config in a_configs:
-            if isinstance(subset, list) and count in subset:
+            if isinstance(subset, list) and count in subset and not small:
                 configs.append(config)
-            elif accept is not None or small:
+            else:# accept is not None or small:
                 configs.append(config)
             count += 1
     else:
@@ -443,13 +447,15 @@ def enum_sys(groupfile, concs, a_concs, num_wanted, HNF, params, supers, accept=
         else:
             configs = brancher(sorted_concs, agroup, decorations, 6, supers, cellsize, total, subset, accept)
 
-    if len(configs) != num_wanted and not super:              
+    if len(configs) != num_wanted and not super: #pragma: no cover
+        #I've never been able to trigger this error.
         raise ValueError("Warning the enumeration code returned {} structures when {} "
                          "were asked for. This should not happen. Please submit a bug "
                          "report on https://github.com/wsmorgan/phonon-enumeration "
                          "including your input files so that this error may be "
                          "corrected.".format(str(len(configs)),str(num_wanted)))
-        if len(configs) == 0:
+        if len(configs) == 0: #pragma: no cover
+            #I've neven been able to trigger this error.
             exit()
 
     return configs

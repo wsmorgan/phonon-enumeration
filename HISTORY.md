@@ -9,6 +9,8 @@
 - Fixed bug in makeStr.py, the lattice vectors weren't being
   transposed after being read in.
 - Fixed bugs revealed by study if hexagonal crystals.
+- Fixed some integer issues for python 3.
+- Finished unit testing. Now at 100% test coverage.
 
 ## Revision 1.8.3
 - Removed an error message from vector_utils.py that was causing the

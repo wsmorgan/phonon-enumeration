@@ -494,7 +494,7 @@ def make_enum_in(infile,distribution,outfile,number=None,sizes=None,save=True,se
 
         ready = False
         for f in files:
-            if form in f:
+            if form in f and f[0]==form[0]:
                 sizes.append(int(f.split(".")[-1]))
                 ready = True
 

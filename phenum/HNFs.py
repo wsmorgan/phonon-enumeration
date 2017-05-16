@@ -16,12 +16,12 @@ def _get_HNF_diagonals(n):
         if not n%i == 0:
             continue
         else:
-            q = int(n/i)
+            q = int(n//i)
             for j in range(1,q+1):
                 if not q%j == 0:
                     continue
                 else:
-                    diags.append([i,j,q/j])
+                    diags.append([i,j,q//j])
                     
     return diags
 
