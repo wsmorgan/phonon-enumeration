@@ -60,7 +60,7 @@ def _invhash(branch,colors,n):
     """
 
     from .numerics import binomial_coefficient
-
+    from functools import reduce 
     new = [0 for y in range(n)]
     coluse = 1
     for i in range(0,len(branch)):
@@ -147,6 +147,7 @@ def _perm(casei,colors,length,index,gen,stab,order,ast):
 
     # if we're on the first level of the tree then we need to
     # follow a special procedure
+    # print("i",index,"l",len(stab),"gl",len(gen))
     if index == 0:
 	# first apply all the symmetry operations one at a time, a
 	# is a single operation
@@ -181,8 +182,8 @@ def _perm(casei,colors,length,index,gen,stab,order,ast):
 	    # if the original hash is larger than the new one then
 	    # this configuration isn't unique so we set unique to be 1
 	    # and reset the other variables
-            elif casei[0] > rtest:
-                unique += 1
+            elif casei[0] > rtest: #pragma: no cover
+                unique = 1
                 st = []
                 ast = []
                 break
@@ -259,17 +260,17 @@ def _perm(casei,colors,length,index,gen,stab,order,ast):
             
 	    # if the configuration isn't unique break from the
             # loop
-            if unique == 1:
+            if unique == 1: #pragma: no cover  Never reached this code.
                 ast = []
                 st = []
                 break
-    else:
+    else: #pragma: no cover
         unique = 1
 		
     return(unique,st,order,ast)
 
 
-def brancher(concs,group,colors_w_arrows, dim, supers, cellsize, total=0, subset=None, accept=None):
+def brancher(concs,group,colors_w_arrows, dim, supers, cellsize, total=0, subset=None, accept=None,seed=None):
     """This routine navigates the tree and saves the unique configurations
     to an array survivors.
 		
@@ -297,8 +298,11 @@ def brancher(concs,group,colors_w_arrows, dim, supers, cellsize, total=0, subset
 
     from .phonons import how_many_arrows, add_arrows
     from copy import deepcopy
+    from functools import reduce 
 
     # initial setup
+    # print("gl1",len(group))
+    # print(group)
 
     # redifine the colors so that the arrows are treated like
     # their own color
@@ -325,8 +329,8 @@ def brancher(concs,group,colors_w_arrows, dim, supers, cellsize, total=0, subset
     # determine if we are finding a subset of doing a full enumeration
     if subset is not None and isinstance(subset, list) and len(subset) > 0:
         use_subset = True
-    elif (subset is None or isinstance(subset, int)) and accept is not None:
-        use_subset = True
+    elif (subset is None or isinstance(subset, int)) and accept is not None: #pragma: no cover
+        use_subset = True # Takes to long to test, only runs for huge enumerations
     else:
         use_subset = False
 				
@@ -362,6 +366,7 @@ def brancher(concs,group,colors_w_arrows, dim, supers, cellsize, total=0, subset
     # Now we loop through the different possible hash arrays until
     # they have all been considered
     ncurrent = 0
+
     while branch[0] < C[0] and ((subset is not None and isinstance(subset, list) and len(survivors) < len(subset))
                                 or use_subset == False
                                 or (accept is not None and isinstance(subset, int) and len(survivors) == subset)):
@@ -382,7 +387,7 @@ def brancher(concs,group,colors_w_arrows, dim, supers, cellsize, total=0, subset
                     trans_branch = []
                     for act in action:
                         trans_branch.append(brancht[act])
-                    if trans_branch == brancht and action != list(range(cellsize)):
+                    if trans_branch == brancht and action != list(range(int(cellsize))):
                         unique = 1
                         if use_subset:
                             if count in subset:
@@ -415,7 +420,7 @@ def brancher(concs,group,colors_w_arrows, dim, supers, cellsize, total=0, subset
 		    # add_arrows from the phonon_brancher code returns
 		    # the unique configurations with the unique arrow
 		    # arrangements
-                    arsurvivors = add_arrows(brancht,ast, dim, group[0:cellsize], accept, True,supers=supers)
+                    arsurvivors = add_arrows(brancht,ast, dim, group[0:int(cellsize)], accept, True,supers=supers)
 		    #write the unique confgurations to file.
                     for z in arsurvivors:
 			# if we aren't using a subset write everything
@@ -427,8 +432,11 @@ def brancher(concs,group,colors_w_arrows, dim, supers, cellsize, total=0, subset
                         else:
                             if subset is not None and isinstance(subset, list) and count in subset:
                                 survivors.append(z)
-                            elif accept is not None:
-                                survivors.append(z)
+                            elif accept is not None and random() < accept and not isinstance(subset,list): #pragma: no cover
+                                if isinstance(subset,int) and len(survivors) < subset: #This option is only for large data sets that
+                                    survivors.append(z) # are too large for unit testing purposes.
+                                else:
+                                    survivors.append(z)
                         count += 1
                 else:
 		    # if there are no arrows just
@@ -443,10 +451,16 @@ def brancher(concs,group,colors_w_arrows, dim, supers, cellsize, total=0, subset
                             tbranch = list(_invhash(branch, concs, len(colors_w_arrows)))
                             tbranch = [colors[leaf -1][1] for leaf in tbranch]
                             survivors.append([[-1,leaf] for leaf in tbranch])
-                        elif accept is not None and random() < accept:
-                            tbranch = list(_invhash(branch, concs, len(colors_w_arrows)))
-                            tbranch = [colors[leaf -1][1] for leaf in tbranch]
-                            survivors.append([[-1,leaf] for leaf in tbranch])
+                        elif accept is not None and random() < accept and not isinstance(subset, list): #pragma: no cover
+                            if isinstance(subset,int) and len(survivors) < subset: #This option is only for large data sets that
+                                tbranch = list(_invhash(branch, concs, len(colors_w_arrows))) # are too large for unit testing purposes.
+                                tbranch = [colors[leaf -1][1] for leaf in tbranch]
+                                survivors.append([[-1,leaf] for leaf in tbranch])
+                            else:
+                                tbranch = list(_invhash(branch, concs, len(colors_w_arrows)))
+                                tbranch = [colors[leaf -1][1] for leaf in tbranch]
+                                survivors.append([[-1,leaf] for leaf in tbranch])
+                                
                     count += 1
 
 		    # if we aren't on the last contributing level
@@ -576,7 +590,8 @@ def guess_and_check_brancher(concs, group, colors_w_arrows, dim, supers, cellsiz
         for i in range(len(C)):
             candidate.append(randint(0,C[i]-1))
 
-        while candidate in visited:
+        while candidate in visited:#pragma: no cover
+            #This happens rarely and so it's really hard to access in tests.
             for i in range(len(C)):
                 candidate.append(randint(0,C[i]-1))
 
@@ -594,7 +609,8 @@ def guess_and_check_brancher(concs, group, colors_w_arrows, dim, supers, cellsiz
 
             new_location = _hash(new_config,concs)
 
-            if new_location in visited and new_location != candidate:
+            if new_location in visited and new_location != candidate: #pragma: no cover
+                #This happens rarely and so it's really hard to access in tests.
                 unique = False
                 break
             
@@ -603,12 +619,13 @@ def guess_and_check_brancher(concs, group, colors_w_arrows, dim, supers, cellsiz
         # translations operations are stabilizers of the
         # configuration to eliminate the unwanted structures.
         if not supers and narrows == 0 and unique == True:
-            for trans in range(1,cellsize):
+            for trans in range(1,int(cellsize)):
                 action = group[trans][0]
                 trans_config = []
                 for act in action:
                     trans_config.append(config[act])
-                if trans_config == config and action != list(range(cellsize)):
+                if trans_config == config and action != list(range(int(cellsize))):#pragma: no cover
+            #This happens rarely and so it's really hard to access in tests.
                     unique = False
                     break
                 
@@ -617,14 +634,13 @@ def guess_and_check_brancher(concs, group, colors_w_arrows, dim, supers, cellsiz
                 # We need to make a copy of the branch with arrows on
                 # it to pass to the add_arrows code.
                 t_config = list(_invhash(candidate,concs,sum(concs)))
-
                 for con in range(len(t_config)):
-                    t_config[con] = deepcopy(colors[t_config[z] -1])
+                    t_config[con] = deepcopy(colors[t_config[con] -1])
                     
-                arsurvivors = add_arrows(t_config, group, dim, group[0:cellsize], nested=True, num_wanted = num_wanted, supers = supers, small = True)
+                arsurvivors = add_arrows(t_config, group, dim, group[0:int(cellsize)], nested=True, num_wanted = num_wanted, supers = supers, small = True)
 
                 for survivor in arsurvivors:
-                    survivors.append(survivors)
+                    survivors.append(survivor)
                     
             else:
                 survivors.append([[-1,leaf] for leaf in config])

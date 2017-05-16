@@ -218,6 +218,8 @@ def read_enum_out(args):
     :arg args: The makeStr.py input arguments
     """
 
+    from numpy import transpose
+    
     # which structures are wanted
     if args["structures"] == None:
         with open(args["input"],"r") as f:
@@ -278,6 +280,8 @@ def read_enum_out(args):
                 structure_data.append(this_struct)
         line_count += 1
 
+    system["plattice"] = transpose(system["plattice"])
+        
     return (system, structure_data)
 
 def write_POSCAR(system_data,space_data,structure_data,args):

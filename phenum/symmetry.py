@@ -79,13 +79,12 @@ def get_concs_for_size(size,nspecies,res_concs,nB,concs):
             
     else:
         cList = []
-        crange = list(range(0,size+1))
+        crange = list(range(0,(size*nB)+1))
         aranges = []
         for i in range(nspecies):
             aranges.append(crange)
         for p in product(*aranges):
-            if sum(p) == size:
-                # if not any([list(c) in cList for c in it.permutations(p)]) == True:
+            if sum(p) == size*nB:
                 cList.append(list(p))
     return(cList)
 
@@ -140,9 +139,9 @@ def bring_into_cell(vec,cart_to_latt,latt_to_cart,eps):
       :args eps: Finite precision tolerance.
     """
 
-    from numpy import matmul
+    from numpy import matmul, transpose
     # Put the representation of the point into lattice coordinates
-    vec = matmul(vec,cart_to_latt).tolist()
+    vec = matmul(transpose(cart_to_latt),vec).tolist()
     # counter to catch compiler bug
     c = 0
     maxc = max(math.ceil(abs(max(vec))),math.ceil(abs(min(vec))))*2
@@ -161,15 +160,21 @@ def bring_into_cell(vec,cart_to_latt,latt_to_cart,eps):
             exit()
 
     # Put the point back into cartesion coordinate representation
-    vec = matmul(vec,latt_to_cart).tolist()
+    vec = matmul(transpose(latt_to_cart),vec).tolist()
     return vec
 
 def _get_lattice_pointGroup(aVecs, eps=1E-10):
-    """This routine returns only the point group of the rather than the
-      space group of the given crystal structure.
+    """This routine returns only the point group of the lattite rather
+      than the space group of the given crystal structure.
 
-      :args aVecs: The 2D integer array that contains the parent lattice vectors
-      :args eps: (Optional) Finite precision tolerance
+    Args:
+        aVecs (array-like): The 2D integer array that contains the parent lattice 
+            vectors as row vectors.
+        eps (float, optional): Finite precision tolerance
+
+    Returns:
+        lattpg_op (array-like): The point group for the lattice in 
+            cartesian coordinates.
     """
 
     inverse_aVecs = numpy.linalg.inv(numpy.array(aVecs)).tolist()
@@ -288,7 +293,7 @@ def get_spaceGroup(par_lat,atomType,bas_vecs,eps=1E-10,lattcoords = False):
     # Apply each of the point operators in the point group to the crystal
     for iop in range(len(lattpg_op)):
         # rotate atom 1 and store its position in the vector v
-        v = numpy.matmul(lattpg_op[iop],atom_pos[0]).tolist()
+        v = numpy.matmul(lattpg_op[iop],atom_pos[0])
         # Loop over all possible fractional translations
         for jAtom in range(nAtoms):
             if (atomType[jAtom] != atomType[0]):
@@ -299,7 +304,7 @@ def get_spaceGroup(par_lat,atomType,bas_vecs,eps=1E-10,lattcoords = False):
             for kAtom in range(nAtoms):
                 this_type = atomType[kAtom]
                 # Rotate and translate each atom        
-                v2 = numpy.matmul(lattpg_op[iop],atom_pos[kAtom]).tolist()
+                v2 = numpy.matmul(lattpg_op[iop],atom_pos[kAtom])
                 v2 = [v2[i] + fract[i] for i in range(3)]
                 v2 = bring_into_cell(v2, cart_to_latt, latt_to_cart, eps)
                 
