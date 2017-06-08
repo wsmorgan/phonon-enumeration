@@ -1,5 +1,10 @@
 # Revision History for "phonon-enumeration"
 
+## Revision 2.0.1
+- Started changing numpy style documentation to google style to be consitent.
+- Switched to codecov and quantified code.
+- Changed the nested for loops in io_utils.py and symmetry.py to itertools iterators.
+
 ## Revision 2.0.0
 - Added HNFs.py to the repo which finds the unique HNFs.
 - Updated the driver so that the polya mode is now stand alone.

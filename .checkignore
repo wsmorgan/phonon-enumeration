@@ -1,0 +1,7 @@
+# Ignore folder content
+tests/*
+
+# Ignore files
+setup.py
+phenum/base.py
+phenum/msg.py

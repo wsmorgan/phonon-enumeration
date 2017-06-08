@@ -15,13 +15,18 @@ def get_concs_for_size(size,nspecies,res_concs,nB,concs):
     rewritten from the get_conetration_list subroutine of:
     https://github.com/msg-byu/enumlib/blob/master/src/derivative_structure_generator.f90  
 
-    :arg size: the cell size in integer form
-    :arg nspecies: the number of atomic species in the system
-    :arg res_concs: a logical that indicates of the concentrations
-    are being restricted
-    :arg nB: the number of basis vectors being used
-    :arg concs: an 2D integer array that contains the concentration
-    ranges for each atom in the system
+    Args:
+        size (int): The cell size in integer form
+        nspecies (int): the number of atomic species in the system
+        res_concs (bool): a logical that indicates of the concentrations
+          are being restricted
+
+        nB (int): the number of basis vectors being used
+        concs (list of int): A 2D integer array that contains the concentration
+          ranges for each atom in the system
+
+    Returns:
+        cList (array-like): The allowed concentration ranges.
     """
     eps = 1E-10
     
@@ -90,18 +95,25 @@ def get_concs_for_size(size,nspecies,res_concs,nB,concs):
 
 def _does_mapping_exist(v,this_type,atom_pos,atomType,eps):
     """Checks to see if a mapping exists between the vector v and the
-      position of any of the atoms of type "this_type".  If a mapping
-      exists, then the logical "mapped" is returned .true., otherwise
-      .false.
+    position of any of the atoms of type "this_type".  If a mapping
+    exists, then the logical "mapped" is returned .true., otherwise
+    .false.
 
-      :args v: Array of the position to check mapping for
-      :args this_type: Integer that indicates which type of atom that is
-            being checked.
-      :args atom_pos: 2D array of the positions of the basis
-            atoms.
-      :args atomType: Array of integers of the types of atoms in the
-            basis.
-      :args eps: Epsilon for checking equivalence.
+    Args:
+        v (list of float): Array of the position to check mapping for
+        this_type (int): Integer that indicates which type of atom that is
+          being checked.
+
+        atom_pos (array-like): 2D array of the positions of the basis
+          atoms.
+
+        atomType (list of int): Array of integers of the types of atoms in the
+          basis.
+
+        eps (float): Epsilon for checking equivalence.
+
+    Returns:
+        mapped (bool): True if mapping exists.
     """
     mapped = False
     for i in range(len(atomType)):
@@ -118,9 +130,18 @@ def _does_mapping_exist(v,this_type,atom_pos,atomType,eps):
 def _get_transformations(par_lat):
 
     """This routine generates the matrices for converting vectors from
-      lattice coordinates to cartesion coordinates and vice versa.
+    lattice coordinates to cartesion coordinates and vice versa.
 
-      :args par_lat: A 2D integer array that contains the parent lattice vectors
+    Args:
+        par_lat (array-like): A 2D integer array that contains the parent 
+          lattice vectors
+
+    Returns:
+        prim_to_cart (numpy ndarray): The matrix that transforms from lattice to 
+          cartesian coordinates.
+        
+        cart_to_prim (numpy ndarray): The matrix that tranforms form cartesian to
+          lattice coordinates.
     """
 
     prim_to_cart = deepcopy(par_lat)
@@ -130,13 +151,21 @@ def _get_transformations(par_lat):
 
 def bring_into_cell(vec,cart_to_latt,latt_to_cart,eps):
     """This subroutine translates a point back into the unit cell in
-      lattice coordinates, the coefficients of the point must all be
-      less than one and at least zero.
+    lattice coordinates, the coefficients of the point must all be
+    less than one and at least zero.
     
-      :args vec: A 1D integer array of the atom position vector
-      :args cart_to_latt: The matrix that transforms from cartesian to lattice coordinates
-      :args latt_to_cart: The matrix that transforms form lattice to cartesian coordinates
-      :args eps: Finite precision tolerance.
+    Args:
+        vec (list of int): A 1D integer array of the atom position vector
+        cart_to_latt (numpy ndarray): The matrix that transforms from cartesian 
+          to lattice coordinates
+
+        latt_to_cart (numpy ndarray): The matrix that transforms form lattice to 
+          cartesian coordinates
+
+        eps (float): Finite precision tolerance.
+
+    Returns:
+        vec (list of float): The vector brought back into the cell.
     """
 
     from numpy import matmul, transpose
@@ -168,7 +197,7 @@ def _get_lattice_pointGroup(aVecs, eps=1E-10):
       than the space group of the given crystal structure.
 
     Args:
-        aVecs (array-like): The 2D integer array that contains the parent lattice 
+        aVecs (array-like): The 2D array that contains the parent lattice 
             vectors as row vectors.
         eps (float, optional): Finite precision tolerance
 
@@ -219,47 +248,42 @@ def _get_lattice_pointGroup(aVecs, eps=1E-10):
     # (i.e. the indices i, j, k must be unique).
     num_ops = 0
     lattpg_op = []
-    for i in range(num_Rs):
-        if (abs(Rlengths[i] - norm_avecs[0]) > eps):
+    from itertools import permutations
+    for i,j,k in permutations(range(num_Rs),3):
+        if (j == i) or k in [i,j]:
             continue
-        for j in range(num_Rs):
-            if (abs(Rlengths[j] - norm_avecs[1]) > eps):
-                continue
-            if (j == i):
-                continue
-            for k in range(num_Rs):
-                if (abs(Rlengths[k] - norm_avecs[2]) > eps):
-                    continue
-                if (k == i or k == j):
-                    continue
-                if (abs(cell_volume - abs(numpy.linalg.det([Rvecs[i],Rvecs[j],Rvecs[k]]))) > eps):
-                    continue
-                # Form the new set of "rotated" basis vectors
-                new_vectors = [Rvecs[i],Rvecs[j],Rvecs[k]]
-                # If the transformation matrix that takes the original set to the new set is
-                # an orthogonal matrix then this rotation is a point symmetry of the lattice.
-                rotation_matrix = numpy.matmul(inverse_aVecs,new_vectors).tolist()
-                # Check orthogonality of rotation matrix by [R][R]^T = [1]
-                test_matrix = numpy.matmul(rotation_matrix,numpy.transpose(rotation_matrix)).tolist()
-                if (numpy.allclose(test_matrix, [[1,0,0],[0,1,0],[0,0,1]], rtol=0,atol=eps)): # Found valid rotation
-                    num_ops +=  1 # Count number of rotations
-                    lattpg_op.append(rotation_matrix)
+        if (abs(Rlengths[i] - norm_avecs[0]) > eps) or (abs(Rlengths[j] - norm_avecs[1]) > eps) or (abs(Rlengths[k] - norm_avecs[2]) > eps) or (abs(cell_volume - abs(numpy.linalg.det([Rvecs[i],Rvecs[j],Rvecs[k]]))) > eps):
+            continue
+        # Form the new set of "rotated" basis vectors
+        new_vectors = [Rvecs[i],Rvecs[j],Rvecs[k]]
+        # If the transformation matrix that takes the original set to the new set is
+        # an orthogonal matrix then this rotation is a point symmetry of the lattice.
+        rotation_matrix = numpy.matmul(inverse_aVecs,new_vectors).tolist()
+        # Check orthogonality of rotation matrix by [R][R]^T = [1]
+        test_matrix = numpy.matmul(rotation_matrix,numpy.transpose(rotation_matrix)).tolist()
+        if (numpy.allclose(test_matrix, [[1,0,0],[0,1,0],[0,0,1]], rtol=0,atol=eps)): # Found valid rotation
+            num_ops +=  1 # Count number of rotations
+            lattpg_op.append(rotation_matrix)
 
     return(lattpg_op)
     
 def get_spaceGroup(par_lat,atomType,bas_vecs,eps=1E-10,lattcoords = False):
-
     """This routine takes a crystal structure (basis vectors and basis
-      atoms and positions) and returns the point operators and
-      fractional translations of the space group. The routine assumes
-      that the given crystal structure is already primitive.
+    atoms and positions) and returns the point operators and
+    fractional translations of the space group. The routine assumes
+    that the given crystal structure is already primitive.
 
-      :args par_lat: A 2D integere array that contains the parent lattice vectors
-      :args atomType: Integer array representing the type of each basis atom
-      :args bas_vecs: A 2D integere array that contains the basis vectors for the cell
-      :args eps: (Optional) Finite precisions tolerance
-      :args lattcoords: (Optional) True if vectors are in lattice
-            coordinates rather than cartesian
+    Args:
+        par_lat (array-like): A 2D integere array that contains the parent lattice vectors
+        atomType (list of int): Integer array representing the type of each basis atom
+        bas_vecs (array-like): A 2D integere array that contains the basis vectors for the cell
+        eps (float, optional): Finite precisions tolerance
+        lattcoords (bool, optional): True if vectors are in lattice coordinates 
+          rather than cartesian
+
+    Returns:
+        sg_ops (array-like): The rotation and mirror operations of the space group.
+        sg_fracts (array-like): The translation operations of the space group.
     """
     # Get number of atoms in the basis    
     nAtoms = len(atomType)
