@@ -147,7 +147,7 @@ def get_HNFs(n,pLV,base_vecs,LatDim,eps_=None):
     for i, b_vecs in enumerate(base_vecs):
         # par_lat_inv = linalg.inv(np.transpose(par_lat))
         base_vecs[i] = bring_into_cell(b_vecs,plv_inv,pLV,eps)
-        if not np.allclose(b_vecs, temp_basis[i], rtol=0, atol=eps):
+        if not np.allclose(b_vecs, temp_basis[i], rtol=0, atol=eps): #pragma: no cover
             from phenum.msg import warn
             warn("An atomic basis vector was not inside the unit cell. It has been "
                  "remapped.\n Original vector: {} \n Remapped vector: {}"

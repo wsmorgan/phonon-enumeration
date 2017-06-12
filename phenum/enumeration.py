@@ -85,7 +85,8 @@ def _polya_out(args):
             out.write("  {0: <26}".format(' '.join(map(str, hnf))))
             sym_g = get_sym_group(params["lat_vecs"],params["basis_vecs"],thnf,3)
             agroup = []
-            for i in range(len(sym_g.perm.site_perm)):
+            len_sym_g = len(sym_g.perm.site_perm)
+            for i in range(len_sym_g):
                 agroup.append([sym_g.perm.site_perm[i],sym_g.perm.arrow_perm[i]])
                 
             # we need to loop over the concentrations and find the

@@ -526,8 +526,8 @@ def _get_rotation_perms_lists(A,HNF,L,SNF,Op,RPlist,dperms,eps, arrows=False):
     temp_rperms_perm = []
     ident = np.reshape([range(n*n_d)],(n_d,n))
 
-    len_RP = len(RPlist)
-    for i in range(len_RP):
+    len_rp = len(RPlist)
+    for i in range(len_rp):
         RPlist[i].nL=0  # initialize the number
     # Make the group member list for the first SNF
     diag = [SNF[0][0][0],SNF[0][1][1],SNF[0][2][2]]
@@ -648,7 +648,8 @@ def _get_rotation_perms_lists(A,HNF,L,SNF,Op,RPlist,dperms,eps, arrows=False):
             perms.sort()
             temp_rperms_perm = []
             temp_arrow_perm = []
-            for i in range(len(perms)):
+            len_perms = len(perms)
+            for i in range(len_perms):
                 temp_rperms_perm =[p[:nr] for p in perms]
                 temp_arrow_perm = [p[-na:] for p in perms]
         # The rotations permutations list is now in "alphabetical"
@@ -734,7 +735,7 @@ def get_sym_group(par_lat,bas_vecs,HNF,LatDim,arrows=True):
     for i, b_vecs in enumerate(bas_vecs):
         # par_lat_inv = linalg.inv(np.transpose(par_lat))
         bas_vecs[i] = bring_into_cell(b_vecs,par_lat_inv,par_lat,eps)
-        if not allclose(b_vecs, temp_basis[i], rtol=0, atol=eps):
+        if not allclose(b_vecs, temp_basis[i], rtol=0, atol=eps): # pragma: no cover
             from phenum.msg import warn
             warn("An atomic basis vector was not inside the unit cell. It has been "
                  "remapped.\n Original vector: {} \n Remapped vector: {}"
