@@ -5,8 +5,9 @@ from phenum import msg
 
 def _plot_HNFs(args,testmode=False):
     """Makes plots of the shapes of the HNF's provided in the enum.in input file.
-
-    :arg args: The command line inputs.
+    
+    Args:
+        args (dict): The command line inputs.
     """
     if args["shapes"]:
         from phenum.visualize import HNF_shapes
@@ -19,7 +20,8 @@ def _enum_in(args):
     """Makes an enum.in file that contains the desired distribution of
     structures from the polya distribution.
 
-    :arg args: The command line inputs.
+    Args:
+        args (dict): The command line inputs.
     """
 
     from phenum.structures import make_enum_in
@@ -50,6 +52,9 @@ def _enum_in(args):
 def _polya_out(args):
     """Generates the 'polya.out' files for the cell sizes specified in 'lattice.in'
     (or other specified input file).
+
+    Args:
+        args (dict): The command line inputs.
     """
     from phenum.HNFs import get_HNFs
     from phenum.grouptheory import get_sym_group
@@ -61,24 +66,24 @@ def _polya_out(args):
 
     for s in range(params["sizes"][0], params["sizes"][1]+1):
         # get HNFs
-        HNFs = get_HNFs(s,params["lat_vecs"],params["basis_vecs"],3)
+        hnfs = get_HNFs(s,params["lat_vecs"],params["basis_vecs"],3)
         out = open(args["outfile"]+"."+str(s), 'w+')
         # find the concentrations available for the desired cell sizes.
-        cList = get_concs_for_size(s, params["nspecies"], params["is_crestricted"],
+        c_list = get_concs_for_size(s, params["nspecies"], params["is_crestricted"],
                                    len(params["basis_vecs"]), params["concs"])
         
-        # We need to write the concs in cList to the output file.
+        # We need to write the concs in c_list to the output file.
         out.write('{0: <28}'.format("# HNF"))
-        for conc in cList:
+        for conc in c_list:
             out.write("{0: <50}".format(':'.join(map(str, conc))))
         out.write('{0: <50}\n'.format("Total"))
 
         a_concs = pb.get_arrow_concs(params)
-        conc_totals = [0 for i in range(len(cList))]
-        for tHNF in HNFs:
-            HNF = [tHNF[0][0],tHNF[1][0],tHNF[1][1],tHNF[2][0],tHNF[2][1],tHNF[2][2]]
-            out.write("  {0: <26}".format(' '.join(map(str, HNF))))
-            sym_g = get_sym_group(params["lat_vecs"],params["basis_vecs"],tHNF,3)
+        conc_totals = [0 for i in range(len(c_list))]
+        for thnf in hnfs:
+            hnf = [thnf[0][0],thnf[1][0],thnf[1][1],thnf[2][0],thnf[2][1],thnf[2][2]]
+            out.write("  {0: <26}".format(' '.join(map(str, hnf))))
+            sym_g = get_sym_group(params["lat_vecs"],params["basis_vecs"],thnf,3)
             agroup = []
             for i in range(len(sym_g.perm.site_perm)):
                 agroup.append([sym_g.perm.site_perm[i],sym_g.perm.arrow_perm[i]])
@@ -86,7 +91,7 @@ def _polya_out(args):
             # we need to loop over the concentrations and find the
             # number of arrangements possible for each cell size
             total = 0
-            for iconc, conc in enumerate(cList):
+            for iconc, conc in enumerate(c_list):
                 if len(conc) > 0:
                     decorations = pb.arrow_concs(conc,a_concs)
                 
@@ -106,7 +111,7 @@ def _polya_out(args):
                     total += total_num
                     conc_totals[iconc] += total_num
             out.write('{0: <10d}\n'.format(total))
-        out.write("# " + ''.join(['-' for i in range(len(cList)*10 + 10 + 30)]) + '\n')
+        out.write("# " + ''.join(['-' for i in range(len(c_list)*10 + 10 + 30)]) + '\n')
         out.write("{0: <28}".format("  0 0 0 0 0 0"))
         for ctotal in conc_totals:
             out.write("{0: <50d}".format(ctotal))
@@ -119,6 +124,9 @@ def _enum_out(args):
     """Produce the enumerations of a subset of the total number of possible 
     arrangements for the desired HNFs. It assumes that all the information 
     used in the polya part above is still available.
+
+    Args:
+        args (dict): The command line inputs.
     """
 
     import phenum.io_utils as io
@@ -164,29 +172,29 @@ def _enum_out(args):
     
     with open(args["outfile"], 'a') as f:
         enumlist = []    
-        for HNF, conc, num_wanted in systems:
-            (SNF,L,R) = SmithNormalForm(get_full_HNF(HNF))
+        for hnf, conc, num_wanted in systems:
+            (SNF,L,R) = SmithNormalForm(get_full_HNF(hnf))
             SNF = [SNF[0][0],SNF[1][1],SNF[2][2]]
             LT = [item for row in L for item in row]
             a_concs = pb.get_arrow_concs(params)
-            configs = pb.enum_sys(None, list(conc), a_concs, num_wanted,HNF,params, keep_supers, args["acceptrate"])
+            configs = pb.enum_sys(None, list(conc), a_concs, num_wanted,hnf,params, keep_supers, args["acceptrate"])
 
             for config in configs:
                 labeling, arrowing = io.create_labeling(config)
-                enumlist.append(((HNF[0]*HNF[2]*HNF[5]), HNF, SNF, LT, labeling, arrowing))
+                enumlist.append(((hnf[0]*hnf[2]*hnf[5]), hnf, SNF, LT, labeling, arrowing))
 
             sortenum = sorted(enumlist, key=itemgetter(0, 4))
             if len(sortenum) > 0:
                 last_sz = sortenum[0][0]
 
-        for (size, HNF, SNF, LT, labeling, arrowing) in sortenum:
+        for (size, hnf, SNF, LT, labeling, arrowing) in sortenum:
             if size != last_sz:
                 count_s = 1
                 last_sz = size
             else:
                 count_s += 1
 
-            o = sfmt.format(count_t, 1, 1, 1, 1, count_s, size, 1, fmtn(SNF, 3), fmtn(HNF, 3),
+            o = sfmt.format(count_t, 1, 1, 1, 1, count_s, size, 1, fmtn(SNF, 3), fmtn(hnf, 3),
                             fmtn(LT, 5), labeling, arrowing)
 
             f.write(o)
@@ -324,6 +332,10 @@ def _parser_options():
 
 def _script_enum(args, testmode=False):
     """Generates the 'polya.out' or 'enum.out' files depending on the script arguments.
+
+    Args:
+        args (dict): The command line inputs.
+        testmode (bool, optional): True if code is being tested.
     """
     from os import path
     from phenum.base import set_testmode
@@ -356,9 +368,8 @@ def _script_enum(args, testmode=False):
                              "distribution is over ('shape', 'conc', 'size', 'all') and the "
                              "number of structures desired. If all the structures are wanted "
                              "then the second argument should be 'all'.")
-    if args["acceptrate"]:
-        if args["acceptrate"] is not None and (not isinstance(args["acceptrate"], float) or args["acceptrate"] > 1.0):
-            raise ValueError("'-acceptrate' is to be a float less than 1.")
+    if args["acceptrate"] and args["acceptrate"] is not None and (not isinstance(args["acceptrate"], float) or args["acceptrate"] > 1.0):
+        raise ValueError(u"'-acceptrate' is to be a float less than 1.")
 
     if args["polya"]:
         _polya_out(args)

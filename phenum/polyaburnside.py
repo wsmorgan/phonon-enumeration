@@ -10,21 +10,31 @@ then available from the coeff().
 """
 from functools import reduce
 class Sequence(object):
-    """Represents an exponent-limited sequence with a single root. Here, sequence represents a
-    sequence of integer values k_1, k_2...k_j that are the exponents of a single term in a multinomial.
-    The root of the sequence is one of the k_i; its children become sets of sequences including
-    variables to the right of i.
+    """Represents an exponent-limited sequence with a single root. Here,
+    sequence represents a sequence of integer values k_1, k_2...k_j
+    that are the exponents of a single term in a multinomial. The root
+    of the sequence is one of the k_i; its children become sets of
+    sequences including variables to the right of i.
+
+    Attributes:
+        used (int): The sum of the exponents that have already been used.
+        parent (Sequence): A Sequence instance for the variable previouse to this one.
+        kids (Sequence): The next possible Sequence instances.
+        varcount (int): The number of variables in the polynomial.
     """
     def __init__(self, root, possibles, i, powersum, targets, parent=None):
         """Initializes a sequence collector for a variable. 'Term' refers to a product
         of variables like x^i.y^j.z^k, then x has index 0, y has 1, etc.
 
-        :arg root: the exponent of the variable to the left in the multinomial term.
-        :arg possibles: a list of possible values for each variable in the multinomial.
-        :arg i: the index of the variable being sequenced in the term.
-        :arg powersum: the maximum value that the sum of exponents in the sequence is allowed to have.
-        :arg parent: a Sequence instance for the variable the *left* of this one
-          (i.e. has index i-1).
+        Args:
+            root (int): The exponent of the variable to the left in the multinomial term.
+            possibles (list): A list of possible values for each variable in the multinomial.
+            i (int): the index of the variable being sequenced in the term.
+            powersum (int): the maximum value that the sum of exponents in the sequence 
+              is allowed to have.
+
+            parent (Sequence): A Sequence instance for the variable the *left* of this one
+              (i.e. has index i-1).
         """
         self._root = root
         self.used = root + (0 if parent is None else parent.used)
@@ -56,7 +66,11 @@ class Sequence(object):
 
     @property
     def kidcount(self): #pragma: no cover
-        """Returns the number of children and grandchildren to the last generation."""
+        """Returns the number of children and grandchildren to the last generation.
+
+        Returns:
+            _kidcount (int): The number of descendents of the parent.
+        """
         if self._kidcount is None:
             _kidcount = sum([k.kidcount for k in self.kids])
             if _kidcount == 0:
@@ -64,7 +78,14 @@ class Sequence(object):
         return _kidcount
 
     def expand(self, depth=0):
-        """Recursively generates a list of all relevant sequences for this multinomial term."""
+        """Recursively generates a list of all relevant sequences for this multinomial term.
+
+        Args:
+            depth (int, optional): The current depth in the recursion.
+
+        Returns:
+            sequences (list): The relevant sequences for the multinomial.
+        """
         #Iterate through the child sequences and add their variable root values if
         #the total sequence sums to the target.
         sequences = []
@@ -83,7 +104,19 @@ class Sequence(object):
             return sequences
 
     def expand_noappend(self, sequences, start, varindex): #pragma: no cover
-        """Implements an expansion that doesn't use python's append."""
+        """Implements an expansion that doesn't use python's append.
+
+        Args:
+            sequences (list): A list of the relevant sequences for the multinomials.
+            start (int): Starting index.
+            varindex (int): The current variabl index.
+
+        Returns:
+            sequences (list): The relevant sequences for the multinomial.
+
+        Raises:
+            ValueError: if self.kidcount is zero.
+        """
         if len(sequences) == 0:
             if self.kidcount == 0:
                 raise ValueError("This can't happen!")
@@ -107,13 +140,20 @@ class Sequence(object):
         return sequences
 
 class Product(object):
-    """Represents a product of multinomials for which only a single term is interesting."""
+    """Represents a product of multinomials for which only a single term is interesting.
+
+    Attributes:
+        coefficient (int): The scalar integer multiplying this product of multinomials.
+        targets (list): A list of exponents for the terms in the products.
+        multinoms (list): A list of multinomials.
+    """
     def __init__(self, coefficient, targets):
         """Initializes the empty product of multinomials.
 
-        :arg coefficient: the scalar integer multiplying this product of multinomials.
-        :arg targets: a list of exponents for the only interesting term in the product. The
-          list is in the order that the variables appear in each multinomial.
+        Args:
+            coefficient (int): The scalar integer multiplying this product of multinomials.
+            targets (list): A list of exponents for the only interesting term in the 
+              product. The list is in the order that the variables appear in each multinomial.
         """
         self.coefficient = coefficient
         self.targets = targets
@@ -122,11 +162,14 @@ class Product(object):
     def coeff(self):
         """Returns the coefficient of the term with the target exponents if all the multinomials
         in the product were expanded and had their terms collected.
+
+        Returns:
+            coefficient (int): The coefficient of th term with the target exponents.
         """
         #If this is an isolated multinomial, we only need to check the coefficient of the target
         #term.
         if len(self.multinoms) == 1:
-            if all([self.multinoms[0].power-t>0 for t in self.targets]):
+            if all(self.multinoms[0].power-t>0 for t in self.targets):
                 return 0
             else:
                 return self.multinoms[0].nchoosekm(self.targets)*self.coefficient
@@ -146,7 +189,8 @@ class Product(object):
             #Each sequence calculated from the first variable has an entry for each multinomial
             #in this product. The Sequence instances construct smart sequences for the remaining
             #variables in each multinomial separately
-            for i in range(len(seq)):
+            len_seq = len(seq)
+            for i in range(len_seq):
                 varseq = Sequence(seq[i], possibles[i], 1, self.multinoms[i].powersum, self.targets)
                 mnseq.append(varseq.expand())
             coeffs += self._sum_sequences(mnseq)
@@ -154,11 +198,15 @@ class Product(object):
         return int(coeffs)*self.coefficient
 
     def _sum_sequences(self, mnseq):
-        """Sums all the possible combinations of relevant sequences based of the variable sequence
-        lists specified.
+        """Sums all the possible combinations of relevant sequences based of the variable 
+        sequence lists specified.
+        
+        Args:
+            mnseq (list): a list of possible variable sequences in each multinomial (one for 
+              each multinomial) that might contribute to the correct target variable.
 
-        :arg mnseq: a list of possible variable sequences in each multinomial (one for each multinomial)
-          that might contribute to the correct target variable.
+        Returns:
+            coeffs (int): The coefficients of the sequence.
         """
         from itertools import product
         from operator import mul
@@ -180,16 +228,37 @@ class Product(object):
         return str(self.coefficient) + ''.join([str(mn) for mn in sortedmns])            
 
 class Multinomial(object):
-    """Represents a multinomial expansion."""
-    def __init__(self, power, coeff, arrowings, exponent=1):
-        """Sets up the multinomial.
+    """Represents a multinomial expansion.
 
-        :arg powers: the power on each of the *unexpanded* variables in the multinomial;
+    Attributes:
+        power (list): The power on each of the *unexpanded* variables in the multinomial;
           of the form (x^2+y^2+z^2) => 2.
-        :arg coeff: the coefficient on each of the variables in the multinomial; e.g.
+
+        coef (list): The coefficient on each of the variables in the multinomial; e.g.
           (x^2 + a y^2) => a. For more than two variables, each color that *has* arrowing
           gets the coefficient while the others get 1.
-        :arg exponent: the exponent of the entire multinomial.
+
+        arrowings (list): The exponents of the arrows terms.
+        exponent (int): The exponent of the entire multinomial, default value is 1.
+
+        powersum (list): The integer value that all term exponents in the multinomial should
+          sum to (or be less than).
+    
+        possible_powers (list): The possible powers based on the exponent in the multinomial.
+    """
+    def __init__(self, power, coeff, arrowings, exponent=1):
+        """Sets up the multinomial.
+        
+        Args:
+            powers (list): The power on each of the *unexpanded* variables in the multinomial;
+              of the form (x^2+y^2+z^2) => 2.
+
+            coeff (list): The coefficient on each of the variables in the multinomial; e.g.
+              (x^2 + a y^2) => a. For more than two variables, each color that *has* arrowing
+              gets the coefficient while the others get 1.
+
+            exponent (int, optional): The exponent of the entire multinomial, default is 1.
+            arrowings (list): The exponents of the arrow terms.
         """
         self.power = power
         self.coeff = coeff
@@ -209,9 +278,14 @@ class Multinomial(object):
         return "({})^{}".format(contents, self.exponent)
 
     def normed_seq(self, seq):
-        """Normalizes the specified sequence using the powers of unexpanded terms in the multinomial.
+        """Normalizes the specified sequence using the powers of unexpanded terms in 
+        the multinomial.
         
-        :arg seq: a list of exponents in an *expanded* term.
+        Args:
+            seq (list): A list of exponents in an *expanded* term.
+
+        Returns:
+            norm_seq (list): The normalized lust of exponents.
         """
         return [int(ai/self.power) for ai in seq]
 
@@ -219,15 +293,20 @@ class Multinomial(object):
         """Returns the number of different ways to partition an n-element
         set into disjoint subsets of sizes k1, ..., km.
 
-        :arg sequence: an un-normed tuple of form (k1, k2, k3).
+        Args:
+            sequence (tuple): An un-normed tuple of form (k1, k2, k3).
+        
+        Returns:
+            nckm (int): The value of the multinomial coefficient for the series.
         """
         prod = 1
-        if not all([seq%self.power == 0 for seq in sequence]):
+        if not all(seq%self.power == 0 for seq in sequence):
             return 0
         else:
             from operator import mul
             normseq = self.normed_seq(sequence)
-            for i in range(len(sequence)):
+            len_seq = len(sequence)
+            for i in range(len_seq):
                 nsum = sum(normseq[0:i+1])
                 prod *= Multinomial.nchoosek(nsum, normseq[i])
 
@@ -246,8 +325,15 @@ class Multinomial(object):
         or Iteration?" by Yannis Manolopoulos, ACM SIGCSE Bulletin InRoads, Vol.34, No.4, 
         December 2002. http://delab.csd.auth.gr/papers/SBI02m.pdf It is supposed to be robust 
         against large, intermediate values and to have optimal complexity.
+
+        Args:
+            n (int): The value of n in n choose k.
+            k (int): The value of k in n choose k.
+
+        Return:
+            t (int): The value of n choose k.
         """
-        if k < 0 or k > n: #pragma: no cover
+        if not (-1 < k < n+1): #pragma: no cover
             return 0
         if k==0 and n == 0:
             return 1
@@ -265,12 +351,24 @@ def group(gen): #pragma: no cover
     """Generates an entire group using the specified generators by applying generators
     to each other recursively.
 
-    :arg gen: a list of generators as integers.
+    Args:
+        gen (list): A list of generators as integers.
+
+    Returns:
+        groupi (list): A list of the symmetry group operators.
     """
     from operator import itemgetter as iget
     def g_apply(operations, source, groupi=None):
         """Applies the specified group operations to the source list of elements and then
         appends it to the group if it is unique.
+
+        Args:
+            operations (list): The symmetry group operation.
+            source (list): Object for group to act on.
+            groupi (list, optional): The growing symmetry group. Default is None.
+
+        Returns:
+            result (list): The result of the symmetry group on the object.
         """
         result = list(iget(*operations)(source))
         if groupi is not None and result not in groupi:
@@ -305,7 +403,16 @@ def group(gen): #pragma: no cover
     return(groupi)
 
 def _group_to_cyclic(group, limit=None):
-    """Determines the degeneracy of each r-cycle in the specified group operations."""
+    """Determines the degeneracy of each r-cycle in the specified group operations.
+
+    Args:
+        group (list): The a list of the symmetry group operations.
+        limit (list, optional): The the start and finishing indices of the desired group.
+          Deafult None.
+
+    Returns:
+        result (list): The group converted to a cyclic group.
+    """
     result = []
     #We allow filtering so that the unit testing can access the cyclic form of the group.
     if 0 not in group[0][0]: #pragma: no cover
@@ -383,11 +490,23 @@ def _group_to_cyclic(group, limit=None):
 def polya(concentrations, group, arrowings=None, debug=False):
     """Uses a group and concentrations to find the number of unique arrangements as described by 
     polya.
-    
-    :arg concentrations: specify a list of integers specifying how many of each coloring should
-      be present in each of the enumerated lists.
-    :arg group: group operations for permuting the colorings.
+
+    Args:
+        concentrations (list):: A list of integers specifying how many of each coloring should
+          be present in each of the enumerated lists.
+
+        group (list): A list of group operations for permuting the colorings.
+        arrowings (int, optional): The number of arrows present. Default is None.
+        debug (bool, optional): True if the code is being debugged.
+
+    Returns:
+        polya (int): The polya number for the system.
+
+    Raises:
+        ValueError: if the concentrations don't sum to the size of the group operation.
     """
+    import itertools
+    
     temp = [str(i) for i in concentrations]
     for i in group:
         temp = [str(j) for j in i[0]]
@@ -405,10 +524,10 @@ def polya(concentrations, group, arrowings=None, debug=False):
     if sum(concentrations) != len(group[0][0]):
         raise ValueError("The concentrations don't sum to the number of things the group is acting on!")
             
-    for k in range(2):
-        for g in range(len(group)):
-            if 0 not in group[g][k]:
-                group[g][k] = [j-1 for j in group[g][k]]
+    len_g = len(group)
+    for k, g in itertools.product(range(2),range(len_g)):
+        if 0 not in group[g][k]:
+            group[g][k] = [j-1 for j in group[g][k]]
 
     polyndict = {}
     #The operations in the group are used to construct the unique polynomials for each operation.

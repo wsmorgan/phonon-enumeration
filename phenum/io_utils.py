@@ -3,7 +3,11 @@ def read_group(fname):
     """Reads the symmetry group in from the 'rot_perms' styled group
     output by enum.x.
 
-    :arg fname: path to the file to read the group from.
+    Args:
+        fname (str): Path to the file to read the group from.
+
+    Returns:
+        group (numpy ndarray): The symmetry group.
     """
     i=0
     groupi = []
@@ -18,15 +22,21 @@ def read_group(fname):
     from numpy import array
     return(list(map(list, array(groupi)-1)))
 
-def read_lattice(filename='lattice.in', verbose=False):
-    """Reads the lattice.in file; returns a dictionary with the following fields:
-      "sizes": the range of cell sizes,
-      "lat_vecs": lattice vectors of the parent cell,
-      "nspecies": the number of atomic species in the enumeration,
-      "basis_vecs": basis vectors of the parent cell,
-      "is_crestricted": logical that indicates if the concentrations will be restricted,
-      "arrows": logical that indicates if arrows are present,
-      "concs": array of the concentrations in format [1,3].
+def read_lattice(filename='lattice.in'):
+    """Reads the lattice.in file.
+
+    Args:
+        filename (str, optional): The filename to be read in. Default is 'lattice.in'.
+
+    Returns: 
+        result (dict): A dictionary with the following fields:
+          "sizes": the range of cell sizes,
+          "lat_vecs": lattice vectors of the parent cell,
+          "nspecies": the number of atomic species in the enumeration,
+          "basis_vecs": basis vectors of the parent cell,
+          "is_crestricted": logical that indicates if the concentrations will be restricted,
+          "arrows": logical that indicates if arrows are present,
+          "concs": array of the concentrations in format [1,3].
     """
     from .msg import info
     with open(filename,'r') as f:
@@ -73,19 +83,26 @@ def read_enum(filename="enum.in"):
     from the 'enum.in' styled file. It should contain only integers and have:
 
        HNF concs num_wanted
+
     where,
 
     HNF: the list of 6 independent entries in the HNF matrix;
     concs: list of integer species concentrations;
     num_wanted: number of random structures to draw from the enumerated list.
+
+    Args:
+        filename (str, optional): The filename and path. Default 'enum.in'.
+    
+    Returns:
+        systems (list of lists): A list containing the lists of [HNF, concs, num_wanted].
     """    
     from numpy import loadtxt
     raw = loadtxt(filename, int, ndmin=2)
     systems = []
-    for i in range(len(raw)):
-        HNF = raw[i,0:6]
-        sys_conc = raw[i,6:-1]
-        num_wanted = raw[i,-1]
+    for i in raw:
+        HNF = i[0:6]
+        sys_conc = i[6:-1]
+        num_wanted = i[-1]
         systems.append((HNF, sys_conc, num_wanted))
     return systems
 
@@ -93,12 +110,13 @@ def write_enum(params, outfile="enum.out"):
     """Writes a 'struct_enum.out' style preamble to the specified output file
     using the enumeration parameters gleaned from a 'lattice.in' styled file.
 
-    :arg params: values returned from method:read_lattice().
-    :arg outfile: path to desired output file.
+    Args:
+        params (dict): values returned from method:read_lattice().
+        outfile (str, optional): path to desired output file. Default is 'enum.out'.
     """
     from datetime import datetime
     lines = []
-    lines.append("Random structure enumeration: %s" % (str(datetime.now())))
+    lines.append("Random structure enumeration: {0}".format(str(datetime.now())))
     lines.append("bulk" if params["bulk"] else "surface")
     lines.extend([" {0:.7f}       {1:.7f}       {2:.7f}".format(*l) for l in params["lat_vecs"]])
     lines.append("    {0:d}".format(len(params["basis_vecs"])))
@@ -122,7 +140,8 @@ def write_enum(params, outfile="enum.out"):
 def write_struct_enum(params):
     """Writes a 'struct_enum.in' file for the executable enum.x.
 
-    :arg params: values returned from method:read_lattice().
+    Args:
+        params (dict): values returned from method:read_lattice().
     """
 
     with open("struct_enum.in","w+") as struct_file:
@@ -170,18 +189,22 @@ def write_struct_enum(params):
         struct_file.write("full \n")
 
 def which(program):
-    """Determines where if an executable exists on the users path.
+    """Determines if and where an executable exists on the users path.
     This code was contributed by Jay at http://stackoverflow.com/a/377028
-    :args program: The name, or path for the program
+
+    Args:
+        program (str): The name, or path for the program.
+
+    Returns:
+        The program or executable.
     """
     import os
     def is_exe(fpath):
         return os.path.isfile(fpath) and os.access(fpath, os.X_OK)
 
     fpath, fname = os.path.split(program)
-    if fpath:
-        if is_exe(program):
-            return program
+    if fpath and is_exe(program):
+        return program
     else:
         for path in os.environ["PATH"].split(os.pathsep):
             path = path.strip('"')
@@ -195,8 +218,13 @@ def create_labeling(config):
     """This routine takes a string of atomic locations as a vector and the
     atomic concentrations and returns a unique labeling.
 
-    :arg config: list of integers describing the arrangement of atoms on
-    the lattice.
+    Args:
+        config (list of int): A list of integers describing the arrangement of atoms on
+          the lattice.
+
+    Returns:
+        label (str): The atomic labeling for the arrangement.
+        arrow (str): The arrow directions for the arrangement.
     """
     label = ''
     arrow =  ''
@@ -214,10 +242,36 @@ def create_labeling(config):
 def read_enum_out(args):
     """Reads the enum.out file and builds a dictionary with the needed
     information to construct a POSCAR.
+    
+    Args:
+        args (dict): The makeStr.py input arguments.
 
-    :arg args: The makeStr.py input arguments
-    """
+    Returns:
+        system (dict): A dictionary with the keys:
+          "plattice": The parrent lattice vectors.
+          "dvecs": The atomic basis vectors.
+          "title": The name of the system.
+          "bulksurf": 'bulk' or 'surface'.
+          "nD": The number of atomic basis vectors.
+          "k": The number of atomic species.
+          "eps": Finite precision tolerance.
 
+        structure_data (list of dict): A list of dictionaries for each desired structure. Each
+          dictionary contains:
+          "strN": The structure number.
+          "hnfN": The HNFs number.
+          "hnf_degen": The HNFs degeneracy.
+          "lab_degen": The label degeneracy.
+          "tot_degen": The total degeneracy for the structure.
+          "sizeN": The system size.
+          "n": Number of structure within this size.
+          "pgOps": The number of point group operations.
+          "diag": The diagonal of the SNF.
+          "HNF": The HNF matrix.
+          "L": The left transform matrix.
+          "labeling": The atomic labeling for the structure.
+          "directions": The arrow labeling for the structure.
+     """
     from numpy import transpose
     
     # which structures are wanted
@@ -288,15 +342,17 @@ def write_POSCAR(system_data,space_data,structure_data,args):
     """Writes a vasp POSCAR style file for the input structure and system
     data.
 
-    :arg system_data: a dictionary of the system_data
-    :arg space_data: a dictionary containing the spacial data
-    :arg structure_data: a dictionary of the data for this structure
-    :arg args: Dictionary of user supplied input.
+    Args:
+        system_data (dict): A dictionary of the system_data.
+        space_data (dict): A dictionary containing the spacial data
+        structure_data (dict):: a dictionary of the data for this structure
+        args (dict): Dictionary of user supplied input.
     """
 
     from numpy import array
     from phenum.element_data import get_lattice_parameter
     from random import uniform
+    from itertools import product
 
     if "{}" in args["outfile"]:
         filename = args["outfile"].format(str(structure_data["strN"]))
@@ -304,33 +360,30 @@ def write_POSCAR(system_data,space_data,structure_data,args):
         filename = args["outfile"] + ".{}".format(str(structure_data["strN"]))
 
     labeling = structure_data["labeling"]            
-    gIndx = space_data["gIndx"]
+    g_indx = space_data["gIndx"]
     arrows = structure_data["directions"]
     struct_n = structure_data["strN"]
 
     arrow_directions = [[0,0,0],[0,0,-1],[0,-1,0],[-1,0,0],[1,0,0],[0,1,0],[0,0,1]]
     directions = []
 
-    concs = []
-    for i in range(system_data["k"]):
-        this_conc = 0
-        for atom in range(structure_data["n"]*system_data["nD"]):
-            if labeling[gIndx[atom]] == str(i):
-                this_conc += 1
-        concs.append(this_conc)
+    concs = [0]*system_data["k"]
+    for atom in range(structure_data["n"]*system_data["nD"]):
+        concs[int(labeling[g_indx[atom]])] += 1
+        
     def_title = "{} str #: {}\n".format(str(system_data["title"]),str(structure_data["strN"]))
 
     lattice_parameter, title = get_lattice_parameter(args["species"],concs,def_title)
 
     for arrow in arrows:
         directions.append(array(arrow_directions[int(arrow)]))
-    sLV = space_data["sLV"]
+    slv = space_data["sLV"]
     with open(filename,"w+") as poscar:
         poscar.write(title)
         poscar.write("{0:.2f}\n".format(lattice_parameter))
         for i in range(3):
             poscar.write(" {}\n".format(" ".join(
-                ["{0: .8f}".format(j) for j in sLV[i]])))
+                ["{0: .8f}".format(j) for j in slv[i]])))
         poscar.write("  ")
         if args["species"] == None:
             for ic in concs:
@@ -342,13 +395,11 @@ def write_POSCAR(system_data,space_data,structure_data,args):
 
         poscar.write("\n")
         poscar.write("D\n")
-        for ilab in range(system_data["k"]):
-            for iAt in range(structure_data["n"]*system_data["nD"]):
-                rattle = uniform(-args["rattle"],args["rattle"])
-                displace = directions[iAt]*args["displace"]*lattice_parameter
-                displace += displace*rattle
-                if labeling[gIndx[iAt]] == str(ilab):
-                    out_array = array(space_data["aBas"][iAt]) + displace
-                    poscar.write(" {}\n".format(
-                        "  ".join(["{0: .8f}".format(i) for i in out_array.tolist()])))
-        
+        for ilab, iAt in product(range(system_data["k"]),range(structure_data["n"]*system_data["nD"])):
+            rattle = uniform(-args["rattle"],args["rattle"])
+            displace = directions[iAt]*args["displace"]*lattice_parameter
+            displace += displace*rattle
+            if labeling[g_indx[iAt]] == str(ilab):
+                out_array = array(space_data["aBas"][iAt]) + displace
+                poscar.write(" {}\n".format(
+                    "  ".join(["{0: .8f}".format(i) for i in out_array.tolist()])))

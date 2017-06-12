@@ -57,22 +57,20 @@ implementations which can be found at:
 <dd><p>This subroutine translates a point back into the unit cell in
 lattice coordinates, the coefficients of the point must all be
 less than one and at least zero.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Args vec:</th><td class="field-body">A 1D integer array of the atom position vector</td>
-</tr>
-<tr class="field-even field"><th class="field-name" colspan="2">Args cart_to_latt:</th></tr>
-<tr class="field-even field"><td>&nbsp;</td><td class="field-body">The matrix that transforms from cartesian to lattice coordinates</td>
-</tr>
-<tr class="field-odd field"><th class="field-name" colspan="2">Args latt_to_cart:</th></tr>
-<tr class="field-odd field"><td>&nbsp;</td><td class="field-body">The matrix that transforms form lattice to cartesian coordinates</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Args eps:</th><td class="field-body">Finite precision tolerance.</td>
-</tr>
-</tbody>
-</table>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><p class="first">vec (list of int): A 1D integer array of the atom position vector</p>
+<dl class="docutils">
+<dt>cart_to_latt (numpy ndarray): The matrix that transforms from cartesian </dt>
+<dd>to lattice coordinates</dd>
+<dt>latt_to_cart (numpy ndarray): The matrix that transforms form lattice to </dt>
+<dd>cartesian coordinates</dd>
+</dl>
+<p class="last">eps (float): Finite precision tolerance.</p>
+</dd>
+<dt>Returns:</dt>
+<dd>vec (list of float): The vector brought back into the cell.</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
@@ -83,23 +81,43 @@ certain sizes given the constraints provided such as
 concentration restrictions and the presence of arrows. Code
 rewritten from the get_conetration_list subroutine of:
 <a class="reference external" href="https://github.com/msg-byu/enumlib/blob/master/src/derivative_structure_generator.f90">https://github.com/msg-byu/enumlib/blob/master/src/derivative_structure_generator.f90</a></p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>size</strong> &#8211; the cell size in integer form</li>
-<li><strong>nspecies</strong> &#8211; the number of atomic species in the system</li>
-<li><strong>res_concs</strong> &#8211; a logical that indicates of the concentrations</li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
-<p>are being restricted
-:arg nB: the number of basis vectors being used
-:arg concs: an 2D integer array that contains the concentration
-ranges for each atom in the system</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><p class="first">size (int): The cell size in integer form
+nspecies (int): the number of atomic species in the system
+nB (int): the number of basis vectors being used</p>
+<dl class="last docutils">
+<dt>res_concs (bool): a logical that indicates of the concentrations</dt>
+<dd>are being restricted</dd>
+<dt>concs (list of int): A 2D integer array that contains the concentration</dt>
+<dd>ranges for each atom in the system</dd>
+</dl>
+</dd>
+<dt>Returns:</dt>
+<dd>c_list (array-like): The allowed concentration ranges.</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="phenum.symmetry.get_lattice_pointGroup">
+<code class="descclassname">phenum.symmetry.</code><code class="descname">get_lattice_pointGroup</code><span class="sig-paren">(</span><em>a_vecs</em>, <em>eps=1e-10</em><span class="sig-paren">)</span><a class="headerlink" href="#phenum.symmetry.get_lattice_pointGroup" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>This routine returns only the point group of the lattite rather</dt>
+<dd>than the space group of the given crystal structure.</dd>
+<dt>Args:</dt>
+<dd><dl class="first docutils">
+<dt>a_vecs (array-like): The 2D array that contains the parent lattice </dt>
+<dd>vectors as row vectors.</dd>
+</dl>
+<p class="last">eps (float, optional): Finite precision tolerance</p>
+</dd>
+<dt>Returns:</dt>
+<dd><dl class="first last docutils">
+<dt>lattpg_op (array-like): The point group for the lattice in </dt>
+<dd>cartesian coordinates.</dd>
+</dl>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
@@ -109,68 +127,62 @@ ranges for each atom in the system</p>
 atoms and positions) and returns the point operators and
 fractional translations of the space group. The routine assumes
 that the given crystal structure is already primitive.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Args par_lat:</th><td class="field-body">A 2D integere array that contains the parent lattice vectors</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Args atomType:</th><td class="field-body">Integer array representing the type of each basis atom</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Args bas_vecs:</th><td class="field-body">A 2D integere array that contains the basis vectors for the cell</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Args eps:</th><td class="field-body">(Optional) Finite precisions tolerance</td>
-</tr>
-<tr class="field-odd field"><th class="field-name" colspan="2">Args lattcoords:</th></tr>
-<tr class="field-odd field"><td>&nbsp;</td><td class="field-body">(Optional) True if vectors are in lattice
-coordinates rather than cartesian</td>
-</tr>
-</tbody>
-</table>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><p class="first">par_lat (array-like): A 2D integere array that contains the parent lattice vectors
+atomType (list of int): Integer array representing the type of each basis atom
+bas_vecs (array-like): A 2D integere array that contains the basis vectors for the cell
+eps (float, optional): Finite precisions tolerance</p>
+<dl class="last docutils">
+<dt>lattcoords (bool, optional): True if vectors are in lattice coordinates </dt>
+<dd>rather than cartesian</dd>
+</dl>
+</dd>
+<dt>Returns:</dt>
+<dd>sg_ops (array-like): The rotation and mirror operations of the space group.
+sg_fracts (array-like): The translation operations of the space group.</dd>
+</dl>
 </dd></dl>
 
 <span class="target" id="module-phenum.element_data"></span><dl class="function">
 <dt id="phenum.element_data.get_lattice_parameter">
 <code class="descclassname">phenum.element_data.</code><code class="descname">get_lattice_parameter</code><span class="sig-paren">(</span><em>elements</em>, <em>concentrations</em>, <em>default_title</em><span class="sig-paren">)</span><a class="headerlink" href="#phenum.element_data.get_lattice_parameter" title="Permalink to this definition">¶</a></dt>
 <dd><p>Finds the lattice parameters for the provided atomic species using Vagars law.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>elements</strong> &#8211; A dictionary of elements in the system and their concentrations.</li>
-<li><strong>title</strong> &#8211; The default system title.</li>
-<li><strong>concentrations</strong> &#8211; The concentrations of each element.</li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>elements (list of str): A list of the elements in the system.
+default_title (str): The default system title.
+concentrations (list of int): The concentrations of each element.</dd>
+<dt>Returns:</dt>
+<dd>lat_param (float): The lattice parameter of the system.</dd>
+<dt>Raises:</dt>
+<dd>ValueError: if the number of elements doesn&#8217;t match the len of the concentration array.</dd>
+</dl>
 </dd></dl>
 
 <span class="target" id="module-phenum.phonons"></span><p>Methods needed for the enumeration of arrows.</p>
 <dl class="function">
 <dt id="phenum.phonons.add_arrows">
-<code class="descclassname">phenum.phonons.</code><code class="descname">add_arrows</code><span class="sig-paren">(</span><em>col</em>, <em>agroup</em>, <em>dim</em>, <em>accept=None</em>, <em>nested=False</em>, <em>num_wanted=None</em>, <em>small=False</em><span class="sig-paren">)</span><a class="headerlink" href="#phenum.phonons.add_arrows" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">phenum.phonons.</code><code class="descname">add_arrows</code><span class="sig-paren">(</span><em>col</em>, <em>agroup</em>, <em>dim</em>, <em>translations</em>, <em>accept=None</em>, <em>nested=False</em>, <em>num_wanted=None</em>, <em>small=False</em>, <em>supers=False</em><span class="sig-paren">)</span><a class="headerlink" href="#phenum.phonons.add_arrows" title="Permalink to this definition">¶</a></dt>
 <dd><p>Finds the unique arrangements of arrows for a given configuration.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>col</strong> &#8211; a 2D integer array of the initial labeling</li>
-<li><strong>agroup</strong> &#8211; the stabilizers for the colors only with the arrow</li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
-<p>permutations
-:arg dim: the number of directions the arrows can point
-:arg accept: acceptance rate of configurations for large enumerations.
-:arg nested: set to True if this is called from within the context</p>
-<blockquote>
-<div>of another progress bar.</div></blockquote>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><p class="first">col (list): A 2D integer array of the initial labeling.
+dim (int): The number of directions the arrows can point.
+translations (list): The translations of the lattice.
+accept (float, optional): acceptance rate of configurations for large enumerations.</p>
+<dl class="last docutils">
+<dt>agroup (list): The stabilizers for the colors only with the arrow</dt>
+<dd>permutations.</dd>
+<dt>nested (bool, optionl): Set to True if this is called from within the context</dt>
+<dd>of another progress bar.</dd>
+<dt>supers (bool, optional): True if we want to include super periodic </dt>
+<dd>arrangements in the enumeration.</dd>
+</dl>
+</dd>
+<dt>Returns:</dt>
+<dd>arsurvivors (list): The unique arrow arrangements.</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
@@ -179,47 +191,43 @@ coordinates rather than cartesian</td>
 <dd><p>Uses the concentrations of the atoms and the arrows to make a
 labeling for the system. It then sorts them to be in the correct
 order for the code.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>cListr</strong> &#8211; an integer array the concentration of the colors</li>
-<li><strong>aconcs</strong> &#8211; an array of floats of the fractional number of arrows</li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
-<p>for each color</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><p class="first">cListr (list): An integer array the concentration of the colors.</p>
+<dl class="last docutils">
+<dt>aconcs (list): An array of floats of the fractional number of arrows</dt>
+<dd>for each color</dd>
+</dl>
+</dd>
+<dt>Returns:</dt>
+<dd>decoration_w_arrows (list): The labeling of both colors and arrows.</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
 <dt id="phenum.phonons.enum_sys">
-<code class="descclassname">phenum.phonons.</code><code class="descname">enum_sys</code><span class="sig-paren">(</span><em>groupfile</em>, <em>concs</em>, <em>a_concs</em>, <em>num_wanted</em>, <em>HNF</em>, <em>params</em>, <em>accept=None</em><span class="sig-paren">)</span><a class="headerlink" href="#phenum.phonons.enum_sys" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">phenum.phonons.</code><code class="descname">enum_sys</code><span class="sig-paren">(</span><em>groupfile</em>, <em>concs</em>, <em>a_concs</em>, <em>num_wanted</em>, <em>HNF</em>, <em>params</em>, <em>supers</em>, <em>accept=None</em><span class="sig-paren">)</span><a class="headerlink" href="#phenum.phonons.enum_sys" title="Permalink to this definition">¶</a></dt>
 <dd><p>Enumerates a random subset of the unique structures that have the shape
 defined by the symmetry group and the specified concentration.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>groupfile</strong> &#8211; path to the file containing the symmetry group.</li>
-<li><strong>concs</strong> &#8211; list of integer concentrations for each species.</li>
-<li><strong>a_concs</strong> &#8211; list of integer <em>arrow</em> concentrations for each species.</li>
-<li><strong>num_wanted</strong> &#8211; the number of structures to pick randomly from the enumerated
-list.</li>
-</ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Args HNF:</th><td class="field-body"><p class="first">the HNF for the system we&#8217;re currently enumerating</p>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Args params:</th><td class="field-body"><p class="first last">the dictionary of parameters read in from lattice.in</p>
-</td>
-</tr>
-</tbody>
-</table>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><p class="first">groupfile (str): Path to the file containing the symmetry group.
+concs (list): Integer array of the concentrations for each species.
+a_concs (list): Integer array of the arrow concentrations for each species.
+HNF (list): The HNF matrix for the system we&#8217;re currently enumerating
+params (dict): The dictionary of parameters read in from lattice.in
+supers (bool): True if superperiodic structures are to be kept.
+accept (float, optional): The acceptance rate for this enumeration.</p>
+<dl class="last docutils">
+<dt>num_wanted (int): The number of structures to pick randomly from the enumerated</dt>
+<dd>list.</dd>
+</dl>
+</dd>
+<dt>Returns:</dt>
+<dd>configs (list): A list of the unique labelings in this system.</dd>
+<dt>Raises:</dt>
+<dd>ValueError: if the number of configurations found doesn&#8217;t match the number requested.</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
@@ -227,59 +235,58 @@ list.</li>
 <code class="descclassname">phenum.phonons.</code><code class="descname">get_arrow_concs</code><span class="sig-paren">(</span><em>params</em><span class="sig-paren">)</span><a class="headerlink" href="#phenum.phonons.get_arrow_concs" title="Permalink to this definition">¶</a></dt>
 <dd><p>If the concentrations are being restricted then find the correct 
 arrow for each species included.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>params</strong> &#8211; the lattice.in parameters.</td>
-</tr>
-</tbody>
-</table>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>params (dict): The parameters read in from lattice.in.</dd>
+<dt>Returns:</dt>
+<dd>a_concs (list): The arrow concentration for each species.</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
 <dt id="phenum.phonons.how_many_arrows">
 <code class="descclassname">phenum.phonons.</code><code class="descname">how_many_arrows</code><span class="sig-paren">(</span><em>tcol</em><span class="sig-paren">)</span><a class="headerlink" href="#phenum.phonons.how_many_arrows" title="Permalink to this definition">¶</a></dt>
 <dd><p>Determines the number of colors that have arrows on them.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>tcol</strong> &#8211; a 2D array of the labeling that contains the colors</td>
-</tr>
-</tbody>
-</table>
-<p>and arrows for each site.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><dl class="first last docutils">
+<dt>tcol (list): A 2D array of the labeling that contains the colors</dt>
+<dd>and arrows for each site.</dd>
+</dl>
+</dd>
+<dt>Returns:</dt>
+<dd>arrows (int): The number of arrows in the system.
+n_species (int): The number of different atomic species with arrows.
+aconcs (list): The concentration of each arrow species.</dd>
+</dl>
 </dd></dl>
 
 <span class="target" id="module-phenum.structures"></span><p>Methods for reading and writing enumeration and polya-counting results.</p>
 <dl class="function">
-<dt id="phenum.structures.enum_data">
-<code class="descclassname">phenum.structures.</code><code class="descname">enum_data</code><span class="sig-paren">(</span><em>cellsize</em>, <em>args</em>, <em>params</em><span class="sig-paren">)</span><a class="headerlink" href="#phenum.structures.enum_data" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns a list of dictionaries with the HNF, SNF, Left Transform
-and permutation group file names for the given cell size.</p>
-</dd></dl>
-
-<dl class="function">
 <dt id="phenum.structures.make_enum_in">
-<code class="descclassname">phenum.structures.</code><code class="descname">make_enum_in</code><span class="sig-paren">(</span><em>distribution</em>, <em>number=None</em>, <em>dataformat='cells.{}'</em>, <em>sizes=None</em><span class="sig-paren">)</span><a class="headerlink" href="#phenum.structures.make_enum_in" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">phenum.structures.</code><code class="descname">make_enum_in</code><span class="sig-paren">(</span><em>infile</em>, <em>distribution</em>, <em>outfile</em>, <em>number=None</em>, <em>sizes=None</em>, <em>save=True</em>, <em>seed=None</em>, <em>restrict=None</em><span class="sig-paren">)</span><a class="headerlink" href="#phenum.structures.make_enum_in" title="Permalink to this definition">¶</a></dt>
 <dd><p>Makes an enum.in file if the distrubiton type is all with the
 desired number of structures. Otherwise prints the distribution
 information to the screen for the user.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>distribution</strong> &#8211; The parameters that the distribution is over</td>
-</tr>
-</tbody>
-</table>
-<p>(&#8216;shape&#8217;, &#8216;conc&#8217;, &#8216;size&#8217;, &#8216;all&#8217;).
-:arg n: The number of structures or &#8216;all&#8217;.
-:arg dataformat: The folder name for the cell sizes.
-:arg sizes: when specified, limit the distribution to these integer cell sizes;</p>
-<blockquote>
-<div>otherwise, look for all cell sizes we have data for.</div></blockquote>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><p class="first">infile (str): The name of the &#8216;polya.out&#8217; style input file.
+n (int): The number of structures or &#8216;all&#8217;.
+outfile (str): The name of the output file for the distribution
+save (bool): True if the data is to be saved to file.
+seed (float): The seed for the random number generator.</p>
+<dl class="last docutils">
+<dt>distribution (list): The parameters that the distribution is over</dt>
+<dd>(&#8216;shape&#8217;, &#8216;conc&#8217;, &#8216;size&#8217;, &#8216;all&#8217;).</dd>
+<dt>sizes (list): when specified, limit the distribution to these integer cell sizes;</dt>
+<dd>otherwise, look for all cell sizes we have data for.</dd>
+<dt>restrict (list): A list containing the restriction type (&#8216;shape&#8217;,&#8217;conc&#8217;) </dt>
+<dd>and the file of allowed values.</dd>
+</dl>
+</dd>
+<dt>Raises:</dt>
+<dd>ValueError: if the &#8216;polya.*&#8217; file cannot be found.</dd>
+</dl>
 </dd></dl>
 
 <span class="target" id="module-phenum.vector_utils"></span><p>Contains routines used to map the enumerated structures to real space.</p>
@@ -289,19 +296,14 @@ information to the screen for the user.</p>
 <dd><p>This routine takes three lattice vectors and a list of atomic basis
 vector in Cartesian coordinates and converts them to direct
 (&#8220;lattice&#8221;) coordinates.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>sLV</strong> &#8211; Superlattice vectors (Cartesian coordinates)</li>
-<li><strong>aBas</strong> &#8211; Atomic positions (cartesian coordinates first, then direct)</li>
-<li><strong>eps</strong> &#8211; Finite precision tolerance.</li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>sLV (list): The superlattice vectors in cartesian coordinates as rows of a matrix.
+aBas (list): Atomic basis vectors in cartesian coordinates.
+eps (float): Finite precision tolerance.</dd>
+<dt>Returns:</dt>
+<dd>aBas (list): The atomic basis vectors in direct coordinates.</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
@@ -309,54 +311,104 @@ vector in Cartesian coordinates and converts them to direct
 <code class="descclassname">phenum.vector_utils.</code><code class="descname">map_enumStr_to_real_space</code><span class="sig-paren">(</span><em>system_data</em>, <em>structure_data</em>, <em>minkowskiReduce</em><span class="sig-paren">)</span><a class="headerlink" href="#phenum.vector_utils.map_enumStr_to_real_space" title="Permalink to this definition">¶</a></dt>
 <dd><p>Maps an enumerated structure back to real space. Returns a
 dictionary containing the real space data.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>system_data</strong> &#8211; a dictionary containing all the information about the sysytem.</li>
-<li><strong>sturture_data</strong> &#8211; a dictionary containing the information for this structure.</li>
-<li><strong>minkowskiReduce</strong> &#8211; logical indicating if basis should be reduced.</li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><dl class="first docutils">
+<dt>system_data (dict): A dictionary containing all the information about the sysytem with</dt>
+<dd>keys:
+&#8220;plattice&#8221;: The parrent lattice vectors.
+&#8220;dvecs&#8221;: The atomic basis vectors.
+&#8220;title&#8221;: The name of the system.
+&#8220;bulksurf&#8221;: &#8216;bulk&#8217; or &#8216;surface&#8217;.
+&#8220;nD&#8221;: The number of atomic basis vectors.
+&#8220;k&#8221;: The number of atomic species.
+&#8220;eps&#8221;: Finite precision tolerance.</dd>
+<dt>sturture_data (dict): A dictionary containing the information for this structure with</dt>
+<dd>keys:
+&#8220;strN&#8221;: The structure number.
+&#8220;hnfN&#8221;: The HNFs number.
+&#8220;hnf_degen&#8221;: The HNFs degeneracy.
+&#8220;lab_degen&#8221;: The label degeneracy.
+&#8220;tot_degen&#8221;: The total degeneracy for the structure.
+&#8220;sizeN&#8221;: The system size.
+&#8220;n&#8221;: Number of structure within this size.
+&#8220;pgOps&#8221;: The number of point group operations.
+&#8220;diag&#8221;: The diagonal of the SNF.
+&#8220;HNF&#8221;: The HNF matrix.
+&#8220;L&#8221;: The left transform matrix.
+&#8220;labeling&#8221;: The atomic labeling for the structure.
+&#8220;directions&#8221;: The arrow labeling for the structure.</dd>
+</dl>
+<p class="last">minkowskiReduce (bool): Logical indicating if basis should be reduced.</p>
+</dd>
+<dt>Returns:</dt>
+<dd><dl class="first last docutils">
+<dt>space_data (dict): A dictionary of the structure mapped to real space with keys:</dt>
+<dd>&#8220;sLV&#8221;: The super lattice vectors as rows in a matrix.
+&#8220;aBas&#8221;: The attomic basis vectors.
+&#8220;spin&#8221;: A list of the occupanices.
+&#8220;gIndx&#8221;: The integer group index.
+&#8220;x&#8221;: A list of the concentrations of each atom type.</dd>
+</dl>
+</dd>
+</dl>
 </dd></dl>
 
 <span class="target" id="module-phenum.tree"></span><p>The heart of the code is here. These methods build the tree and
 check the canfigurations for uniqueness.</p>
 <dl class="function">
 <dt id="phenum.tree.brancher">
-<code class="descclassname">phenum.tree.</code><code class="descname">brancher</code><span class="sig-paren">(</span><em>concs</em>, <em>group</em>, <em>colors_w_arrows</em>, <em>dim</em>, <em>total=0</em>, <em>subset=None</em>, <em>accept=None</em><span class="sig-paren">)</span><a class="headerlink" href="#phenum.tree.brancher" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">phenum.tree.</code><code class="descname">brancher</code><span class="sig-paren">(</span><em>concs</em>, <em>group</em>, <em>colors_w_arrows</em>, <em>dim</em>, <em>supers</em>, <em>cellsize</em>, <em>total=0</em>, <em>subset=None</em>, <em>accept=None</em>, <em>seed=None</em><span class="sig-paren">)</span><a class="headerlink" href="#phenum.tree.brancher" title="Permalink to this definition">¶</a></dt>
 <dd><p>This routine navigates the tree and saves the unique configurations
 to an array survivors.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>concs</strong> &#8211; the concentrations of the colors or atoms</li>
-<li><strong>group</strong> &#8211; the symmetry group for the system, including the</li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
-<p>effect on the arrows (displacement directions)
-:arg colors_w_arrows: an integer 2D array that indiciates
-which atoms are being displaced, i.e., where the arrows are.
-:arg dim: the number of directions the arrows can point
-:arg total: the total number predicted by polya.
-:arg subset: an integer array of the subset of unique
-arrangements wanted
-:arg accept: for large enumerations, how often to accept configurations.</p>
-<p>The method returns the list of unique configurations and the
-number of stabilizers for the last level of the tree.</p>
-<p>survivors: is the 3D array of the unique arrangements of
-colors and arrows
-stob_len: the number of stabilizers for a given unique
-configuration</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><p class="first">concs (list): The concentrations of the colors or atoms.
+dim (int): The number of directions the arrows can point.
+supers (bool): True if superperiodic structures are to be kept.
+cellsize (int): The number of cells in the system.
+total (int, optional): The total number predicted by polya. Default is 0.</p>
+<dl class="docutils">
+<dt>group (list): The symmetry group for the system, including the</dt>
+<dd>effect on the arrows (displacement directions).</dd>
+<dt>colors_w_arrows (list): An integer 2D array that indiciates</dt>
+<dd>which atoms are being displaced, i.e., where the arrows are.</dd>
+<dt>subset (list, optional): An integer array of the subset of unique</dt>
+<dd>arrangements wanted. Default is None.</dd>
+<dt>accept (float, optional): for large enumerations, how often to accept configurations.</dt>
+<dd>Default is None.</dd>
+</dl>
+<p class="last">seed (int, optaion): The random seed. Default is None.</p>
+</dd>
+<dt>Returns:</dt>
+<dd>survivors (list): A 3D array of the unique arrangements of colors and arrows.</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="phenum.tree.guess_and_check_brancher">
+<code class="descclassname">phenum.tree.</code><code class="descname">guess_and_check_brancher</code><span class="sig-paren">(</span><em>concs</em>, <em>group</em>, <em>colors_w_arrows</em>, <em>dim</em>, <em>supers</em>, <em>cellsize</em>, <em>num_wanted</em><span class="sig-paren">)</span><a class="headerlink" href="#phenum.tree.guess_and_check_brancher" title="Permalink to this definition">¶</a></dt>
+<dd><p>When the number of configurations wanted is sufficiently small
+relative to the total number of unique configurations then it is
+faster to &#8216;pick&#8217; them from the list of possible configurations and
+then verify that none of your selected configurations are
+equivalent.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><p class="first">concs (list): An integer arrray of the concentrations of the colors or atoms.
+dim (int): The number of directions the arrows can point.
+supers (bool): Logical that indicates if super periodic structures are to be kept.
+cellsize (int): The number of cells in the system.</p>
+<dl class="last docutils">
+<dt>group (list): The symmetry group for the system, including the</dt>
+<dd>effect on the arrows (displacement directions).</dd>
+<dt>colors_w_arrows (list): An integer 2D array that indiciates</dt>
+<dd>which atoms are being displaced, i.e., where the arrows are.</dd>
+</dl>
+</dd>
+<dt>Returns:</dt>
+<dd>survivors (list): A 3D array of the unique arrangements of colors and arrows.</dd>
+</dl>
 </dd></dl>
 
 <span class="target" id="module-phenum.grouptheory"></span><p>Methods for taking an HNF and finding the site permutations and the
@@ -370,6 +422,23 @@ inside the RotPermList class.</p>
 <dt id="phenum.grouptheory.ArrowPerm">
 <em class="property">class </em><code class="descclassname">phenum.grouptheory.</code><code class="descname">ArrowPerm</code><span class="sig-paren">(</span><em>site_perm=None</em>, <em>arrow_perm=None</em><span class="sig-paren">)</span><a class="headerlink" href="#phenum.grouptheory.ArrowPerm" title="Permalink to this definition">¶</a></dt>
 <dd><p>ArrowPerm pairs a site permutation with an arrow permutation.</p>
+<dl class="docutils">
+<dt>Attributes:</dt>
+<dd>site_perm (list): A 1D array containing a site permutation.
+arrow_perm (list): A 1D array containing an arrow permutation.</dd>
+</dl>
+</dd></dl>
+
+<dl class="class">
+<dt id="phenum.grouptheory.OpList">
+<em class="property">class </em><code class="descclassname">phenum.grouptheory.</code><code class="descname">OpList</code><span class="sig-paren">(</span><em>rot=None</em>, <em>shift=None</em><span class="sig-paren">)</span><a class="headerlink" href="#phenum.grouptheory.OpList" title="Permalink to this definition">¶</a></dt>
+<dd><p>OpList maintains the data structure of the fixing operations form
+the fortran code.</p>
+<dl class="docutils">
+<dt>Attributes:</dt>
+<dd>rot (array-like): A 3D array containing the rotations.
+shift (array-like): A 2D array containing the translations of the lattice.</dd>
+</dl>
 </dd></dl>
 
 <dl class="class">
@@ -377,6 +446,13 @@ inside the RotPermList class.</p>
 <em class="property">class </em><code class="descclassname">phenum.grouptheory.</code><code class="descname">RotPermList</code><span class="sig-paren">(</span><em>nL=None</em>, <em>v=None</em>, <em>perm=None</em>, <em>RotIndx=None</em>, <em>arrows=None</em><span class="sig-paren">)</span><a class="headerlink" href="#phenum.grouptheory.RotPermList" title="Permalink to this definition">¶</a></dt>
 <dd><p>RotPermList maintains the data structure for the rotations and
 permutations from the fortran code.</p>
+<dl class="docutils">
+<dt>Attributes:</dt>
+<dd>nL (int): An integer indicating the number of operations.
+v (array-like): A 2D array containing the lattice vectors.
+perm (ArrowPerm): An ArrowPerm object.
+RotIndx (list): List of the rotation indices.</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
@@ -384,15 +460,14 @@ permutations from the fortran code.</p>
 <code class="descclassname">phenum.grouptheory.</code><code class="descname">SmithNormalForm</code><span class="sig-paren">(</span><em>HNF</em><span class="sig-paren">)</span><a class="headerlink" href="#phenum.grouptheory.SmithNormalForm" title="Permalink to this definition">¶</a></dt>
 <dd><p>Finds the Smith Normal Form (SNF) of an HNF as well as the left and
 right transforms.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Args HNF:</th><td class="field-body">The integer matrix HNF for which the SNFs are to be
-found</td>
-</tr>
-</tbody>
-</table>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>HNF (list of list): The integer matrix HNF for which the SNF is to be found.</dd>
+<dt>Returns:</dt>
+<dd>M (list of list): The Smith Normal Form matrix of the HNF.
+A (list of list): The left transform matrix.
+B (list of list): The right transform matrix.</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
@@ -400,18 +475,19 @@ found</td>
 <code class="descclassname">phenum.grouptheory.</code><code class="descname">a_group</code><span class="sig-paren">(</span><em>trans</em>, <em>rots</em><span class="sig-paren">)</span><a class="headerlink" href="#phenum.grouptheory.a_group" title="Permalink to this definition">¶</a></dt>
 <dd><p>This subroutine combines that translations of the lattice with the
 rotatians of the lattice.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>trans</strong> &#8211; a 2D integer array where each row is an translation</td>
-</tr>
-</tbody>
-</table>
-<p>of the lattice
-:arg rots: a 3D integer array. Each row&#8217;s first entry is the
-site permutations and the second entry is the arrow
-permutations.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><dl class="first last docutils">
+<dt>trans (list): A 2D array where each row is an translation</dt>
+<dd>of the lattice.</dd>
+<dt>rots (list): A 3D array. Each row&#8217;s first entry is the</dt>
+<dd>site permutations and the second entry is the arrow
+permutations.</dd>
+</dl>
+</dd>
+<dt>Returns:</dt>
+<dd>groupi (list): The full symmetry group.</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
@@ -419,160 +495,521 @@ permutations.</p>
 <code class="descclassname">phenum.grouptheory.</code><code class="descname">a_group_gen</code><span class="sig-paren">(</span><em>trans</em>, <em>rots</em><span class="sig-paren">)</span><a class="headerlink" href="#phenum.grouptheory.a_group_gen" title="Permalink to this definition">¶</a></dt>
 <dd><p>This subroutine combines that translations of the lattice with the
 rotatians of the lattice for the generators of the system.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>trans</strong> &#8211; a 2D integer array where each row is an translation</td>
-</tr>
-</tbody>
-</table>
-<p>of the lattice
-:arg rots: a 3D integer array. Each row&#8217;s first entry is the
-site permutations and the second entry is the arrow
-permutations.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><dl class="first last docutils">
+<dt>trans (list): A 2D array where each row is an translation</dt>
+<dd>of the lattice.</dd>
+<dt>rots (list): A 3D array. Each row&#8217;s first entry is the</dt>
+<dd>site permutations and the second entry is the arrow
+permutations.</dd>
+</dl>
+</dd>
+<dt>Returns:</dt>
+<dd>groupi (list): The full symmetry group.</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
 <dt id="phenum.grouptheory.get_full_HNF">
 <code class="descclassname">phenum.grouptheory.</code><code class="descname">get_full_HNF</code><span class="sig-paren">(</span><em>HNF</em><span class="sig-paren">)</span><a class="headerlink" href="#phenum.grouptheory.get_full_HNF" title="Permalink to this definition">¶</a></dt>
 <dd><p>Turns the reduced HNF to a full HNF matrix.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Args HNF:</th><td class="field-body">The 1D integer numpy array that contains all the lower</td>
-</tr>
-</tbody>
-</table>
-<p>diagonal entries of the HNF matrix.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><dl class="first last docutils">
+<dt>HNF (list): The 1D array that contains all the lower</dt>
+<dd>diagonal entries of the HNF matrix.</dd>
+</dl>
+</dd>
+<dt>Returns:</dt>
+<dd>full_hnf (list of list): A 2D list containing the HNF matrix.</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
 <dt id="phenum.grouptheory.get_sym_group">
-<code class="descclassname">phenum.grouptheory.</code><code class="descname">get_sym_group</code><span class="sig-paren">(</span><em>par_lat</em>, <em>bas_vecs</em>, <em>HNF</em>, <em>LatDim</em><span class="sig-paren">)</span><a class="headerlink" href="#phenum.grouptheory.get_sym_group" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">phenum.grouptheory.</code><code class="descname">get_sym_group</code><span class="sig-paren">(</span><em>par_lat</em>, <em>bas_vecs</em>, <em>HNF</em>, <em>LatDim</em>, <em>arrows=True</em><span class="sig-paren">)</span><a class="headerlink" href="#phenum.grouptheory.get_sym_group" title="Permalink to this definition">¶</a></dt>
 <dd><p>Generates the symmetry group for a given lattice and HNF</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Args par_lat:</th><td class="field-body">a 2D integer array that contains the parrent</td>
-</tr>
-</tbody>
-</table>
-<p>lattice vectors
-:args bas_vecs: The atomic basis for the lattice
-:args HNF: The HNF that defines the supercell
-:args LatDim: 2 if a 2D case 3 if 3D</p>
+<p>Args:</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>par_lat (numpy ndarray): a 2D array that contains the parrent</dt>
+<dd>lattice vectors</dd>
+</dl>
+<p>bas_vecs (list): A list of the atomic basis vectors for the lattice.
+HNF (numpy ndarray): The HNF matrix that defines the supercell.
+LatDim (int): 2 if a surface case case 3 if bulk.
+arrows (bool, optional): True if the arrow group is to be found as well.</p>
+</div></blockquote>
+<dl class="docutils">
+<dt>Returns:</dt>
+<dd><dl class="first last docutils">
+<dt>sym_group (RotPermList): The symmetry operations represented as permutations</dt>
+<dd>of a list.</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<span class="target" id="module-phenum.enumeration"></span><p>The methods needed to take input from the user and put it in useful
+forms. Also the actual executable for the code.</p>
+<dl class="function">
+<dt id="phenum.enumeration.examples">
+<code class="descclassname">phenum.enumeration.</code><code class="descname">examples</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#phenum.enumeration.examples" title="Permalink to this definition">¶</a></dt>
+<dd><p>Prints examples of using the script to the console using colored output.</p>
+</dd></dl>
+
+<dl class="data">
+<dt id="phenum.enumeration.script_options">
+<code class="descclassname">phenum.enumeration.</code><code class="descname">script_options</code><em class="property"> = {'-profile': {'action': 'store_true', 'help': &quot;Profile the code as it runs. Requires vprof (`pip install vprof`). Argument is a combination of 'c', 'm' and 'h'. See vprof docs.&quot;}, '-sizes': {'default': None, 'type': &lt;type 'int'&gt;, 'nargs': 2, 'help': 'Specify the start and stop cell sizes over which to distribute the structure selection, weighted by the Polya distribution.'}, '-shapes': {'action': 'store_true', 'help': 'The visualization excludes the atoms showing just the shapes of the cells.'}, '-show': {'action': 'store_true', 'help': 'If present then the visualization will loop through an interactive image for each HNF.'}, '-distribution': {'default': None, 'nargs': '+', 'help': &quot;Makes an enum.in file when the distribution is 'all'. Otherwise the distribution is printed to the screen for the user.  The distributions are built from the results of the polya run and contain the specified number of structures.&quot;}, '-outfile': {'default': None, 'type': &lt;type 'str'&gt;, 'help': &quot;Override the default output file names: 'polya.out' for polya counting; 'enum.out' for structure enumeration; 'enum.in' for the distributions.&quot;}, '-polya': {'action': 'store_true', 'help': 'Predict the total number of unique superstructures for each cell shape and possible concentration.'}, '-savedist': {'action': 'store_true', 'help': &quot;Makes an enum.in file for the distribution over 'size', 'shape', or 'conc'.&quot;}, '-enum': {'action': 'store_true', 'help': &quot;Enumerate the number of superstructures of specific shape as specified in the 'enum.in' file.&quot;}, '-acceptrate': {'default': None, 'type': &lt;type 'float'&gt;, 'help': 'For large numbers of unique arrangements, specify how often one should be kept in the final list.'}, '-input': {'default': None, 'type': &lt;type 'str'&gt;, 'help': &quot;Override the default 'enum.in' file name.&quot;}, '-super': {'action': 'store_true', 'help': 'Overrides the exclusion of the superperiodic cells from the output.'}, '-visualize': {'action': 'store_true', 'help': &quot;Makes plots of the shapes of the HNF's in the provided enum.in style file.&quot;}, '-filter': {'default': None, 'nargs': 2, 'help': &quot;Applys a filter over the 'shape' or the 'conc' option of the distributions. The first entry should specify the filter the second should be the name of the file containing the desired restrictions.&quot;}, '-lattice': {'default': 'lattice.in', 'type': &lt;type 'str'&gt;, 'help': &quot;Override the default input file name: 'lattice.in' for enumeration parameters.&quot;}, '-seed': {'default': None, 'type': &lt;type 'int'&gt;, 'help': 'The integer seed for the random number generator.'}}</em><a class="headerlink" href="#phenum.enumeration.script_options" title="Permalink to this definition">¶</a></dt>
+<dd><p>dict: default command-line arguments and their
+<a class="reference external" href="https://docs.python.org/2/library/argparse.html#argparse.ArgumentParser.add_argument" title="(in Python v2.7)"><code class="xref py py-meth docutils literal"><span class="pre">argparse.ArgumentParser.add_argument()</span></code></a> keyword arguments.</p>
+</dd></dl>
+
+<span class="target" id="module-phenum.io_utils"></span><p>Methods for reading and writing enumeration and polya-counting results.</p>
+<dl class="function">
+<dt id="phenum.io_utils.create_labeling">
+<code class="descclassname">phenum.io_utils.</code><code class="descname">create_labeling</code><span class="sig-paren">(</span><em>config</em><span class="sig-paren">)</span><a class="headerlink" href="#phenum.io_utils.create_labeling" title="Permalink to this definition">¶</a></dt>
+<dd><p>This routine takes a string of atomic locations as a vector and the
+atomic concentrations and returns a unique labeling.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><dl class="first last docutils">
+<dt>config (list of int): A list of integers describing the arrangement of atoms on</dt>
+<dd>the lattice.</dd>
+</dl>
+</dd>
+<dt>Returns:</dt>
+<dd>label (str): The atomic labeling for the arrangement.
+arrow (str): The arrow directions for the arrangement.</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="phenum.io_utils.read_enum">
+<code class="descclassname">phenum.io_utils.</code><code class="descname">read_enum</code><span class="sig-paren">(</span><em>filename='enum.in'</em><span class="sig-paren">)</span><a class="headerlink" href="#phenum.io_utils.read_enum" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reads the list of structures and the number of random candidates to enumerate
+from the &#8216;enum.in&#8217; styled file. It should contain only integers and have:</p>
+<blockquote>
+<div>HNF concs num_wanted</div></blockquote>
+<p>where,</p>
+<p>HNF: the list of 6 independent entries in the HNF matrix;
+concs: list of integer species concentrations;
+num_wanted: number of random structures to draw from the enumerated list.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>filename (str, optional): The filename and path. Default &#8216;enum.in&#8217;.</dd>
+<dt>Returns:</dt>
+<dd>systems (list of lists): A list containing the lists of [HNF, concs, num_wanted].</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="phenum.io_utils.read_enum_out">
+<code class="descclassname">phenum.io_utils.</code><code class="descname">read_enum_out</code><span class="sig-paren">(</span><em>args</em><span class="sig-paren">)</span><a class="headerlink" href="#phenum.io_utils.read_enum_out" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reads the enum.out file and builds a dictionary with the needed
+information to construct a POSCAR.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>args (dict): The makeStr.py input arguments.</dd>
+<dt>Returns:</dt>
+<dd><dl class="first last docutils">
+<dt>system (dict): A dictionary with the keys:</dt>
+<dd>&#8220;plattice&#8221;: The parrent lattice vectors.
+&#8220;dvecs&#8221;: The atomic basis vectors.
+&#8220;title&#8221;: The name of the system.
+&#8220;bulksurf&#8221;: &#8216;bulk&#8217; or &#8216;surface&#8217;.
+&#8220;nD&#8221;: The number of atomic basis vectors.
+&#8220;k&#8221;: The number of atomic species.
+&#8220;eps&#8221;: Finite precision tolerance.</dd>
+<dt>structure_data (list of dict): A list of dictionaries for each desired structure. Each</dt>
+<dd>dictionary contains:
+&#8220;strN&#8221;: The structure number.
+&#8220;hnfN&#8221;: The HNFs number.
+&#8220;hnf_degen&#8221;: The HNFs degeneracy.
+&#8220;lab_degen&#8221;: The label degeneracy.
+&#8220;tot_degen&#8221;: The total degeneracy for the structure.
+&#8220;sizeN&#8221;: The system size.
+&#8220;n&#8221;: Number of structure within this size.
+&#8220;pgOps&#8221;: The number of point group operations.
+&#8220;diag&#8221;: The diagonal of the SNF.
+&#8220;HNF&#8221;: The HNF matrix.
+&#8220;L&#8221;: The left transform matrix.
+&#8220;labeling&#8221;: The atomic labeling for the structure.
+&#8220;directions&#8221;: The arrow labeling for the structure.</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="phenum.io_utils.read_group">
+<code class="descclassname">phenum.io_utils.</code><code class="descname">read_group</code><span class="sig-paren">(</span><em>fname</em><span class="sig-paren">)</span><a class="headerlink" href="#phenum.io_utils.read_group" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reads the symmetry group in from the &#8216;rot_perms&#8217; styled group
+output by enum.x.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>fname (str): Path to the file to read the group from.</dd>
+<dt>Returns:</dt>
+<dd>group (numpy ndarray): The symmetry group.</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="phenum.io_utils.read_lattice">
+<code class="descclassname">phenum.io_utils.</code><code class="descname">read_lattice</code><span class="sig-paren">(</span><em>filename='lattice.in'</em><span class="sig-paren">)</span><a class="headerlink" href="#phenum.io_utils.read_lattice" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reads the lattice.in file.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>filename (str, optional): The filename to be read in. Default is &#8216;lattice.in&#8217;.</dd>
+<dt>Returns: </dt>
+<dd><dl class="first last docutils">
+<dt>result (dict): A dictionary with the following fields:</dt>
+<dd>&#8220;sizes&#8221;: the range of cell sizes,
+&#8220;lat_vecs&#8221;: lattice vectors of the parent cell,
+&#8220;nspecies&#8221;: the number of atomic species in the enumeration,
+&#8220;basis_vecs&#8221;: basis vectors of the parent cell,
+&#8220;is_crestricted&#8221;: logical that indicates if the concentrations will be restricted,
+&#8220;arrows&#8221;: logical that indicates if arrows are present,
+&#8220;concs&#8221;: array of the concentrations in format [1,3].</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="phenum.io_utils.which">
+<code class="descclassname">phenum.io_utils.</code><code class="descname">which</code><span class="sig-paren">(</span><em>program</em><span class="sig-paren">)</span><a class="headerlink" href="#phenum.io_utils.which" title="Permalink to this definition">¶</a></dt>
+<dd><p>Determines if and where an executable exists on the users path.
+This code was contributed by Jay at <a class="reference external" href="http://stackoverflow.com/a/377028">http://stackoverflow.com/a/377028</a></p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>program (str): The name, or path for the program.</dd>
+<dt>Returns:</dt>
+<dd>The program or executable.</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="phenum.io_utils.write_POSCAR">
+<code class="descclassname">phenum.io_utils.</code><code class="descname">write_POSCAR</code><span class="sig-paren">(</span><em>system_data</em>, <em>space_data</em>, <em>structure_data</em>, <em>args</em><span class="sig-paren">)</span><a class="headerlink" href="#phenum.io_utils.write_POSCAR" title="Permalink to this definition">¶</a></dt>
+<dd><p>Writes a vasp POSCAR style file for the input structure and system
+data.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>system_data (dict): A dictionary of the system_data.
+space_data (dict): A dictionary containing the spacial data
+structure_data (dict):: a dictionary of the data for this structure
+args (dict): Dictionary of user supplied input.</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="phenum.io_utils.write_enum">
+<code class="descclassname">phenum.io_utils.</code><code class="descname">write_enum</code><span class="sig-paren">(</span><em>params</em>, <em>outfile='enum.out'</em><span class="sig-paren">)</span><a class="headerlink" href="#phenum.io_utils.write_enum" title="Permalink to this definition">¶</a></dt>
+<dd><p>Writes a &#8216;struct_enum.out&#8217; style preamble to the specified output file
+using the enumeration parameters gleaned from a &#8216;lattice.in&#8217; styled file.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>params (dict): values returned from method:read_lattice().
+outfile (str, optional): path to desired output file. Default is &#8216;enum.out&#8217;.</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="phenum.io_utils.write_struct_enum">
+<code class="descclassname">phenum.io_utils.</code><code class="descname">write_struct_enum</code><span class="sig-paren">(</span><em>params</em><span class="sig-paren">)</span><a class="headerlink" href="#phenum.io_utils.write_struct_enum" title="Permalink to this definition">¶</a></dt>
+<dd><p>Writes a &#8216;struct_enum.in&#8217; file for the executable enum.x.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>params (dict): values returned from method:read_lattice().</dd>
+</dl>
+</dd></dl>
+
+<span class="target" id="module-phenum.makeStr"></span><dl class="function">
+<dt id="phenum.makeStr.RepresentsInt">
+<code class="descclassname">phenum.makeStr.</code><code class="descname">RepresentsInt</code><span class="sig-paren">(</span><em>s</em><span class="sig-paren">)</span><a class="headerlink" href="#phenum.makeStr.RepresentsInt" title="Permalink to this definition">¶</a></dt>
+<dd><p>Determines if a stri could be an int.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>s (str): The string to be tested.</dd>
+<dt>Returns:</dt>
+<dd>True if the string is an integer.</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="phenum.makeStr.examples">
+<code class="descclassname">phenum.makeStr.</code><code class="descname">examples</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#phenum.makeStr.examples" title="Permalink to this definition">¶</a></dt>
+<dd><p>Print some examples on how to use this python version of makeStr.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="phenum.makeStr.run">
+<code class="descclassname">phenum.makeStr.</code><code class="descname">run</code><span class="sig-paren">(</span><em>args</em><span class="sig-paren">)</span><a class="headerlink" href="#phenum.makeStr.run" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generates the vasp output file for the desired structure.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>args (dict): The user input.</dd>
+</dl>
+</dd></dl>
+
+<dl class="data">
+<dt id="phenum.makeStr.script_options">
+<code class="descclassname">phenum.makeStr.</code><code class="descname">script_options</code><em class="property"> = {'-rattle': {'default': 0.0, 'type': &lt;type 'float'&gt;, 'help': 'Randomizes the positions of the atoms in the POSCAR by no more than the fraction of the displacement provided.'}, '-displace': {'default': 0.0, 'type': &lt;type 'float'&gt;, 'help': 'The displacement amount for the arrows in units of the lattice parameter. Default is 0.'}, '-species': {'default': None, 'type': &lt;type 'str'&gt;, 'nargs': '+', 'help': 'Specify the atomic species present in the system.'}, '-mink': {'default': 't', 'help': 'Sets flag to perform minkowski reduction of the basis (T/F). Default is True.', 'choices': ['t', 'f']}, '-input': {'default': 'struct_enum.out', 'type': &lt;type 'str'&gt;, 'help': &quot;Override the default 'struct_enum.out' file name.&quot;}, 'structures': {'nargs': '+', 'help': 'The desired structure numbers from the enum.out file. This can be either a single value or a desired range indicated by the starting and stopping structure numbers.'}, '-outfile': {'default': 'vasp.{}', 'type': &lt;type 'str'&gt;, 'help': &quot;Override the default output file names: 'vasp.{structure#}'for the structures.&quot;}}</em><a class="headerlink" href="#phenum.makeStr.script_options" title="Permalink to this definition">¶</a></dt>
+<dd><p>dict: default command-line arguments and their
+<a class="reference external" href="https://docs.python.org/2/library/argparse.html#argparse.ArgumentParser.add_argument" title="(in Python v2.7)"><code class="xref py py-meth docutils literal"><span class="pre">argparse.ArgumentParser.add_argument()</span></code></a> keyword arguments.</p>
+</dd></dl>
+
+<span class="target" id="module-phenum.numerics"></span><p>Numerical methods for mathematical functions neede for the program</p>
+<dl class="function">
+<dt id="phenum.numerics.binomial_coefficient">
+<code class="descclassname">phenum.numerics.</code><code class="descname">binomial_coefficient</code><span class="sig-paren">(</span><em>n</em>, <em>k</em><span class="sig-paren">)</span><a class="headerlink" href="#phenum.numerics.binomial_coefficient" title="Permalink to this definition">¶</a></dt>
+<dd><p>Finds the binomial coefficient n choose k. See
+<a class="reference external" href="https://en.wikipedia.org/wiki/Binomial_coefficient">https://en.wikipedia.org/wiki/Binomial_coefficient</a> for details.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>n (int): An integer.
+k (int): An integer.</dd>
+<dt>Returns:</dt>
+<dd>t (int): The binomial coefficient, n choose k.</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="phenum.numerics.factorial">
+<code class="descclassname">phenum.numerics.</code><code class="descname">factorial</code><span class="sig-paren">(</span><em>num</em><span class="sig-paren">)</span><a class="headerlink" href="#phenum.numerics.factorial" title="Permalink to this definition">¶</a></dt>
+<dd><p>Finds the factorial of the input integer.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>num (int): The integer to find the factorial of.</dd>
+<dt>Returns:</dt>
+<dd>fact (int): The factorial of num.</dd>
+</dl>
+</dd></dl>
+
+<span class="target" id="module-phenum.polyaburnside"></span><p>AUTHORS: Conrad W. Rosenbrock, Wiley S. Morgan (June 2015)</p>
+<p>Classes to support the calculation of coefficients for specific terms in a product
+of multinomials. Construct a product class by specifying the exponent and target term
+and then add multinomials using the Product instance&#8217;s append(). The coefficient is
+then available from the coeff().</p>
+<dl class="class">
+<dt id="phenum.polyaburnside.Multinomial">
+<em class="property">class </em><code class="descclassname">phenum.polyaburnside.</code><code class="descname">Multinomial</code><span class="sig-paren">(</span><em>power</em>, <em>coeff</em>, <em>arrowings</em>, <em>exponent=1</em><span class="sig-paren">)</span><a class="headerlink" href="#phenum.polyaburnside.Multinomial" title="Permalink to this definition">¶</a></dt>
+<dd><p>Represents a multinomial expansion.</p>
+<dl class="docutils">
+<dt>Attributes:</dt>
+<dd><dl class="first docutils">
+<dt>power (list): The power on each of the <em>unexpanded</em> variables in the multinomial;</dt>
+<dd>of the form (x^2+y^2+z^2) =&gt; 2.</dd>
+<dt>coef (list): The coefficient on each of the variables in the multinomial; e.g.</dt>
+<dd>(x^2 + a y^2) =&gt; a. For more than two variables, each color that <em>has</em> arrowing
+gets the coefficient while the others get 1.</dd>
+</dl>
+<p>arrowings (list): The exponents of the arrows terms.
+exponent (int): The exponent of the entire multinomial, default value is 1.</p>
+<dl class="docutils">
+<dt>powersum (list): The integer value that all term exponents in the multinomial should</dt>
+<dd>sum to (or be less than).</dd>
+</dl>
+<p class="last">possible_powers (list): The possible powers based on the exponent in the multinomial.</p>
+</dd>
+</dl>
+<dl class="staticmethod">
+<dt id="phenum.polyaburnside.Multinomial.nchoosek">
+<em class="property">static </em><code class="descname">nchoosek</code><span class="sig-paren">(</span><em>n</em>, <em>k</em><span class="sig-paren">)</span><a class="headerlink" href="#phenum.polyaburnside.Multinomial.nchoosek" title="Permalink to this definition">¶</a></dt>
+<dd><p>This implementation was taken from &#8220;Binomial Coefﬁcient Computation: Recursion 
+or Iteration?&#8221; by Yannis Manolopoulos, ACM SIGCSE Bulletin InRoads, Vol.34, No.4, 
+December 2002. <a class="reference external" href="http://delab.csd.auth.gr/papers/SBI02m.pdf">http://delab.csd.auth.gr/papers/SBI02m.pdf</a> It is supposed to be robust 
+against large, intermediate values and to have optimal complexity.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>n (int): The value of n in n choose k.
+k (int): The value of k in n choose k.</dd>
+<dt>Return:</dt>
+<dd>t (int): The value of n choose k.</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="phenum.polyaburnside.Multinomial.nchoosekm">
+<code class="descname">nchoosekm</code><span class="sig-paren">(</span><em>sequence</em><span class="sig-paren">)</span><a class="headerlink" href="#phenum.polyaburnside.Multinomial.nchoosekm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the number of different ways to partition an n-element
+set into disjoint subsets of sizes k1, ..., km.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>sequence (tuple): An un-normed tuple of form (k1, k2, k3).</dd>
+<dt>Returns:</dt>
+<dd>nckm (int): The value of the multinomial coefficient for the series.</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="phenum.polyaburnside.Multinomial.normed_seq">
+<code class="descname">normed_seq</code><span class="sig-paren">(</span><em>seq</em><span class="sig-paren">)</span><a class="headerlink" href="#phenum.polyaburnside.Multinomial.normed_seq" title="Permalink to this definition">¶</a></dt>
+<dd><p>Normalizes the specified sequence using the powers of unexpanded terms in 
+the multinomial.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>seq (list): A list of exponents in an <em>expanded</em> term.</dd>
+<dt>Returns:</dt>
+<dd>norm_seq (list): The normalized lust of exponents.</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="phenum.polyaburnside.Multinomial.possible_powers">
+<code class="descname">possible_powers</code><em class="property"> = None</em><a class="headerlink" href="#phenum.polyaburnside.Multinomial.possible_powers" title="Permalink to this definition">¶</a></dt>
+<dd><p>For each variable being considered, determines the possible powers based
+on the exponent in the multinomial.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="phenum.polyaburnside.Multinomial.powersum">
+<code class="descname">powersum</code><em class="property"> = None</em><a class="headerlink" href="#phenum.polyaburnside.Multinomial.powersum" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the integer value that all term exponents in the multinomial should
+sum to (or be less than).</p>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="class">
-<dt id="phenum.grouptheory.opList">
-<em class="property">class </em><code class="descclassname">phenum.grouptheory.</code><code class="descname">opList</code><span class="sig-paren">(</span><em>rot=None</em>, <em>shift=None</em><span class="sig-paren">)</span><a class="headerlink" href="#phenum.grouptheory.opList" title="Permalink to this definition">¶</a></dt>
-<dd><p>opList maintains the data structure of the fixing operations form
-the fortran code.</p>
+<dt id="phenum.polyaburnside.Product">
+<em class="property">class </em><code class="descclassname">phenum.polyaburnside.</code><code class="descname">Product</code><span class="sig-paren">(</span><em>coefficient</em>, <em>targets</em><span class="sig-paren">)</span><a class="headerlink" href="#phenum.polyaburnside.Product" title="Permalink to this definition">¶</a></dt>
+<dd><p>Represents a product of multinomials for which only a single term is interesting.</p>
+<dl class="docutils">
+<dt>Attributes:</dt>
+<dd>coefficient (int): The scalar integer multiplying this product of multinomials.
+targets (list): A list of exponents for the terms in the products.
+multinoms (list): A list of multinomials.</dd>
+</dl>
+<dl class="method">
+<dt id="phenum.polyaburnside.Product.coeff">
+<code class="descname">coeff</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#phenum.polyaburnside.Product.coeff" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the coefficient of the term with the target exponents if all the multinomials
+in the product were expanded and had their terms collected.</p>
+<dl class="docutils">
+<dt>Returns:</dt>
+<dd>coefficient (int): The coefficient of th term with the target exponents.</dd>
+</dl>
 </dd></dl>
 
-<span class="target" id="module-phenum.msg"></span><p>This module handles writing to the terminal or a log file with support
-for coloring for warnings, errors, etc.</p>
-<dl class="function">
-<dt id="phenum.msg.arb">
-<code class="descclassname">phenum.msg.</code><code class="descname">arb</code><span class="sig-paren">(</span><em>text</em>, <em>cols</em>, <em>split</em><span class="sig-paren">)</span><a class="headerlink" href="#phenum.msg.arb" title="Permalink to this definition">¶</a></dt>
-<dd><p>Prints a line of text in arbitrary colors specified by the numeric
-values contained in msg.cenum dictionary.</p>
 </dd></dl>
 
-<dl class="function">
-<dt id="phenum.msg.blank">
-<code class="descclassname">phenum.msg.</code><code class="descname">blank</code><span class="sig-paren">(</span><em>n=1</em>, <em>level=2</em><span class="sig-paren">)</span><a class="headerlink" href="#phenum.msg.blank" title="Permalink to this definition">¶</a></dt>
-<dd><p>Prints a blank line to the terminal.</p>
+<dl class="class">
+<dt id="phenum.polyaburnside.Sequence">
+<em class="property">class </em><code class="descclassname">phenum.polyaburnside.</code><code class="descname">Sequence</code><span class="sig-paren">(</span><em>root</em>, <em>possibles</em>, <em>i</em>, <em>powersum</em>, <em>targets</em>, <em>parent=None</em><span class="sig-paren">)</span><a class="headerlink" href="#phenum.polyaburnside.Sequence" title="Permalink to this definition">¶</a></dt>
+<dd><p>Represents an exponent-limited sequence with a single root. Here,
+sequence represents a sequence of integer values k_1, k_2...k_j
+that are the exponents of a single term in a multinomial. The root
+of the sequence is one of the k_i; its children become sets of
+sequences including variables to the right of i.</p>
+<dl class="docutils">
+<dt>Attributes:</dt>
+<dd>used (int): The sum of the exponents that have already been used.
+parent (Sequence): A Sequence instance for the variable previouse to this one.
+kids (Sequence): The next possible Sequence instances.
+varcount (int): The number of variables in the polynomial.</dd>
+</dl>
+<dl class="method">
+<dt id="phenum.polyaburnside.Sequence.expand">
+<code class="descname">expand</code><span class="sig-paren">(</span><em>depth=0</em><span class="sig-paren">)</span><a class="headerlink" href="#phenum.polyaburnside.Sequence.expand" title="Permalink to this definition">¶</a></dt>
+<dd><p>Recursively generates a list of all relevant sequences for this multinomial term.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>depth (int, optional): The current depth in the recursion.</dd>
+<dt>Returns:</dt>
+<dd>sequences (list): The relevant sequences for the multinomial.</dd>
+</dl>
 </dd></dl>
 
-<dl class="data">
-<dt id="phenum.msg.cenum">
-<code class="descclassname">phenum.msg.</code><code class="descname">cenum</code><em class="property"> = {'cwarn': 1, 'cerrs': 0, 'cstds': 4, 'cokay': 5, 'cinfo': 2, 'cgens': 3}</em><a class="headerlink" href="#phenum.msg.cenum" title="Permalink to this definition">¶</a></dt>
-<dd><p>Dict of the various colors available for coloring specific
-lines in the arb().</p>
+<dl class="method">
+<dt id="phenum.polyaburnside.Sequence.expand_noappend">
+<code class="descname">expand_noappend</code><span class="sig-paren">(</span><em>sequences</em>, <em>start</em>, <em>varindex</em><span class="sig-paren">)</span><a class="headerlink" href="#phenum.polyaburnside.Sequence.expand_noappend" title="Permalink to this definition">¶</a></dt>
+<dd><p>Implements an expansion that doesn&#8217;t use python&#8217;s append.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>sequences (list): A list of the relevant sequences for the multinomials.
+start (int): Starting index.
+varindex (int): The current variabl index.</dd>
+<dt>Returns:</dt>
+<dd>sequences (list): The relevant sequences for the multinomial.</dd>
+<dt>Raises:</dt>
+<dd>ValueError: if self.kidcount is zero.</dd>
+</dl>
 </dd></dl>
 
-<dl class="function">
-<dt id="phenum.msg.err">
-<code class="descclassname">phenum.msg.</code><code class="descname">err</code><span class="sig-paren">(</span><em>msg</em>, <em>level=-1</em>, <em>prefix=True</em><span class="sig-paren">)</span><a class="headerlink" href="#phenum.msg.err" title="Permalink to this definition">¶</a></dt>
-<dd><p>Prints the specified message as an error; prepends &#8220;ERROR&#8221; to
-the message, so that can be left off.</p>
+<dl class="attribute">
+<dt id="phenum.polyaburnside.Sequence.kidcount">
+<code class="descname">kidcount</code><a class="headerlink" href="#phenum.polyaburnside.Sequence.kidcount" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the number of children and grandchildren to the last generation.</p>
+<dl class="docutils">
+<dt>Returns:</dt>
+<dd>_kidcount (int): The number of descendents of the parent.</dd>
+</dl>
 </dd></dl>
 
-<dl class="function">
-<dt id="phenum.msg.gen">
-<code class="descclassname">phenum.msg.</code><code class="descname">gen</code><span class="sig-paren">(</span><em>msg</em>, <em>level=1</em><span class="sig-paren">)</span><a class="headerlink" href="#phenum.msg.gen" title="Permalink to this definition">¶</a></dt>
-<dd><p>Prints the message as generic output to terminal.</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="phenum.msg.info">
-<code class="descclassname">phenum.msg.</code><code class="descname">info</code><span class="sig-paren">(</span><em>msg</em>, <em>level=1</em><span class="sig-paren">)</span><a class="headerlink" href="#phenum.msg.info" title="Permalink to this definition">¶</a></dt>
-<dd><p>Prints the specified message as information.</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="phenum.msg.okay">
-<code class="descclassname">phenum.msg.</code><code class="descname">okay</code><span class="sig-paren">(</span><em>msg</em>, <em>level=1</em><span class="sig-paren">)</span><a class="headerlink" href="#phenum.msg.okay" title="Permalink to this definition">¶</a></dt>
-<dd><p>Prints the specified message as textual progress update.</p>
-</dd></dl>
-
-<dl class="data">
-<dt id="phenum.msg.quiet">
-<code class="descclassname">phenum.msg.</code><code class="descname">quiet</code><em class="property"> = None</em><a class="headerlink" href="#phenum.msg.quiet" title="Permalink to this definition">¶</a></dt>
-<dd><p>When in quiet mode, no text is ever printed to terminal unless its
-verbosity level is explicitly specified.</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="phenum.msg.set_quiet">
-<code class="descclassname">phenum.msg.</code><code class="descname">set_quiet</code><span class="sig-paren">(</span><em>is_quiet</em><span class="sig-paren">)</span><a class="headerlink" href="#phenum.msg.set_quiet" title="Permalink to this definition">¶</a></dt>
-<dd><p>Sets whether the messaging system is running in quiet mode. Quiet mode
-only prints messages with explicit verbosity specified. If verbosity==None
-and quiet==True, any message with level &gt;= 0 is printed.</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="phenum.msg.set_verbosity">
-<code class="descclassname">phenum.msg.</code><code class="descname">set_verbosity</code><span class="sig-paren">(</span><em>level</em><span class="sig-paren">)</span><a class="headerlink" href="#phenum.msg.set_verbosity" title="Permalink to this definition">¶</a></dt>
-<dd><p>Sets the modules message verbosity level for <em>all</em> messages printed.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>level</strong> &#8211; a positive integer (&gt;0); higher levels including more detail.</td>
-</tr>
-</tbody>
-</table>
 </dd></dl>
 
 <dl class="function">
-<dt id="phenum.msg.std">
-<code class="descclassname">phenum.msg.</code><code class="descname">std</code><span class="sig-paren">(</span><em>msg</em>, <em>level=1</em><span class="sig-paren">)</span><a class="headerlink" href="#phenum.msg.std" title="Permalink to this definition">¶</a></dt>
-<dd><p>Prints using the standard print() function.</p>
-</dd></dl>
-
-<dl class="data">
-<dt id="phenum.msg.verbosity">
-<code class="descclassname">phenum.msg.</code><code class="descname">verbosity</code><em class="property"> = None</em><a class="headerlink" href="#phenum.msg.verbosity" title="Permalink to this definition">¶</a></dt>
-<dd><p>The verbosity level of messages being printed by the module.</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="phenum.msg.warn">
-<code class="descclassname">phenum.msg.</code><code class="descname">warn</code><span class="sig-paren">(</span><em>msg</em>, <em>level=0</em>, <em>prefix=True</em><span class="sig-paren">)</span><a class="headerlink" href="#phenum.msg.warn" title="Permalink to this definition">¶</a></dt>
-<dd><p>Prints the specified message as a warning; prepends &#8220;WARNING&#8221; to
-the message, so that can be left off.</p>
+<dt id="phenum.polyaburnside.group">
+<code class="descclassname">phenum.polyaburnside.</code><code class="descname">group</code><span class="sig-paren">(</span><em>gen</em><span class="sig-paren">)</span><a class="headerlink" href="#phenum.polyaburnside.group" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generates an entire group using the specified generators by applying generators
+to each other recursively.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>gen (list): A list of generators as integers.</dd>
+<dt>Returns:</dt>
+<dd>groupi (list): A list of the symmetry group operators.</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
-<dt id="phenum.msg.will_print">
-<code class="descclassname">phenum.msg.</code><code class="descname">will_print</code><span class="sig-paren">(</span><em>level=1</em><span class="sig-paren">)</span><a class="headerlink" href="#phenum.msg.will_print" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns True if the current global status of messaging would print a
-message using any of the printing functions in this module.</p>
+<dt id="phenum.polyaburnside.polya">
+<code class="descclassname">phenum.polyaburnside.</code><code class="descname">polya</code><span class="sig-paren">(</span><em>concentrations</em>, <em>group</em>, <em>arrowings=None</em>, <em>debug=False</em><span class="sig-paren">)</span><a class="headerlink" href="#phenum.polyaburnside.polya" title="Permalink to this definition">¶</a></dt>
+<dd><p>Uses a group and concentrations to find the number of unique arrangements as described by 
+polya.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><dl class="first docutils">
+<dt>concentrations (list):: A list of integers specifying how many of each coloring should</dt>
+<dd>be present in each of the enumerated lists.</dd>
+</dl>
+<p class="last">group (list): A list of group operations for permuting the colorings.
+arrowings (int, optional): The number of arrows present. Default is None.
+debug (bool, optional): True if the code is being debugged.</p>
+</dd>
+<dt>Returns:</dt>
+<dd>polya (int): The polya number for the system.</dd>
+<dt>Raises:</dt>
+<dd>ValueError: if the concentrations don&#8217;t sum to the size of the group operation.</dd>
+</dl>
+</dd></dl>
+
+<span class="target" id="module-phenum.visualize"></span><p>This module contains methods used for visualizing the enuerated structures.</p>
+<dl class="function">
+<dt id="phenum.visualize.HNF_atoms">
+<code class="descclassname">phenum.visualize.</code><code class="descname">HNF_atoms</code><span class="sig-paren">(</span><em>enum</em>, <em>lattice</em>, <em>show</em>, <em>testmode=False</em><span class="sig-paren">)</span><a class="headerlink" href="#phenum.visualize.HNF_atoms" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plots the atomic positions of the atoms in the cells.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>enum (str): The enum.in style input file.
+lattice (str): The lattice.in style input file.
+show (bool): If true each HNF is plotted in an interactive window.
+testmode (bool, optional): True if unit tests are being run.</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="phenum.visualize.HNF_shapes">
+<code class="descclassname">phenum.visualize.</code><code class="descname">HNF_shapes</code><span class="sig-paren">(</span><em>enum</em>, <em>lattice</em>, <em>show</em>, <em>testmode=False</em><span class="sig-paren">)</span><a class="headerlink" href="#phenum.visualize.HNF_shapes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plots the shape of each HNF.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>enum (str): The enum.in style input file.
+lattice (str): The lattice.in style input file.
+show (bool): If true each HNF is plotted in an interactive window.        testmode (bool, optional): True if unittests are running.</dd>
+</dl>
 </dd></dl>
 
 </div>

@@ -1,4 +1,5 @@
-[![PyPI](https://img.shields.io/pypi/v/phenum.svg)](https://pypi.python.org/pypi/phenum/) [![Build Status](https://travis-ci.org/wsmorgan/phonon-enumeration.svg?branch=master)](https://travis-ci.org/wsmorgan/phonon-enumeration)[![Coverage Status](https://coveralls.io/repos/github/wsmorgan/phonon-enumeration/badge.svg?branch=phenum-dev)](https://coveralls.io/github/wsmorgan/phonon-enumeration?branch=phenum-dev)[![Code Health](https://landscape.io/github/wsmorgan/phonon-enumeration/master/landscape.svg?style=flat)](https://landscape.io/github/wsmorgan/phonon-enumeration/master)
+[![PyPI](https://img.shields.io/pypi/v/phenum.svg)](https://pypi.python.org/pypi/phenum/) [![Build Status](https://travis-ci.org/wsmorgan/phonon-enumeration.svg?branch=master)](https://travis-ci.org/wsmorgan/phonon-enumeration)[![Code Health](https://landscape.io/github/wsmorgan/phonon-enumeration/master/landscape.svg?style=flat)](https://landscape.io/github/wsmorgan/phonon-enumeration/master)[![codecov](https://codecov.io/gh/wsmorgan/phonon-enumeration/branch/master/graph/badge.svg)](https://codecov.io/gh/wsmorgan/phonon-enumeration)[![Code Issues](https://www.quantifiedcode.com/api/v1/project/675d6268247c4c2cb80669f832bef46c/badge.svg)](https://www.quantifiedcode.com/app/project/675d6268247c4c2cb80669f832bef46c)
+
 # phonon-enumeration
 
 This code is used to enumerate all the derivative structures of a
@@ -9,83 +10,42 @@ of displacement directions, or arrow directions, within a system.
 
 Full API Documentation available at: [github pages](https://wsmorgan.github.io/phenum/).
 
-## Prerequisites
-
-The code currently requires a modified version of the previous
-enumeration code, available at https://github.com/msg-byu/enumlib, to
-run. To make this modified code do the following, get the symlib library:
-
-```
-git clone https://github.com/msg-byu/symlib.git
-cd symlib/src/
-make F90=(your compiler, gfortran or ifort)
-cd ../../
-```
-
-Then get a copy of enumlib:
-
-```
-git clone https://github.com/msg-byu/enumlib.git
-```
-
-Now copy the Makefile, derivative_structure_generator.f90, and
-wrapper.f90 from the phonon-enumeration/support directory to the
-enumlib/src/ directory. Now we can make the enum.x executable and
-place it in our path:
-
-```
-cd enumlib/src/
-make F90=(your compiler) enum.x
-cp enum.x /bin/.
-```
-
-In order for enum.x to run you will need to have its input folder
-struct_enum.in, an example of which can be found in the input folder,
-for the system you desire to model. You may then choose to run enum.x
-yourself to generate the needed input files by typing:
-
-```
-enum.x
-```
-
-This will now generate a number of files titled cell_# where # is the
-cell size. These files contain the information needed to run the new
-enumeration code. If you do not run enum.x the enumeration.py code
-will execute it for you as long as its in your path. The input files
-are setup so that each HNF with it's SNF and left transform (as
-described in http://msg.byu.edu/papers/multi.pdf and
-http://msg.byu.edu/papers/GLWHart_enumeration.pdf) are listed in a
-file titeled matrices:
-
-```
-  #n	SNF		   HNF			          left transform
-   1  1  1  4    1  0  1  0  0  4      1    0    0    0    1    0    0    0    1
-   1  1  1  4    1  0  1  0  1  4      1    0    0    0    1    0    0   -1    1   
-```
-
-The first digit indicates which of the group.n files contains the
-symmetry group for that system. As can be seen only the diagonals of
-the SNF and lower traingular entries of the HNF should be included in
-this file. The group.n files contain the permutations of the sites on
-the lattice that constitute the symmtery group.
-
 ## Installing the code
 
 To install the code use the following command in the
 phonon-enumeration directory:
 
 ```
+pip intsall phenum
+```
+
+Alternatively you can clone this repository and use:
+
+```
 python setup.py install
 ```
 
+from within the phonon-enumeration directory.
+
 ## Running the code
 
-# Enumerating a system
+### Complete enumeration of a system.
 
-You now have everything you need to run the new enumeration code. The
-work flow for this code is as follows. Samples of all input files can
-be found in the input folder. First find the polya distribution for the
-system described in your lattice.in file:
+If you want to enumerate every possible structure specified in your
+'struct_enum.in' file, a sample of which can be found in the input
+folder, then use the commend:
+
+```
+enumeration-py -enum
+```
+
+### Enumerating a subset
+
+If the total number of arrangements in your system is huge you may not
+want to enumerate them all. In that case it is possible to enumerate a
+subset of the system as follows. Examples of all input files can be
+found in the input folder. First have the code find the polya
+distribution for the system described in your lattice.in file:
 
 ```
 enumeration.py -polya
@@ -94,7 +54,7 @@ enumeration.py -polya
 Next we need to build an enum.in file. You may either build this by
 hand or have the code build it for you using the `-distribution`
 option which takes two arguments, the type of distribution and the
-number of structures we want in the results.
+number of structures we want in the results. 
 
 ```
 enumeration.py -distribution all all

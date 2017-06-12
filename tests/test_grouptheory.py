@@ -1,6 +1,6 @@
 """Methods for testing the subroutines in the grouptheory module."""
 import unittest as ut
-from phenum.grouptheory import ArrowPerm, RotPermList, opList
+from phenum.grouptheory import ArrowPerm, RotPermList, OpList
 import pytest
 import numpy as np
 
@@ -26,7 +26,7 @@ def _read_fixOp_1D(fname):
             shift = list(map(list,zip(*_read_float_2D(fname+"/_-"+str(j)+"-shift"))))
         else:
             shift = None
-        temp = opList(rot=rot,shift=shift)
+        temp = OpList(rot=rot,shift=shift)
 
         out.append(temp)
     return out
@@ -79,7 +79,7 @@ def _read_fixOp(fname):
         shift = list(map(list,zip(*_read_float_2D(fname+"/_-shift"))))
     else:
         shift = None
-    out = opList(rot=rot,shift=shift)
+    out = OpList(rot=rot,shift=shift)
     return out
 
 def _read_RotPermList(fname,arrowp = None):
@@ -228,49 +228,49 @@ def _read_logical(fname):
 class TestGetFullHNF(ut.TestCase):
     """ Tests of the get_full_HNF subroutine."""
 
-    def test1(self):
+    def test_1(self):
         from phenum.grouptheory import get_full_HNF
         from numpy import array
         HNF = array([1,0,1,0,0,1])
         out = [[1,0,0],[0,1,0],[0,0,1]]
         self.assertEqual(get_full_HNF(HNF),out)
 
-    def test2(self):
+    def test_2(self):
         from phenum.grouptheory import get_full_HNF
         from numpy import array
         HNF = array([2,1,2,1,0,4])
         out = [[2,0,0],[1,2,0],[1,0,4]]
         self.assertEqual(get_full_HNF(HNF),out)
 
-    def test3(self):
+    def test_3(self):
         from phenum.grouptheory import get_full_HNF
         from numpy import array
         HNF = array([1,0,3,1,2,3])
         out = [[1,0,0],[0,3,0],[1,2,3]]
         self.assertEqual(get_full_HNF(HNF),out)
 
-    def test4(self):
+    def test_4(self):
         from phenum.grouptheory import get_full_HNF
         from numpy import array
         HNF = [0,0,0,0,0,0]
         out = [[0,0,0],[0,0,0],[0,0,0]]
         self.assertEqual(get_full_HNF(HNF),out)
 
-    def test5(self):
+    def test_5(self):
         from phenum.grouptheory import get_full_HNF
         from numpy import array
         HNF = array([3,0,3,0,0,3])
         out = [[3,0,0],[0,3,0],[0,0,3]]
         self.assertEqual(get_full_HNF(HNF),out)
 
-    def test1(self):
+    def test_1(self):
         from phenum.grouptheory import get_full_HNF
         from numpy import array
         HNF = array([1,1,2,0,2,2])
         out = [[1,0,0],[1,2,0],[0,2,2]]
         self.assertEqual(get_full_HNF(HNF),out)
 
-    def test1(self):
+    def test_1(self):
         from phenum.grouptheory import get_full_HNF
         from numpy import array
         HNF = array([2,0,2,0,2,4])
@@ -280,99 +280,99 @@ class TestGetFullHNF(ut.TestCase):
 class TestSmithNormalForm(ut.TestCase):
     """ Tests of the SmithNormalForm subroutine."""
 
-    def test1(self):
+    def test_1(self):
         from phenum.grouptheory import SmithNormalForm
         HNF =  [[1, 0, 0], [0, 1, 0], [0, 0, 1]]
         out =  ([[1, 0, 0], [0, 1, 0], [0, 0, 1]], [[1, 0, 0], [0, 1, 0], [0, 0, 1]], [[1, 0, 0], [0, 1, 0], [0, 0, 1]])
         self.assertEqual(SmithNormalForm(HNF),out)
 
-    def test2(self):
+    def test_2(self):
         from phenum.grouptheory import SmithNormalForm
         HNF =  [[1, 0, 0], [0, 1, 0], [0, 1, 2]]
         out =  ([[1, 0, 0], [0, 1, 0], [0, 0, 2]], [[1, 0, 0], [0, 1, 0], [0, -1, 1]], [[1, 0, 0], [0, 1, 0], [0, 0, 1]])
         self.assertEqual(SmithNormalForm(HNF),out)
 
-    def test3(self):
+    def test_3(self):
         from phenum.grouptheory import SmithNormalForm
         HNF =  [[1, 0, 0], [0, 1, 0], [0, 0, 3]]
         out =  ([[1, 0, 0], [0, 1, 0], [0, 0, 3]], [[1, 0, 0], [0, 1, 0], [0, 0, 1]], [[1, 0, 0], [0, 1, 0], [0, 0, 1]])
         self.assertEqual(SmithNormalForm(HNF),out)
 
-    def test4(self):
+    def test_4(self):
         from phenum.grouptheory import SmithNormalForm
         HNF =  [[1, 0, 0], [0, 2, 0], [0, 0, 2]]
         out =  ([[1, 0, 0], [0, 2, 0], [0, 0, 2]], [[1, 0, 0], [0, 1, 0], [0, 0, 1]], [[1, 0, 0], [0, 1, 0], [0, 0, 1]])
         self.assertEqual(SmithNormalForm(HNF),out)
 
-    def test5(self):
+    def test_5(self):
         from phenum.grouptheory import SmithNormalForm
         HNF =  [[1, 0, 0], [0, 1, 0], [1, 2, 5]]
         out =  ([[1, 0, 0], [0, 1, 0], [0, 0, 5]], [[1, 0, 0], [0, 1, 0], [-1, -2, 1]], [[1, 0, 0], [0, 1, 0], [0, 0, 1]])
         self.assertEqual(SmithNormalForm(HNF),out)
 
-    def test6(self):
+    def test_6(self):
         from phenum.grouptheory import SmithNormalForm
         HNF =  [[1, 0, 0], [0, 1, 0], [2, 3, 6]]
         out =  ([[1, 0, 0], [0, 1, 0], [0, 0, 6]], [[1, 0, 0], [0, 1, 0], [-2, -3, 1]], [[1, 0, 0], [0, 1, 0], [0, 0, 1]])
         self.assertEqual(SmithNormalForm(HNF),out)
 
-    def test7(self):
+    def test_7(self):
         from phenum.grouptheory import SmithNormalForm
         HNF =  [[1, 0, 0], [0, 1, 0], [0, 6, 7]]
         out =  ([[1, 0, 0], [0, 1, 0], [0, 0, 7]], [[1, 0, 0], [0, 1, 0], [0, -6, 1]], [[1, 0, 0], [0, 1, 0], [0, 0, 1]])
         self.assertEqual(SmithNormalForm(HNF),out)
 
-    def test8(self):
+    def test_8(self):
         from phenum.grouptheory import SmithNormalForm
         HNF =  [[1, 0, 0], [1, 2, 0], [1, 0, 4]]
         out =  ([[1, 0, 0], [0, 2, 0], [0, 0, 4]], [[1, 0, 0], [-1, 1, 0], [-1, 0, 1]], [[1, 0, 0], [0, 1, 0], [0, 0, 1]])
         self.assertEqual(SmithNormalForm(HNF),out)
 
-    def test9(self):
+    def test_9(self):
         from phenum.grouptheory import SmithNormalForm
         HNF =  [[2, 0, 0], [0, 2, 0], [0, 0, 2]]
         out =  ([[2, 0, 0], [0, 2, 0], [0, 0, 2]], [[1, 0, 0], [0, 1, 0], [0, 0, 1]], [[1, 0, 0], [0, 1, 0], [0, 0, 1]])
         self.assertEqual(SmithNormalForm(HNF),out)
 
-    def test10(self):
+    def test_10(self):
         from phenum.grouptheory import SmithNormalForm
         HNF =  [[1, 0, 0], [0, 1, 0], [1, 5, 10]]
         out =  ([[1, 0, 0], [0, 1, 0], [0, 0, 10]], [[1, 0, 0], [0, 1, 0], [-1, -5, 1]], [[1, 0, 0], [0, 1, 0], [0, 0, 1]])
         self.assertEqual(SmithNormalForm(HNF),out)
 
-    def test11(self):
+    def test_11(self):
         from phenum.grouptheory import SmithNormalForm
         HNF =  [[-1, 0, 0], [0, 1, 0], [0, 0, 1]]
         out =  ()
         with pytest.raises(ValueError):
             self.assertEqual(SmithNormalForm(HNF),out)
 
-    def test12(self):
+    def test_12(self):
         from phenum.grouptheory import SmithNormalForm
         HNF =  [[0, 1, 0], [0, 0, 1], [1, 0, 0]]
         out =  ([[1, 0, 0], [0, 1, 0], [0, 0, 1]], [[0, 0, 1], [1, 0, 0], [0, 1, 0]], [[1, 0, 0], [0, 1, 0], [0, 0, 1]]) 
         self.assertEqual(SmithNormalForm(HNF),out)
 
-    def test13(self):
+    def test_13(self):
         from phenum.grouptheory import SmithNormalForm
         HNF =  [[1, -1, -2], [1, 2, -3], [1, 2, 4]]
         out =  ([[1, 0, 0], [0, 1, 0], [0, 0, 21]], [[1, 0, 0], [-1, 1, 0], [-7, 6, 1]], [[1, -2, 7], [0, 0, 1], [0, -1, 3]])
         self.assertEqual(SmithNormalForm(HNF),out)
 
-    def test14(self):
+    def test_14(self):
         from phenum.grouptheory import SmithNormalForm
         HNF =  [[-1, -2, -3], [-1, -1, -2], [-1, -2, -4]]
         out =  ([[1, 0, 0], [0, 1, 0], [0, 0, 1]], [[1, 0, 0], [-1, 1, 0], [-1, 0, 1]], [[-1, -2, 1], [0, 1, 1], [0, 0, -1]])
         self.assertEqual(SmithNormalForm(HNF),out)
 
-    def test15(self):
+    def test_15(self):
         from phenum.grouptheory import SmithNormalForm
         HNF =  [[1, 2.5, 0], [0, 1.5, 1.66], [1.5, 1.25, 1.3]]
         out =  ([[0.5, 0.0, 0.0], [0.0, 0.5, 0.0], [0.0, 0.0, 16.5]], [[-1.0, 0.0, 1.0], [3.0, -3.0, -2.0], [-9.0, 10.0, 6.0]], [[1, 2.5, 23.25], [0, 1.0, 10.5], [0, 0.0, 1.0]])
         with pytest.raises(RuntimeError):
             SmithNormalForm(HNF)
 
-    def test16(self):
+    def test_16(self):
         from phenum.grouptheory import SmithNormalForm
         HNF =  [[2, 0, 0], [0, 2, 0], [0, 0, 1]]
         out =  ([[1, 0, 0], [0, 2, 0], [0, 0, 2]], [[1, 0, 1], [0, 1, 0], [-1, 0, 0]], [[0, 0, -1], [0, 1, 0], [1, 0, 2]])
@@ -382,35 +382,35 @@ class TestSmithNormalForm(ut.TestCase):
 class TestAGroup(ut.TestCase):
     """ Tests of the a_group subroutine."""
 
-    def test1(self):
+    def test_1(self):
         from phenum.grouptheory import a_group
         trans = [[0,1],[1,0]]
         rots = [[[0,1],[0,1,2,3,4,5]],[[1,0],[2,3,0,1,5,4]],[[1,0],[2,1,0,3,5,4]],[[0,1],[0,3,2,1,5,4]]]
         out = _read_output("agroup.out.1")
         self.assertEqual(a_group(trans,rots),out)
 
-    def test2(self):
+    def test_2(self):
         from phenum.grouptheory import a_group
         trans = [[j-1 for j in i] for i in [[1, 2, 3, 4], [2, 1, 4, 3], [3, 4, 1, 2], [4, 3, 2, 1]]]
         rots = [[[j-1 for j in i] for i in t] for t in [[[1, 2, 3, 4], [1, 2, 3, 4, 5, 6]], [[1, 4, 3, 2], [1, 3, 2, 4, 6, 5]], [[1, 2, 3, 4], [4, 2, 3, 1, 5, 6]], [[1, 4, 3, 2], [4, 3, 2, 1, 6, 5]], [[1, 2, 3, 4], [1, 5, 3, 4, 2, 6]], [[1, 4, 3, 2], [1, 3, 5, 4, 6, 2]], [[1, 2, 3, 4], [4, 5, 3, 1, 2, 6]], [[1, 4, 3, 2], [4, 3, 5, 1, 6, 2]], [[1, 2, 3, 4], [1, 2, 6, 4, 5, 3]], [[1, 4, 3, 2], [1, 6, 2, 4, 3, 5]], [[1, 2, 3, 4], [4, 2, 6, 1, 5, 3]], [[1, 4, 3, 2], [4, 6, 2, 1, 3, 5]], [[1, 2, 3, 4], [1, 5, 6, 4, 2, 3]], [[1, 4, 3, 2], [1, 6, 5, 4, 3, 2]], [[1, 2, 3, 4], [4, 5, 6, 1, 2, 3]], [[1, 4, 3, 2], [4, 6, 5, 1, 3, 2]]]]
         out = _read_output("agroup.out.2")
         self.assertEqual(a_group(trans,rots),out)
 
-    def test3(self):
+    def test_3(self):
         from phenum.grouptheory import a_group
         trans = [[j-1 for j in i] for i in [[1, 2, 3, 4, 5, 6, 7, 8], [2, 1, 4, 3, 6, 5, 8, 7], [3, 4, 5, 6, 7, 8, 1, 2], [4, 3, 6, 5, 8, 7, 2, 1], [5, 6, 7, 8, 1, 2, 3, 4], [6, 5, 8, 7, 2, 1, 4, 3], [7, 8, 1, 2, 3, 4, 5, 6], [8, 7, 2, 1, 4, 3, 6, 5]]]
         rots = [[[j-1 for j in i] for i in t] for t in [[[1, 2, 3, 4, 5, 6, 7, 8], [1, 2, 3, 4, 5, 6]], [[1, 2, 3, 4, 5, 6, 7, 8], [4, 2, 3, 1, 5, 6]], [[1, 2, 3, 4, 5, 6, 7, 8], [1, 5, 3, 4, 2, 6]], [[1, 2, 3, 4, 5, 6, 7, 8], [4, 5, 3, 1, 2, 6]], [[1, 2, 7, 8, 5, 6, 3, 4], [1, 2, 6, 4, 5, 3]], [[1, 2, 7, 8, 5, 6, 3, 4], [4, 2, 6, 1, 5, 3]], [[1, 2, 7, 8, 5, 6, 3, 4], [1, 5, 6, 4, 2, 3]], [[1, 2, 7, 8, 5, 6, 3, 4], [4, 5, 6, 1, 2, 3]]]]
         out = _read_output("agroup.out.3")
         self.assertEqual(a_group(trans,rots),out)
 
-    def test4(self):
+    def test_4(self):
         from phenum.grouptheory import a_group
         trans =[[j - 1 for j in i] for i in[[1,2,3,4,5,6,7,8], [2,1,4,3,6,5,8,7], [3,4,5,6,7,8,1,2], [4,3,6,5,8,7,2,1], [5,6,7,8,1,2,3,4], [6,5,8,7,2,1,4,3], [7,8,1,2,3,4,5,6], [8,7,2,1,4,3,6,5]]]
         rots = [[[0,1,2,3,4,5,6,7],[0,1,2,3]],[[0,1,2,3,4,5,6,7],[2,1,0,3]],[[0,1,6,7,4,5,2,3],[0,3,2,1]],[[0,1,6,7,4,5,2,3],[2,3,0,1]]]
         out = _read_output("agroup.out.4")
         self.assertEqual(a_group(trans,rots),out)
 
-    def test5(self):
+    def test_5(self):
         from phenum.grouptheory import a_group
         trans =[[j - 1 for j in i] for i in[[1, 2, 3, 4, 5, 6, 7, 8], [2, 1, 4, 3, 6, 5, 8, 7], [3, 4, 5, 6, 7, 8, 1, 2], [4, 3, 6, 5, 8, 7, 2, 1], [5, 6, 7, 8, 1, 2, 3, 4], [6, 5, 8, 7, 2, 1, 4, 3], [7, 8, 1, 2, 3, 4, 5, 6], [8, 7, 2, 1, 4, 3, 6, 5]]]
         rots = [[[0,1,2,3,4,5,6,7],[0,1,2,3]],[[0,1,2,3,4,5,6,7],[2,1,0,3]],[[0,1,6,7,4,5,2,3],[0,3,2,1]],[[0,1,6,7,4,5,2,3],[2,3,0,1]]]
@@ -420,35 +420,35 @@ class TestAGroup(ut.TestCase):
 class TestAGroupGen(ut.TestCase):
     """ Tests of the a_group subroutine."""
 
-    def test1(self):
+    def test_1(self):
         from phenum.grouptheory import a_group_gen
         trans = [[0,1],[1,0]]
         rots = [[[0,1],[0,1,2,3,4,5]],[[1,0],[2,3,0,1,5,4]],[[1,0],[2,1,0,3,5,4]],[[0,1],[0,3,2,1,5,4]]]
         out = _read_output("agroupgen.out.1")
         self.assertEqual(a_group_gen(trans,rots),out)
 
-    def test2(self):
+    def test_2(self):
         from phenum.grouptheory import a_group_gen
         trans = [[j-1 for j in i] for i in [[1, 2, 3, 4], [2, 1, 4, 3], [3, 4, 1, 2], [4, 3, 2, 1]]]
         rots = [[[j-1 for j in i] for i in t] for t in [[[1, 2, 3, 4], [1, 2, 3, 4, 5, 6]], [[1, 4, 3, 2], [1, 3, 2, 4, 6, 5]], [[1, 2, 3, 4], [4, 2, 3, 1, 5, 6]], [[1, 4, 3, 2], [4, 3, 2, 1, 6, 5]], [[1, 2, 3, 4], [1, 5, 3, 4, 2, 6]], [[1, 4, 3, 2], [1, 3, 5, 4, 6, 2]], [[1, 2, 3, 4], [4, 5, 3, 1, 2, 6]], [[1, 4, 3, 2], [4, 3, 5, 1, 6, 2]], [[1, 2, 3, 4], [1, 2, 6, 4, 5, 3]], [[1, 4, 3, 2], [1, 6, 2, 4, 3, 5]], [[1, 2, 3, 4], [4, 2, 6, 1, 5, 3]], [[1, 4, 3, 2], [4, 6, 2, 1, 3, 5]], [[1, 2, 3, 4], [1, 5, 6, 4, 2, 3]], [[1, 4, 3, 2], [1, 6, 5, 4, 3, 2]], [[1, 2, 3, 4], [4, 5, 6, 1, 2, 3]], [[1, 4, 3, 2], [4, 6, 5, 1, 3, 2]]]]
         out = _read_output("agroupgen.out.2")
         self.assertEqual(a_group_gen(trans,rots),out)
 
-    def test3(self):
+    def test_3(self):
         from phenum.grouptheory import a_group_gen
         trans = [[j-1 for j in i] for i in [[1, 2, 3, 4, 5, 6, 7, 8], [2, 1, 4, 3, 6, 5, 8, 7], [3, 4, 5, 6, 7, 8, 1, 2], [4, 3, 6, 5, 8, 7, 2, 1], [5, 6, 7, 8, 1, 2, 3, 4], [6, 5, 8, 7, 2, 1, 4, 3], [7, 8, 1, 2, 3, 4, 5, 6], [8, 7, 2, 1, 4, 3, 6, 5]]]
         rots = [[[j-1 for j in i] for i in t] for t in [[[1, 2, 3, 4, 5, 6, 7, 8], [1, 2, 3, 4, 5, 6]], [[1, 2, 3, 4, 5, 6, 7, 8], [4, 2, 3, 1, 5, 6]], [[1, 2, 3, 4, 5, 6, 7, 8], [1, 5, 3, 4, 2, 6]], [[1, 2, 3, 4, 5, 6, 7, 8], [4, 5, 3, 1, 2, 6]], [[1, 2, 7, 8, 5, 6, 3, 4], [1, 2, 6, 4, 5, 3]], [[1, 2, 7, 8, 5, 6, 3, 4], [4, 2, 6, 1, 5, 3]], [[1, 2, 7, 8, 5, 6, 3, 4], [1, 5, 6, 4, 2, 3]], [[1, 2, 7, 8, 5, 6, 3, 4], [4, 5, 6, 1, 2, 3]]]]
         out = _read_output("agroupgen.out.3")
         self.assertEqual(a_group_gen(trans,rots),out)
 
-    def test4(self):
+    def test_4(self):
         from phenum.grouptheory import a_group_gen
         trans =[[j - 1 for j in i] for i in[[1,2,3,4,5,6,7,8], [2,1,4,3,6,5,8,7], [3,4,5,6,7,8,1,2], [4,3,6,5,8,7,2,1], [5,6,7,8,1,2,3,4], [6,5,8,7,2,1,4,3], [7,8,1,2,3,4,5,6], [8,7,2,1,4,3,6,5]]]
         rots = [[[0,1,2,3,4,5,6,7],[0,1,2,3]],[[0,1,2,3,4,5,6,7],[2,1,0,3]],[[0,1,6,7,4,5,2,3],[0,3,2,1]],[[0,1,6,7,4,5,2,3],[2,3,0,1]]]
         out = _read_output("agroupgen.out.4")
         self.assertEqual(a_group_gen(trans,rots),out)
 
-    def test5(self):
+    def test_5(self):
         from phenum.grouptheory import a_group_gen
         trans =[[j - 1 for j in i] for i in[[1, 2, 3, 4, 5, 6, 7, 8], [2, 1, 4, 3, 6, 5, 8, 7], [3, 4, 5, 6, 7, 8, 1, 2], [4, 3, 6, 5, 8, 7, 2, 1], [5, 6, 7, 8, 1, 2, 3, 4], [6, 5, 8, 7, 2, 1, 4, 3], [7, 8, 1, 2, 3, 4, 5, 6], [8, 7, 2, 1, 4, 3, 6, 5]]]
         rots = [[[0,1,2,3,4,5,6,7],[0,1,2,3]],[[0,1,2,3,4,5,6,7],[2,1,0,3]],[[0,1,6,7,4,5,2,3],[0,3,2,1]],[[0,1,6,7,4,5,2,3],[2,3,0,1]]]
@@ -458,140 +458,140 @@ class TestAGroupGen(ut.TestCase):
 class TestMakeMemberList(ut.TestCase):
     """Tests of the _make_member_list subroutine."""
 
-    def test1(self):
+    def test_1(self):
         from phenum.grouptheory import _make_member_list
         case = 1
         n = _read_float_1D(gpath+"make_member_list_n.in."+str(case))
         out = list(map(list,zip(*_read_float_2D(gpath+"make_member_list_p.out."+str(case)))))
         self.assertTrue(np.allclose(_make_member_list(n),out))
 
-    def test2(self):
+    def test_2(self):
         from phenum.grouptheory import _make_member_list
         case = 2
         n = _read_float_1D(gpath+"make_member_list_n.in."+str(case))
         out = list(map(list,zip(*_read_float_2D(gpath+"make_member_list_p.out."+str(case)))))
         self.assertTrue(np.allclose(_make_member_list(n),out))
 
-    def test3(self):
+    def test_3(self):
         from phenum.grouptheory import _make_member_list
         case = 3
         n = _read_float_1D(gpath+"make_member_list_n.in."+str(case))
         out = list(map(list,zip(*_read_float_2D(gpath+"make_member_list_p.out."+str(case)))))
         self.assertTrue(np.allclose(_make_member_list(n),out))
 
-    def test4(self):
+    def test_4(self):
         from phenum.grouptheory import _make_member_list
         case = 4
         n = _read_float_1D(gpath+"make_member_list_n.in."+str(case))
         out = list(map(list,zip(*_read_float_2D(gpath+"make_member_list_p.out."+str(case)))))
         self.assertTrue(np.allclose(_make_member_list(n),out))
 
-    def test5(self):
+    def test_5(self):
         from phenum.grouptheory import _make_member_list
         case = 5
         n = _read_float_1D(gpath+"make_member_list_n.in."+str(case))
         out = list(map(list,zip(*_read_float_2D(gpath+"make_member_list_p.out."+str(case)))))
         self.assertTrue(np.allclose(_make_member_list(n),out))
 
-    def test6(self):
+    def test_6(self):
         from phenum.grouptheory import _make_member_list
         case = 6
         n = _read_float_1D(gpath+"make_member_list_n.in."+str(case))
         out = list(map(list,zip(*_read_float_2D(gpath+"make_member_list_p.out."+str(case)))))
         self.assertTrue(np.allclose(_make_member_list(n),out))
 
-    def test7(self):
+    def test_7(self):
         from phenum.grouptheory import _make_member_list
         case = 7
         n = _read_float_1D(gpath+"make_member_list_n.in."+str(case))
         out = list(map(list,zip(*_read_float_2D(gpath+"make_member_list_p.out."+str(case)))))
         self.assertTrue(np.allclose(_make_member_list(n),out))
 
-    def test8(self):
+    def test_8(self):
         from phenum.grouptheory import _make_member_list
         case = 8
         n = _read_float_1D(gpath+"make_member_list_n.in."+str(case))
         out = list(map(list,zip(*_read_float_2D(gpath+"make_member_list_p.out."+str(case)))))
         self.assertTrue(np.allclose(_make_member_list(n),out))
 
-    def test9(self):
+    def test_9(self):
         from phenum.grouptheory import _make_member_list
         case = 9
         n = _read_float_1D(gpath+"make_member_list_n.in."+str(case))
         out = list(map(list,zip(*_read_float_2D(gpath+"make_member_list_p.out."+str(case)))))
         self.assertTrue(np.allclose(_make_member_list(n),out))
 
-    def test10(self):
+    def test_10(self):
         from phenum.grouptheory import _make_member_list
         case = 10
         n = _read_float_1D(gpath+"make_member_list_n.in."+str(case))
         out = list(map(list,zip(*_read_float_2D(gpath+"make_member_list_p.out."+str(case)))))
         self.assertTrue(np.allclose(_make_member_list(n),out))
 
-    def test11(self):
+    def test_11(self):
         from phenum.grouptheory import _make_member_list
         case = 11
         n = _read_float_1D(gpath+"make_member_list_n.in."+str(case))
         out = list(map(list,zip(*_read_float_2D(gpath+"make_member_list_p.out."+str(case)))))
         self.assertTrue(np.allclose(_make_member_list(n),out))
 
-    def test12(self):
+    def test_12(self):
         from phenum.grouptheory import _make_member_list
         case = 12
         n = _read_float_1D(gpath+"make_member_list_n.in."+str(case))
         out = list(map(list,zip(*_read_float_2D(gpath+"make_member_list_p.out."+str(case)))))
         self.assertTrue(np.allclose(_make_member_list(n),out))
 
-    def test13(self):
+    def test_13(self):
         from phenum.grouptheory import _make_member_list
         case = 13
         n = _read_float_1D(gpath+"make_member_list_n.in."+str(case))
         out = list(map(list,zip(*_read_float_2D(gpath+"make_member_list_p.out."+str(case)))))
         self.assertTrue(np.allclose(_make_member_list(n),out))
 
-    def test14(self):
+    def test_14(self):
         from phenum.grouptheory import _make_member_list
         case = 14
         n = _read_float_1D(gpath+"make_member_list_n.in."+str(case))
         out = list(map(list,zip(*_read_float_2D(gpath+"make_member_list_p.out."+str(case)))))
         self.assertTrue(np.allclose(_make_member_list(n),out))
 
-    def test15(self):
+    def test_15(self):
         from phenum.grouptheory import _make_member_list
         case = 15
         n = _read_float_1D(gpath+"make_member_list_n.in."+str(case))
         out = list(map(list,zip(*_read_float_2D(gpath+"make_member_list_p.out."+str(case)))))
         self.assertTrue(np.allclose(_make_member_list(n),out))
 
-    def test16(self):
+    def test_16(self):
         from phenum.grouptheory import _make_member_list
         case = 16
         n = _read_float_1D(gpath+"make_member_list_n.in."+str(case))
         out = list(map(list,zip(*_read_float_2D(gpath+"make_member_list_p.out."+str(case)))))
         self.assertTrue(np.allclose(_make_member_list(n),out))
 
-    def test17(self):
+    def test_17(self):
         from phenum.grouptheory import _make_member_list
         case = 17
         n = _read_float_1D(gpath+"make_member_list_n.in."+str(case))
         out = list(map(list,zip(*_read_float_2D(gpath+"make_member_list_p.out."+str(case)))))
         self.assertTrue(np.allclose(_make_member_list(n),out))
 
-    def test18(self):
+    def test_18(self):
         from phenum.grouptheory import _make_member_list
         case = 18
         n = _read_float_1D(gpath+"make_member_list_n.in."+str(case))
         out = list(map(list,zip(*_read_float_2D(gpath+"make_member_list_p.out."+str(case)))))
         self.assertTrue(np.allclose(_make_member_list(n),out))
 
-    def test19(self):
+    def test_19(self):
         from phenum.grouptheory import _make_member_list
         case = 19
         n = _read_float_1D(gpath+"make_member_list_n.in."+str(case))
         out = list(map(list,zip(*_read_float_2D(gpath+"make_member_list_p.out."+str(case)))))
         self.assertTrue(np.allclose(_make_member_list(n),out))
 
-    def test20(self):
+    def test_20(self):
         from phenum.grouptheory import _make_member_list
         case = 20
         n = _read_float_1D(gpath+"make_member_list_n.in."+str(case))
@@ -601,7 +601,7 @@ class TestMakeMemberList(ut.TestCase):
 class TestFindPermutationOfGroup(ut.TestCase):
     """Tests of the _find_permutation_of_group subroutine."""
 
-    def test1(self):
+    def test_1(self):
         from phenum.grouptheory import _find_permutation_of_group
         case = 1
         g = list(map(list,zip(*_read_float_2D(gpath+"find_permutation_of_group_g.in."+str(case)))))
@@ -609,7 +609,7 @@ class TestFindPermutationOfGroup(ut.TestCase):
         out = [i-1 for i in _read_int_1D(gpath+"find_permutation_of_group_perm.out."+str(case))]
         self.assertEqual(_find_permutation_of_group(g,gp),out)
 
-    def test2(self):
+    def test_2(self):
         from phenum.grouptheory import _find_permutation_of_group
         case = 2
         g = list(map(list,zip(*_read_float_2D(gpath+"find_permutation_of_group_g.in."+str(case)))))
@@ -617,7 +617,7 @@ class TestFindPermutationOfGroup(ut.TestCase):
         out = [i-1 for i in _read_int_1D(gpath+"find_permutation_of_group_perm.out."+str(case))]
         self.assertEqual(_find_permutation_of_group(g,gp),out)
 
-    def test3(self):
+    def test_3(self):
         from phenum.grouptheory import _find_permutation_of_group
         case = 3
         g = list(map(list,zip(*_read_float_2D(gpath+"find_permutation_of_group_g.in."+str(case)))))
@@ -625,7 +625,7 @@ class TestFindPermutationOfGroup(ut.TestCase):
         out = [i-1 for i in _read_int_1D(gpath+"find_permutation_of_group_perm.out."+str(case))]
         self.assertEqual(_find_permutation_of_group(g,gp),out)
 
-    def test4(self):
+    def test_4(self):
         from phenum.grouptheory import _find_permutation_of_group
         case = 4
         g = list(map(list,zip(*_read_float_2D(gpath+"find_permutation_of_group_g.in."+str(case)))))
@@ -633,7 +633,7 @@ class TestFindPermutationOfGroup(ut.TestCase):
         out = [i-1 for i in _read_int_1D(gpath+"find_permutation_of_group_perm.out."+str(case))]
         self.assertEqual(_find_permutation_of_group(g,gp),out)
 
-    def test5(self):
+    def test_5(self):
         from phenum.grouptheory import _find_permutation_of_group
         case = 5
         g = list(map(list,zip(*_read_float_2D(gpath+"find_permutation_of_group_g.in."+str(case)))))
@@ -641,7 +641,7 @@ class TestFindPermutationOfGroup(ut.TestCase):
         out = [i-1 for i in _read_int_1D(gpath+"find_permutation_of_group_perm.out."+str(case))]
         self.assertEqual(_find_permutation_of_group(g,gp),out)
 
-    def test6(self):
+    def test_6(self):
         from phenum.grouptheory import _find_permutation_of_group
         case = 6
         g = list(map(list,zip(*_read_float_2D(gpath+"find_permutation_of_group_g.in."+str(case)))))
@@ -649,7 +649,7 @@ class TestFindPermutationOfGroup(ut.TestCase):
         out = [i-1 for i in _read_int_1D(gpath+"find_permutation_of_group_perm.out."+str(case))]
         self.assertEqual(_find_permutation_of_group(g,gp),out)
 
-    def test7(self):
+    def test_7(self):
         from phenum.grouptheory import _find_permutation_of_group
         case = 7
         g = list(map(list,zip(*_read_float_2D(gpath+"find_permutation_of_group_g.in."+str(case)))))
@@ -657,7 +657,7 @@ class TestFindPermutationOfGroup(ut.TestCase):
         out = [i-1 for i in _read_int_1D(gpath+"find_permutation_of_group_perm.out."+str(case))]
         self.assertEqual(_find_permutation_of_group(g,gp),out)
 
-    def test8(self):
+    def test_8(self):
         from phenum.grouptheory import _find_permutation_of_group
         case = 8
         g = list(map(list,zip(*_read_float_2D(gpath+"find_permutation_of_group_g.in."+str(case)))))
@@ -665,7 +665,7 @@ class TestFindPermutationOfGroup(ut.TestCase):
         out = [i-1 for i in _read_int_1D(gpath+"find_permutation_of_group_perm.out."+str(case))]
         self.assertEqual(_find_permutation_of_group(g,gp),out)
 
-    def test9(self):
+    def test_9(self):
         from phenum.grouptheory import _find_permutation_of_group
         case = 9
         g = list(map(list,zip(*_read_float_2D(gpath+"find_permutation_of_group_g.in."+str(case)))))
@@ -673,7 +673,7 @@ class TestFindPermutationOfGroup(ut.TestCase):
         out = [i-1 for i in _read_int_1D(gpath+"find_permutation_of_group_perm.out."+str(case))]
         self.assertEqual(_find_permutation_of_group(g,gp),out)
 
-    def test10(self):
+    def test_10(self):
         from phenum.grouptheory import _find_permutation_of_group
         case = 10
         g = list(map(list,zip(*_read_float_2D(gpath+"find_permutation_of_group_g.in."+str(case)))))
@@ -681,7 +681,7 @@ class TestFindPermutationOfGroup(ut.TestCase):
         out = [i-1 for i in _read_int_1D(gpath+"find_permutation_of_group_perm.out."+str(case))]
         self.assertEqual(_find_permutation_of_group(g,gp),out)
 
-    def test11(self):
+    def test_11(self):
         from phenum.grouptheory import _find_permutation_of_group
         case = 11
         g = list(map(list,zip(*_read_float_2D(gpath+"find_permutation_of_group_g.in."+str(case)))))
@@ -689,7 +689,7 @@ class TestFindPermutationOfGroup(ut.TestCase):
         out = [i-1 for i in _read_int_1D(gpath+"find_permutation_of_group_perm.out."+str(case))]
         self.assertEqual(_find_permutation_of_group(g,gp),out)
 
-    def test12(self):
+    def test_12(self):
         from phenum.grouptheory import _find_permutation_of_group
         case = 12
         g = list(map(list,zip(*_read_float_2D(gpath+"find_permutation_of_group_g.in."+str(case)))))
@@ -697,7 +697,7 @@ class TestFindPermutationOfGroup(ut.TestCase):
         out = [i-1 for i in _read_int_1D(gpath+"find_permutation_of_group_perm.out."+str(case))]
         self.assertEqual(_find_permutation_of_group(g,gp),out)
 
-    def test13(self):
+    def test_13(self):
         from phenum.grouptheory import _find_permutation_of_group
         case = 13
         g = list(map(list,zip(*_read_float_2D(gpath+"find_permutation_of_group_g.in."+str(case)))))
@@ -705,7 +705,7 @@ class TestFindPermutationOfGroup(ut.TestCase):
         out = [i-1 for i in _read_int_1D(gpath+"find_permutation_of_group_perm.out."+str(case))]
         self.assertEqual(_find_permutation_of_group(g,gp),out)
 
-    def test14(self):
+    def test_14(self):
         from phenum.grouptheory import _find_permutation_of_group
         case = 14
         g = list(map(list,zip(*_read_float_2D(gpath+"find_permutation_of_group_g.in."+str(case)))))
@@ -713,7 +713,7 @@ class TestFindPermutationOfGroup(ut.TestCase):
         out = [i-1 for i in _read_int_1D(gpath+"find_permutation_of_group_perm.out."+str(case))]
         self.assertEqual(_find_permutation_of_group(g,gp),out)
 
-    def test15(self):
+    def test_15(self):
         from phenum.grouptheory import _find_permutation_of_group
         case = 15
         g = list(map(list,zip(*_read_float_2D(gpath+"find_permutation_of_group_g.in."+str(case)))))
@@ -721,7 +721,7 @@ class TestFindPermutationOfGroup(ut.TestCase):
         out = [i-1 for i in _read_int_1D(gpath+"find_permutation_of_group_perm.out."+str(case))]
         self.assertEqual(_find_permutation_of_group(g,gp),out)
 
-    def test16(self):
+    def test_16(self):
         from phenum.grouptheory import _find_permutation_of_group
         case = 16
         g = list(map(list,zip(*_read_float_2D(gpath+"find_permutation_of_group_g.in."+str(case)))))
@@ -729,7 +729,7 @@ class TestFindPermutationOfGroup(ut.TestCase):
         out = [i-1 for i in _read_int_1D(gpath+"find_permutation_of_group_perm.out."+str(case))]
         self.assertEqual(_find_permutation_of_group(g,gp),out)
 
-    def test17(self):
+    def test_17(self):
         from phenum.grouptheory import _find_permutation_of_group
         case = 17
         g = list(map(list,zip(*_read_float_2D(gpath+"find_permutation_of_group_g.in."+str(case)))))
@@ -737,7 +737,7 @@ class TestFindPermutationOfGroup(ut.TestCase):
         out = [i-1 for i in _read_int_1D(gpath+"find_permutation_of_group_perm.out."+str(case))]
         self.assertEqual(_find_permutation_of_group(g,gp),out)
 
-    def test18(self):
+    def test_18(self):
         from phenum.grouptheory import _find_permutation_of_group
         case = 18
         g = list(map(list,zip(*_read_float_2D(gpath+"find_permutation_of_group_g.in."+str(case)))))
@@ -745,7 +745,7 @@ class TestFindPermutationOfGroup(ut.TestCase):
         out = [i-1 for i in _read_int_1D(gpath+"find_permutation_of_group_perm.out."+str(case))]
         self.assertEqual(_find_permutation_of_group(g,gp),out)
 
-    def test19(self):
+    def test_19(self):
         from phenum.grouptheory import _find_permutation_of_group
         case = 19
         g = list(map(list,zip(*_read_float_2D(gpath+"find_permutation_of_group_g.in."+str(case)))))
@@ -753,7 +753,7 @@ class TestFindPermutationOfGroup(ut.TestCase):
         out = [i-1 for i in _read_int_1D(gpath+"find_permutation_of_group_perm.out."+str(case))]
         self.assertEqual(_find_permutation_of_group(g,gp),out)
 
-    def test20(self):
+    def test_20(self):
         from phenum.grouptheory import _find_permutation_of_group
         case = 20
         g = list(map(list,zip(*_read_float_2D(gpath+"find_permutation_of_group_g.in."+str(case)))))
@@ -764,7 +764,7 @@ class TestFindPermutationOfGroup(ut.TestCase):
 class TestIsEquivLattice(ut.TestCase):
     """Tests of the _is_equiv_lattice subroutine."""
 
-    def test1(self):
+    def test_1(self):
         from phenum.grouptheory import _is_equiv_lattice
         case = 1
         lat1 = _read_float_2D(gpath+"is_equiv_lattice_lat1.in."+str(case))
@@ -773,7 +773,7 @@ class TestIsEquivLattice(ut.TestCase):
         out = _read_logical(gpath+"is_equiv_lattice.out."+str(case))
         self.assertEqual(_is_equiv_lattice(lat1,lat2,eps),out)
 
-    def test2(self):
+    def test_2(self):
         from phenum.grouptheory import _is_equiv_lattice
         case = 2
         lat1 = _read_float_2D(gpath+"is_equiv_lattice_lat1.in."+str(case))
@@ -782,7 +782,7 @@ class TestIsEquivLattice(ut.TestCase):
         out = _read_logical(gpath+"is_equiv_lattice.out."+str(case))
         self.assertEqual(_is_equiv_lattice(lat1,lat2,eps),out)
 
-    def test3(self):
+    def test_3(self):
         from phenum.grouptheory import _is_equiv_lattice
         case = 3
         lat1 = _read_float_2D(gpath+"is_equiv_lattice_lat1.in."+str(case))
@@ -791,7 +791,7 @@ class TestIsEquivLattice(ut.TestCase):
         out = _read_logical(gpath+"is_equiv_lattice.out."+str(case))
         self.assertEqual(_is_equiv_lattice(lat1,lat2,eps),out)
 
-    def test4(self):
+    def test_4(self):
         from phenum.grouptheory import _is_equiv_lattice
         case = 4
         lat1 = _read_float_2D(gpath+"is_equiv_lattice_lat1.in."+str(case))
@@ -800,7 +800,7 @@ class TestIsEquivLattice(ut.TestCase):
         out = _read_logical(gpath+"is_equiv_lattice.out."+str(case))
         self.assertEqual(_is_equiv_lattice(lat1,lat2,eps),out)
 
-    def test5(self):
+    def test_5(self):
         from phenum.grouptheory import _is_equiv_lattice
         case = 5
         lat1 = _read_float_2D(gpath+"is_equiv_lattice_lat1.in."+str(case))
@@ -809,7 +809,7 @@ class TestIsEquivLattice(ut.TestCase):
         out = _read_logical(gpath+"is_equiv_lattice.out."+str(case))
         self.assertEqual(_is_equiv_lattice(lat1,lat2,eps),out)
 
-    def test6(self):
+    def test_6(self):
         from phenum.grouptheory import _is_equiv_lattice
         case = 6
         lat1 = _read_float_2D(gpath+"is_equiv_lattice_lat1.in."+str(case))
@@ -818,7 +818,7 @@ class TestIsEquivLattice(ut.TestCase):
         out = _read_logical(gpath+"is_equiv_lattice.out."+str(case))
         self.assertEqual(_is_equiv_lattice(lat1,lat2,eps),out)
 
-    def test7(self):
+    def test_7(self):
         from phenum.grouptheory import _is_equiv_lattice
         case = 7
         lat1 = _read_float_2D(gpath+"is_equiv_lattice_lat1.in."+str(case))
@@ -827,7 +827,7 @@ class TestIsEquivLattice(ut.TestCase):
         out = _read_logical(gpath+"is_equiv_lattice.out."+str(case))
         self.assertEqual(_is_equiv_lattice(lat1,lat2,eps),out)
 
-    def test8(self):
+    def test_8(self):
         from phenum.grouptheory import _is_equiv_lattice
         case = 8
         lat1 = _read_float_2D(gpath+"is_equiv_lattice_lat1.in."+str(case))
@@ -836,7 +836,7 @@ class TestIsEquivLattice(ut.TestCase):
         out = _read_logical(gpath+"is_equiv_lattice.out."+str(case))
         self.assertEqual(_is_equiv_lattice(lat1,lat2,eps),out)
 
-    def test9(self):
+    def test_9(self):
         from phenum.grouptheory import _is_equiv_lattice
         case = 9
         lat1 = _read_float_2D(gpath+"is_equiv_lattice_lat1.in."+str(case))
@@ -845,7 +845,7 @@ class TestIsEquivLattice(ut.TestCase):
         out = _read_logical(gpath+"is_equiv_lattice.out."+str(case))
         self.assertEqual(_is_equiv_lattice(lat1,lat2,eps),out)
 
-    def test10(self):
+    def test_10(self):
         from phenum.grouptheory import _is_equiv_lattice
         case = 10
         lat1 = _read_float_2D(gpath+"is_equiv_lattice_lat1.in."+str(case))
@@ -854,7 +854,7 @@ class TestIsEquivLattice(ut.TestCase):
         out = _read_logical(gpath+"is_equiv_lattice.out."+str(case))
         self.assertEqual(_is_equiv_lattice(lat1,lat2,eps),out)
 
-    def test11(self):
+    def test_11(self):
         from phenum.grouptheory import _is_equiv_lattice
         case = 11
         lat1 = _read_float_2D(gpath+"is_equiv_lattice_lat1.in."+str(case))
@@ -863,7 +863,7 @@ class TestIsEquivLattice(ut.TestCase):
         out = _read_logical(gpath+"is_equiv_lattice.out."+str(case))
         self.assertEqual(_is_equiv_lattice(lat1,lat2,eps),out)
 
-    def test12(self):
+    def test_12(self):
         from phenum.grouptheory import _is_equiv_lattice
         case = 12
         lat1 = _read_float_2D(gpath+"is_equiv_lattice_lat1.in."+str(case))
@@ -872,7 +872,7 @@ class TestIsEquivLattice(ut.TestCase):
         out = _read_logical(gpath+"is_equiv_lattice.out."+str(case))
         self.assertEqual(_is_equiv_lattice(lat1,lat2,eps),out)
 
-    def test13(self):
+    def test_13(self):
         from phenum.grouptheory import _is_equiv_lattice
         case = 13
         lat1 = _read_float_2D(gpath+"is_equiv_lattice_lat1.in."+str(case))
@@ -881,7 +881,7 @@ class TestIsEquivLattice(ut.TestCase):
         out = _read_logical(gpath+"is_equiv_lattice.out."+str(case))
         self.assertEqual(_is_equiv_lattice(lat1,lat2,eps),out)
 
-    def test14(self):
+    def test_14(self):
         from phenum.grouptheory import _is_equiv_lattice
         case = 14
         lat1 = _read_float_2D(gpath+"is_equiv_lattice_lat1.in."+str(case))
@@ -890,7 +890,7 @@ class TestIsEquivLattice(ut.TestCase):
         out = _read_logical(gpath+"is_equiv_lattice.out."+str(case))
         self.assertEqual(_is_equiv_lattice(lat1,lat2,eps),out)
 
-    def test15(self):
+    def test_15(self):
         from phenum.grouptheory import _is_equiv_lattice
         case = 15
         lat1 = _read_float_2D(gpath+"is_equiv_lattice_lat1.in."+str(case))
@@ -899,7 +899,7 @@ class TestIsEquivLattice(ut.TestCase):
         out = _read_logical(gpath+"is_equiv_lattice.out."+str(case))
         self.assertEqual(_is_equiv_lattice(lat1,lat2,eps),out)
 
-    def test16(self):
+    def test_16(self):
         from phenum.grouptheory import _is_equiv_lattice
         case = 16
         lat1 = _read_float_2D(gpath+"is_equiv_lattice_lat1.in."+str(case))
@@ -908,7 +908,7 @@ class TestIsEquivLattice(ut.TestCase):
         out = _read_logical(gpath+"is_equiv_lattice.out."+str(case))
         self.assertEqual(_is_equiv_lattice(lat1,lat2,eps),out)
 
-    def test17(self):
+    def test_17(self):
         from phenum.grouptheory import _is_equiv_lattice
         case = 17
         lat1 = _read_float_2D(gpath+"is_equiv_lattice_lat1.in."+str(case))
@@ -917,7 +917,7 @@ class TestIsEquivLattice(ut.TestCase):
         out = _read_logical(gpath+"is_equiv_lattice.out."+str(case))
         self.assertEqual(_is_equiv_lattice(lat1,lat2,eps),out)
 
-    def test18(self):
+    def test_18(self):
         from phenum.grouptheory import _is_equiv_lattice
         case = 18
         lat1 = _read_float_2D(gpath+"is_equiv_lattice_lat1.in."+str(case))
@@ -926,7 +926,7 @@ class TestIsEquivLattice(ut.TestCase):
         out = _read_logical(gpath+"is_equiv_lattice.out."+str(case))
         self.assertEqual(_is_equiv_lattice(lat1,lat2,eps),out)
 
-    def test19(self):
+    def test_19(self):
         from phenum.grouptheory import _is_equiv_lattice
         case = 19
         lat1 = _read_float_2D(gpath+"is_equiv_lattice_lat1.in."+str(case))
@@ -935,7 +935,7 @@ class TestIsEquivLattice(ut.TestCase):
         out = _read_logical(gpath+"is_equiv_lattice.out."+str(case))
         self.assertEqual(_is_equiv_lattice(lat1,lat2,eps),out)
 
-    def test20(self):
+    def test_20(self):
         from phenum.grouptheory import _is_equiv_lattice
         case = 20
         lat1 = _read_float_2D(gpath+"is_equiv_lattice_lat1.in."+str(case))
@@ -1006,7 +1006,7 @@ class TestGetSLVFixingOperations(ut.TestCase):
         else:
             self.assertEqual(rot1.perm.arrow_perm,rot2.perm.arrow_perm)
         
-    def test1(self):
+    def test_1(self):
         from phenum.grouptheory import _get_sLV_fixing_operations
         case = 1
         HNF = _read_int_2D(gpath+"get_sLV_fixing_operations_HNF.in."+str(case))
@@ -1023,7 +1023,7 @@ class TestGetSLVFixingOperations(ut.TestCase):
 
         self._compare_outputs([fixOp,rotPerm,degeneracy],[fixOp_out,rotPerm_out,degen_out])
         
-    def test2(self):
+    def test_2(self):
         from phenum.grouptheory import _get_sLV_fixing_operations
         case = 10
         HNF = _read_int_2D(gpath+"get_sLV_fixing_operations_HNF.in."+str(case))
@@ -1040,7 +1040,7 @@ class TestGetSLVFixingOperations(ut.TestCase):
 
         self._compare_outputs([fixOp,rotPerm,degeneracy],[fixOp_out,rotPerm_out,degen_out])
         
-    def test3(self):
+    def test_3(self):
         from phenum.grouptheory import _get_sLV_fixing_operations
         case = 20
         HNF = _read_int_2D(gpath+"get_sLV_fixing_operations_HNF.in."+str(case))
@@ -1057,7 +1057,7 @@ class TestGetSLVFixingOperations(ut.TestCase):
 
         self._compare_outputs([fixOp,rotPerm,degeneracy],[fixOp_out,rotPerm_out,degen_out])
         
-    def test4(self):
+    def test_4(self):
         from phenum.grouptheory import _get_sLV_fixing_operations
         case = 30
         HNF = _read_int_2D(gpath+"get_sLV_fixing_operations_HNF.in."+str(case))
@@ -1074,7 +1074,7 @@ class TestGetSLVFixingOperations(ut.TestCase):
 
         self._compare_outputs([fixOp,rotPerm,degeneracy],[fixOp_out,rotPerm_out,degen_out])
         
-    def test5(self):
+    def test_5(self):
         from phenum.grouptheory import _get_sLV_fixing_operations
         case = 40
         HNF = _read_int_2D(gpath+"get_sLV_fixing_operations_HNF.in."+str(case))
@@ -1091,7 +1091,7 @@ class TestGetSLVFixingOperations(ut.TestCase):
 
         self._compare_outputs([fixOp,rotPerm,degeneracy],[fixOp_out,rotPerm_out,degen_out])
         
-    def test6(self):
+    def test_6(self):
         from phenum.grouptheory import _get_sLV_fixing_operations
         case = 50
         HNF = _read_int_2D(gpath+"get_sLV_fixing_operations_HNF.in."+str(case))
@@ -1108,7 +1108,7 @@ class TestGetSLVFixingOperations(ut.TestCase):
 
         self._compare_outputs([fixOp,rotPerm,degeneracy],[fixOp_out,rotPerm_out,degen_out])
         
-    def test7(self):
+    def test_7(self):
         from phenum.grouptheory import _get_sLV_fixing_operations
         case = 60
         HNF = _read_int_2D(gpath+"get_sLV_fixing_operations_HNF.in."+str(case))
@@ -1125,7 +1125,7 @@ class TestGetSLVFixingOperations(ut.TestCase):
 
         self._compare_outputs([fixOp,rotPerm,degeneracy],[fixOp_out,rotPerm_out,degen_out])
         
-    def test8(self):
+    def test_8(self):
         from phenum.grouptheory import _get_sLV_fixing_operations
         case = 70
         HNF = _read_int_2D(gpath+"get_sLV_fixing_operations_HNF.in."+str(case))
@@ -1142,7 +1142,7 @@ class TestGetSLVFixingOperations(ut.TestCase):
 
         self._compare_outputs([fixOp,rotPerm,degeneracy],[fixOp_out,rotPerm_out,degen_out])
         
-    def test9(self):
+    def test_9(self):
         from phenum.grouptheory import _get_sLV_fixing_operations
         case = 80
         HNF = _read_int_2D(gpath+"get_sLV_fixing_operations_HNF.in."+str(case))
@@ -1159,7 +1159,7 @@ class TestGetSLVFixingOperations(ut.TestCase):
 
         self._compare_outputs([fixOp,rotPerm,degeneracy],[fixOp_out,rotPerm_out,degen_out])
         
-    def test10(self):
+    def test_10(self):
         from phenum.grouptheory import _get_sLV_fixing_operations
         case = 90
         HNF = _read_int_2D(gpath+"get_sLV_fixing_operations_HNF.in."+str(case))
@@ -1175,7 +1175,7 @@ class TestGetSLVFixingOperations(ut.TestCase):
         fixOp_out = _read_fixOp(gpath+"get_sLV_fixing_operations_fixOp.out."+str(case))
         self._compare_outputs([fixOp,rotPerm,degeneracy],[fixOp_out,rotPerm_out,degen_out])
         
-    def test11(self):
+    def test_11(self):
         from phenum.grouptheory import _get_sLV_fixing_operations
         case = 100
         HNF = _read_int_2D(gpath+"get_sLV_fixing_operations_HNF.in."+str(case))
@@ -1192,7 +1192,7 @@ class TestGetSLVFixingOperations(ut.TestCase):
 
         self._compare_outputs([fixOp,rotPerm,degeneracy],[fixOp_out,rotPerm_out,degen_out])
         
-    def test12(self):
+    def test_12(self):
         from phenum.grouptheory import _get_sLV_fixing_operations
         case = 110
         HNF = _read_int_2D(gpath+"get_sLV_fixing_operations_HNF.in."+str(case))
@@ -1209,7 +1209,7 @@ class TestGetSLVFixingOperations(ut.TestCase):
 
         self._compare_outputs([fixOp,rotPerm,degeneracy],[fixOp_out,rotPerm_out,degen_out])
         
-    def test13(self):
+    def test_13(self):
         from phenum.grouptheory import _get_sLV_fixing_operations
         case = 120
         HNF = _read_int_2D(gpath+"get_sLV_fixing_operations_HNF.in."+str(case))
@@ -1226,7 +1226,7 @@ class TestGetSLVFixingOperations(ut.TestCase):
 
         self._compare_outputs([fixOp,rotPerm,degeneracy],[fixOp_out,rotPerm_out,degen_out])
         
-    def test14(self):
+    def test_14(self):
         from phenum.grouptheory import _get_sLV_fixing_operations
         case = 130
         HNF = _read_int_2D(gpath+"get_sLV_fixing_operations_HNF.in."+str(case))
@@ -1243,7 +1243,7 @@ class TestGetSLVFixingOperations(ut.TestCase):
 
         self._compare_outputs([fixOp,rotPerm,degeneracy],[fixOp_out,rotPerm_out,degen_out])
         
-    def test15(self):
+    def test_15(self):
         from phenum.grouptheory import _get_sLV_fixing_operations
         case = 140
         HNF = _read_int_2D(gpath+"get_sLV_fixing_operations_HNF.in."+str(case))
@@ -1260,7 +1260,7 @@ class TestGetSLVFixingOperations(ut.TestCase):
 
         self._compare_outputs([fixOp,rotPerm,degeneracy],[fixOp_out,rotPerm_out,degen_out])
         
-    def test16(self):
+    def test_16(self):
         from phenum.grouptheory import _get_sLV_fixing_operations
         case = 150
         HNF = _read_int_2D(gpath+"get_sLV_fixing_operations_HNF.in."+str(case))
@@ -1287,7 +1287,7 @@ class TestMapDvectorPermutation(ut.TestCase):
         else:
             self.assertEqual(len(out1),len(out2))
                 
-    def test1(self):
+    def test_1(self):
         from phenum.grouptheory import _map_dvector_permutation
         case = 1
         rd = list(map(list,zip(*_read_float_2D(gpath+"map_dvector_permutation_rd.in."+str(case)))))
@@ -1299,7 +1299,7 @@ class TestMapDvectorPermutation(ut.TestCase):
 
         self._compare_outputs(_map_dvector_permutation(rd,d,eps,n),out)
         
-    def test2(self):
+    def test_2(self):
         from phenum.grouptheory import _map_dvector_permutation
         case = 10
         rd = list(map(list,zip(*_read_float_2D(gpath+"map_dvector_permutation_rd.in."+str(case)))))
@@ -1311,7 +1311,7 @@ class TestMapDvectorPermutation(ut.TestCase):
 
         self._compare_outputs(_map_dvector_permutation(rd,d,eps,n),out)
         
-    def test3(self):
+    def test_3(self):
         from phenum.grouptheory import _map_dvector_permutation
         case = 20
         rd = list(map(list,zip(*_read_float_2D(gpath+"map_dvector_permutation_rd.in."+str(case)))))
@@ -1323,7 +1323,7 @@ class TestMapDvectorPermutation(ut.TestCase):
 
         self._compare_outputs(_map_dvector_permutation(rd,d,eps,n),out)
         
-    def test4(self):
+    def test_4(self):
         from phenum.grouptheory import _map_dvector_permutation
         case = 30
         rd = list(map(list,zip(*_read_float_2D(gpath+"map_dvector_permutation_rd.in."+str(case)))))
@@ -1335,7 +1335,7 @@ class TestMapDvectorPermutation(ut.TestCase):
 
         self._compare_outputs(_map_dvector_permutation(rd,d,eps,n),out)
         
-    def test5(self):
+    def test_5(self):
         from phenum.grouptheory import _map_dvector_permutation
         case = 40
         rd = list(map(list,zip(*_read_float_2D(gpath+"map_dvector_permutation_rd.in."+str(case)))))
@@ -1347,7 +1347,7 @@ class TestMapDvectorPermutation(ut.TestCase):
 
         self._compare_outputs(_map_dvector_permutation(rd,d,eps,n),out)
         
-    def test6(self):
+    def test_6(self):
         from phenum.grouptheory import _map_dvector_permutation
         case = 50
         rd = list(map(list,zip(*_read_float_2D(gpath+"map_dvector_permutation_rd.in."+str(case)))))
@@ -1359,7 +1359,7 @@ class TestMapDvectorPermutation(ut.TestCase):
 
         self._compare_outputs(_map_dvector_permutation(rd,d,eps,n),out)
         
-    def test7(self):
+    def test_7(self):
         from phenum.grouptheory import _map_dvector_permutation
         case = 60
         rd = list(map(list,zip(*_read_float_2D(gpath+"map_dvector_permutation_rd.in."+str(case)))))
@@ -1371,7 +1371,7 @@ class TestMapDvectorPermutation(ut.TestCase):
 
         self._compare_outputs(_map_dvector_permutation(rd,d,eps,n),out)
         
-    def test8(self):
+    def test_8(self):
         from phenum.grouptheory import _map_dvector_permutation
         case = 70
         rd = list(map(list,zip(*_read_float_2D(gpath+"map_dvector_permutation_rd.in."+str(case)))))
@@ -1383,7 +1383,7 @@ class TestMapDvectorPermutation(ut.TestCase):
 
         self._compare_outputs(_map_dvector_permutation(rd,d,eps,n),out)
         
-    def test9(self):
+    def test_9(self):
         from phenum.grouptheory import _map_dvector_permutation
         case = 80
         rd = list(map(list,zip(*_read_float_2D(gpath+"map_dvector_permutation_rd.in."+str(case)))))
@@ -1395,7 +1395,7 @@ class TestMapDvectorPermutation(ut.TestCase):
 
         self._compare_outputs(_map_dvector_permutation(rd,d,eps,n),out)
         
-    def test10(self):
+    def test_10(self):
         from phenum.grouptheory import _map_dvector_permutation
         case = 90
         rd = list(map(list,zip(*_read_float_2D(gpath+"map_dvector_permutation_rd.in."+str(case)))))
@@ -1407,7 +1407,7 @@ class TestMapDvectorPermutation(ut.TestCase):
 
         self._compare_outputs(_map_dvector_permutation(rd,d,eps,n),out)
         
-    def test11(self):
+    def test_11(self):
         from phenum.grouptheory import _map_dvector_permutation
         case = 100
         rd = list(map(list,zip(*_read_float_2D(gpath+"map_dvector_permutation_rd.in."+str(case)))))
@@ -1419,7 +1419,7 @@ class TestMapDvectorPermutation(ut.TestCase):
 
         self._compare_outputs(_map_dvector_permutation(rd,d,eps,n),out)
         
-    def test12(self):
+    def test_12(self):
         from phenum.grouptheory import _map_dvector_permutation
         case = 110
         rd = list(map(list,zip(*_read_float_2D(gpath+"map_dvector_permutation_rd.in."+str(case)))))
@@ -1431,7 +1431,7 @@ class TestMapDvectorPermutation(ut.TestCase):
 
         self._compare_outputs(_map_dvector_permutation(rd,d,eps,n),out)
         
-    def test13(self):
+    def test_13(self):
         from phenum.grouptheory import _map_dvector_permutation
         case = 120
         rd = list(map(list,zip(*_read_float_2D(gpath+"map_dvector_permutation_rd.in."+str(case)))))
@@ -1443,7 +1443,7 @@ class TestMapDvectorPermutation(ut.TestCase):
 
         self._compare_outputs(_map_dvector_permutation(rd,d,eps,n),out)
         
-    def test14(self):
+    def test_14(self):
         from phenum.grouptheory import _map_dvector_permutation
         case = 130
         rd = list(map(list,zip(*_read_float_2D(gpath+"map_dvector_permutation_rd.in."+str(case)))))
@@ -1455,7 +1455,7 @@ class TestMapDvectorPermutation(ut.TestCase):
 
         self._compare_outputs(_map_dvector_permutation(rd,d,eps,n),out)
         
-    def test15(self):
+    def test_15(self):
         from phenum.grouptheory import _map_dvector_permutation
         case = 140
         rd = list(map(list,zip(*_read_float_2D(gpath+"map_dvector_permutation_rd.in."+str(case)))))
@@ -1467,7 +1467,7 @@ class TestMapDvectorPermutation(ut.TestCase):
 
         self._compare_outputs(_map_dvector_permutation(rd,d,eps,n),out)
         
-    def test16(self):
+    def test_16(self):
         from phenum.grouptheory import _map_dvector_permutation
         case = 150
         rd = list(map(list,zip(*_read_float_2D(gpath+"map_dvector_permutation_rd.in."+str(case)))))
@@ -1479,7 +1479,7 @@ class TestMapDvectorPermutation(ut.TestCase):
 
         self._compare_outputs(_map_dvector_permutation(rd,d,eps,n),out)
         
-    def test17(self):
+    def test_17(self):
         from phenum.grouptheory import _map_dvector_permutation
         case = 160
         rd = list(map(list,zip(*_read_float_2D(gpath+"map_dvector_permutation_rd.in."+str(case)))))
@@ -1491,7 +1491,7 @@ class TestMapDvectorPermutation(ut.TestCase):
 
         self._compare_outputs(_map_dvector_permutation(rd,d,eps,n),out)
         
-    def test18(self):
+    def test_18(self):
         from phenum.grouptheory import _map_dvector_permutation
         case = 170
         rd = list(map(list,zip(*_read_float_2D(gpath+"map_dvector_permutation_rd.in."+str(case)))))
@@ -1503,7 +1503,7 @@ class TestMapDvectorPermutation(ut.TestCase):
 
         self._compare_outputs(_map_dvector_permutation(rd,d,eps,n),out)
         
-    def test19(self):
+    def test_19(self):
         from phenum.grouptheory import _map_dvector_permutation
         case = 180
         rd = list(map(list,zip(*_read_float_2D(gpath+"map_dvector_permutation_rd.in."+str(case)))))
@@ -1515,7 +1515,7 @@ class TestMapDvectorPermutation(ut.TestCase):
 
         self._compare_outputs(_map_dvector_permutation(rd,d,eps,n),out)
         
-    def test20(self):
+    def test_20(self):
         from phenum.grouptheory import _map_dvector_permutation
         case = 190
         rd = list(map(list,zip(*_read_float_2D(gpath+"map_dvector_permutation_rd.in."+str(case)))))
@@ -1527,7 +1527,7 @@ class TestMapDvectorPermutation(ut.TestCase):
 
         self._compare_outputs(_map_dvector_permutation(rd,d,eps,n),out)
         
-    def test21(self):
+    def test_21(self):
         from phenum.grouptheory import _map_dvector_permutation
         case = 200
         rd = list(map(list,zip(*_read_float_2D(gpath+"map_dvector_permutation_rd.in."+str(case)))))
@@ -1542,7 +1542,7 @@ class TestMapDvectorPermutation(ut.TestCase):
 class TestFindMinmaxIndices(ut.TestCase):
     """Tests of the _find_minmax_indices subroutine."""
 
-    def test1(self):
+    def test_1(self):
         from phenum.grouptheory import _find_minmax_indices
         case = 1
         invec = _read_int_1D(gpath+"get_minmax_indices_invec.in."+str(case))
@@ -1552,7 +1552,7 @@ class TestFindMinmaxIndices(ut.TestCase):
         self.assertEqual(min,min_out)
         self.assertEqual(max,max_out)
 
-    def test2(self):
+    def test_2(self):
         from phenum.grouptheory import _find_minmax_indices
         case = 5
         invec = _read_int_1D(gpath+"get_minmax_indices_invec.in."+str(case))
@@ -1562,7 +1562,7 @@ class TestFindMinmaxIndices(ut.TestCase):
         self.assertEqual(min,min_out)
         self.assertEqual(max,max_out)
 
-    def test3(self):
+    def test_3(self):
         from phenum.grouptheory import _find_minmax_indices
         case = 10
         invec = _read_int_1D(gpath+"get_minmax_indices_invec.in."+str(case))
@@ -1572,7 +1572,7 @@ class TestFindMinmaxIndices(ut.TestCase):
         self.assertEqual(min,min_out)
         self.assertEqual(max,max_out)
 
-    def test4(self):
+    def test_4(self):
         from phenum.grouptheory import _find_minmax_indices
         case = 15
         invec = _read_int_1D(gpath+"get_minmax_indices_invec.in."+str(case))
@@ -1582,7 +1582,7 @@ class TestFindMinmaxIndices(ut.TestCase):
         self.assertEqual(min,min_out)
         self.assertEqual(max,max_out)
 
-    def test5(self):
+    def test_5(self):
         from phenum.grouptheory import _find_minmax_indices
         case = 20
         invec = _read_int_1D(gpath+"get_minmax_indices_invec.in."+str(case))
@@ -1592,7 +1592,7 @@ class TestFindMinmaxIndices(ut.TestCase):
         self.assertEqual(min,min_out)
         self.assertEqual(max,max_out)
 
-    def test6(self):
+    def test_6(self):
         from phenum.grouptheory import _find_minmax_indices
         case = 25
         invec = _read_int_1D(gpath+"get_minmax_indices_invec.in."+str(case))
@@ -1602,7 +1602,7 @@ class TestFindMinmaxIndices(ut.TestCase):
         self.assertEqual(min,min_out)
         self.assertEqual(max,max_out)
 
-    def test7(self):
+    def test_7(self):
         from phenum.grouptheory import _find_minmax_indices
         case = 30
         invec = _read_int_1D(gpath+"get_minmax_indices_invec.in."+str(case))
@@ -1612,7 +1612,7 @@ class TestFindMinmaxIndices(ut.TestCase):
         self.assertEqual(min,min_out)
         self.assertEqual(max,max_out)
 
-    def test8(self):
+    def test_8(self):
         from phenum.grouptheory import _find_minmax_indices
         case = 35
         invec = _read_int_1D(gpath+"get_minmax_indices_invec.in."+str(case))
@@ -1622,7 +1622,7 @@ class TestFindMinmaxIndices(ut.TestCase):
         self.assertEqual(min,min_out)
         self.assertEqual(max,max_out)
 
-    def test9(self):
+    def test_9(self):
         from phenum.grouptheory import _find_minmax_indices
         case = 40
         invec = _read_int_1D(gpath+"get_minmax_indices_invec.in."+str(case))
@@ -1632,7 +1632,7 @@ class TestFindMinmaxIndices(ut.TestCase):
         self.assertEqual(min,min_out)
         self.assertEqual(max,max_out)
 
-    def test10(self):
+    def test_10(self):
         from phenum.grouptheory import _find_minmax_indices
         case = 45
         invec = _read_int_1D(gpath+"get_minmax_indices_invec.in."+str(case))
@@ -1642,7 +1642,7 @@ class TestFindMinmaxIndices(ut.TestCase):
         self.assertEqual(min,min_out)
         self.assertEqual(max,max_out)
 
-    def test11(self):
+    def test_11(self):
         from phenum.grouptheory import _find_minmax_indices
         case = 50
         invec = _read_int_1D(gpath+"get_minmax_indices_invec.in."+str(case))
@@ -1690,7 +1690,7 @@ class TestGetDvectorPermutations(ut.TestCase):
         else:
             self.assertEqual(rot1.perm.arrow_perm,rot2.perm.arrow_perm)
         
-    def test1(self):
+    def test_1(self):
         from phenum.grouptheory import _get_dvector_permutations
         case = 1
         par_lat = list(map(list,zip(*_read_float_2D(gpath+"get_dvector_permutations_pLV.in."+str(case)))))
@@ -1701,7 +1701,7 @@ class TestGetDvectorPermutations(ut.TestCase):
         dRPList = _get_dvector_permutations(par_lat,bas_vecs,LatDim,eps)
         self._compare_outputs(dRPList,dRPList_out)
         
-    def test2(self):
+    def test_2(self):
         from phenum.grouptheory import _get_dvector_permutations
         case = 2
         par_lat = list(map(list,zip(*_read_float_2D(gpath+"get_dvector_permutations_pLV.in."+str(case)))))
@@ -1712,7 +1712,7 @@ class TestGetDvectorPermutations(ut.TestCase):
         dRPList = _get_dvector_permutations(par_lat,bas_vecs,LatDim,eps)
         self._compare_outputs(dRPList,dRPList_out)
 
-    def test3(self):
+    def test_3(self):
         from phenum.grouptheory import _get_dvector_permutations
         case = 3
         par_lat = list(map(list,zip(*_read_float_2D(gpath+"get_dvector_permutations_pLV.in."+str(case)))))
@@ -1723,7 +1723,7 @@ class TestGetDvectorPermutations(ut.TestCase):
         dRPList = _get_dvector_permutations(par_lat,bas_vecs,LatDim,eps)
         self._compare_outputs(dRPList,dRPList_out)
 
-    def test4(self):
+    def test_4(self):
         from phenum.grouptheory import _get_dvector_permutations
         case = 4
         par_lat = list(map(list,zip(*_read_float_2D(gpath+"get_dvector_permutations_pLV.in."+str(case)))))
@@ -1734,7 +1734,7 @@ class TestGetDvectorPermutations(ut.TestCase):
         dRPList = _get_dvector_permutations(par_lat,bas_vecs,LatDim,eps)
         self._compare_outputs(dRPList,dRPList_out)
 
-    def test5(self):
+    def test_5(self):
         from phenum.grouptheory import _get_dvector_permutations
         case = 5
         par_lat = list(map(list,zip(*_read_float_2D(gpath+"get_dvector_permutations_pLV.in."+str(case)))))
@@ -1745,7 +1745,7 @@ class TestGetDvectorPermutations(ut.TestCase):
         dRPList = _get_dvector_permutations(par_lat,bas_vecs,LatDim,eps)
         self._compare_outputs(dRPList,dRPList_out)
 
-    def test6(self):
+    def test_6(self):
         from phenum.grouptheory import _get_dvector_permutations
         case = 6
         par_lat = list(map(list,zip(*_read_float_2D(gpath+"get_dvector_permutations_pLV.in."+str(case)))))
@@ -1756,7 +1756,7 @@ class TestGetDvectorPermutations(ut.TestCase):
         dRPList = _get_dvector_permutations(par_lat,bas_vecs,LatDim,eps)
         self._compare_outputs(dRPList,dRPList_out)
 
-    def test7(self):
+    def test_7(self):
         from phenum.grouptheory import _get_dvector_permutations
         case = 7
         par_lat = list(map(list,zip(*_read_float_2D(gpath+"get_dvector_permutations_pLV.in."+str(case)))))
@@ -1767,7 +1767,7 @@ class TestGetDvectorPermutations(ut.TestCase):
         dRPList = _get_dvector_permutations(par_lat,bas_vecs,LatDim,eps)
         self._compare_outputs(dRPList,dRPList_out)
 
-    def test8(self):
+    def test_8(self):
         from phenum.grouptheory import _get_dvector_permutations
         case = 8
         par_lat = list(map(list,zip(*_read_float_2D(gpath+"get_dvector_permutations_pLV.in."+str(case)))))
@@ -1778,7 +1778,7 @@ class TestGetDvectorPermutations(ut.TestCase):
         dRPList = _get_dvector_permutations(par_lat,bas_vecs,LatDim,eps)
         self._compare_outputs(dRPList,dRPList_out)
     
-    def test9(self):
+    def test_9(self):
         from phenum.grouptheory import _get_dvector_permutations
         case = 9
         par_lat = list(map(list,zip(*_read_float_2D(gpath+"get_dvector_permutations_pLV.in."+str(case)))))
@@ -1789,7 +1789,7 @@ class TestGetDvectorPermutations(ut.TestCase):
         dRPList_out = _read_RotPermList(gpath+"get_dvector_permutations_dRPList.out."+str(case))
         self._compare_outputs(dRPList,dRPList_out)
 
-    def test10(self):
+    def test_10(self):
         from phenum.grouptheory import _get_dvector_permutations
         case = 10
         par_lat = list(map(list,zip(*_read_float_2D(gpath+"get_dvector_permutations_pLV.in."+str(case)))))
@@ -1800,7 +1800,7 @@ class TestGetDvectorPermutations(ut.TestCase):
         dRPList = _get_dvector_permutations(par_lat,bas_vecs,LatDim,eps)
         self._compare_outputs(dRPList,dRPList_out)
 
-    def test11(self):
+    def test_11(self):
         from phenum.grouptheory import _get_dvector_permutations
         case = 11
         par_lat = list(map(list,zip(*_read_float_2D(gpath+"get_dvector_permutations_pLV.in."+str(case)))))
@@ -1811,7 +1811,7 @@ class TestGetDvectorPermutations(ut.TestCase):
         dRPList = _get_dvector_permutations(par_lat,bas_vecs,LatDim,eps)
         self._compare_outputs(dRPList,dRPList_out)
 
-    def test12(self):
+    def test_12(self):
         from phenum.grouptheory import _get_dvector_permutations
         case = 12
         par_lat = list(map(list,zip(*_read_float_2D(gpath+"get_dvector_permutations_pLV.in."+str(case)))))
@@ -1822,7 +1822,7 @@ class TestGetDvectorPermutations(ut.TestCase):
         dRPList = _get_dvector_permutations(par_lat,bas_vecs,LatDim,eps)
         self._compare_outputs(dRPList,dRPList_out)
 
-    def test13(self):
+    def test_13(self):
         from phenum.grouptheory import _get_dvector_permutations
         case = 13
         par_lat = list(map(list,zip(*_read_float_2D(gpath+"get_dvector_permutations_pLV.in."+str(case)))))
@@ -1833,7 +1833,7 @@ class TestGetDvectorPermutations(ut.TestCase):
         dRPList = _get_dvector_permutations(par_lat,bas_vecs,LatDim,eps)
         self._compare_outputs(dRPList,dRPList_out)
 
-    def test14(self):
+    def test_14(self):
         from phenum.grouptheory import _get_dvector_permutations
         case = 14
         par_lat = list(map(list,zip(*_read_float_2D(gpath+"get_dvector_permutations_pLV.in."+str(case)))))
@@ -1844,7 +1844,7 @@ class TestGetDvectorPermutations(ut.TestCase):
         dRPList = _get_dvector_permutations(par_lat,bas_vecs,LatDim,eps)
         self._compare_outputs(dRPList,dRPList_out)
 
-    def test15(self):
+    def test_15(self):
         from phenum.grouptheory import _get_dvector_permutations
         case = 15
         par_lat = list(map(list,zip(*_read_float_2D(gpath+"get_dvector_permutations_pLV.in."+str(case)))))
@@ -1855,7 +1855,7 @@ class TestGetDvectorPermutations(ut.TestCase):
         dRPList = _get_dvector_permutations(par_lat,bas_vecs,LatDim,eps)
         self._compare_outputs(dRPList,dRPList_out)
 
-    def test16(self):
+    def test_16(self):
         from phenum.grouptheory import _get_dvector_permutations
         case = 16
         par_lat = list(map(list,zip(*_read_float_2D(gpath+"get_dvector_permutations_pLV.in."+str(case)))))
@@ -1866,7 +1866,7 @@ class TestGetDvectorPermutations(ut.TestCase):
         dRPList = _get_dvector_permutations(par_lat,bas_vecs,LatDim,eps)
         self._compare_outputs(dRPList,dRPList_out)
 
-    def test17(self):
+    def test_17(self):
         from phenum.grouptheory import _get_dvector_permutations
         case = 17
         par_lat = list(map(list,zip(*_read_float_2D(gpath+"get_dvector_permutations_pLV.in."+str(case)))))
@@ -1877,7 +1877,7 @@ class TestGetDvectorPermutations(ut.TestCase):
         dRPList = _get_dvector_permutations(par_lat,bas_vecs,LatDim,eps)
         self._compare_outputs(dRPList,dRPList_out)
 
-    def test18(self):
+    def test_18(self):
         from phenum.grouptheory import _get_dvector_permutations
         case = 18
         par_lat = list(map(list,zip(*_read_float_2D(gpath+"get_dvector_permutations_pLV.in."+str(case)))))
@@ -1888,7 +1888,7 @@ class TestGetDvectorPermutations(ut.TestCase):
         dRPList = _get_dvector_permutations(par_lat,bas_vecs,LatDim,eps)
         self._compare_outputs(dRPList,dRPList_out)
 
-    def test19(self):
+    def test_19(self):
         from phenum.grouptheory import _get_dvector_permutations
         case = 19
         par_lat = list(map(list,zip(*_read_float_2D(gpath+"get_dvector_permutations_pLV.in."+str(case)))))
@@ -1899,7 +1899,7 @@ class TestGetDvectorPermutations(ut.TestCase):
         dRPList = _get_dvector_permutations(par_lat,bas_vecs,LatDim,eps)
         self._compare_outputs(dRPList,dRPList_out)
 
-    def test20(self):
+    def test_20(self):
         from phenum.grouptheory import _get_dvector_permutations
         case = 20
         par_lat = list(map(list,zip(*_read_float_2D(gpath+"get_dvector_permutations_pLV.in."+str(case)))))
@@ -1963,7 +1963,7 @@ class TestGetRotationPermsLists(ut.TestCase):
         else:
             self.assertEqual(len(out1),len(out2))
 
-    def test1(self):
+    def test_1(self):
         from phenum.grouptheory import _get_rotation_perms_lists
         case = 1
         A = [[10,0,0],[0,10,0],[0,0,10]]
@@ -1980,7 +1980,7 @@ class TestGetRotationPermsLists(ut.TestCase):
         out2 = _read_RotPermList_1D(gpath+"get_rotation_perms_lists_RPlist.out."+str(case))
         self._compare_outputs(out1,out2)
 
-    def test2(self):
+    def test_2(self):
         from phenum.grouptheory import _get_rotation_perms_lists
         case = 2
         A = list(map(list,zip(*_read_float_2D(gpath+"get_rotation_perms_lists_A.in."+str(case)))))
@@ -1997,7 +1997,7 @@ class TestGetRotationPermsLists(ut.TestCase):
         out2 = _read_RotPermList_1D(gpath+"get_rotation_perms_lists_RPlist.out."+str(case))
         self._compare_outputs(out1,out2)
 
-    def test3(self):
+    def test_3(self):
         from phenum.grouptheory import _get_rotation_perms_lists
         case = 3
         A = list(map(list,zip(*_read_float_2D(gpath+"get_rotation_perms_lists_A.in."+str(case)))))
@@ -2014,7 +2014,7 @@ class TestGetRotationPermsLists(ut.TestCase):
             out.perm.arrow_perm = None
         self._compare_outputs(out1,out2)
 
-    def test4(self):
+    def test_4(self):
         from phenum.grouptheory import _get_rotation_perms_lists
         case = 4
         A = list(map(list,zip(*_read_float_2D(gpath+"get_rotation_perms_lists_A.in."+str(case)))))
@@ -2031,7 +2031,7 @@ class TestGetRotationPermsLists(ut.TestCase):
             out.perm.arrow_perm = None
         self._compare_outputs(out1,out2)
 
-    def test5(self):
+    def test_5(self):
         from phenum.grouptheory import _get_rotation_perms_lists
         case = 5
         A = list(map(list,zip(*_read_float_2D(gpath+"get_rotation_perms_lists_A.in."+str(case)))))
@@ -2048,7 +2048,7 @@ class TestGetRotationPermsLists(ut.TestCase):
             out.perm.arrow_perm = None
         self._compare_outputs(out1,out2)
 
-    def test6(self):
+    def test_6(self):
         from phenum.grouptheory import _get_rotation_perms_lists
         case = 6
         A = list(map(list,zip(*_read_float_2D(gpath+"get_rotation_perms_lists_A.in."+str(case)))))
@@ -2065,7 +2065,7 @@ class TestGetRotationPermsLists(ut.TestCase):
             out.perm.arrow_perm = None
         self._compare_outputs(out1,out2)
         
-    def test7(self):
+    def test_7(self):
         from phenum.grouptheory import _get_rotation_perms_lists
         case = 7
         A = list(map(list,zip(*_read_float_2D(gpath+"get_rotation_perms_lists_A.in."+str(case)))))
@@ -2082,7 +2082,7 @@ class TestGetRotationPermsLists(ut.TestCase):
             out.perm.arrow_perm = None
         self._compare_outputs(out1,out2)
 
-    def test8(self):
+    def test_8(self):
         from phenum.grouptheory import _get_rotation_perms_lists
         case = 8
         A = list(map(list,zip(*_read_float_2D(gpath+"get_rotation_perms_lists_A.in."+str(case)))))
@@ -2099,7 +2099,7 @@ class TestGetRotationPermsLists(ut.TestCase):
             out.perm.arrow_perm = None
         self._compare_outputs(out1,out2)
 
-    def test9(self):
+    def test_9(self):
         from phenum.grouptheory import _get_rotation_perms_lists
         case = 9
         A = list(map(list,zip(*_read_float_2D(gpath+"get_rotation_perms_lists_A.in."+str(case)))))
@@ -2116,7 +2116,7 @@ class TestGetRotationPermsLists(ut.TestCase):
             out.perm.arrow_perm = None
         self._compare_outputs(out1,out2)
 
-    def test10(self):
+    def test_10(self):
         from phenum.grouptheory import _get_rotation_perms_lists
         case = 10
         A = list(map(list,zip(*_read_float_2D(gpath+"get_rotation_perms_lists_A.in."+str(case)))))
@@ -2133,7 +2133,7 @@ class TestGetRotationPermsLists(ut.TestCase):
             out.perm.arrow_perm = None
         self._compare_outputs(out1,out2)
 
-    def test11(self):
+    def test_11(self):
         from phenum.grouptheory import _get_rotation_perms_lists
         case = 11
         A = list(map(list,zip(*_read_float_2D(gpath+"get_rotation_perms_lists_A.in."+str(case)))))
@@ -2150,7 +2150,7 @@ class TestGetRotationPermsLists(ut.TestCase):
             out.perm.arrow_perm = None
         self._compare_outputs(out1,out2)
 
-    def test12(self):
+    def test_12(self):
         from phenum.grouptheory import _get_rotation_perms_lists
         case = 12
         A = list(map(list,zip(*_read_float_2D(gpath+"get_rotation_perms_lists_A.in."+str(case)))))
@@ -2167,7 +2167,7 @@ class TestGetRotationPermsLists(ut.TestCase):
             out.perm.arrow_perm = None
         self._compare_outputs(out1,out2)
 
-    def test13(self):
+    def test_13(self):
         from phenum.grouptheory import _get_rotation_perms_lists
         case = 13
         A = list(map(list,zip(*_read_float_2D(gpath+"get_rotation_perms_lists_A.in."+str(case)))))
@@ -2184,7 +2184,7 @@ class TestGetRotationPermsLists(ut.TestCase):
             out.perm.arrow_perm = None
         self._compare_outputs(out1,out2)
 
-    def test14(self):
+    def test_14(self):
         from phenum.grouptheory import _get_rotation_perms_lists
         case = 14
         A = list(map(list,zip(*_read_float_2D(gpath+"get_rotation_perms_lists_A.in."+str(case)))))
@@ -2201,7 +2201,7 @@ class TestGetRotationPermsLists(ut.TestCase):
             out.perm.arrow_perm = None
         self._compare_outputs(out1,out2)
 
-    def test15(self):
+    def test_15(self):
         from phenum.grouptheory import _get_rotation_perms_lists
         case = 15
         A = list(map(list,zip(*_read_float_2D(gpath+"get_rotation_perms_lists_A.in."+str(case)))))
@@ -2218,7 +2218,7 @@ class TestGetRotationPermsLists(ut.TestCase):
             out.perm.arrow_perm = None
         self._compare_outputs(out1,out2)
 
-    def test16(self):
+    def test_16(self):
         from phenum.grouptheory import _get_rotation_perms_lists
         case = 16
         A = list(map(list,zip(*_read_float_2D(gpath+"get_rotation_perms_lists_A.in."+str(case)))))
@@ -2235,7 +2235,7 @@ class TestGetRotationPermsLists(ut.TestCase):
             out.perm.arrow_perm = None
         self._compare_outputs(out1,out2)
 
-    def test17(self):
+    def test_17(self):
         from phenum.grouptheory import _get_rotation_perms_lists
         case = 17
         A = list(map(list,zip(*_read_float_2D(gpath+"get_rotation_perms_lists_A.in."+str(case)))))
@@ -2252,7 +2252,7 @@ class TestGetRotationPermsLists(ut.TestCase):
             out.perm.arrow_perm = None
         self._compare_outputs(out1,out2)
 
-    def test18(self):
+    def test_18(self):
         from phenum.grouptheory import _get_rotation_perms_lists
         case = 18
         A = list(map(list,zip(*_read_float_2D(gpath+"get_rotation_perms_lists_A.in."+str(case)))))
@@ -2269,7 +2269,7 @@ class TestGetRotationPermsLists(ut.TestCase):
             out.perm.arrow_perm = None
         self._compare_outputs(out1,out2)
 
-    def test19(self):
+    def test_19(self):
         from phenum.grouptheory import _get_rotation_perms_lists
         case = 19
         A = list(map(list,zip(*_read_float_2D(gpath+"get_rotation_perms_lists_A.in."+str(case)))))
@@ -2286,7 +2286,7 @@ class TestGetRotationPermsLists(ut.TestCase):
             out.perm.arrow_perm = None
         self._compare_outputs(out1,out2)
 
-    def test20(self):
+    def test_20(self):
         from phenum.grouptheory import _get_rotation_perms_lists
         case = 20
         A = list(map(list,zip(*_read_float_2D(gpath+"get_rotation_perms_lists_A.in."+str(case)))))
@@ -2303,7 +2303,7 @@ class TestGetRotationPermsLists(ut.TestCase):
             out.perm.arrow_perm = None
         self._compare_outputs(out1,out2)
 
-    def test21(self):
+    def test_21(self):
         from phenum.grouptheory import _get_rotation_perms_lists
         case = 21
         A = list(map(list,zip(*_read_float_2D(gpath+"get_rotation_perms_lists_A.in."+str(case)))))
@@ -2320,7 +2320,7 @@ class TestGetRotationPermsLists(ut.TestCase):
             out.perm.arrow_perm = None
         self._compare_outputs(out1,out2)
 
-    def test22(self):
+    def test_22(self):
         from phenum.grouptheory import _get_rotation_perms_lists
         case = 22
         A = list(map(list,zip(*_read_float_2D(gpath+"get_rotation_perms_lists_A.in."+str(case)))))
@@ -2337,7 +2337,7 @@ class TestGetRotationPermsLists(ut.TestCase):
             out.perm.arrow_perm = None
         self._compare_outputs(out1,out2)
 
-    def test23(self):
+    def test_23(self):
         from phenum.grouptheory import _get_rotation_perms_lists
         case = 23
         A = list(map(list,zip(*_read_float_2D(gpath+"get_rotation_perms_lists_A.in."+str(case)))))
@@ -2354,7 +2354,7 @@ class TestGetRotationPermsLists(ut.TestCase):
             out.perm.arrow_perm = None
         self._compare_outputs(out1,out2)
 
-    def test24(self):
+    def test_24(self):
         from phenum.grouptheory import _get_rotation_perms_lists
         case = 24
         A = list(map(list,zip(*_read_float_2D(gpath+"get_rotation_perms_lists_A.in."+str(case)))))
@@ -2371,7 +2371,7 @@ class TestGetRotationPermsLists(ut.TestCase):
             out.perm.arrow_perm = None
         self._compare_outputs(out1,out2)
 
-    def test25(self):
+    def test_25(self):
         from phenum.grouptheory import _get_rotation_perms_lists
         case = 25
         A = list(map(list,zip(*_read_float_2D(gpath+"get_rotation_perms_lists_A.in."+str(case)))))
@@ -2388,7 +2388,7 @@ class TestGetRotationPermsLists(ut.TestCase):
             out.perm.arrow_perm = None
         self._compare_outputs(out1,out2)
 
-    def test26(self):
+    def test_26(self):
         from phenum.grouptheory import _get_rotation_perms_lists
         case = 26
         A = list(map(list,zip(*_read_float_2D(gpath+"get_rotation_perms_lists_A.in."+str(case)))))
@@ -2405,7 +2405,7 @@ class TestGetRotationPermsLists(ut.TestCase):
             out.perm.arrow_perm = None
         self._compare_outputs(out1,out2)
 
-    def test27(self):
+    def test_27(self):
         from phenum.grouptheory import _get_rotation_perms_lists
         case = 27
         A = list(map(list,zip(*_read_float_2D(gpath+"get_rotation_perms_lists_A.in."+str(case)))))
@@ -2422,7 +2422,7 @@ class TestGetRotationPermsLists(ut.TestCase):
             out.perm.arrow_perm = None
         self._compare_outputs(out1,out2)
 
-    def test28(self):
+    def test_28(self):
         from phenum.grouptheory import _get_rotation_perms_lists
         case = 28
         A = list(map(list,zip(*_read_float_2D(gpath+"get_rotation_perms_lists_A.in."+str(case)))))
@@ -2439,7 +2439,7 @@ class TestGetRotationPermsLists(ut.TestCase):
             out.perm.arrow_perm = None
         self._compare_outputs(out1,out2)
 
-    def test29(self):
+    def test_29(self):
         from phenum.grouptheory import _get_rotation_perms_lists
         case = 29
         A = list(map(list,zip(*_read_float_2D(gpath+"get_rotation_perms_lists_A.in."+str(case)))))
@@ -2456,7 +2456,7 @@ class TestGetRotationPermsLists(ut.TestCase):
             out.perm.arrow_perm = None
         self._compare_outputs(out1,out2)
 
-    def test30(self):
+    def test_30(self):
         from phenum.grouptheory import _get_rotation_perms_lists
         case = 30
         A = list(map(list,zip(*_read_float_2D(gpath+"get_rotation_perms_lists_A.in."+str(case)))))
@@ -2473,7 +2473,7 @@ class TestGetRotationPermsLists(ut.TestCase):
             out.perm.arrow_perm = None
         self._compare_outputs(out1,out2)
 
-    def test31(self):
+    def test_31(self):
         from phenum.grouptheory import _get_rotation_perms_lists
         case = 31
         A = list(map(list,zip(*_read_float_2D(gpath+"get_rotation_perms_lists_A.in."+str(case)))))
@@ -2490,7 +2490,7 @@ class TestGetRotationPermsLists(ut.TestCase):
             out.perm.arrow_perm = None
         self._compare_outputs(out1,out2)
 
-    def test32(self):
+    def test_32(self):
         from phenum.grouptheory import _get_rotation_perms_lists
         case = 32
         A = list(map(list,zip(*_read_float_2D(gpath+"get_rotation_perms_lists_A.in."+str(case)))))
@@ -2507,7 +2507,7 @@ class TestGetRotationPermsLists(ut.TestCase):
             out.perm.arrow_perm = None
         self._compare_outputs(out1,out2)
 
-    def test33(self):
+    def test_33(self):
         from phenum.grouptheory import _get_rotation_perms_lists
         case = 33
         A = list(map(list,zip(*_read_float_2D(gpath+"get_rotation_perms_lists_A.in."+str(case)))))
@@ -2524,7 +2524,7 @@ class TestGetRotationPermsLists(ut.TestCase):
             out.perm.arrow_perm = None
         self._compare_outputs(out1,out2)
 
-    def test34(self):
+    def test_34(self):
         from phenum.grouptheory import _get_rotation_perms_lists
         case = 34
         A = list(map(list,zip(*_read_float_2D(gpath+"get_rotation_perms_lists_A.in."+str(case)))))
@@ -2541,7 +2541,7 @@ class TestGetRotationPermsLists(ut.TestCase):
             out.perm.arrow_perm = None
         self._compare_outputs(out1,out2)
 
-    def test35(self):
+    def test_35(self):
         from phenum.grouptheory import _get_rotation_perms_lists
         case = 35
         A = list(map(list,zip(*_read_float_2D(gpath+"get_rotation_perms_lists_A.in."+str(case)))))
@@ -2558,7 +2558,7 @@ class TestGetRotationPermsLists(ut.TestCase):
             out.perm.arrow_perm = None
         self._compare_outputs(out1,out2)
 
-    def test36(self):
+    def test_36(self):
         from phenum.grouptheory import _get_rotation_perms_lists
         case = 36
         A = list(map(list,zip(*_read_float_2D(gpath+"get_rotation_perms_lists_A.in."+str(case)))))
@@ -2575,7 +2575,7 @@ class TestGetRotationPermsLists(ut.TestCase):
             out.perm.arrow_perm = None
         self._compare_outputs(out1,out2)
 
-    def test37(self):
+    def test_37(self):
         from phenum.grouptheory import _get_rotation_perms_lists
         case = 37
         A = list(map(list,zip(*_read_float_2D(gpath+"get_rotation_perms_lists_A.in."+str(case)))))
@@ -2592,7 +2592,7 @@ class TestGetRotationPermsLists(ut.TestCase):
             out.perm.arrow_perm = None
         self._compare_outputs(out1,out2)
 
-    def test38(self):
+    def test_38(self):
         from phenum.grouptheory import _get_rotation_perms_lists
         case = 38
         A = list(map(list,zip(*_read_float_2D(gpath+"get_rotation_perms_lists_A.in."+str(case)))))
@@ -2609,7 +2609,7 @@ class TestGetRotationPermsLists(ut.TestCase):
             out.perm.arrow_perm = None
         self._compare_outputs(out1,out2)
 
-    def test39(self):
+    def test_39(self):
         from phenum.grouptheory import _get_rotation_perms_lists
         case = 39
         A = list(map(list,zip(*_read_float_2D(gpath+"get_rotation_perms_lists_A.in."+str(case)))))
@@ -2626,7 +2626,7 @@ class TestGetRotationPermsLists(ut.TestCase):
             out.perm.arrow_perm = None
         self._compare_outputs(out1,out2)
 
-    def test50(self):
+    def test_50(self):
         from phenum.grouptheory import _get_rotation_perms_lists
         case = 50
         A = list(map(list,zip(*_read_float_2D(gpath+"get_rotation_perms_lists_A.in."+str(case)))))
@@ -2643,7 +2643,7 @@ class TestGetRotationPermsLists(ut.TestCase):
             out.perm.arrow_perm = None
         self._compare_outputs(out1,out2)
 
-    def test51(self):
+    def test_51(self):
         from phenum.grouptheory import _get_rotation_perms_lists
         case = 51
         A = list(map(list,zip(*_read_float_2D(gpath+"get_rotation_perms_lists_A.in."+str(case)))))
@@ -2660,7 +2660,7 @@ class TestGetRotationPermsLists(ut.TestCase):
             out.perm.arrow_perm = None
         self._compare_outputs(out1,out2)
 
-    def test52(self):
+    def test_52(self):
         from phenum.grouptheory import _get_rotation_perms_lists
         case = 52
         A = list(map(list,zip(*_read_float_2D(gpath+"get_rotation_perms_lists_A.in."+str(case)))))
@@ -2677,7 +2677,7 @@ class TestGetRotationPermsLists(ut.TestCase):
             out.perm.arrow_perm = None
         self._compare_outputs(out1,out2)
 
-    def test53(self):
+    def test_53(self):
         from phenum.grouptheory import _get_rotation_perms_lists
         case = 53
         A = list(map(list,zip(*_read_float_2D(gpath+"get_rotation_perms_lists_A.in."+str(case)))))
@@ -2694,7 +2694,7 @@ class TestGetRotationPermsLists(ut.TestCase):
             out.perm.arrow_perm = None
         self._compare_outputs(out1,out2)
 
-    def test54(self):
+    def test_54(self):
         from phenum.grouptheory import _get_rotation_perms_lists
         case = 54
         A = list(map(list,zip(*_read_float_2D(gpath+"get_rotation_perms_lists_A.in."+str(case)))))
@@ -2711,7 +2711,7 @@ class TestGetRotationPermsLists(ut.TestCase):
             out.perm.arrow_perm = None
         self._compare_outputs(out1,out2)
 
-    def test55(self):
+    def test_55(self):
         from phenum.grouptheory import _get_rotation_perms_lists
         case = 55
         A = list(map(list,zip(*_read_float_2D(gpath+"get_rotation_perms_lists_A.in."+str(case)))))
@@ -2728,7 +2728,7 @@ class TestGetRotationPermsLists(ut.TestCase):
             out.perm.arrow_perm = None
         self._compare_outputs(out1,out2)
 
-    def test56(self):
+    def test_56(self):
         from phenum.grouptheory import _get_rotation_perms_lists
         case = 56
         A = list(map(list,zip(*_read_float_2D(gpath+"get_rotation_perms_lists_A.in."+str(case)))))
@@ -2745,7 +2745,7 @@ class TestGetRotationPermsLists(ut.TestCase):
             out.perm.arrow_perm = None
         self._compare_outputs(out1,out2)
 
-    def test57(self):
+    def test_57(self):
         from phenum.grouptheory import _get_rotation_perms_lists
         case = 57
         A = list(map(list,zip(*_read_float_2D(gpath+"get_rotation_perms_lists_A.in."+str(case)))))
@@ -2762,7 +2762,7 @@ class TestGetRotationPermsLists(ut.TestCase):
             out.perm.arrow_perm = None
         self._compare_outputs(out1,out2)
 
-    def test58(self):
+    def test_58(self):
         from phenum.grouptheory import _get_rotation_perms_lists
         case = 58
         A = list(map(list,zip(*_read_float_2D(gpath+"get_rotation_perms_lists_A.in."+str(case)))))
@@ -2782,7 +2782,7 @@ class TestGetRotationPermsLists(ut.TestCase):
 class TestRM3DOperations(ut.TestCase):
     """Tests of the _rm_3D_operations subroutine."""
 
-    def test1(self):
+    def test_1(self):
         from phenum.grouptheory import _rm_3D_operations
         with pytest.raises(ValueError):
             _rm_3D_operations([[1,1,0],[1,1,1],[0,1,1]],[0],[0],1E-7)
@@ -2791,7 +2791,7 @@ class TestRM3DOperations(ut.TestCase):
 class TestGetSymGroup(ut.TestCase):
     """ Tests of the get_sym_group subroutine."""
         
-    def test1(self):
+    def test_1(self):
         from phenum.grouptheory import get_sym_group
         par_lat = [[0.5, 0.5, 0.0], [0.5, 0.0, 0.5], [0.0, 0.5, 0.5]]
         bas_vacs = [[0.0, 0.0, 0.0]]
@@ -2805,7 +2805,7 @@ class TestGetSymGroup(ut.TestCase):
         for perm in agroup:
             self.assertIn(perm,out)
 
-    def test2(self):
+    def test_2(self):
         from phenum.grouptheory import get_sym_group
         par_lat = [[0.5, 0.5, 0.0], [0.5, 0.0, 0.5], [0.0, 0.5, 0.5]]
         bas_vacs = [[0.0, 0.0, 0.0]]
@@ -2819,7 +2819,7 @@ class TestGetSymGroup(ut.TestCase):
         for perm in agroup:
             self.assertIn(perm,out)
 
-    def test3(self):
+    def test_3(self):
         from phenum.grouptheory import get_sym_group
         par_lat = [[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]]
         bas_vacs = [[0.0, 0.0, 0.0], [0.5, 0.5, 0.5]]
@@ -2833,7 +2833,7 @@ class TestGetSymGroup(ut.TestCase):
         for perm in agroup:
             self.assertIn(perm,out)
 
-    def test4(self):
+    def test_4(self):
         from phenum.grouptheory import get_sym_group
         par_lat = [[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]]
         bas_vacs = [[0.0, 0.0, 0.0]]
@@ -2847,7 +2847,7 @@ class TestGetSymGroup(ut.TestCase):
         for perm in agroup:
             self.assertIn(perm,out)
 
-    def test5(self):
+    def test_5(self):
         from phenum.grouptheory import get_sym_group
         par_lat = [[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]]
         bas_vacs = [[0.0, 0.0, 0.0]]
@@ -2861,7 +2861,7 @@ class TestGetSymGroup(ut.TestCase):
         for perm in agroup:
             self.assertIn(perm,out)
 
-    def test6(self):
+    def test_6(self):
         from phenum.grouptheory import get_sym_group
         par_lat = [[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]]
         bas_vacs = [[0.0, 0.0, 0.0]]
@@ -2875,7 +2875,7 @@ class TestGetSymGroup(ut.TestCase):
         for perm in agroup:
             self.assertIn(perm,out)
 
-    def test7(self):
+    def test_7(self):
         from phenum.grouptheory import get_sym_group
         par_lat = [[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]]
         bas_vacs = [[0.0, 0.0, 0.0], [0.5, 0.5, 0.5], [0.25, 0.25, 0.75]]
@@ -2889,7 +2889,7 @@ class TestGetSymGroup(ut.TestCase):
         for perm in agroup:
             self.assertIn(perm,out)
 
-    def test8(self):
+    def test_8(self):
         from phenum.grouptheory import get_sym_group
         par_lat = [[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]]
         bas_vacs = [[0.0, 0.0, 0.0], [0.5, 0.5, 0.5], [0.25, 0.25, 0.75]]
@@ -2903,7 +2903,7 @@ class TestGetSymGroup(ut.TestCase):
         for perm in agroup:
             self.assertIn(perm,out)
 
-    def test9(self):
+    def test_9(self):
         from phenum.grouptheory import get_sym_group
         par_lat = [[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]]
         bas_vacs = [[0.0, 0.0, 0.0], [0.5, 0.5, 0.5], [0.25, 0.25, 0.75]]
@@ -2917,7 +2917,7 @@ class TestGetSymGroup(ut.TestCase):
         for perm in agroup:
             self.assertIn(perm,out)
 
-    def test10(self):
+    def test_10(self):
         from phenum.grouptheory import get_sym_group
         par_lat = [[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]]
         bas_vacs = [[0.0, 0.0, 0.0]]
@@ -2931,7 +2931,7 @@ class TestGetSymGroup(ut.TestCase):
         for perm in agroup:
             self.assertIn(perm,out)
 
-    def test11(self):
+    def test_11(self):
         from phenum.grouptheory import get_sym_group
         par_lat = [[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]]
         bas_vacs = [[2.0, 2.0, 2.0]]

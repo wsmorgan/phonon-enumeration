@@ -8,27 +8,37 @@ from numpy import array, dot
 def _find_concentrations(col):
     """Finds the concentration of a given array of colors.
 
-    :arg col: an integer array of the labeling
+    Args:
+        col (list): an integer array of the labeling.
+
+    Returns:
+        concs (list): The concentrations of the colors.
     """
-    Concs=[]
+    concs=[]
 
     tcol= list(col)
-    for i in range(len(tcol)):
-        if tcol[i] != 0:
-            Concs.append(tcol.count(tcol[i]))
-            for j in range(len(tcol)):
-                if tcol[j] == tcol[i] and i != j:
+    for i, tcol_i in enumerate(tcol):
+        if tcol_i != 0:
+            concs.append(tcol.count(tcol_i))
+            for j, tcol_j in enumerate(tcol):
+                if tcol_j == tcol_i and i != j:
                     tcol[j] =0
             tcol[i] =0
-    return(Concs)
+    return(concs)
 
 #Takes an array of colors and arrows and tells us how many different
 #colors have arrows on them.
 def how_many_arrows(tcol):
     """Determines the number of colors that have arrows on them.
 
-    :arg tcol: a 2D array of the labeling that contains the colors
-    and arrows for each site.
+    Args:
+        tcol (list): A 2D array of the labeling that contains the colors
+          and arrows for each site.
+
+    Returns:
+        arrows (int): The number of arrows in the system.
+        n_species (int): The number of different atomic species with arrows.
+        aconcs (list): The concentration of each arrow species.
     """
     arrows = 0
     
@@ -50,8 +60,12 @@ def _col_sort(col_list):
     list and so that the arrowed and non-arrowed colors are sorted
     from lowest to highest concentration.
 
-    :arg col_list: a 2D integer array of the full labeling of the
-    system
+    Args:
+        col_list (list): A 2D integer array of the full labeling of the
+          system.
+
+    Returns:
+        colt (list): A 2D integer array of the sorted colors.
     """
 
     col1 = []
@@ -83,15 +97,23 @@ def _col_sort(col_list):
 def add_arrows(col,agroup,dim, translations, accept=None,nested=False,num_wanted=None, small=False, supers = False):
     """Finds the unique arrangements of arrows for a given configuration.
 
-    :arg col: a 2D integer array of the initial labeling
-    :arg agroup: the stabilizers for the colors only with the arrow
-    permutations
-    :arg dim: the number of directions the arrows can point
-    :arg accept: acceptance rate of configurations for large enumerations.
-    :arg nested: set to True if this is called from within the context
-      of another progress bar.
-    :arg supers: True if we want to include super periodic arrangements in the enumeration.
-    :arg translations: The translations of the lattice.
+    Args:
+        col (list): A 2D integer array of the initial labeling.
+        dim (int): The number of directions the arrows can point.
+        translations (list): The translations of the lattice.
+        accept (float, optional): acceptance rate of configurations for large enumerations.
+
+        agroup (list): The stabilizers for the colors only with the arrow
+          permutations.
+
+        nested (bool, optionl): Set to True if this is called from within the context
+          of another progress bar.
+
+        supers (bool, optional): True if we want to include super periodic 
+          arrangements in the enumeration.
+
+    Returns:
+        arsurvivors (list): The unique arrow arrangements.
     """
     from random import random
     #Find out how many arrows there are in the col array
@@ -100,6 +122,7 @@ def add_arrows(col,agroup,dim, translations, accept=None,nested=False,num_wanted
     largest_arrow = [dim-1]*narrows
     #this is an array for storing the unique arrangements.
     arsurvivors = []
+    len_col = len(col)
 
     maxpossible = _ahash(largest_arrow,dim)
     from phenum.msg import verbosity
@@ -131,7 +154,7 @@ def add_arrows(col,agroup,dim, translations, accept=None,nested=False,num_wanted
                 l = 0
                 #this loop constucts the coloring with the correct arrows
                 #for the permutation group to be applied to.
-                for z in range(len(col)):
+                for z in range(len_col):
                     if col[z][0] < 0:
                         temp_coloring_with_arroms[z] = list(col[z])
                     elif col[z][0] >= 0:
@@ -166,7 +189,7 @@ def add_arrows(col,agroup,dim, translations, accept=None,nested=False,num_wanted
                 #added to the list of unique configurations.
                 coloring_with_arrows = [0]*len(col)
                 i = 0
-                for z in range(len(col)):
+                for z in range(len_col):
                     coloring_with_arrows[z] = list(col[z])
                     if col[z][0] >= 0:
                         coloring_with_arrows[z][0] = arrow_config[i]
@@ -187,13 +210,12 @@ def add_arrows(col,agroup,dim, translations, accept=None,nested=False,num_wanted
                             if orig_sites == perm_sites and perm_arrows == arrow_config:
                                 unique = False
                                 break
-                if accept is None or random() < accept:
-                    if unique == True:
-                        arsurvivors.append(coloring_with_arrows)
-                        if verbosity is not None and verbosity >= 1 and not nested: #pragma: no cover
-                            pbar.update(1)
-                        if num_wanted is not None and len(arsurvivors) == num_wanted:
-                            break
+                if (accept is None or random() < accept) and unique == True:
+                    arsurvivors.append(coloring_with_arrows)
+                    if verbosity is not None and verbosity >= 1 and not nested: #pragma: no cover
+                        pbar.update(1)
+                    if num_wanted is not None and len(arsurvivors) == num_wanted:
+                        break
             orighash += 1
     else:
         from random import randrange
@@ -215,7 +237,7 @@ def add_arrows(col,agroup,dim, translations, accept=None,nested=False,num_wanted
                 l = 0
                 #this loop constucts the coloring with the correct arrows
                 #for the permutation group to be applied to.
-                for z in range(len(col)):
+                for z in range(len_col):
                     if col[z][0] < 0:
                         temp_coloring_with_arroms[z] = list(col[z])
                     elif col[z][0] >= 0:
@@ -251,7 +273,7 @@ def add_arrows(col,agroup,dim, translations, accept=None,nested=False,num_wanted
                 #added to the list of unique configurations.
                 coloring_with_arrows = [0]*len(col)
                 i = 0
-                for z in range(len(col)):
+                for z in range(len_col):
                     coloring_with_arrows[z] = list(col[z])
                     if col[z][0] >= 0:
                         coloring_with_arrows[z][0] = arrow_config[i]
@@ -266,10 +288,9 @@ def add_arrows(col,agroup,dim, translations, accept=None,nested=False,num_wanted
                         perm_sites = [orig_sites[i] for i in action]
                         perm_arrows = [permutation[site] for site in arrow_config
                                          if site >= 0]
-                        if orig_sites == perm_sites and perm_arrows == arrow_config:
-                            if action != list(range(len(action))) and permutation != list(range(len(permutation))): #pragma: no cover
-                                #This happens rarely and so it's really hard to access in tests.
-                                unique == False
+                        if orig_sites == perm_sites and perm_arrows == arrow_config and action != list(range(len(action))) and permutation != list(range(len(permutation))): #pragma: no cover
+                            #This happens rarely and so it's really hard to access in tests.
+                            unique == False
 
                 if unique == True:
                     arsurvivors.append(coloring_with_arrows)
@@ -291,16 +312,21 @@ def arrow_concs(cList,aconcs):
     labeling for the system. It then sorts them to be in the correct
     order for the code.
 
-    :arg cListr: an integer array the concentration of the colors 
-    :arg aconcs: an array of floats of the fractional number of arrows
-    for each color
+    Args:
+        cListr (list): An integer array the concentration of the colors.
+
+        aconcs (list): An array of floats of the fractional number of arrows
+          for each color
+
+    Returns:
+        decoration_w_arrows (list): The labeling of both colors and arrows.
     """
     aconcs = [int(cList[i]*aconcs[i]) for i in range(len(cList))]
     
     decoration_w_arrows = []
     labels = range(1,len(cList)+1)
-    for i in range(len(aconcs)):
-        na = aconcs[i]
+    for i, ac_i in enumerate(aconcs):
+        na = ac_i
         ns = cList[i]
         if ns >= na:
             while na > 0:
@@ -325,7 +351,11 @@ def get_arrow_concs(params):
     """If the concentrations are being restricted then find the correct 
     arrow for each species included.
 
-    :arg params: the lattice.in parameters.
+    Args:
+        params (dict): The parameters read in from lattice.in.
+
+    Returns:
+        a_concs (list): The arrow concentration for each species.
     """
     a_concs = []
     if params["is_crestricted"]:
@@ -343,14 +373,23 @@ def enum_sys(groupfile, concs, a_concs, num_wanted, HNF, params, supers, accept=
     """Enumerates a random subset of the unique structures that have the shape
     defined by the symmetry group and the specified concentration.
 
-    :arg groupfile: path to the file containing the symmetry group.
-    :arg concs: list of integer concentrations for each species.
-    :arg a_concs: list of integer *arrow* concentrations for each species.
-    :arg num_wanted: the number of structures to pick randomly from the enumerated
-      list.
-    :args HNF: the HNF for the system we're currently enumerating
-    :args params: the dictionary of parameters read in from lattice.in
-    :args supers: True if superperiodic structures are to be kept.
+    Args:
+        groupfile (str): Path to the file containing the symmetry group.
+        concs (list): Integer array of the concentrations for each species.
+        a_concs (list): Integer array of the arrow concentrations for each species.
+        HNF (list): The HNF matrix for the system we're currently enumerating
+        params (dict): The dictionary of parameters read in from lattice.in
+        supers (bool): True if superperiodic structures are to be kept.
+        accept (float, optional): The acceptance rate for this enumeration.
+
+        num_wanted (int): The number of structures to pick randomly from the enumerated
+          list.
+
+    Returns:
+        configs (list): A list of the unique labelings in this system.
+
+    Raises:
+        ValueError: if the number of configurations found doesn't match the number requested.
     """
 
     from phenum.grouptheory import get_full_HNF, get_sym_group
@@ -362,7 +401,7 @@ def enum_sys(groupfile, concs, a_concs, num_wanted, HNF, params, supers, accept=
     decorations = arrow_concs(concs, a_concs)
     # get the symmetry group for this HNF. Assumes the group can be
     # found in the file labeled by (this_HNF)_sym_group.out
-    if groupfile == None:
+    if groupfile is  None:
         if sum(a_concs) == 0:
             arrows = False
         else:
@@ -371,9 +410,8 @@ def enum_sys(groupfile, concs, a_concs, num_wanted, HNF, params, supers, accept=
         sym_g = get_sym_group(params["lat_vecs"],params["basis_vecs"],
                               get_full_HNF(HNF),3,arrows=arrows)
 
-        agroup = []
-        for i in range(len(sym_g.perm.site_perm)):
-            agroup.append([sym_g.perm.site_perm[i],sym_g.perm.arrow_perm[i]])
+        agroup = [list(sym_p) for sym_p in zip(sym_g.perm.site_perm,sym_g.perm.arrow_perm)]
+        
     else:
         group = io.read_group(groupfile)
         # get symgroup from HNF and lat_vecs
@@ -449,7 +487,7 @@ def enum_sys(groupfile, concs, a_concs, num_wanted, HNF, params, supers, accept=
 
     if len(configs) != num_wanted and not super: #pragma: no cover
         #I've never been able to trigger this error.
-        raise ValueError("Warning the enumeration code returned {} structures when {} "
+        raise ValueError("Warning the enumeration code returned {0} structures when {1} "
                          "were asked for. This should not happen. Please submit a bug "
                          "report on https://github.com/wsmorgan/phonon-enumeration "
                          "including your input files so that this error may be "
@@ -465,8 +503,12 @@ def _ahash(coloring,dim):
     arrows. This number is used to compare the order that the arrows
     occure in.
 
-    :arg coloring: is a 2D integer array of the full coloring with colors and arrows	    
-    :arg dim: the number of directions the arrows can point
+    Args:
+        coloring (list): A 2D integer array of the full coloring with colors and arrows.
+        dim (int): The number of directions the arrows can point.
+
+    Returns:
+        hash (int): The hash for the arrow configuration.
     """
     return sum([coloring[i]*dim**i for i in range(len(coloring))])
 
@@ -476,9 +518,13 @@ def _ahash(coloring,dim):
 def _ainvhash(anum,num_of_arrows,dim):
     """Turns an arrow hash back into the array of arrow directions.
 
-    :arg anum: the arrow hash number
-    :arg num_of_arrows: the number of arrows in the system
-    :arg dim: the number of directions the arrows can point
+    Args:
+        anum (int): The arrow hash number.
+        num_of_arrows (int): The number of arrows in the system.
+        dim (int): The number of directions the arrows can point.
+
+    Returns:
+        arrows (list): The arrow labeling.
     """
     arrows = [0]*num_of_arrows
     for i in range(num_of_arrows):

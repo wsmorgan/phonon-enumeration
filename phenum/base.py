@@ -15,10 +15,11 @@ def deprecated(func):
 def exhandler(function, parser):
     """If -examples was specified in 'args', the specified function
     is called and the application exits.
-
-    :arg function: the function that prints the examples.
-    :arg parser: the initialized instance of the parser that has the
-      additional, script-specific parameters.
+    
+    Args:
+        function: the function that prints the examples.
+        parser: the initialized instance of the parser that has the
+          additional, script-specific parameters.
     """
     args = vars(bparser.parse_known_args()[0])
     if args["examples"]:

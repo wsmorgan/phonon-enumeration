@@ -4,17 +4,49 @@ def map_enumStr_to_real_space(system_data,structure_data,minkowskiReduce):
     """Maps an enumerated structure back to real space. Returns a
     dictionary containing the real space data.
 
-    :arg system_data: a dictionary containing all the information about the sysytem.
-    :arg sturture_data: a dictionary containing the information for this structure.
-    :arg minkowskiReduce: logical indicating if basis should be reduced.
+    Args:
+        system_data (dict): A dictionary containing all the information about the sysytem with
+          keys:
+          "plattice": The parrent lattice vectors.
+          "dvecs": The atomic basis vectors.
+          "title": The name of the system.
+          "bulksurf": 'bulk' or 'surface'.
+          "nD": The number of atomic basis vectors.
+          "k": The number of atomic species.
+          "eps": Finite precision tolerance.
 
+        sturture_data (dict): A dictionary containing the information for this structure with
+          keys:
+          "strN": The structure number.
+          "hnfN": The HNFs number.
+          "hnf_degen": The HNFs degeneracy.
+          "lab_degen": The label degeneracy.
+          "tot_degen": The total degeneracy for the structure.
+          "sizeN": The system size.
+          "n": Number of structure within this size.
+          "pgOps": The number of point group operations.
+          "diag": The diagonal of the SNF.
+          "HNF": The HNF matrix.
+          "L": The left transform matrix.
+          "labeling": The atomic labeling for the structure.
+          "directions": The arrow labeling for the structure.
+
+        minkowskiReduce (bool): Logical indicating if basis should be reduced.
+
+    Returns:
+        space_data (dict): A dictionary of the structure mapped to real space with keys:
+          "sLV": The super lattice vectors as rows in a matrix.
+          "aBas": The attomic basis vectors.
+          "spin": A list of the occupanices.
+          "gIndx": The integer group index.
+          "x": A list of the concentrations of each atom type.
     """
     # print("in system_data",system_data)
     # print("in structure_data",structure_data)
     # print("in minkReduce",minkowskiReduce)
     from numpy import matmul, allclose, matrix, array
     
-    nD = system_data["nD"]
+    n_d = system_data["nD"]
     n = structure_data["n"]
 
     # DEFINE the non-zero elements of the HNF matrix
@@ -25,25 +57,25 @@ def map_enumStr_to_real_space(system_data,structure_data,minkowskiReduce):
     e = structure_data["HNF"][2][1]
     f = structure_data["HNF"][2][2]
 
-    pBas = system_data["dvecs"]
+    p_bas = system_data["dvecs"]
     S = structure_data["diag"]
-    pLV = system_data["plattice"]
+    plv = system_data["plattice"]
     HNF = structure_data["HNF"]
     eps = system_data["eps"]
     L = structure_data["L"]
     # Compute the superlattice vectors
-    sLV = matmul(pLV,HNF).tolist()
+    slv = matmul(plv,HNF).tolist()
     # Find the coordinates of the basis atoms
-    gIndx = []
+    g_indx = []
 
     if minkowskiReduce:
-        sLV = list(map(list,zip(*_minkowski_reduce_basis(list(map(list,zip(*sLV))),eps))))
+        slv = list(map(list,zip(*_minkowski_reduce_basis(list(map(list,zip(*slv))),eps))))
         
     # Find each atomic position from the g-space information
-    aBas = []
+    a_bas = []
     ic = 0  # Keep track of the number of points mapped so far
     # Loop over the number at sites/parent cell (the d set)it
-    for iD in range(0, nD):  
+    for iD in range(0, n_d):  
         # For the limits on the loops, see the "interior_points.pdf" write-up
         for z1 in range(a):
             for z2 in range(int((b*z1)/a), int(c+(b*z1)/a)):
@@ -54,9 +86,9 @@ def map_enumStr_to_real_space(system_data,structure_data,minkowskiReduce):
                     #     err("Problem with basis atoms in map_enpStr_to_real_space...")
                     #     exit()
                     # Atomic basis vector in Cartesian coordinates
-                    temp = matmul(pLV,[z1,z2,z3]).tolist()
-                    temp2 = [temp[i]+pBas[iD][i] for i in range(len(pBas[iD]))]
-                    aBas.append(temp2)
+                    temp = matmul(plv,[z1,z2,z3]).tolist()
+                    temp2 = [temp[i]+p_bas[iD][i] for i in range(len(p_bas[iD]))]
+                    a_bas.append(temp2)
                     # Map position into the group
                     greal = matmul(L,[float(z1),float(z2),float(z3)]).tolist() 
                     g = [int(i) for i in greal] # Convert the g-vector from real to integer
@@ -66,12 +98,12 @@ def map_enumStr_to_real_space(system_data,structure_data,minkowskiReduce):
                         exit()
                     # Bring the g-vector back into the first tile
                     g = [g[i]%S[i] for i in range(len(S))] 
-                    # gIndx is the index in the configuration string that
+                    # g_indx is the index in the configuration string that
                     # tells us which atom type is used at this position
 
-                    gIndx.append((iD)*S[0]*S[1]*S[2]+g[0]*S[1]*S[2]+g[1]*S[2]+g[2])
+                    g_indx.append((iD)*S[0]*S[1]*S[2]+g[0]*S[1]*S[2]+g[1]*S[2]+g[2])
 
-    if ic != n*nD: #pragma: no cover
+    if ic != n*n_d: #pragma: no cover
         from .msg import err
         err("ERROR: map_enumStr_to_real_space: Didn't find the correct # of basis atoms")
         exit()
@@ -84,8 +116,8 @@ def map_enumStr_to_real_space(system_data,structure_data,minkowskiReduce):
     labeling = structure_data["labeling"]
     spin = []
     if k % 2 == 0:
-        for iAt in range(0, n*nD):
-            i = int(labeling[gIndx[iAt]])
+        for iAt in range(0, n*n_d):
+            i = int(labeling[g_indx[iAt]])
             digit = i-k//2 # convert 0..k-1 label to spin variable -k/2..k/2
             x[i] += 1  # Keep track of the concentration of each atom type
             if digit < 0:
@@ -93,20 +125,30 @@ def map_enumStr_to_real_space(system_data,structure_data,minkowskiReduce):
             else:
                 spin.append(digit+1) # skip 0 as a spin if k is even
     else:
-        for iAt in range(0, n*nD):
-            i = int(labeling[gIndx[iAt]])
+        for iAt in range(0, n*n_d):
+            i = int(labeling[g_indx[iAt]])
             spin.append(i-k//2)
             x[i] += 1 # Keep track of the concentration of each atom type
 
-    x = [i/float(n*nD) for i in x]
+    x = [i/float(n*n_d) for i in x]
 
-    space_data = {"sLV": list(map(list,zip(*sLV))), "aBas": aBas, "spin": spin, "gIndx": gIndx, "x": x}
-    # print("out space_data",space_data)
+    space_data = {"sLV": list(map(list,zip(*slv))), "aBas": a_bas, "spin": spin, "gIndx": g_indx, "x": x}
+
     return space_data
 
-
 def _minkowski_reduce_basis(IN,eps):
-    """Performs a minkowski reduction on the basis atoms."""
+    """Performs a minkowski reduction on the basis atoms.
+
+    Args:
+        IN (list): The input basis as rows of a matrix.
+        eps (float): Floating point tolerance.
+
+    Returns:
+        OUT (list): The reduced basis vectors as rows of a matrix.
+
+    Raises:
+        ValueError: if the input vectors are linearly dependent.
+    """
 
     from numpy import allclose, linalg, array, matrix
     from copy import deepcopy
@@ -156,8 +198,12 @@ def _minkowski_conditions_check(basis,eps):
     """This function checks the minkowski conditions for a 3D lattice
     basis.
 
-    :arg basis: The atomic basis vectors
-    :arg eps: finitie precision tolerance
+    Args:
+        basis (list): The atomic basis vectors.
+        eps (float): Finitie precision tolerance.
+
+    Returns:
+        minkowski_check (bool): True if minkowski conditions are met.
     """
     from numpy import linalg
     from .msg import err
@@ -226,16 +272,22 @@ def _reduce_C_in_ABC(A,B,C,eps):
     - VI : algorithmic number theory, 2004, vol. 3076, pp. 338-357
     ISBN 3-540-22156-5
 
-    :arg A: a vector
-    :arg B: a vector
-    :arg C: a vector
-    :arg eps: finite precision tolerance
+    Args:
+        A (list): The first vector.
+        B (list): The second vector.
+        C (list): The vector to be reduced.
+        eps (float): Finite precision tolerance.
+
+    Returns:
+        A (list): The vector A.
+        B (list): The vector B.
+        C (list): The reduced vector C.
     """
     from numpy import cross, linalg, dot, allclose, matmul, array
     from copy import deepcopy
     from math import floor
     
-    oldABC = deepcopy([A,B,C])
+    old_abc = deepcopy([A,B,C])
     
     # Use Gaussian reduction to reduce the A,B 2D basis so that it is
     # itself Minkowski reduced. If this is done, then the closest
@@ -246,53 +298,53 @@ def _reduce_C_in_ABC(A,B,C,eps):
 
     # First thing to do is find the (real, not lattice) point in the
     # affine plane A,B + C that is nearest the origin. Call this T.
-    cpdAB = [i/linalg.norm(cross(A,B)) for i in cross(A,B)]
-    T = [C[i] - cpdAB[i]*dot(C,cpdAB) for i in range(3)]
+    cpd_AB = [i/linalg.norm(cross(A,B)) for i in cross(A,B)]
+    T = [C[i] - cpd_AB[i]*dot(C,cpd_AB) for i in range(3)]
 
     if not allclose(dot(T,cross(A,B)),0,atol=eps,rtol=eps): #pragma: no cover
         from .msg import err
-        err("{} Projection of C into A,B plane failed".format(str(dot(T,cross(A,B)))))
+        err("{0} Projection of C into A,B plane failed".format(str(dot(T,cross(A,B)))))
 
     # Now find the four points of the A,B lattice, in the affine
     # plane, that enclose the point T
-    ABC = [A,B,C]
-    ABCinv = linalg.inv(ABC)
+    abc = [A,B,C]
+    abcinv = linalg.inv(abc)
 
-    LC = [int(floor(i +eps)) for i in matmul(T,ABCinv).tolist()]
+    LC = [int(floor(i +eps)) for i in matmul(T,abcinv).tolist()]
     # Compute the distance from T to each of the four corners of the cell and pick
     # the one that is the closest.
     corners = array([[0,0,0],[1,0,0],[0,1,0],[1,1,0]])
     dist = []
     for i in range(0,4):
         temp1 = corners[i] + array(LC)
-        temp2 = array(T) -matmul((corners[i] + array(LC)),ABC)
-        dist.append(linalg.norm(array(T) -matmul((corners[i] + array(LC)),ABC)))
+        temp2 = array(T) -matmul((corners[i] + array(LC)),abc)
+        dist.append(linalg.norm(array(T) -matmul((corners[i] + array(LC)),abc)))
 
     idx = dist.index(min(dist))
 
     if idx == 0:
         temp1 = [corners[0][i] + LC[i] for i in range(3)]
-        temp2 = matmul(temp1,ABC).tolist()
+        temp2 = matmul(temp1,abc).tolist()
         C = [C[i] - temp2[i] for i in range(len(C))]
     elif idx == 1:
         temp1 = [corners[1][i] + LC[i] for i in range(3)]
-        temp2 = matmul(temp1,ABC).tolist()
+        temp2 = matmul(temp1,abc).tolist()
         C = [C[i] - temp2[i] for i in range(len(C))]
     elif idx == 2:
         temp1 = [corners[2][i] + LC[i] for i in range(3)]
-        temp2 = matmul(temp1,ABC).tolist()
+        temp2 = matmul(temp1,abc).tolist()
         C = [C[i] - temp2[i] for i in range(len(C))]
     elif idx == 3:
         temp1 = [corners[3][i] + LC[i] for i in range(3)]
-        temp2 = matmul(temp1,ABC).tolist()
+        temp2 = matmul(temp1,abc).tolist()
         C = [C[i] - temp2[i] for i in range(len(C))]
     else: #pragma: no cover
         from .msg import err 
-        err("Case failed in reduce_C_in_ABC Lattice coordinates in the A,B plane: {}".format(' '.join([str(i) for i in LC])))
+        err("Case failed in reduce_C_in_ABC Lattice coordinates in the A,B plane: {0}".format(' '.join([str(i) for i in LC])))
 
-    ABC = [A,B,C]
-    ABCinv = linalg.inv(ABC)
-    temp = matmul(list(map(list,zip(*ABCinv))),list(map(list,zip(*oldABC)))).tolist()
+    abc = [A,B,C]
+    abcinv = linalg.inv(abc)
+    temp = matmul(list(map(list,zip(*abcinv))),list(map(list,zip(*old_abc)))).tolist()
     for i in range(3):
         for j in range(3):
             if abs(temp[i][j] - int(round(temp[i][j]))) > eps: #pragma: no cover
@@ -314,9 +366,14 @@ def _gaussian_reduce_two_vectors(U,V,eps):
     pp. 338-357 ISBN 3-540-22156-5. Fixes made Apr 2012 GLWH (not sure
     if they made a practical difference though)
 
-    :arg U: a vector
-    :arg V: a vector
-    :arg eps: finite precision tolerance
+    Args:
+        U (list): A vector.
+        V (list): Another vector.
+        eps (float): Finite precision tolerance.
+
+    Returns:
+        U (list): The reduced vector U.
+        V (list): The reduced vector V.
     """
 
     from numpy.linalg import norm
@@ -354,18 +411,21 @@ def cartesian2direct(sLV,aBas, eps):
     vector in Cartesian coordinates and converts them to direct
     ("lattice") coordinates.
 
-    :arg sLV: Superlattice vectors (Cartesian coordinates)
-    :arg aBas: Atomic positions (cartesian coordinates first, then direct)
-    :arg eps: Finite precision tolerance.
+    Args:
+        sLV (list): The superlattice vectors in cartesian coordinates as rows of a matrix.
+        aBas (list): Atomic basis vectors in cartesian coordinates.
+        eps (float): Finite precision tolerance.
 
+    Returns:
+        aBas (list): The atomic basis vectors in direct coordinates.
     """
     from numpy import linalg, matmul, array
     
-    nAt = len(aBas)
-    sLVinv = linalg.inv(sLV)
+    n_at = len(aBas)
+    slv_inv = linalg.inv(sLV)
     # Convert aBas to DIRECT COORDINATES
-    for iAt in range(nAt):
-        aBas[iAt] = matmul(aBas[iAt],sLVinv) # Put positions into
+    for iAt in range(n_at):
+        aBas[iAt] = matmul(aBas[iAt],slv_inv) # Put positions into
         # "direct" coordinates This keeps the atomic coordinates inside
         # the first unit cell--- not necessary but aesthetically
         # pleasing.

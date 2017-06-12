@@ -5,10 +5,15 @@ def _coefficients(number_of_each_color,number_of_slots):
     """This method generates the radix numbers, or total number of
     combinations of each color, for a given aray.
 
-    :arg number_of_each_color: is an integer array integer indicating the
-    number of times each color is found in the array.
-    :arg number_of_slots: an integer equal to the sum of the
-    number_of_each_color array.
+    Args:
+        number_of_each_color (list): An integer array indicating the
+          number of times each color is found in the array.
+    
+        number_of_slots (int): An integer equal to the sum of the
+          number_of_each_color array.
+
+    Returns:
+        coe (list): The maximum radix number for the system.
     """
     from .numerics import binomial_coefficient
 
@@ -22,13 +27,16 @@ def _coefficients(number_of_each_color,number_of_slots):
 
 def _hash(listi,color):
     """Generates a hash for each color in the ladeling returning a array
-    of the hash for each color.
-    
-    :arg listi: An integer array that contains the labeling.
-    :arg color: An integer array of the concentrations of the
-    colors.
+    of the hash for each color. For details on this method see: 
+    http://msg.byu.edu/papers/enum3.pdf
 
-    For details on this method see: http://msg.byu.edu/papers/enum3.pdf
+    Args:
+        listi (list): An integer array that contains the labeling.
+        color (list): An integer array of the concentrations of the
+          colors.
+
+    Returns:
+        y (int): The hash number for this labeling.
     """
     from .numerics import binomial_coefficient
 
@@ -49,14 +57,16 @@ def _hash(listi,color):
 
 def _invhash(branch,colors,n):
     """Turns a hash array into a labeling, i.e., undoes the hash()
-    subroutine.
-    
-    :arg branch: an integer list of the radix number/hash array
-    :arg colors: an integer array of the concentration of the colors
-    :arg n: the length of the labeling array, i.e., the
-    number of sites in the system
+    subroutine. For the details on this method see: http://msg.byu.edu/papers/enum3.pdf
 
-    For the details on this method see: http://msg.byu.edu/papers/enum3.pdf
+    Args:
+        branch (list): An integer list of the radix number/hash array
+        colors (list): An integer array of the concentration of the colors
+        n (int): The length of the labeling array, i.e., the
+          number of sites in the system
+
+    Returns:
+        new (list): The labeling for this hash number.    
     """
 
     from .numerics import binomial_coefficient
@@ -88,50 +98,64 @@ def _invhash(branch,colors,n):
 def _color_list(col):
     """Finds the unique colors in a labeling.
 
-    :arg col: an integer array of the labeling.
+    Args:
+        col (list): An integer array of the labeling.
+
+    Returns:
+        colors (list): The unique colors present in the labeling.
     """
     colors=[]
 
     tcol=col[:]
-    for i in range(len(tcol)):
+    len_tcol = len(tcol)
+    for i in range(len_tcol):
         if tcol[i] != 0:
             colors.append(tcol[i])
-            for j in range(len(tcol)):
+            for j in range(len_tcol):
                 if tcol[j] == tcol[i] and i != j:
                     tcol[j] =0
             tcol[i] =0
     return(colors)
 
-
-
 def _perm(casei,colors,length,index,gen,stab,order,ast):
     """This method applies a cyclical permutation to an array to determine
     if it is unique. 
-		
-    :arg casei: the integer array hash for the current branch of
-    the tree that will be permuted
-    :arg colors: an integer array indicates the concentration of
-    each color in the system
-    :arg ast: the stabalizer for the final configuration that will
-    be passed to the arrow permutation routine.
-    :arg length: the total number of sites (colors) in the system
-    :arg index: an integer that indicates which level of the tree
-    we are in, i.e., which color is being added to the tree
-    :arg gen: a 3D integer array that contains the permutation group
-    :arg stab: a 3D integer array of the stabilizers for
-    the previous level of this branch in the tree
-    :arg order: is an integer array that keeps track of which
-    configurations of the first level of the tree have already
-    been seen
 
-    The routin outputs the following:
+    Args:
+        casei (list): The integer array hash for the current branch of
+          the tree that will be permuted.
 
-    unique: an integer that indicates if the configuration is
-    unique, a returned value of 0 is a unique configuration
-    anything else is not
-    st: a 2D integer array that stores the stabilizers for this
-    configuration		   
-    order and ast
+        colors (list): An integer array indicates the concentration of
+          each color in the system.
+
+        ast (list): The stabalizer group for the final configuration that will
+          be passed to the arrow permutation routine.
+
+        length (int): The total number of sites (colors) in the system.
+        index (int): An integer that indicates which level of the tree
+          we are in, i.e., which color is being added to the tree.
+
+        gen (list): A 3D integer array that contains the permutation group.
+        stab (list): A 3D integer array of the stabilizers for
+          the previous level of this branch in the tree
+
+        order (list): Is an integer array that keeps track of which
+          configurations of the first level of the tree have already
+          been seen
+
+    Returns:
+        unique (int): An integer that indicates if the configuration is
+          unique, a returned value of 0 is a unique configuration
+          anything else is not.
+
+        st (list): A 2D integer array that stores the stabilizers for this
+          configuration.
+
+        order (list): A list that keeps track of which branches of the base
+          layer have been visited.
+    
+        ast (list): A 2D integer array that stores the stabilizer for the final
+          run if arrows are present.
     """
 		
     #initialize unique to be 0 and arrays to be empty
@@ -273,27 +297,30 @@ def _perm(casei,colors,length,index,gen,stab,order,ast):
 def brancher(concs,group,colors_w_arrows, dim, supers, cellsize, total=0, subset=None, accept=None,seed=None):
     """This routine navigates the tree and saves the unique configurations
     to an array survivors.
-		
-    :arg concs: the concentrations of the colors or atoms
-    :arg group: the symmetry group for the system, including the
-    effect on the arrows (displacement directions)
-    :arg colors_w_arrows: an integer 2D array that indiciates
-    which atoms are being displaced, i.e., where the arrows are.
-    :arg dim: the number of directions the arrows can point
-    :arg total: the total number predicted by polya.
-    :arg subset: an integer array of the subset of unique
-    arrangements wanted
-    :arg accept: for large enumerations, how often to accept configurations.
-    :arg supers: Logical that indicates if super periodic structures are to be kept.
-    :arg cellsize: The number of cells in the system 
 
-    The method returns the list of unique configurations and the
-    number of stabilizers for the last level of the tree.
+    Args:
+        concs (list): The concentrations of the colors or atoms.
+        dim (int): The number of directions the arrows can point.
+        supers (bool): True if superperiodic structures are to be kept.
+        cellsize (int): The number of cells in the system.
+        total (int, optional): The total number predicted by polya. Default is 0.
 
-    survivors: is the 3D array of the unique arrangements of
-    colors and arrows
-    stob_len: the number of stabilizers for a given unique
-    configuration
+        group (list): The symmetry group for the system, including the
+          effect on the arrows (displacement directions).
+
+        colors_w_arrows (list): An integer 2D array that indiciates
+          which atoms are being displaced, i.e., where the arrows are.
+
+        subset (list, optional): An integer array of the subset of unique
+          arrangements wanted. Default is None.
+    
+        accept (float, optional): for large enumerations, how often to accept configurations.
+          Default is None.
+
+        seed (int, optaion): The random seed. Default is None.
+
+    Returns:
+        survivors (list): A 3D array of the unique arrangements of colors and arrows.
     """
 
     from .phonons import how_many_arrows, add_arrows
@@ -415,8 +442,8 @@ def brancher(concs,group,colors_w_arrows, dim, supers, cellsize, total=0, subset
 		    # make a coloring with arrows to be passed to the
 		    # arrow permutiation code by adding arrows back
 		    # into the array where needed.
-                    for z in range(len(brancht)):
-                        brancht[z] = deepcopy(colors[brancht[z] -1])
+                    for z, leaf_z in enumerate(brancht):
+                        brancht[z] = deepcopy(colors[leaf_z -1])
 		    # add_arrows from the phonon_brancher code returns
 		    # the unique configurations with the unique arrow
 		    # arrangements
@@ -541,19 +568,20 @@ def guess_and_check_brancher(concs, group, colors_w_arrows, dim, supers, cellsiz
     then verify that none of your selected configurations are
     equivalent. 
 
-    :arg concs: the concentrations of the colors or atoms
-    :arg group: the symmetry group for the system, including the
-    effect on the arrows (displacement directions)
-    :arg colors_w_arrows: an integer 2D array that indiciates
-    which atoms are being displaced, i.e., where the arrows are.
-    :arg dim: the number of directions the arrows can point
-    :arg supers: Logical that indicates if super periodic structures are to be kept.
-    :arg cellsize: The number of cells in the system 
+    Args:
+        concs (list): An integer arrray of the concentrations of the colors or atoms.
+        dim (int): The number of directions the arrows can point.
+        supers (bool): Logical that indicates if super periodic structures are to be kept.
+        cellsize (int): The number of cells in the system.
 
-    The method returns the list of unique configurations.
+        group (list): The symmetry group for the system, including the
+          effect on the arrows (displacement directions).
 
-    survivors: is the 3D array of the unique arrangements of
-    colors and arrows
+        colors_w_arrows (list): An integer 2D array that indiciates
+          which atoms are being displaced, i.e., where the arrows are.
+
+    Returns:
+        survivors (list): A 3D array of the unique arrangements of colors and arrows.
     """
 
     from .phonons import how_many_arrows, add_arrows
@@ -587,13 +615,13 @@ def guess_and_check_brancher(concs, group, colors_w_arrows, dim, supers, cellsiz
     while len(survivors) < num_wanted:
         candidate = []
         # pick a random configuration to check against.
-        for i in range(len(C)):
-            candidate.append(randint(0,C[i]-1))
+        for c_i in C:
+            candidate.append(randint(0,c_i-1))
 
         while candidate in visited:#pragma: no cover
             #This happens rarely and so it's really hard to access in tests.
-            for i in range(len(C)):
-                candidate.append(randint(0,C[i]-1))
+            for c_i in C:
+                candidate.append(randint(0,c_i-1))
 
         visited.append(candidate)
         unique = True
@@ -634,8 +662,8 @@ def guess_and_check_brancher(concs, group, colors_w_arrows, dim, supers, cellsiz
                 # We need to make a copy of the branch with arrows on
                 # it to pass to the add_arrows code.
                 t_config = list(_invhash(candidate,concs,sum(concs)))
-                for con in range(len(t_config)):
-                    t_config[con] = deepcopy(colors[t_config[con] -1])
+                for con, t_con in enumerate(t_config):
+                    t_config[con] = deepcopy(colors[t_con -1])
                     
                 arsurvivors = add_arrows(t_config, group, dim, group[0:int(cellsize)], nested=True, num_wanted = num_wanted, supers = supers, small = True)
 

@@ -14,9 +14,11 @@ from mpl_toolkits.mplot3d import Axes3D
 def HNF_shapes(enum,lattice,show,testmode=False):
     """Plots the shape of each HNF.
 
-    :arg enum: The enum.in style input file.
-    :arg lattice: The lattice.in style input file.
-    :arg show: If true each HNF is plotted in an interactive window.
+    Args:
+        enum (str): The enum.in style input file.
+        lattice (str): The lattice.in style input file.
+        show (bool): If true each HNF is plotted in an interactive window.\
+        testmode (bool, optional): True if unittests are running.
     """
     from phenum.io_utils import read_lattice
     from phenum.grouptheory import SmithNormalForm, get_full_HNF
@@ -39,10 +41,10 @@ def HNF_shapes(enum,lattice,show,testmode=False):
                 pass
             else:
                 structure = {}
-                HNF_name = [int(i) for i in line.strip().split()[:-1]]
-                if len(HNF_name) != 6:
-                    HNF_name = HNF_name[0:6]
-                structure["HNF"] = get_full_HNF(HNF_name)
+                hnf_name = [int(i) for i in line.strip().split()[:-1]]
+                if len(hnf_name) != 6:
+                    hnf_name = hnf_name[0:6]
+                structure["HNF"] = get_full_HNF(hnf_name)
                 (SNF,L,R) = SmithNormalForm(structure["HNF"])
                 structure["diag"] = [SNF[0][0],SNF[1][1],SNF[2][2]]
                 structure["L"] = L
@@ -97,15 +99,15 @@ def HNF_shapes(enum,lattice,show,testmode=False):
 
                 max_range = array([array(xf).max()-array(xf).min(),array(yf).max()-array(yf).min(),
                                    array(zf).max()-array(zf).min()]).max()
-                Xb = 0.5*max_range*mgrid[-1:2:2,-1:2:2,-1:2:2][0].flatten() + 0.5*(array(xf).max()+array(xf).min())
-                Yb = 0.5*max_range*mgrid[-1:2:2,-1:2:2,-1:2:2][0].flatten() + 0.5*(array(yf).max()+array(yf).min())
-                Zb = 0.5*max_range*mgrid[-1:2:2,-1:2:2,-1:2:2][0].flatten() + 0.5*(array(zf).max()+array(zf).min())
+                xb = 0.5*max_range*mgrid[-1:2:2,-1:2:2,-1:2:2][0].flatten() + 0.5*(array(xf).max()+array(xf).min())
+                yb = 0.5*max_range*mgrid[-1:2:2,-1:2:2,-1:2:2][0].flatten() + 0.5*(array(yf).max()+array(yf).min())
+                zb = 0.5*max_range*mgrid[-1:2:2,-1:2:2,-1:2:2][0].flatten() + 0.5*(array(zf).max()+array(zf).min())
 
-                for xb, yb, zb in zip(Xb,Yb,Zb):
+                for xb, yb, zb in zip(xb,yb,zb):
                     ax.plot([xb],[yb],[zb],'w')
 
                 if not testmode: # pragma: no cover
-                    fig.savefig("{}.pdf".format("".join([str(i) for i in HNF_name])))
+                    fig.savefig("{}.pdf".format("".join([str(i) for i in hnf_name])))
                 if show and not testmode: #pragma: no cover
                     plt.show()
                 else:
@@ -114,9 +116,11 @@ def HNF_shapes(enum,lattice,show,testmode=False):
 def HNF_atoms(enum,lattice,show,testmode=False):
     """Plots the atomic positions of the atoms in the cells.
 
-    :arg enum: The enum.in style input file.
-    :arg lattice: The lattice.in style input file.
-    :arg show: If true each HNF is plotted in an interactive window.
+    Args:
+        enum (str): The enum.in style input file.
+        lattice (str): The lattice.in style input file.
+        show (bool): If true each HNF is plotted in an interactive window.
+        testmode (bool, optional): True if unit tests are being run.
     """
     from phenum.io_utils import read_lattice
     from phenum.grouptheory import SmithNormalForm, get_full_HNF
@@ -139,10 +143,10 @@ def HNF_atoms(enum,lattice,show,testmode=False):
                 pass
             else:
                 structure = {}
-                HNF_name = [int(i) for i in line.strip().split()[:-1]]
-                if len(HNF_name) != 6:
-                    HNF_name = HNF_name[0:6]
-                structure["HNF"] = get_full_HNF(HNF_name)
+                hnf_name = [int(i) for i in line.strip().split()[:-1]]
+                if len(hnf_name) != 6:
+                    hnf_name = hnf_name[0:6]
+                structure["HNF"] = get_full_HNF(hnf_name)
                 (SNF,L,R) = SmithNormalForm(structure["HNF"])
                 structure["diag"] = [SNF[0][0],SNF[1][1],SNF[2][2]]
                 structure["L"] = L
@@ -167,15 +171,15 @@ def HNF_atoms(enum,lattice,show,testmode=False):
 
                 max_range = array([array(xf).max()-array(xf).min(),array(yf).max()-array(yf).min(),
                                    array(zf).max()-array(zf).min()]).max()
-                Xb = 0.5*max_range*mgrid[-1:2:2,-1:2:2,-1:2:2][0].flatten() + 0.5*(array(xf).max()+array(xf).min())
-                Yb = 0.5*max_range*mgrid[-1:2:2,-1:2:2,-1:2:2][0].flatten() + 0.5*(array(yf).max()+array(yf).min())
-                Zb = 0.5*max_range*mgrid[-1:2:2,-1:2:2,-1:2:2][0].flatten() + 0.5*(array(zf).max()+array(zf).min())
+                xb = 0.5*max_range*mgrid[-1:2:2,-1:2:2,-1:2:2][0].flatten() + 0.5*(array(xf).max()+array(xf).min())
+                yb = 0.5*max_range*mgrid[-1:2:2,-1:2:2,-1:2:2][0].flatten() + 0.5*(array(yf).max()+array(yf).min())
+                zb = 0.5*max_range*mgrid[-1:2:2,-1:2:2,-1:2:2][0].flatten() + 0.5*(array(zf).max()+array(zf).min())
 
-                for xb, yb, zb in zip(Xb,Yb,Zb):
+                for xb, yb, zb in zip(xb,yb,zb):
                     ax.plot([xb],[yb],[zb],'w')
 
                 if not testmode: #pragma: no cover
-                    fig.savefig("{}.pdf".format("".join([str(i) for i in HNF_name])))
+                    fig.savefig("{}.pdf".format("".join([str(i) for i in hnf_name])))
                 if show and not testmode:#pragma: no cover
                     plt.show()
                 else:
@@ -185,7 +189,25 @@ def _convert_read_lat_to_system_dat(lattice):
     """This method converts the lattice_data dictionary returned by
     io_utils.read_lattice to the dictionary structure of io_utils.read_enum_out.
 
-    :arg lattice: The io_utils.read_lattice style dictionary.
+    Args:
+        attice (dict): The io_utils.read_lattice style dictionary with keys:
+          "sizes": the range of cell sizes,
+          "lat_vecs": lattice vectors of the parent cell,
+          "nspecies": the number of atomic species in the enumeration,
+          "basis_vecs": basis vectors of the parent cell,
+          "is_crestricted": logical that indicates if the concentrations will be restricted,
+          "arrows": logical that indicates if arrows are present,
+          "concs": array of the concentrations in format [1,3].
+
+    Returns:
+        system_data (dict): A dictionary of the system data with keys:
+          "title": The system title.
+          "bulksulf": Is this a surface or bulk system.
+          "plattice": The parent lattice vectors as rows of a matrix.
+          "nD": The number of atoms in the system.
+          "dvecs": The atomic basis vectors.
+          "k": The number of atomic species in the system.
+          "eps": Finite precision tolerance.
     """
 
     system_data = {
