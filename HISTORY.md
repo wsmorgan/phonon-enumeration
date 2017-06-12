@@ -4,6 +4,7 @@
 - Removed deprecated code from phenum/structures.py.
 - Fixed lots of minor style issues found by quantified code.
 - Finished improving sphinx documentation.
+- Move phenum.symmetry._get_lattice_pointGroup to phenum.symmetry.get_lattice_pointGroup.
 
 ## Revision 2.0.1
 - Started changing numpy style documentation to google style to be consitent.

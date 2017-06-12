@@ -665,12 +665,12 @@ class TestBringIntoCell(ut.TestCase):
        
 class TestGetLatticePointGroup(ut.TestCase):
     def test_getpg1(self):
-        from phenum.symmetry import _get_lattice_pointGroup
+        from phenum.symmetry import get_lattice_pointGroup
         avecs = [[1,1,0],[1,0,1],[0,1,1]]
         eps = 1E-6
         out = _read_pg(gpath+"fcc_pg.out")
 
-        pg = _get_lattice_pointGroup(avecs,eps)
+        pg = get_lattice_pointGroup(avecs,eps)
         present = []
         for p in pg:
             for g in out:
@@ -680,12 +680,12 @@ class TestGetLatticePointGroup(ut.TestCase):
         self.assertEqual(len(out),len(present))
 
     def test_getpg2(self):
-        from phenum.symmetry import _get_lattice_pointGroup
+        from phenum.symmetry import get_lattice_pointGroup
         avecs = [[1,0,0],[0.5,-0.86602540378444,0],[0,0,2]]
         eps = 1E-6
         out = _read_pg(gpath+"hex_pg.out")
 
-        pg = _get_lattice_pointGroup(avecs,eps)
+        pg = get_lattice_pointGroup(avecs,eps)
         present = []
         for p in pg:
             for g in out:
@@ -695,12 +695,12 @@ class TestGetLatticePointGroup(ut.TestCase):
         self.assertEqual(len(out),len(present))
 
     def test_getpg3(self):
-        from phenum.symmetry import _get_lattice_pointGroup
+        from phenum.symmetry import get_lattice_pointGroup
         avecs = [[1,0,0],[0,1,0],[0,0,1]]
         eps = 1E-6
         out = _read_pg(gpath+"sc_pg.out")
 
-        pg = _get_lattice_pointGroup(avecs,eps)
+        pg = get_lattice_pointGroup(avecs,eps)
         present = []
         for p in pg:
             for g in out:
@@ -710,12 +710,12 @@ class TestGetLatticePointGroup(ut.TestCase):
         self.assertEqual(len(out),len(present))
 
     def test_getpg4(self):
-        from phenum.symmetry import _get_lattice_pointGroup
+        from phenum.symmetry import get_lattice_pointGroup
         avecs = [[1,-1,1],[-1,1,1],[1,1,-1]]
         eps = 1E-6
         out = _read_pg(gpath+"bcc_pg.out")
 
-        pg = _get_lattice_pointGroup(avecs,eps)
+        pg = get_lattice_pointGroup(avecs,eps)
         present = []
         for p in pg:
             for g in out:
@@ -725,12 +725,12 @@ class TestGetLatticePointGroup(ut.TestCase):
         self.assertEqual(len(out),len(present))
 
     def test_getpg5(self):
-        from phenum.symmetry import _get_lattice_pointGroup
+        from phenum.symmetry import get_lattice_pointGroup
         avecs = [[1,2,2],[2,1,2],[2,2,1]]
         eps = 1E-6
         out = _read_pg(gpath+"trig_pg.out")
 
-        pg = _get_lattice_pointGroup(avecs,eps)
+        pg = get_lattice_pointGroup(avecs,eps)
         present = []
         for p in pg:
             for g in out:
@@ -740,12 +740,12 @@ class TestGetLatticePointGroup(ut.TestCase):
         self.assertEqual(len(out),len(present))
 
     def test_getpg6(self):
-        from phenum.symmetry import _get_lattice_pointGroup
+        from phenum.symmetry import get_lattice_pointGroup
         avecs = [[1,0,0],[0.15,1,0],[0.25,0,1]]
         eps = 1E-6
         out = _read_pg(gpath+"tric_pg.out")
 
-        pg = _get_lattice_pointGroup(avecs,eps)
+        pg = get_lattice_pointGroup(avecs,eps)
         present = []
         for p in pg:
             for g in out:
@@ -755,12 +755,12 @@ class TestGetLatticePointGroup(ut.TestCase):
         self.assertEqual(len(out),len(present))
 
     def test_getpg7(self):
-        from phenum.symmetry import _get_lattice_pointGroup
+        from phenum.symmetry import get_lattice_pointGroup
         avecs = [[1,0,0],[0,1,0],[0,0,2]]
         eps = 1E-6
         out = _read_pg(gpath+"st_pg.out")
 
-        pg = _get_lattice_pointGroup(avecs,eps)
+        pg = get_lattice_pointGroup(avecs,eps)
         present = []
         for p in pg:
             for g in out:
@@ -770,12 +770,12 @@ class TestGetLatticePointGroup(ut.TestCase):
         self.assertEqual(len(out),len(present))
 
     def test_getpg8(self):
-        from phenum.symmetry import _get_lattice_pointGroup
+        from phenum.symmetry import get_lattice_pointGroup
         avecs = [[-0.5,0.5,1],[0.5,-0.5,1],[0.5,0.5,-1]]
         eps = 1E-6
         out = _read_pg(gpath+"bct_pg.out")
 
-        pg = _get_lattice_pointGroup(avecs,eps)
+        pg = get_lattice_pointGroup(avecs,eps)
         present = []
         for p in pg:
             for g in out:
@@ -785,12 +785,12 @@ class TestGetLatticePointGroup(ut.TestCase):
         self.assertEqual(len(out),len(present))
 
     def test_getpg9(self):
-        from phenum.symmetry import _get_lattice_pointGroup
+        from phenum.symmetry import get_lattice_pointGroup
         avecs = [[1,0,0],[0,2,0],[0,0,3]]
         eps = 1E-6
         out = _read_pg(gpath+"so_pg.out")
 
-        pg = _get_lattice_pointGroup(avecs,eps)
+        pg = get_lattice_pointGroup(avecs,eps)
         present = []
         for p in pg:
             for g in out:
@@ -800,12 +800,12 @@ class TestGetLatticePointGroup(ut.TestCase):
         self.assertEqual(len(out),len(present))
 
     def test_getpg10(self):
-        from phenum.symmetry import _get_lattice_pointGroup
+        from phenum.symmetry import get_lattice_pointGroup
         avecs = [[0.5,1,0],[0.5,-1,0],[0,0,3]]
         eps = 1E-6
         out = _read_pg(gpath+"cco_pg.out")
 
-        pg = _get_lattice_pointGroup(avecs,eps)
+        pg = get_lattice_pointGroup(avecs,eps)
         present = []
         for p in pg:
             for g in out:
@@ -815,12 +815,12 @@ class TestGetLatticePointGroup(ut.TestCase):
         self.assertEqual(len(out),len(present))
 
     def test_getpg11(self):
-        from phenum.symmetry import _get_lattice_pointGroup
+        from phenum.symmetry import get_lattice_pointGroup
         avecs = [[-0.5,1,1.5],[0.5,-1,1.5],[0.5,1,-1.5]]
         eps = 1E-6
         out = _read_pg(gpath+"bco_pg.out")
 
-        pg = _get_lattice_pointGroup(avecs,eps)
+        pg = get_lattice_pointGroup(avecs,eps)
         present = []
         for p in pg:
             for g in out:
@@ -830,12 +830,12 @@ class TestGetLatticePointGroup(ut.TestCase):
         self.assertEqual(len(out),len(present))
 
     def test_getpg13(self):
-        from phenum.symmetry import _get_lattice_pointGroup
+        from phenum.symmetry import get_lattice_pointGroup
         avecs = [[0.5,1,0],[0.5,0,1.5],[0,1,1.5]]
         eps = 1E-6
         out = _read_pg(gpath+"fco_pg.out")
 
-        pg = _get_lattice_pointGroup(avecs,eps)
+        pg = get_lattice_pointGroup(avecs,eps)
         present = []
         for p in pg:
             for g in out:
@@ -845,12 +845,12 @@ class TestGetLatticePointGroup(ut.TestCase):
         self.assertEqual(len(out),len(present))
 
     def test_getpg14(self):
-        from phenum.symmetry import _get_lattice_pointGroup
+        from phenum.symmetry import get_lattice_pointGroup
         avecs = [[1,0,0],[0,1,0],[0.25,0,1]]
         eps = 1E-6
         out = _read_pg(gpath+"sm_pg.out")
 
-        pg = _get_lattice_pointGroup(avecs,eps)
+        pg = get_lattice_pointGroup(avecs,eps)
         present = []
         for p in pg:
             for g in out:
@@ -860,12 +860,12 @@ class TestGetLatticePointGroup(ut.TestCase):
         self.assertEqual(len(out),len(present))
 
     def test_getpg12(self):
-        from phenum.symmetry import _get_lattice_pointGroup
+        from phenum.symmetry import get_lattice_pointGroup
         avecs = [[0.5,0.5,0],[0.5,-0.5,0],[0.25,0,1]]
         eps = 1E-6
         out = _read_pg(gpath+"ccm_pg.out")
 
-        pg = _get_lattice_pointGroup(avecs,eps)
+        pg = get_lattice_pointGroup(avecs,eps)
         present = []
         for p in pg:
             for g in out:
@@ -875,12 +875,12 @@ class TestGetLatticePointGroup(ut.TestCase):
         self.assertEqual(len(out),len(present))
 
     def test_getpg15(self):
-        from phenum.symmetry import _get_lattice_pointGroup
+        from phenum.symmetry import get_lattice_pointGroup
         avecs = [[1,1,0],[1,0,1],[0,0,2]]
         eps = 1E-6
         out = _read_pg(gpath+"fcc2_pg.out")
 
-        pg = _get_lattice_pointGroup(avecs,eps)
+        pg = get_lattice_pointGroup(avecs,eps)
         present = []
         for p in pg:
             for g in out:
