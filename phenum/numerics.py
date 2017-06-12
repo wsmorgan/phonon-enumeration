@@ -4,10 +4,13 @@
 #The method calls for an integer input num
 #The method returns the factorial(represented as fact in the method)
 def factorial(num):
-
     """Finds the factorial of the input integer.
     
-    :arg num: an integer
+    Args:
+        num (int): The integer to find the factorial of.
+
+    Returns:
+        fact (int): The factorial of num.
     """
     #If the number provided is zero then the factorial is 1
     if num == 0:
@@ -23,8 +26,18 @@ def factorial(num):
     return fact
 
 def binomial_coefficient(n, k):
+    """Finds the binomial coefficient n choose k. See
+    https://en.wikipedia.org/wiki/Binomial_coefficient for details.
 
-    if k < 0 or k > n:
+    Args:
+        n (int): An integer.
+        k (int): An integer.
+
+    Returns:
+       t (int): The binomial coefficient, n choose k.
+
+    """
+    if not (-1 < k < n+1):
         return 0
     if k==0 and n == 0:
         return 1

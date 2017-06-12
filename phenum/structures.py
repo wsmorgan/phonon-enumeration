@@ -3,65 +3,14 @@
 """Generates a random subset of possible structures weighted by the
 Polya distribution for superstructures.
 """
-# def enum_data(cellsize, args, params): #pragma: no cover
-#     """Returns a list of dictionaries with the HNF, SNF, Left Transform
-#     and permutation group file names for the given cell size.
-#     """
-#     from os import path
-#     from numpy import loadtxt, array
-#     dirname = "{}{}".format(args["cellsdir"],args["dataformat"].format(cellsize))
-#     result = []
-
-#     if path.isdir(dirname):
-#         matrices = loadtxt(path.join(dirname, "matrices"), int)
-#         limit = matrices.shape[0] if len(matrices.shape) > 1 else 1
-#         matrices = array([matrices]) if limit == 1 else matrices
-#         for i in range(limit):
-#             result.append({
-#                 "SNF": matrices[i,1:4],
-#                 "HNF": matrices[i,4:10],
-#                 "L": matrices[i,10:],
-#                 "group": path.join(dirname, "group.{}".format(matrices[i,0]))})
-#     else:
-#         from phenum.msg import warn, err
-#         from os import system
-#         from phenum.io_utils import write_struct_enum, which
-#         warn("No data for cell size {0:d} found at {1}. Creating new {2} files now using "
-#              "{3}.".format(cellsize, dirname,args["dataformat"],args["exec"]))
-#         if which(args["exec"]) != None:
-#             write_struct_enum(params)
-#             system(args["exec"])
-#             system('rm symops_enum_parent_lattice.out readcheck_enum.out fort.*')
-#             if path.isdir(dirname):
-#                 matrices = loadtxt(path.join(dirname, "matrices"), int)
-#                 limit = matrices.shape[0] if len(matrices.shape) > 1 else 1
-#                 matrices = array([matrices]) if limit == 1 else matrices
-#                 for i in range(limit):
-#                     result.append({
-#                         "SNF": matrices[i,1:4],
-#                         "HNF": matrices[i,4:10],
-#                         "L": matrices[i,10:],
-#                         "group": path.join(dirname, "group.{}".format(matrices[i,0]))})
-#             else:
-#                 err("The executable {0} does not produce the needed input folders {1}, "
-#                     "or else your struct_enum.in doesn't agree with your {2} file. "
-#                     "\nPlease ensure that your struct_enum.in is correct. If it is then "
-#                     "please follow the instructions found to compile {0} in the "
-#                     "README.".format(args["exec"],args["dataformat"],args["lattice"]))
-#                 exit()                            
-#         else:
-#             err("Could not find {} on your path. Please add it to your path "
-#                 "if you have already\n compiled it. Otherwise please follow the "
-#                 "instructions found in the README to download, make,\n and place the "
-#                 "executable in your path.".format(args["exec"]))
-#             exit()
-        
-#     return result   
 
 def _read_struct_enum(): #pragma: no cover
     """Reads in the struct_enum.out file and returns a dictionary with key
     for each cell size, and value a dictionary keyed by HNF with the number
     of unique structures.
+
+    Returns:
+        structs (dict): A dictionary containing the structure data for each structure.
     """
     i = 0
     structs = {}
@@ -70,52 +19,20 @@ def _read_struct_enum(): #pragma: no cover
             i += 1                        
             if i > 17:
                 vals = line.split()
-                sN = int(vals[6])
+                sn = int(vals[6])
                 HNF = tuple(map(int, vals[11:17]))
                 concs = tuple([vals[-1].count(c) for c in ["0", "1"]])
-                if sN not in structs:
-                    structs[sN] = {}
-                if HNF not in structs[sN]:
-                    structs[sN][HNF] = {}
-                    structs[sN][HNF][concs] = 1
+                if sn not in structs:
+                    structs[sn] = {}
+                if HNF not in structs[sn]:
+                    structs[sn][HNF] = {}
+                    structs[sn][HNF][concs] = 1
                 else:
-                    if concs in structs[sN][HNF]:
-                        structs[sN][HNF][concs] += 1
+                    if concs in structs[sn][HNF]:
+                        structs[sn][HNF][concs] += 1
                     else:
-                        structs[sN][HNF][concs] = 1
+                        structs[sn][HNF][concs] = 1
     return structs
-
-# def _write_struct_summary(structs): # pragma: no cover
-#     """Writes the summary of unique structure counts by HNF and cell size
-#     to file for verification of polya.
-#     """
-#     from numpy import zeros
-#     for sN, HNFS in list(structs.items()):
-#         out = open('enum_'+str(sN)+'.out', 'w+')
-#         out.write('{0: <28}'.format("# HNF"))
-#         first = sorted(next(iter(HNFS.values())))
-#         for conc in first:
-#             out.write("{0: <10}".format(':'.join(map(str, conc))))
-#         out.write('{0: <10}\n'.format("Total"))
-
-#         conc_totals = {conc: 0 for conc in first}
-#         sHNFs = sorted(HNFS.values)
-#         for HNF in sHNFs:
-#             out.write("  {0: <26}".format(' '.join(map(str, HNF))))
-#             for conc in first:
-#                 if conc in dHNF:
-#                     out.write("{0: <10d}".format(dHNF[conc]))
-#                     conc_totals[conc] += dHNF[conc]
-#                 else:
-#                     out.write("{0: <10d}".format(0))
-#             out.write('{0: <10d}\n'.format(sum(dHNF.values())))
-            
-#         out.write("# " + ''.join(['-' for i in range(len(first)*10 + 10 + 30)]) + '\n')
-#         out.write("{0: <28}".format(""))
-#         for conc in first:
-#             out.write("{0: <10d}".format(conc_totals[conc]))
-#         out.write("{0: <10d}\n".format(sum(conc_totals.values())))
-#         out.close()
 
 def _distribute(infile, cellsizes, ftype, n=None,seed=None, res_type=None, res_values=None):
     """Returns a dictionary specifying how many of each cell shape, size and concentration
@@ -166,7 +83,7 @@ def _distribute(infile, cellsizes, ftype, n=None,seed=None, res_type=None, res_v
         else:
             return False   
     
-    def assign(relvals, f, rtotal, gtotal, n, result, ftype,seed_val=None):
+    def assign(relvals, f, rtotal, gtotal, n, result, dataset, ftype,seed_val=None):
         """Recurses through the relative weights specified to fill the
         result dictionary until it has the exact number of structures
         requested.
@@ -180,7 +97,7 @@ def _distribute(infile, cellsizes, ftype, n=None,seed=None, res_type=None, res_v
             from random import random, seed, getstate
             from operator import itemgetter
             import sys
-            if seed_val != None:
+            if seed_val is not None:
                 seed(a=seed_val)
                 
             ids = {
@@ -201,7 +118,7 @@ def _distribute(infile, cellsizes, ftype, n=None,seed=None, res_type=None, res_v
                     #Eventually this should terminate unless all of the fractional
                     #pieces are super small; but even then, we should get what we want
                     #by the time we have iterated through the whole list.
-                    rf, qf = modf(value if recount == 0 else f(delta, *(ids[ftype](key))))
+                    rf, qf = modf(value if recount == 0 else f(delta, *(ids[ftype](key)),dataset=dataset,ftotal=float(gtotal)))
                     retval = int(qf + (1 if random() < rf else 0))
                     if not vinsert(key, retval, rtotal, n, result):
                         break
@@ -219,31 +136,31 @@ def _distribute(infile, cellsizes, ftype, n=None,seed=None, res_type=None, res_v
             for HNF, distr in list(data["distr"].items()):
                 for conc, limit in list(distr.items()):
                     key = (size, HNF, conc)
-                    value = f(n, size, HNF, conc)
+                    value = f(n, size, HNF, conc, dataset, float(gtotal))
                     relvals.append((key, value, limit))
     elif ftype == "shape":
         for size, data in list(dataset.items()):
             for HNF, limit in list(data["stotals"].items()):
                 key = (size, HNF, None)
-                value = f(n, size, HNF)
+                value = f(n, size, HNF, dataset, float(gtotal))
                 relvals.append((key, value, limit))                
     elif ftype == "conc":
         for size, data in list(dataset.items()):
             for conc, limit in list(data["ctotals"].items()):
                 key = (size, None, conc)
-                value = f(n, size, conc)
+                value = f(n, size, conc, dataset, float(gtotal))
                 relvals.append((key, value, limit))
     elif ftype == "size":
         for size, data in list(dataset.items()):
             limit = data["gtotal"]
             key = (size, None, None)
-            value = f(n, size)
+            value = f(n, size, dataset, float(gtotal))
             relvals.append((key, value, limit))
     
     #This makes the selection according to the relative values and keeps
     #choosing, weighted by relative abundance, until we have the right
     #number of structures.
-    assign(relvals, f, rtotal, gtotal, n, result, ftype,seed_val=seed)
+    assign(relvals, f, rtotal, gtotal, n, result, dataset, ftype, seed_val=seed)
     #Make sure we are returning exactly how many they asked for.
     if rtotal[0] > n: #pragma: no cover
         from .msg import warn
@@ -316,13 +233,25 @@ def _distribution(infile, ftype, dataset, gtotal, cast=float, cellsizes=None,res
     #desired structures by concentration and cell shape.
     ftotal = float(gtotal)
     if ftype == "all":
-        f = lambda n, size, HNF, conc: cast(dataset[size]["distr"][tuple(HNF)][conc]/ftotal*n)
+        def f(n,size,HNF,conc,dataset,ftotal):
+            """Summing function"""
+            return cast(dataset[size]["distr"][tuple(HNF)][conc]/ftotal*n)
+        # f = lambda n, size, HNF, conc: cast(dataset[size]["distr"][tuple(HNF)][conc]/ftotal*n)
     elif ftype == "shape":
-        f = lambda n, size, HNF: cast(dataset[size]["stotals"][tuple(HNF)]/ftotal*n)
+        def f(n,size,HNF,dataset,ftotal):
+            """Summing function"""
+            return cast(dataset[size]["stotals"][tuple(HNF)]/ftotal*n)
+        # f = lambda n, size, HNF: cast(dataset[size]["stotals"][tuple(HNF)]/ftotal*n)
     elif ftype == "conc":
-        f = lambda n, size, conc: cast(dataset[size]["ctotals"][tuple(conc)]/ftotal*n)
+        def f(n,size,conc,dataset,ftotal):
+            """Summing function"""
+            return cast(dataset[size]["ctotals"][tuple(conc)]/ftotal*n)
+        # f = lambda n, size, conc: cast(dataset[size]["ctotals"][tuple(conc)]/ftotal*n)
     elif ftype == "size":
-        f = lambda n, size: cast(dataset[size]["gtotal"]/ftotal*n)
+        def f(n,size,dataset,ftotal):
+            """Summing function"""
+            return cast(dataset[size]["gtotal"]/ftotal*n)
+        # f = lambda n, size: cast(dataset[size]["gtotal"]/ftotal*n)
     else:
         raise ValueError("The parameter {} is not a valid parameter for the distribution. "
                          "Please use size, shape, conc, or all.".format(ftype))
@@ -363,12 +292,12 @@ def _distribution_summary(infile, cellsizes, HNFs = None, wanted_concs = None):
         polya = loadtxt(source, int)
         distr = {}
 
-        if HNFs == None and wanted_concs == None:
+        if HNFs is None and wanted_concs is None:
             for iHNF, HNF in enumerate(polya[0:-1,0:6]):
                 distr[tuple(HNF)] = {tuple(c): v for c, v in zip(concs, polya[iHNF,6:-1])}
             stotals = {tuple(m): v for m, v in zip(polya[0:-1,0:6], polya[:-1,-1])}
             ctotals = {c: v for c, v in zip(concs, polya[-1, 6:-1])}
-        elif HNFs != None:
+        elif HNFs is not None:
             ctotals = {c: v for c, v in zip(concs,[0]*len(concs))}
             stotals = {}
             for iHNF, HNF in enumerate(polya[0:-1,0:6]):
@@ -379,7 +308,7 @@ def _distribution_summary(infile, cellsizes, HNFs = None, wanted_concs = None):
             for m, v in zip(polya[0:-1,0:6], polya[:-1,-1]):
                 if tuple(m) in HNFs:
                     stotals[tuple(m)] = v
-        elif wanted_concs != None:
+        elif wanted_concs is not None:
             ctotals = {c: v for c, v in zip(concs,[0]*len(concs))}
             stotals = {}
             for iHNF, HNF in enumerate(polya[0:-1,0:6]):
@@ -454,7 +383,7 @@ def _print_distribution(distr, distribution, filename=None, header=True, append=
                     f.write("# {0: <6}  {1}\n".format("Size", "Number"))
             for key, value in list(distr.items()):
                 size, HNF, conc = key
-                if conc == None:
+                if conc is None:
                     conc = []
                 if distribution == "all":
                     f.write("  {0: <28}  {1: <10}  {2:d}\n".format(' '.join(map(str, HNF)), ' '.join(map(str, conc)), value))
@@ -473,16 +402,22 @@ def make_enum_in(infile,distribution,outfile,number=None,sizes=None,save=True,se
 
     Args:
         infile (str): The name of the 'polya.out' style input file.
-        distribution (list): The parameters that the distribution is over
-            ('shape', 'conc', 'size', 'all').
         n (int): The number of structures or 'all'.
-        sizes (list): when specified, limit the distribution to these integer cell sizes;
-            otherwise, look for all cell sizes we have data for.
         outfile (str): The name of the output file for the distribution
         save (bool): True if the data is to be saved to file.
         seed (float): The seed for the random number generator.
+
+        distribution (list): The parameters that the distribution is over
+            ('shape', 'conc', 'size', 'all').
+
+        sizes (list): when specified, limit the distribution to these integer cell sizes;
+            otherwise, look for all cell sizes we have data for.
+
         restrict (list): A list containing the restriction type ('shape','conc') 
             and the file of allowed values.
+
+    Raises:
+        ValueError: if the 'polya.*' file cannot be found.
     """
 
     from os import listdir
@@ -502,7 +437,7 @@ def make_enum_in(infile,distribution,outfile,number=None,sizes=None,save=True,se
         for i in sizes:
             sizedir = infile+'.'+str(i)
             if sizedir not in files:
-                raise ValueError("Cannot find '{}' in current directory.".format(sizedir))
+                raise ValueError("Cannot find '{0}' in current directory.".format(sizedir))
         ready = True
                 
     if ready == False:

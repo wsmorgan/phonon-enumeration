@@ -29,12 +29,23 @@ from within the phonon-enumeration directory.
 
 ## Running the code
 
-# Enumerating a system
+### Complete enumeration of a system.
 
-You now have everything you need to run the new enumeration code. The
-work flow for this code is as follows. Samples of all input files can
-be found in the input folder. First find the polya distribution for the
-system described in your lattice.in file:
+If you want to enumerate every possible structure specified in your
+'struct_enum.in' file, a sample of which can be found in the input
+folder, then use the commend:
+
+```
+enumeration-py -enum
+```
+
+### Enumerating a subset
+
+If the total number of arrangements in your system is huge you may not
+want to enumerate them all. In that case it is possible to enumerate a
+subset of the system as follows. Examples of all input files can be
+found in the input folder. First have the code find the polya
+distribution for the system described in your lattice.in file:
 
 ```
 enumeration.py -polya
@@ -43,7 +54,7 @@ enumeration.py -polya
 Next we need to build an enum.in file. You may either build this by
 hand or have the code build it for you using the `-distribution`
 option which takes two arguments, the type of distribution and the
-number of structures we want in the results.
+number of structures we want in the results. 
 
 ```
 enumeration.py -distribution all all

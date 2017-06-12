@@ -33,9 +33,24 @@ Contents:
 .. automodule :: phenum.grouptheory
    :members: 
 
-.. automodule :: phenum.msg
+.. automodule :: phenum.enumeration
    :members: 
 
+.. automodule :: phenum.io_utils
+   :members: 
+
+.. automodule :: phenum.makeStr
+   :members: 
+
+.. automodule :: phenum.numerics
+   :members: 
+
+.. automodule :: phenum.polyaburnside
+   :members: 
+
+.. automodule :: phenum.visualize
+   :members:      
+      
 Indices and tables
 ==================
 

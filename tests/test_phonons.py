@@ -11,7 +11,7 @@ def _read_output(test):
 class TestGetArrowConcs(ut.TestCase):
     """ Tests of the get_arrow_concs subroutine."""
 
-    def test1(self):
+    def test_1(self):
         from phenum.phonons import get_arrow_concs
         params = {
             "bulk": True,
@@ -26,7 +26,7 @@ class TestGetArrowConcs(ut.TestCase):
 
         self.assertEqual(get_arrow_concs(params),[0,0,0,0])
 
-    def test2(self):
+    def test_2(self):
         from phenum.phonons import get_arrow_concs
         params = {
             "bulk": True,
@@ -41,7 +41,7 @@ class TestGetArrowConcs(ut.TestCase):
 
         self.assertEqual(get_arrow_concs(params),[0,0])
 
-    def test3(self):
+    def test_3(self):
         from phenum.phonons import get_arrow_concs
         params = {
             "bulk": True,
@@ -56,7 +56,7 @@ class TestGetArrowConcs(ut.TestCase):
 
         self.assertEqual(get_arrow_concs(params),[1,2,0])
 
-    def test4(self):
+    def test_4(self):
         from phenum.phonons import get_arrow_concs
         params = {
             "bulk": True,
@@ -71,7 +71,7 @@ class TestGetArrowConcs(ut.TestCase):
 
         self.assertEqual(get_arrow_concs(params),[0,0,0,0,0,0,0,0,0,0])
 
-    def test5(self):
+    def test_5(self):
         from phenum.phonons import get_arrow_concs
         params = {
             "bulk": True,
@@ -86,7 +86,7 @@ class TestGetArrowConcs(ut.TestCase):
 
         self.assertEqual(get_arrow_concs(params),[0])
 
-    def test6(self):
+    def test_6(self):
         from phenum.phonons import get_arrow_concs
         params = {
             "bulk": True,
@@ -101,7 +101,7 @@ class TestGetArrowConcs(ut.TestCase):
 
         self.assertEqual(get_arrow_concs(params),[1,2,0,10,1])
 
-    def test7(self):
+    def test_7(self):
         from phenum.phonons import get_arrow_concs
         params = {
             "bulk": True,
@@ -116,7 +116,7 @@ class TestGetArrowConcs(ut.TestCase):
 
         self.assertEqual(get_arrow_concs(params),[0,0,0])
 
-    def test8(self):
+    def test_8(self):
         from phenum.phonons import get_arrow_concs
         params = {
             "bulk": True,
@@ -131,7 +131,7 @@ class TestGetArrowConcs(ut.TestCase):
 
         self.assertEqual(get_arrow_concs(params),[0,0,0,0])
 
-    def test9(self):
+    def test_9(self):
         from phenum.phonons import get_arrow_concs
         params = {
             "bulk": True,
@@ -146,7 +146,7 @@ class TestGetArrowConcs(ut.TestCase):
 
         self.assertEqual(get_arrow_concs(params),[5])
 
-    def test10(self):
+    def test_10(self):
         from phenum.phonons import get_arrow_concs
         params = {
             "bulk": True,
@@ -164,7 +164,7 @@ class TestGetArrowConcs(ut.TestCase):
 class TestArrowConcs(ut.TestCase):
     """Tests of the arrow_concs subroutine."""
 
-    def test1(self):
+    def test_1(self):
         from phenum.phonons import arrow_concs
 
         cList = [1, 2, 1]
@@ -172,7 +172,7 @@ class TestArrowConcs(ut.TestCase):
 
         self.assertEqual(arrow_concs(cList,aconcs),[[-1, 1], [-1, 3], [-1, 2], [-1, 2]])
         
-    def test2(self):
+    def test_2(self):
         from phenum.phonons import arrow_concs
 
         cList = [3]
@@ -181,7 +181,7 @@ class TestArrowConcs(ut.TestCase):
         
         self.assertEqual(arrow_concs(cList,aconcs),out)
         
-    def test3(self):
+    def test_3(self):
         from phenum.phonons import arrow_concs
 
         cList = [10, 3, 1]
@@ -191,7 +191,7 @@ class TestArrowConcs(ut.TestCase):
         
         self.assertEqual(arrow_concs(cList,aconcs),out)
         
-    def test4(self):
+    def test_4(self):
         from phenum.phonons import arrow_concs
 
         cList = [2, 4, 1, 5, 2, 1, 1]
@@ -201,7 +201,7 @@ class TestArrowConcs(ut.TestCase):
         
         self.assertEqual(arrow_concs(cList,aconcs),out)
         
-    def test5(self):
+    def test_5(self):
         from phenum.phonons import arrow_concs
 
         cList = [3]
@@ -210,7 +210,7 @@ class TestArrowConcs(ut.TestCase):
         
         self.assertEqual(arrow_concs(cList,aconcs),out)
         
-    def test6(self):
+    def test_6(self):
         from phenum.phonons import arrow_concs
 
         cList = [3, 1]
@@ -219,7 +219,7 @@ class TestArrowConcs(ut.TestCase):
         
         self.assertEqual(arrow_concs(cList,aconcs),out)
         
-    def test7(self):
+    def test_7(self):
         from phenum.phonons import arrow_concs
 
         cList = [1]
@@ -228,7 +228,7 @@ class TestArrowConcs(ut.TestCase):
         
         self.assertEqual(arrow_concs(cList,aconcs),out)
         
-    def test8(self):
+    def test_8(self):
         from phenum.phonons import arrow_concs
 
         cList = [2, 8, 3, 1]
@@ -238,7 +238,7 @@ class TestArrowConcs(ut.TestCase):
         
         self.assertEqual(arrow_concs(cList,aconcs),out)
         
-    def test9(self):
+    def test_9(self):
         from phenum.phonons import arrow_concs
 
         cList = [4, 1, 1, 1]
@@ -247,7 +247,7 @@ class TestArrowConcs(ut.TestCase):
         
         self.assertEqual(arrow_concs(cList,aconcs),out)
         
-    def test10(self):
+    def test_10(self):
         from phenum.phonons import arrow_concs
 
         cList = [18, 1]
@@ -258,7 +258,7 @@ class TestArrowConcs(ut.TestCase):
         
         self.assertEqual(arrow_concs(cList,aconcs),out)
         
-    def test11(self):
+    def test_11(self):
         from phenum.phonons import arrow_concs
 
         cList = [2, 0, 1]
@@ -267,7 +267,7 @@ class TestArrowConcs(ut.TestCase):
         
         self.assertEqual(arrow_concs(cList,aconcs),out)
         
-    def test12(self):
+    def test_12(self):
         from phenum.phonons import arrow_concs
 
         cList = [3, 0, 2]
@@ -280,14 +280,14 @@ class TestArrowConcs(ut.TestCase):
 class TestHowManyArrows(ut.TestCase):
     """Tests of the how_many_arrows subroutine."""
 
-    def test1(self):
+    def test_1(self):
         from phenum.phonons import how_many_arrows
         tcol = [[-1, 2], [-1, 2], [-1, 1], [-1, 3]]
         out = (0,0,[2,1,1])
         
         self.assertEqual(how_many_arrows(tcol),out)
 
-    def test2(self):
+    def test_2(self):
         from phenum.phonons import how_many_arrows
 
         tcol = [[-1, 1], [1, 1], [1, 1]]
@@ -295,7 +295,7 @@ class TestHowManyArrows(ut.TestCase):
         
         self.assertEqual(how_many_arrows(tcol),out)
         
-    def test3(self):
+    def test_3(self):
         from phenum.phonons import how_many_arrows
 
         tcol = [[-1, 1], [-1, 1], [-1, 1], [-1, 1], [-1, 1], [-1, 1], [-1, 1], [-1, 1], [-1, 1],
@@ -303,7 +303,7 @@ class TestHowManyArrows(ut.TestCase):
         out = (1,1,[10,2,1,1])
         self.assertEqual(how_many_arrows(tcol),out)
         
-    def test4(self):
+    def test_4(self):
         from phenum.phonons import how_many_arrows
 
         tcol = [[-1, 4], [-1, 4], [-1, 4], [-1, 4], [-1, 4], [-1, 2], [-1, 2], [-1, 2], [-1, 1],
@@ -311,28 +311,28 @@ class TestHowManyArrows(ut.TestCase):
         out = (3,3,[5,3,1,1,1,1,1,1,1,1])
         self.assertEqual(how_many_arrows(tcol),out)
         
-    def test5(self):
+    def test_5(self):
         from phenum.phonons import how_many_arrows
 
         tcol = [[-1, 1], [-1, 1], [-1, 1]]
         out = (0,0,[3])
         self.assertEqual(how_many_arrows(tcol),out)
         
-    def test6(self):
+    def test_6(self):
         from phenum.phonons import how_many_arrows
 
         tcol = [[-1, 1], [-1, 1], [-1, 1], [-1, 2]]
         out = (0,0,[3,1])
         self.assertEqual(how_many_arrows(tcol),out)
         
-    def test7(self):
+    def test_7(self):
         from phenum.phonons import how_many_arrows
 
         tcol = [[-1, 1]]
         out = (0,0,[1])
         self.assertEqual(how_many_arrows(tcol),out)
         
-    def test8(self):
+    def test_8(self):
         from phenum.phonons import how_many_arrows
 
         tcol = [[-1, 2], [-1, 2], [-1, 2], [-1, 2], [-1, 2], [-1, 2], [-1, 1], [-1, 3], [-1, 4],
@@ -340,14 +340,14 @@ class TestHowManyArrows(ut.TestCase):
         out = (5,3,[6,1,1,1,2,2,1])
         self.assertEqual(how_many_arrows(tcol),out)
         
-    def test9(self):
+    def test_9(self):
         from phenum.phonons import how_many_arrows
 
         tcol = [[-1, 1], [-1, 1], [-1, 1], [-1, 1], [-1, 2], [-1, 3], [-1, 4]]
         out = (0,0,[4,1,1,1])
         self.assertEqual(how_many_arrows(tcol),out)
         
-    def test10(self):
+    def test_10(self):
         from phenum.phonons import how_many_arrows
 
         tcol = [[-1, 1], [-1, 1], [-1, 1], [-1, 1], [-1, 1], [-1, 1], [-1, 1], [-1, 1], [-1, 1],
@@ -359,7 +359,7 @@ class TestHowManyArrows(ut.TestCase):
 class TestEnumSys(ut.TestCase):
     """Tests of the enum_sys subroutine."""
     
-    def test1(self):
+    def test_1(self):
         from phenum.phonons import enum_sys
         from numpy import array
         groupfile = "tests/phonons/test_group.1"
@@ -371,7 +371,7 @@ class TestEnumSys(ut.TestCase):
         out = [[[-1, 1], [-1, 2], [-1, 2]]]
         self.assertEqual(enum_sys(groupfile,concs,a_cons,num_wanted,HNF,params,True),out)
 
-    def test2(self):
+    def test_2(self):
         from phenum.phonons import enum_sys
         from numpy import array
         groupfile = "tests/phonons/test_group.2"
@@ -383,7 +383,7 @@ class TestEnumSys(ut.TestCase):
         out = [[[-1, 1], [-1, 1], [-1, 1], [-1, 2], [-1, 2], [-1, 2]], [[-1, 1], [-1, 1], [-1, 2], [-1, 1], [-1, 2], [-1, 2]], [[-1, 1], [-1, 2], [-1, 1], [-1, 2], [-1, 1], [-1, 2]]]
         self.assertEqual(enum_sys(groupfile,concs,a_cons,num_wanted,HNF,params,True),out)
 
-    def test3(self):
+    def test_3(self):
         from numpy import array
         from phenum.phonons import enum_sys
         groupfile = "tests/phonons/test_group.3"
@@ -396,7 +396,7 @@ class TestEnumSys(ut.TestCase):
                 
         self.assertEqual(enum_sys(groupfile,concs,a_cons,num_wanted,HNF,params,True),out)
 
-    def test4(self):
+    def test_4(self):
         from phenum.phonons import enum_sys
         from numpy import array
         groupfile = "tests/phonons/test_group.4"
@@ -408,7 +408,7 @@ class TestEnumSys(ut.TestCase):
         out = [[[-1, 1], [-1, 1], [-1, 1], [-1, 2], [-1, 2], [-1, 2], [-1, 2]], [[-1, 1], [-1, 1], [-1, 2], [-1, 1], [-1, 2], [-1, 2], [-1, 2]]]
         self.assertEqual(enum_sys(groupfile,concs,a_cons,num_wanted,HNF,params,True),out)
 
-    def test5(self):
+    def test_5(self):
         from phenum.phonons import enum_sys
         from numpy import array
         groupfile = "tests/phonons/test_group.5"
@@ -420,7 +420,7 @@ class TestEnumSys(ut.TestCase):
         out = [[[-1, 1], [-1, 1], [-1, 1], [-1, 1], [-1, 2], [-1, 2], [-1, 2], [-1, 2]], [[-1, 1], [-1, 1], [-1, 1], [-1, 2], [-1, 1], [-1, 2], [-1, 2], [-1, 2]], [[-1, 1], [-1, 1], [-1, 1], [-1, 2], [-1, 2], [-1, 1], [-1, 2], [-1, 2]], [[-1, 1], [-1, 1], [-1, 1], [-1, 2], [-1, 2], [-1, 2], [-1, 2], [-1, 1]], [[-1, 1], [-1, 1], [-1, 2], [-1, 2], [-1, 1], [-1, 1], [-1, 2], [-1, 2]], [[-1, 1], [-1, 1], [-1, 2], [-1, 2], [-1, 1], [-1, 2], [-1, 1], [-1, 2]], [[-1, 1], [-1, 1], [-1, 2], [-1, 2], [-1, 1], [-1, 2], [-1, 2], [-1, 1]], [[-1, 1], [-1, 1], [-1, 2], [-1, 2], [-1, 2], [-1, 2], [-1, 1], [-1, 1]], [[-1, 1], [-1, 2], [-1, 1], [-1, 2], [-1, 1], [-1, 2], [-1, 1], [-1, 2]], [[-1, 1], [-1, 2], [-1, 1], [-1, 2], [-1, 2], [-1, 1], [-1, 2], [-1, 1]]]
         self.assertEqual(enum_sys(groupfile,concs,a_cons,num_wanted,HNF,params,True),out)
 
-    def test6(self):
+    def test_6(self):
         from phenum.phonons import enum_sys
         from numpy import array
         groupfile = None
@@ -433,7 +433,7 @@ class TestEnumSys(ut.TestCase):
 
         self.assertEqual(enum_sys(groupfile,concs,a_cons,num_wanted,HNF,params,True),out)
 
-    # def test7(self):
+    # def test_7(self):
     #     from phenum.phonons import enum_sys
     #     from numpy import array
     #     groupfile = None
@@ -446,7 +446,7 @@ class TestEnumSys(ut.TestCase):
 
     #     self.assertEqual(enum_sys(groupfile,concs,a_cons,num_wanted,HNF,params,True),out)
 
-    # def test8(self):
+    # def test_8(self):
     #     from phenum.phonons import enum_sys
     #     from numpy import array
     #     groupfile = None
@@ -458,7 +458,7 @@ class TestEnumSys(ut.TestCase):
     #     out = _read_output("enum_sys.out.8")
     #     self.assertEqual(enum_sys(groupfile,concs,a_cons,num_wanted,HNF,params,True),out)
 
-    # def test9(self):
+    # def test_9(self):
     #     from phenum.phonons import enum_sys
     #     from numpy import array
     #     groupfile = None
@@ -470,7 +470,7 @@ class TestEnumSys(ut.TestCase):
     #     out = _read_output("enum_sys.out.9")
     #     self.assertEqual(enum_sys(groupfile,concs,a_cons,num_wanted,HNF,params,True),out)
 
-    # def test10(self):
+    # def test_10(self):
     #     from phenum.phonons import enum_sys
     #     from numpy import array
     #     groupfile = None
@@ -482,7 +482,7 @@ class TestEnumSys(ut.TestCase):
     #     out = _read_output("enum_sys.out.10")
     #     self.assertEqual(enum_sys(groupfile,concs,a_cons,num_wanted,HNF,params,True),out)
 
-    # def test11(self):
+    # def test_11(self):
     #     from phenum.phonons import enum_sys
     #     from numpy import array
     #     groupfile = None
@@ -495,7 +495,7 @@ class TestEnumSys(ut.TestCase):
 
     #     self.assertEqual(enum_sys(groupfile,concs,a_cons,num_wanted,HNF,params,True),out)
 
-    # def test12(self):
+    # def test_12(self):
     #     from phenum.phonons import enum_sys
     #     from numpy import array
     #     groupfile = None
@@ -508,7 +508,7 @@ class TestEnumSys(ut.TestCase):
 
     #     self.assertEqual(enum_sys(groupfile,concs,a_cons,num_wanted,HNF,params,True),out)
 
-    # def test13(self):
+    # def test_13(self):
     #     from phenum.phonons import enum_sys
     #     from numpy import array
     #     groupfile = None
@@ -521,7 +521,7 @@ class TestEnumSys(ut.TestCase):
 
     #     self.assertEqual(enum_sys(groupfile,concs,a_cons,num_wanted,HNF,params,False),out)
 
-    # def test14(self):
+    # def test_14(self):
     #     from phenum.phonons import enum_sys
     #     from numpy import array
     #     groupfile = None
@@ -534,7 +534,7 @@ class TestEnumSys(ut.TestCase):
 
     #     self.assertEqual(enum_sys(groupfile,concs,a_cons,num_wanted,HNF,params,False),out)
 
-    def test15(self):
+    def test_15(self):
         from phenum.phonons import enum_sys
         from numpy import array
         groupfile = "tests/phonons/test_group.5"
@@ -550,7 +550,7 @@ class TestEnumSys(ut.TestCase):
 class TestAddArrows(ut.TestCase):
     """Tests of the add_arrows subroutine."""
 
-    def test1(self):
+    def test_1(self):
         from phenum.grouptheory import get_sym_group
         from phenum.phonons import add_arrows
         col = [[-1, 2], [-1, 1], [1, 2], [-1, 2], [1, 2], [-1, 3]]
@@ -559,7 +559,7 @@ class TestAddArrows(ut.TestCase):
         out = [[[-1, 2], [-1, 1], [0, 2], [-1, 2], [0, 2], [-1, 3]], [[-1, 2], [-1, 1], [1, 2], [-1, 2], [0, 2], [-1, 3]], [[-1, 2], [-1, 1], [2, 2], [-1, 2], [0, 2], [-1, 3]], [[-1, 2], [-1, 1], [5, 2], [-1, 2], [0, 2], [-1, 3]], [[-1, 2], [-1, 1], [0, 2], [-1, 2], [2, 2], [-1, 3]], [[-1, 2], [-1, 1], [2, 2], [-1, 2], [2, 2], [-1, 3]], [[-1, 2], [-1, 1], [3, 2], [-1, 2], [2, 2], [-1, 3]], [[-1, 2], [-1, 1], [4, 2], [-1, 2], [2, 2], [-1, 3]]]
         self.assertEqual(add_arrows(col,agroup,dim,agroup[0:len(col)],supers=True),out)
 
-    def test2(self):
+    def test_2(self):
         from phenum.grouptheory import get_sym_group
         from phenum.phonons import add_arrows
         col = [[-1, 1], [1, 2], [-1, 2], [1, 2]]
@@ -568,7 +568,7 @@ class TestAddArrows(ut.TestCase):
         out = [[[-1, 1], [0, 2], [-1, 2], [0, 2]], [[-1, 1], [1, 2], [-1, 2], [0, 2]], [[-1, 1], [5, 2], [-1, 2], [0, 2]], [[-1, 1], [0, 2], [-1, 2], [1, 2]], [[-1, 1], [1, 2], [-1, 2], [1, 2]], [[-1, 1], [2, 2], [-1, 2], [1, 2]], [[-1, 1], [4, 2], [-1, 2], [1, 2]], [[-1, 1], [5, 2], [-1, 2], [1, 2]], [[-1, 1], [0, 2], [-1, 2], [5, 2]], [[-1, 1], [1, 2], [-1, 2], [5, 2]], [[-1, 1], [5, 2], [-1, 2], [5, 2]]]
         self.assertEqual(add_arrows(col,agroup,dim,agroup[0:len(col)],supers=True),out)
 
-    def test3(self):
+    def test_3(self):
         from phenum.grouptheory import get_sym_group
         from phenum.phonons import add_arrows
         col = [[-1, 1], [1, 2], [1, 2], [-1, 1], [-1, 2], [1, 2], [-1, 2]]
@@ -577,7 +577,7 @@ class TestAddArrows(ut.TestCase):
         out = [[[-1, 1], [0, 2], [0, 2], [-1, 1], [-1, 2], [0, 2], [-1, 2]], [[-1, 1], [1, 2], [0, 2], [-1, 1], [-1, 2], [0, 2], [-1, 2]], [[-1, 1], [5, 2], [0, 2], [-1, 1], [-1, 2], [0, 2], [-1, 2]], [[-1, 1], [0, 2], [1, 2], [-1, 1], [-1, 2], [0, 2], [-1, 2]], [[-1, 1], [1, 2], [1, 2], [-1, 1], [-1, 2], [0, 2], [-1, 2]], [[-1, 1], [2, 2], [1, 2], [-1, 1], [-1, 2], [0, 2], [-1, 2]], [[-1, 1], [4, 2], [1, 2], [-1, 1], [-1, 2], [0, 2], [-1, 2]], [[-1, 1], [5, 2], [1, 2], [-1, 1], [-1, 2], [0, 2], [-1, 2]], [[-1, 1], [0, 2], [5, 2], [-1, 1], [-1, 2], [0, 2], [-1, 2]], [[-1, 1], [1, 2], [5, 2], [-1, 1], [-1, 2], [0, 2], [-1, 2]], [[-1, 1], [5, 2], [5, 2], [-1, 1], [-1, 2], [0, 2], [-1, 2]], [[-1, 1], [0, 2], [0, 2], [-1, 1], [-1, 2], [1, 2], [-1, 2]], [[-1, 1], [1, 2], [0, 2], [-1, 1], [-1, 2], [1, 2], [-1, 2]], [[-1, 1], [2, 2], [0, 2], [-1, 1], [-1, 2], [1, 2], [-1, 2]], [[-1, 1], [4, 2], [0, 2], [-1, 1], [-1, 2], [1, 2], [-1, 2]], [[-1, 1], [5, 2], [0, 2], [-1, 1], [-1, 2], [1, 2], [-1, 2]], [[-1, 1], [0, 2], [1, 2], [-1, 1], [-1, 2], [1, 2], [-1, 2]], [[-1, 1], [1, 2], [1, 2], [-1, 1], [-1, 2], [1, 2], [-1, 2]], [[-1, 1], [2, 2], [1, 2], [-1, 1], [-1, 2], [1, 2], [-1, 2]], [[-1, 1], [4, 2], [1, 2], [-1, 1], [-1, 2], [1, 2], [-1, 2]], [[-1, 1], [0, 2], [2, 2], [-1, 1], [-1, 2], [1, 2], [-1, 2]], [[-1, 1], [2, 2], [2, 2], [-1, 1], [-1, 2], [1, 2], [-1, 2]], [[-1, 1], [3, 2], [2, 2], [-1, 1], [-1, 2], [1, 2], [-1, 2]], [[-1, 1], [4, 2], [2, 2], [-1, 1], [-1, 2], [1, 2], [-1, 2]], [[-1, 1], [0, 2], [4, 2], [-1, 1], [-1, 2], [1, 2], [-1, 2]], [[-1, 1], [4, 2], [4, 2], [-1, 1], [-1, 2], [1, 2], [-1, 2]], [[-1, 1], [0, 2], [5, 2], [-1, 1], [-1, 2], [1, 2], [-1, 2]]]
         self.assertEqual(add_arrows(col,agroup,dim,agroup[0:len(col)],supers=True),out)
 
-    def test4(self):
+    def test_4(self):
         from phenum.grouptheory import get_sym_group
         from phenum.phonons import add_arrows
         col = [[-1, 1], [1, 3], [1, 4], [-1, 2]]
@@ -586,7 +586,7 @@ class TestAddArrows(ut.TestCase):
         out = [[[-1, 1], [0, 3], [0, 4], [-1, 2]], [[-1, 1], [1, 3], [0, 4], [-1, 2]], [[-1, 1], [2, 3], [0, 4], [-1, 2]], [[-1, 1], [5, 3], [0, 4], [-1, 2]], [[-1, 1], [0, 3], [1, 4], [-1, 2]], [[-1, 1], [1, 3], [1, 4], [-1, 2]], [[-1, 1], [2, 3], [1, 4], [-1, 2]], [[-1, 1], [4, 3], [1, 4], [-1, 2]], [[-1, 1], [0, 3], [2, 4], [-1, 2]], [[-1, 1], [1, 3], [2, 4], [-1, 2]], [[-1, 1], [2, 3], [2, 4], [-1, 2]], [[-1, 1], [3, 3], [2, 4], [-1, 2]]]
         self.assertEqual(add_arrows(col,agroup,dim,agroup[0:len(col)],supers=True),out)
 
-    def test5(self):
+    def test_5(self):
         from phenum.grouptheory import get_sym_group
         from phenum.phonons import add_arrows
         col = [[-1, 1], [-1, 2], [1, 2], [-1, 1], [-1, 1], [-1, 1]]
@@ -595,7 +595,7 @@ class TestAddArrows(ut.TestCase):
         out = [[[-1, 1], [-1, 2], [0, 2], [-1, 1], [-1, 1], [-1, 1]], [[-1, 1], [-1, 2], [1, 2], [-1, 1], [-1, 1], [-1, 1]], [[-1, 1], [-1, 2], [3, 2], [-1, 1], [-1, 1], [-1, 1]], [[-1, 1], [-1, 2], [5, 2], [-1, 1], [-1, 1], [-1, 1]]]
         self.assertEqual(add_arrows(col,agroup,dim,agroup[0:len(col)],supers=True),out)
 
-    def test6(self):
+    def test_6(self):
         from phenum.grouptheory import get_sym_group
         from phenum.phonons import add_arrows
         col = [[-1, 1], [-1, 1], [-1, 2], [1, 2], [-1, 1], [-1, 1], [-1, 1], [-1, 1], [-1, 1]]
@@ -604,7 +604,7 @@ class TestAddArrows(ut.TestCase):
         out = [[[-1, 1], [-1, 1], [-1, 2], [0, 2], [-1, 1], [-1, 1], [-1, 1], [-1, 1], [-1, 1]], [[-1, 1], [-1, 1], [-1, 2], [1, 2], [-1, 1], [-1, 1], [-1, 1], [-1, 1], [-1, 1]], [[-1, 1], [-1, 1], [-1, 2], [3, 2], [-1, 1], [-1, 1], [-1, 1], [-1, 1], [-1, 1]], [[-1, 1], [-1, 1], [-1, 2], [5, 2], [-1, 1], [-1, 1], [-1, 1], [-1, 1], [-1, 1]]]
         self.assertEqual(add_arrows(col,agroup,dim,agroup[0:len(col)],supers=True),out)
 
-    def test7(self):
+    def test_7(self):
         from phenum.grouptheory import get_sym_group
         from phenum.phonons import add_arrows
         col = [[-1, 3], [-1, 3], [-1, 1], [-1, 3], [-1, 2], [-1, 3], [-1, 3], [-1, 1], [-1, 3], [1, 2]]
@@ -613,7 +613,7 @@ class TestAddArrows(ut.TestCase):
         out = [[[-1, 3], [-1, 3], [-1, 1], [-1, 3], [-1, 2], [-1, 3], [-1, 3], [-1, 1], [-1, 3], [0, 2]], [[-1, 3], [-1, 3], [-1, 1], [-1, 3], [-1, 2], [-1, 3], [-1, 3], [-1, 1], [-1, 3], [1, 2]], [[-1, 3], [-1, 3], [-1, 1], [-1, 3], [-1, 2], [-1, 3], [-1, 3], [-1, 1], [-1, 3], [5, 2]]]
         self.assertEqual(add_arrows(col,agroup,dim,agroup[0:len(col)],supers=True),out)
 
-    def test8(self):
+    def test_8(self):
         from phenum.grouptheory import get_sym_group
         from phenum.phonons import add_arrows
         col = [[-1, 3], [-1, 3], [-1, 1], [-1, 3], [-1, 2], [-1, 3], [-1, 3], [1, 2], [-1, 3], [-1, 1]]
@@ -622,7 +622,7 @@ class TestAddArrows(ut.TestCase):
         out = [[[-1, 3], [-1, 3], [-1, 1], [-1, 3], [-1, 2], [-1, 3], [-1, 3], [0, 2], [-1, 3], [-1, 1]], [[-1, 3], [-1, 3], [-1, 1], [-1, 3], [-1, 2], [-1, 3], [-1, 3], [1, 2], [-1, 3], [-1, 1]], [[-1, 3], [-1, 3], [-1, 1], [-1, 3], [-1, 2], [-1, 3], [-1, 3], [5, 2], [-1, 3], [-1, 1]]]
         self.assertEqual(add_arrows(col,agroup,dim,agroup[0:len(col)],supers=True),out)
 
-    def test9(self):
+    def test_9(self):
         from phenum.grouptheory import get_sym_group
         from phenum.phonons import add_arrows
         col = [[-1, 1], [-1, 3], [-1, 2], [1, 4], [1, 2], [-1, 4], [-1, 3], [-1, 1]]
@@ -631,7 +631,7 @@ class TestAddArrows(ut.TestCase):
         out = [[[-1, 1], [-1, 3], [-1, 2], [0, 4], [0, 2], [-1, 4], [-1, 3], [-1, 1]], [[-1, 1], [-1, 3], [-1, 2], [1, 4], [0, 2], [-1, 4], [-1, 3], [-1, 1]], [[-1, 1], [-1, 3], [-1, 2], [2, 4], [0, 2], [-1, 4], [-1, 3], [-1, 1]], [[-1, 1], [-1, 3], [-1, 2], [5, 4], [0, 2], [-1, 4], [-1, 3], [-1, 1]], [[-1, 1], [-1, 3], [-1, 2], [0, 4], [1, 2], [-1, 4], [-1, 3], [-1, 1]], [[-1, 1], [-1, 3], [-1, 2], [1, 4], [1, 2], [-1, 4], [-1, 3], [-1, 1]], [[-1, 1], [-1, 3], [-1, 2], [2, 4], [1, 2], [-1, 4], [-1, 3], [-1, 1]], [[-1, 1], [-1, 3], [-1, 2], [4, 4], [1, 2], [-1, 4], [-1, 3], [-1, 1]], [[-1, 1], [-1, 3], [-1, 2], [0, 4], [2, 2], [-1, 4], [-1, 3], [-1, 1]], [[-1, 1], [-1, 3], [-1, 2], [1, 4], [2, 2], [-1, 4], [-1, 3], [-1, 1]], [[-1, 1], [-1, 3], [-1, 2], [2, 4], [2, 2], [-1, 4], [-1, 3], [-1, 1]], [[-1, 1], [-1, 3], [-1, 2], [3, 4], [2, 2], [-1, 4], [-1, 3], [-1, 1]]]
         self.assertEqual(add_arrows(col,agroup,dim,agroup[0:len(col)],supers=True),out)
 
-    def test10(self):
+    def test_10(self):
         from phenum.grouptheory import get_sym_group
         from phenum.phonons import add_arrows
         col = [[-1, 1], [-1, 2], [-1, 3], [1, 2], [-1, 3], [-1, 4], [-1, 1], [1, 4]]

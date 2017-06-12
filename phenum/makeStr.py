@@ -4,7 +4,11 @@ from phenum import msg
 def RepresentsInt(s):
     """Determines if a stri could be an int.
 
-    :arg s: The string to be tested.
+    Args:
+        s (str): The string to be tested.
+    
+    Returns:
+        True if the string is an integer.
     """    
     try: 
         int(s)
@@ -13,7 +17,11 @@ def RepresentsInt(s):
         return False
 
 def _make_structures(args):
-    """Makes a VASP POSCAR file for the desired structures."""
+    """Makes a VASP POSCAR file for the desired structures.
+
+    Args:
+        args (dict): The user input.
+    """
     from phenum.io_utils import read_enum_out, write_POSCAR
     from phenum.vector_utils import map_enumStr_to_real_space, cartesian2direct
 
@@ -119,9 +127,12 @@ def _parser_options():
 
 def run(args):
     """Generates the vasp output file for the desired structure.
+
+    Args:
+        args (dict): The user input.
     """
 
-    if args == None:
+    if args is None:
         raise ValueError("Please enter a single structure number, two structures that "
                          "indicate the first and last structure to be used in the input "
                          "file, or all.")

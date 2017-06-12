@@ -83,6 +83,7 @@ def read_enum(filename="enum.in"):
     from the 'enum.in' styled file. It should contain only integers and have:
 
        HNF concs num_wanted
+
     where,
 
     HNF: the list of 6 independent entries in the HNF matrix;
@@ -98,10 +99,10 @@ def read_enum(filename="enum.in"):
     from numpy import loadtxt
     raw = loadtxt(filename, int, ndmin=2)
     systems = []
-    for i in range(len(raw)):
-        HNF = raw[i,0:6]
-        sys_conc = raw[i,6:-1]
-        num_wanted = raw[i,-1]
+    for i in raw:
+        HNF = i[0:6]
+        sys_conc = i[6:-1]
+        num_wanted = i[-1]
         systems.append((HNF, sys_conc, num_wanted))
     return systems
 
@@ -115,7 +116,7 @@ def write_enum(params, outfile="enum.out"):
     """
     from datetime import datetime
     lines = []
-    lines.append("Random structure enumeration: %s" % (str(datetime.now())))
+    lines.append("Random structure enumeration: {0}".format(str(datetime.now())))
     lines.append("bulk" if params["bulk"] else "surface")
     lines.extend([" {0:.7f}       {1:.7f}       {2:.7f}".format(*l) for l in params["lat_vecs"]])
     lines.append("    {0:d}".format(len(params["basis_vecs"])))
@@ -202,9 +203,8 @@ def which(program):
         return os.path.isfile(fpath) and os.access(fpath, os.X_OK)
 
     fpath, fname = os.path.split(program)
-    if fpath:
-        if is_exe(program):
-            return program
+    if fpath and is_exe(program):
+        return program
     else:
         for path in os.environ["PATH"].split(os.pathsep):
             path = path.strip('"')
@@ -360,7 +360,7 @@ def write_POSCAR(system_data,space_data,structure_data,args):
         filename = args["outfile"] + ".{}".format(str(structure_data["strN"]))
 
     labeling = structure_data["labeling"]            
-    gIndx = space_data["gIndx"]
+    g_indx = space_data["gIndx"]
     arrows = structure_data["directions"]
     struct_n = structure_data["strN"]
 
@@ -369,7 +369,7 @@ def write_POSCAR(system_data,space_data,structure_data,args):
 
     concs = [0]*system_data["k"]
     for atom in range(structure_data["n"]*system_data["nD"]):
-        concs[int(labeling[gIndx[atom]])] += 1
+        concs[int(labeling[g_indx[atom]])] += 1
         
     def_title = "{} str #: {}\n".format(str(system_data["title"]),str(structure_data["strN"]))
 
@@ -377,13 +377,13 @@ def write_POSCAR(system_data,space_data,structure_data,args):
 
     for arrow in arrows:
         directions.append(array(arrow_directions[int(arrow)]))
-    sLV = space_data["sLV"]
+    slv = space_data["sLV"]
     with open(filename,"w+") as poscar:
         poscar.write(title)
         poscar.write("{0:.2f}\n".format(lattice_parameter))
         for i in range(3):
             poscar.write(" {}\n".format(" ".join(
-                ["{0: .8f}".format(j) for j in sLV[i]])))
+                ["{0: .8f}".format(j) for j in slv[i]])))
         poscar.write("  ")
         if args["species"] == None:
             for ic in concs:
@@ -399,7 +399,7 @@ def write_POSCAR(system_data,space_data,structure_data,args):
             rattle = uniform(-args["rattle"],args["rattle"])
             displace = directions[iAt]*args["displace"]*lattice_parameter
             displace += displace*rattle
-            if labeling[gIndx[iAt]] == str(ilab):
+            if labeling[g_indx[iAt]] == str(ilab):
                 out_array = array(space_data["aBas"][iAt]) + displace
                 poscar.write(" {}\n".format(
                     "  ".join(["{0: .8f}".format(i) for i in out_array.tolist()])))

@@ -13,27 +13,34 @@ all_elements ={"H": 3.75,"He": 3.57,"Li": 3.49,"Be": 2.29,"B": 8.73,"C": 3.57,"N
 def get_lattice_parameter(elements, concentrations, default_title):
     """Finds the lattice parameters for the provided atomic species using Vagars law.
 
-    :arg elements: A dictionary of elements in the system and their concentrations.
-    :arg title: The default system title.
-    :arg concentrations: The concentrations of each element.
+    Args:
+        elements (list of str): A list of the elements in the system.
+        default_title (str): The default system title.
+        concentrations (list of int): The concentrations of each element.
+
+    Returns:
+        lat_param (float): The lattice parameter of the system.
+
+    Raises:
+        ValueError: if the number of elements doesn't match the len of the concentration array.
     """
 
-    if elements == None:
+    if elements is None:
         lat_param = 1.0
         title = default_title
     else:
         if len(elements) != len(concentrations):
-            raise ValueError("You have provided {} element names when {} elements are present "
+            raise ValueError("You have provided {0} element names when {1} elements are present "
                 "in the system. Please provide the correct number of elements."
                 .format(len(elements),len(concentrations)))
 
         else:
             title = ""
             lat_param = 0
-            for i in range(len(elements)):
-                lat_param += concentrations[i]*all_elements[elements[i]]
+            for i, elem in enumerate(elements):
+                lat_param += concentrations[i]*all_elements[elem]
                 if concentrations[i] > 0:
-                    title += " {} ".format(elements[i])
+                    title += " {0} ".format(elem)
             lat_param = float(lat_param) / sum(concentrations)
             title = "{0} {1}\n".format(default_title.strip(),title)
     return lat_param, title

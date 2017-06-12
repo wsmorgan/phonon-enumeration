@@ -1,5 +1,10 @@
 # Revision History for "phonon-enumeration"
 
+## Revision 2.0.2
+- Removed deprecated code from phenum/structures.py.
+- Fixed lots of minor style issues found by quantified code.
+- Finished improving sphinx documentation.
+
 ## Revision 2.0.1
 - Started changing numpy style documentation to google style to be consitent.
 - Switched to codecov and quantified code.
