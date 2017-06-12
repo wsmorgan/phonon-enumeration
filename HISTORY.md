@@ -1,10 +1,16 @@
 # Revision History for "phonon-enumeration"
 
+## Revision 2.0.3
+- Fixed final 4 issues found by quantifiedcode, this involved minor
+  changes to phenum/symmetry.py, phenum/grouptheory.py,
+  phenum/vector_utils.py, and phenum/HNFs.py.
+- Added CONTRIBUTING.md to repo.
+
 ## Revision 2.0.2
 - Removed deprecated code from phenum/structures.py.
 - Fixed lots of minor style issues found by quantified code.
 - Finished improving sphinx documentation.
-- Move phenum.symmetry._get_lattice_pointGroup to phenum.symmetry.get_lattice_pointGroup.
+- Moved phenum.symmetry._get_lattice_pointGroup to phenum.symmetry.get_lattice_pointGroup.
 
 ## Revision 2.0.1
 - Started changing numpy style documentation to google style to be consitent.

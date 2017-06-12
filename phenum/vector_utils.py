@@ -298,8 +298,8 @@ def _reduce_C_in_ABC(A,B,C,eps):
 
     # First thing to do is find the (real, not lattice) point in the
     # affine plane A,B + C that is nearest the origin. Call this T.
-    cpd_AB = [i/linalg.norm(cross(A,B)) for i in cross(A,B)]
-    T = [C[i] - cpd_AB[i]*dot(C,cpd_AB) for i in range(3)]
+    cpd_ab = [i/linalg.norm(cross(A,B)) for i in cross(A,B)]
+    T = [C[i] - cpd_ab[i]*dot(C,cpd_ab) for i in range(3)]
 
     if not allclose(dot(T,cross(A,B)),0,atol=eps,rtol=eps): #pragma: no cover
         from .msg import err
