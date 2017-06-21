@@ -30,13 +30,20 @@ def read_lattice(filename='lattice.in'):
 
     Returns: 
         result (dict): A dictionary with the following fields:
-          "sizes": the range of cell sizes,
-          "lat_vecs": lattice vectors of the parent cell,
-          "nspecies": the number of atomic species in the enumeration,
-          "basis_vecs": basis vectors of the parent cell,
-          "is_crestricted": logical that indicates if the concentrations will be restricted,
-          "arrows": logical that indicates if arrows are present,
-          "concs": array of the concentrations in format [1,3].
+
+            "sizes": the range of cell sizes,
+
+            "lat_vecs": lattice vectors of the parent cell,
+
+            "nspecies": the number of atomic species in the enumeration,
+
+            "basis_vecs": basis vectors of the parent cell,
+
+            "is_crestricted": logical that indicates if the concentrations will be restricted,
+
+            "arrows": logical that indicates if arrows are present,
+
+            "concs": array of the concentrations in format [1,3].
     """
     from .msg import info
     with open(filename,'r') as f:
@@ -248,29 +255,49 @@ def read_enum_out(args):
 
     Returns:
         system (dict): A dictionary with the keys:
-          "plattice": The parrent lattice vectors.
-          "dvecs": The atomic basis vectors.
-          "title": The name of the system.
-          "bulksurf": 'bulk' or 'surface'.
-          "nD": The number of atomic basis vectors.
-          "k": The number of atomic species.
-          "eps": Finite precision tolerance.
+
+            "plattice": The parrent lattice vectors.
+
+            "dvecs": The atomic basis vectors.
+
+            "title": The name of the system.
+
+            "bulksurf": 'bulk' or 'surface'.
+
+            "nD": The number of atomic basis vectors.
+
+            "k": The number of atomic species.
+
+            "eps": Finite precision tolerance.
 
         structure_data (list of dict): A list of dictionaries for each desired structure. Each
-          dictionary contains:
-          "strN": The structure number.
-          "hnfN": The HNFs number.
-          "hnf_degen": The HNFs degeneracy.
-          "lab_degen": The label degeneracy.
-          "tot_degen": The total degeneracy for the structure.
-          "sizeN": The system size.
-          "n": Number of structure within this size.
-          "pgOps": The number of point group operations.
-          "diag": The diagonal of the SNF.
-          "HNF": The HNF matrix.
-          "L": The left transform matrix.
-          "labeling": The atomic labeling for the structure.
-          "directions": The arrow labeling for the structure.
+            dictionary contains:
+
+                "strN": The structure number.
+
+                "hnfN": The HNFs number.
+
+                "hnf_degen": The HNFs degeneracy.
+
+                "lab_degen": The label degeneracy.
+
+                "tot_degen": The total degeneracy for the structure.
+
+                "sizeN": The system size.
+
+                "n": Number of structure within this size.
+
+                "pgOps": The number of point group operations.
+
+                "diag": The diagonal of the SNF.
+
+                "HNF": The HNF matrix.
+
+                "L": The left transform matrix.
+
+                "labeling": The atomic labeling for the structure.
+
+                "directions": The arrow labeling for the structure.
      """
     from numpy import transpose
     

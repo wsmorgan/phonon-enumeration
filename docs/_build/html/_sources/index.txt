@@ -33,13 +33,7 @@ Contents:
 .. automodule :: phenum.grouptheory
    :members: 
 
-.. automodule :: phenum.enumeration
-   :members: 
-
 .. automodule :: phenum.io_utils
-   :members: 
-
-.. automodule :: phenum.makeStr
    :members: 
 
 .. automodule :: phenum.numerics

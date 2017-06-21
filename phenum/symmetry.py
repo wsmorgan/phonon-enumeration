@@ -135,7 +135,7 @@ def _get_transformations(par_lat):
     lattice coordinates to cartesion coordinates and vice versa.
 
     Args:
-        par_lat (array-like): A 2D integer array that contains the parent 
+        par_lat (array-like): A 2D array that contains the parent 
           lattice vectors
 
     Returns:
@@ -157,7 +157,7 @@ def bring_into_cell(vec,cart_to_latt,latt_to_cart,eps):
     less than one and at least zero.
     
     Args:
-        vec (list of int): A 1D integer array of the atom position vector
+        vec (list of int): The atom's position vector
 
         cart_to_latt (numpy ndarray): The matrix that transforms from cartesian 
           to lattice coordinates
@@ -207,7 +207,7 @@ def get_lattice_pointGroup(a_vecs, eps=1E-10):
 
     Returns:
         lattpg_op (array-like): The point group for the lattice in 
-            cartesian coordinates.
+        cartesian coordinates.
     """
 
     inverse_avecs = numpy.linalg.inv(numpy.array(a_vecs)).tolist()
@@ -276,17 +276,16 @@ def get_spaceGroup(par_lat,atomType,bas_vecs,eps=1E-10,lattcoords = False):
     that the given crystal structure is already primitive.
 
     Args:
-        par_lat (array-like): A 2D integere array that contains the parent lattice vectors
-        atomType (list of int): Integer array representing the type of each basis atom
-        bas_vecs (array-like): A 2D integere array that contains the basis vectors for the cell
-        eps (float, optional): Finite precisions tolerance
-
+        par_lat (array-like): A 2D array that contains the parent lattice vectors.
+        atomType (list of int): Integer array representing the type of each basis atom.
+        bas_vecs (array-like): A 2D array that contains the basis vectors for the cell.
+        eps (float, optional): Finite precisions tolerance.
         lattcoords (bool, optional): True if vectors are in lattice coordinates 
-          rather than cartesian
+            rather than cartesian.
 
     Returns:
-        sg_ops (array-like): The rotation and mirror operations of the space group.
-        sg_fracts (array-like): The translation operations of the space group.
+        (sg_ops, sg_fracts) (array-like, array-like): The rotation and mirror operations of 
+        the space group, and the translation operations of the space group.
     """
     # Get number of atoms in the basis    
     n_atoms = len(atomType)

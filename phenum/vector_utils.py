@@ -6,40 +6,65 @@ def map_enumStr_to_real_space(system_data,structure_data,minkowskiReduce):
 
     Args:
         system_data (dict): A dictionary containing all the information about the sysytem with
-          keys:
-          "plattice": The parrent lattice vectors.
-          "dvecs": The atomic basis vectors.
-          "title": The name of the system.
-          "bulksurf": 'bulk' or 'surface'.
-          "nD": The number of atomic basis vectors.
-          "k": The number of atomic species.
-          "eps": Finite precision tolerance.
+            keys:
+
+                "plattice": The parrent lattice vectors.
+
+                "dvecs": The atomic basis vectors.
+
+                "title": The name of the system.
+
+                "bulksurf": 'bulk' or 'surface'.
+
+                "nD": The number of atomic basis vectors.
+
+                "k": The number of atomic species.
+
+                "eps": Finite precision tolerance.
 
         sturture_data (dict): A dictionary containing the information for this structure with
-          keys:
-          "strN": The structure number.
-          "hnfN": The HNFs number.
-          "hnf_degen": The HNFs degeneracy.
-          "lab_degen": The label degeneracy.
-          "tot_degen": The total degeneracy for the structure.
-          "sizeN": The system size.
-          "n": Number of structure within this size.
-          "pgOps": The number of point group operations.
-          "diag": The diagonal of the SNF.
-          "HNF": The HNF matrix.
-          "L": The left transform matrix.
-          "labeling": The atomic labeling for the structure.
-          "directions": The arrow labeling for the structure.
+            keys:
+
+                "strN": The structure number.
+
+                "hnfN": The HNFs number.
+
+                "hnf_degen": The HNFs degeneracy.
+
+                "lab_degen": The label degeneracy.
+
+                "tot_degen": The total degeneracy for the structure.
+
+                "sizeN": The system size.
+
+                "n": Number of structure within this size.
+
+                "pgOps": The number of point group operations.
+
+                "diag": The diagonal of the SNF.
+
+                "HNF": The HNF matrix.
+
+                "L": The left transform matrix.
+
+                "labeling": The atomic labeling for the structure.
+
+                "directions": The arrow labeling for the structure.
 
         minkowskiReduce (bool): Logical indicating if basis should be reduced.
 
     Returns:
         space_data (dict): A dictionary of the structure mapped to real space with keys:
-          "sLV": The super lattice vectors as rows in a matrix.
-          "aBas": The attomic basis vectors.
-          "spin": A list of the occupanices.
-          "gIndx": The integer group index.
-          "x": A list of the concentrations of each atom type.
+
+            "sLV": The super lattice vectors as rows in a matrix.
+
+            "aBas": The attomic basis vectors.
+
+            "spin": A list of the occupanices.
+
+            "gIndx": The integer group index.
+
+            "x": A list of the concentrations of each atom type.
     """
     # print("in system_data",system_data)
     # print("in structure_data",structure_data)

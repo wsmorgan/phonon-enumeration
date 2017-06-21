@@ -378,6 +378,12 @@ class TestSmithNormalForm(ut.TestCase):
         out =  ([[1, 0, 0], [0, 2, 0], [0, 0, 2]], [[1, 0, 1], [0, 1, 0], [-1, 0, 0]], [[0, 0, -1], [0, 1, 0], [1, 0, 2]])
         self.assertEqual(SmithNormalForm(HNF),out)
 
+    def test_17(self):
+        """Test of the bug reported in issue #56."""
+        from phenum.grouptheory import SmithNormalForm
+        HNF = [[1,2,4],[3,3,4],[3,4,2]]
+        S, L, R = SmithNormalForm(HNF)
+        self.assertTrue(np.allclose(list(np.dot(np.dot(L,HNF),R)),S))
 
 class TestAGroup(ut.TestCase):
     """ Tests of the a_group subroutine."""
