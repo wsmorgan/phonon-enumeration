@@ -292,8 +292,7 @@ script_options = {
                            "vprof`). Argument is a combination of 'c', 'm' and 'h'. See "
                            "vprof docs.")),
     "-seed": dict(default=None, type=int,
-                  help=("The integer seed for the random number generator.")),
-    
+                  help=("The integer seed for the random number generator.")),    
     "-super": dict(action="store_true",
                    help=("Overrides the exclusion of the superperiodic cells from the output.")),
     "-filter": dict(default=None, nargs = 2,

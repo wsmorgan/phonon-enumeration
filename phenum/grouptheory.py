@@ -272,20 +272,25 @@ def SmithNormalForm(HNF):
     right transforms.
       
     Args:
-        HNF (list of list): The integer matrix HNF for which the SNF is to be found.
+        HNF (list of list): An integer matrix for which the SNF is to be found.
 
     Returns:
-        M (list of list): The Smith Normal Form matrix of the HNF.
-        A (list of list): The left transform matrix.
-        B (list of list): The right transform matrix.
+
+        (M, A, B) (matrix, matrix, matrix): The M is the Smith Normal Form
+        matrix of the input matrix, A is the left transform matrix,
+        and B is the right transform matrix. The matrices are such
+        that np.dot(np.dot(A,HNF),B) = M.
+
     """
     from numpy import dot
+    from copy import deepcopy
+    
     if np.linalg.det(HNF) < 1:
         raise ValueError("SmithNormalForm routine failed because the input matrix had a "
                          "determinant less than 1.")
 
     A = [[0,0,0],[0,0,0],[0,0,0]]
-    M = list(HNF)
+    M = deepcopy(list(HNF))
     B = [[0,0,0],[0,0,0],[0,0,0]]
 
     for i in range(3):

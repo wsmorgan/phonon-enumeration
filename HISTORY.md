@@ -1,5 +1,10 @@
 # Revision History for "phonon-enumeration"
 
+## Revision 2.0.4
+- Fixed the issue reported in issue #56 by changing M=list(HNF) to
+  M=deepcopy(list(HNF)) in SmithNormalForm.
+- Finished fixing the documentation.
+
 ## Revision 2.0.3
 - Fixed final 4 issues found by quantifiedcode, this involved minor
   changes to phenum/symmetry.py, phenum/grouptheory.py,
