@@ -383,7 +383,7 @@ class TestSmithNormalForm(ut.TestCase):
         from phenum.grouptheory import SmithNormalForm
         HNF = [[1,2,4],[3,3,4],[3,4,2]]
         S, L, R = SmithNormalForm(HNF)
-        self.assertEqual(list(np.dot(np.dot(L,HNF),R)),S)
+        self.assertTrue(np.allclose(list(np.dot(np.dot(L,HNF),R)),S))
 
 class TestAGroup(ut.TestCase):
     """ Tests of the a_group subroutine."""
