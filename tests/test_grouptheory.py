@@ -380,6 +380,7 @@ class TestSmithNormalForm(ut.TestCase):
 
     def test_17(self):
         """Test of the bug reported in issue #56."""
+        from phenum.grouptheory import SmithNormalForm
         HNF = [[1,2,4],[3,3,4],[3,4,2]]
         S, L, R = SmithNormalForm(HNF)
         self.assertEqual(list(np.dot(np.dot(L,HNF),R)),S)
