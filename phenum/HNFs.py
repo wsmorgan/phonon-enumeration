@@ -51,23 +51,21 @@ def find_all_HNFs(n):
 
     return hnfs
 
-def remove_duplicate_lattices(hnfs,pLV,base_vecs,LatDim,base_perms,eps_=None):
+def remove_duplicate_lattices(hnfs,pLV,base_vecs,base_perms,eps_=None):
     """Removes symmetrically equivalent lattices from the list of possible lattices.
 
     Args:
         hnfs (array-like): A list of the possible HNFs.
         pLV (array-like): The parent lattice vectors as a column matrix.
         base_vecs (array-like): The atomic basis vectors.
-        LatDim (int): 3 if bulk, 2 if surf.
         base_perms (RotPermList): Permutations of the basis vectors.
         eps_ (float optional): Floating point tollerance.
 
     Returns:
-        uhnfs (array-like): List of unique HNFs.
-        latts (array-like): List of unique lattices.
-        fix_ops (OpList): List of operations that preserve the symmetry group.
-        rp_list (RotPermList): Permutations of basis vectors.
-        degeneracy (list): The degeneracy of each HNF.
+        (uhnfs, fix_ops, rp_list, degeneracy): uhnfs is an array-like list of unique HNFs,
+           fix_ops is of type OpList, i.e., the list of operations that preserve the 
+           symmetry group rp_list is of type RotPermList, the permutations of basis 
+           vectors, and degeneracy is a list of the degeneracy of each HNF.
     """
 
     from .symmetry import get_spaceGroup
@@ -110,13 +108,13 @@ def remove_duplicate_lattices(hnfs,pLV,base_vecs,LatDim,base_perms,eps_=None):
     for hnf in uhnfs:
         B = np.matmul(pLV,hnf)
         latts.append(B)
-        (fix_op, RPlisti,degeneracy) = _get_sLV_fixing_operations(hnf,pLV,len(base_vecs),
-                                                                 rots,shifts,base_perms,eps)
+        (fix_op, RPlisti,degeneracy) = _get_sLV_fixing_operations(hnf,pLV,rots,shifts,
+                                                                  base_perms,eps)
         fix_ops.append(fix_op)
         rp_list.append(RPlisti)
         degens.append(degeneracy+1)
 
-    return (uhnfs,latts,fix_ops,rp_list,degens)
+    return (uhnfs,fix_ops,rp_list,degens)
 
 def get_HNFs(n,pLV,base_vecs,LatDim,eps_=None):
     """Finds the unique HNFs for the system.
@@ -143,10 +141,9 @@ def get_HNFs(n,pLV,base_vecs,LatDim,eps_=None):
 
     hnfs = find_all_HNFs(n)
     temp_basis = deepcopy(base_vecs)
-    plv_inv = np.linalg.inv(pLV)
+    plv_inv = np.transpose(np.linalg.inv(pLV))
     for i, b_vecs in enumerate(base_vecs):
-        # par_lat_inv = linalg.inv(np.transpose(par_lat))
-        base_vecs[i] = bring_into_cell(b_vecs,plv_inv,pLV,eps)
+        base_vecs[i] = bring_into_cell(b_vecs,plv_inv,np.transpose(pLV),eps)
         if not np.allclose(b_vecs, temp_basis[i], rtol=0, atol=eps): #pragma: no cover
             from phenum.msg import warn
             warn("An atomic basis vector was not inside the unit cell. It has been "
@@ -156,6 +153,6 @@ def get_HNFs(n,pLV,base_vecs,LatDim,eps_=None):
         
     base_perms = _get_dvector_permutations(pLV,base_vecs,LatDim,eps)
 
-    (hnfs,latts,fix_ops,rp_list,degens) = remove_duplicate_lattices(hnfs,pLV,base_vecs,
-                                                                   LatDim,base_perms,eps_=eps)
+    (hnfs,fix_ops,rp_list,degens) = remove_duplicate_lattices(hnfs,pLV,base_vecs,
+                                                                   base_perms,eps_=eps)
     return hnfs

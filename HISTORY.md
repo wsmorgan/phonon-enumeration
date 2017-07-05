@@ -1,5 +1,9 @@
 # Revision History for "phonon-enumeration"
 
+## Revision 2.0.5
+- Fixed the issue reported in [issue #58](https://github.com/wsmorgan/phonon-enumeration/issues/58).
+- Removed a lot of unused variables.
+
 ## Revision 2.0.4
 - Fixed the issue reported in issue #56 by changing M=list(HNF) to
   M=deepcopy(list(HNF)) in SmithNormalForm.

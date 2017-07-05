@@ -25,7 +25,6 @@ def HNF_shapes(enum,lattice,show,testmode=False):
     from phenum.vector_utils import map_enumStr_to_real_space, cartesian2direct
     from operator import mul
     from numpy import array, mgrid, dot
-    from itertools import product
 
     try: 
         from functools import reduce
@@ -127,7 +126,6 @@ def HNF_atoms(enum,lattice,show,testmode=False):
     from phenum.vector_utils import map_enumStr_to_real_space, cartesian2direct
     from operator import mul
     from numpy import array, mgrid, dot
-    from itertools import product
     
     try: 
         from functools import reduce

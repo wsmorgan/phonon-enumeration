@@ -1,6 +1,6 @@
-"""Methods for reading and writing enumeration and polya-counting results."""
+"""Methods for reading and writing enumeration and polya-counting results.
 
-"""Generates a random subset of possible structures weighted by the
+Generates a random subset of possible structures weighted by the
 Polya distribution for superstructures.
 """
 
@@ -92,11 +92,10 @@ def _distribute(infile, cellsizes, ftype, n=None,seed=None, res_type=None, res_v
             for key, value, limit in relvals:
                 vinsert(key, limit, rtotal, n, result)
         else:
-            from numpy import round
             from math import modf
-            from random import random, seed, getstate
+            from random import random, seed
             from operator import itemgetter
-            import sys
+
             if seed_val is not None:
                 seed(a=seed_val)
                 
@@ -166,7 +165,6 @@ def _distribute(infile, cellsizes, ftype, n=None,seed=None, res_type=None, res_v
         from .msg import warn
         warn("More structures were returned than asked for, should not be possible.")
 
-    from operator import itemgetter
     return result
 
 def _distribution(infile, ftype, dataset, gtotal, cast=float, cellsizes=None,res_type = None,

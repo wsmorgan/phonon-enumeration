@@ -303,7 +303,6 @@ class Multinomial(object):
         if not all(seq%self.power == 0 for seq in sequence):
             return 0
         else:
-            from operator import mul
             normseq = self.normed_seq(sequence)
             len_seq = len(sequence)
             for i in range(len_seq):
@@ -506,14 +505,7 @@ def polya(concentrations, group, arrowings=None, debug=False):
         ValueError: if the concentrations don't sum to the size of the group operation.
     """
     import itertools
-    
-    temp = [str(i) for i in concentrations]
-    for i in group:
-        temp = [str(j) for j in i[0]]
-
-    for i in group:
-        temp = [str(j) for j in i[1]]
-    
+        
     if arrowings is None:
         arrowings = [False]*len(concentrations)
     elif isinstance(arrowings, int):
