@@ -1022,7 +1022,7 @@ class TestGetSLVFixingOperations(ut.TestCase):
         shift = list(map(list,zip(*_read_float_2D(gpath+"get_sLV_fixing_operations_shift.in."+str(case)))))
         eps = _read_float(gpath+"get_sLV_fixing_operations_eps.in."+str(case))
         dPerm = _read_RotPermList(gpath+"get_sLV_fixing_operations_dPerm.in."+str(case))
-        fixOp, rotPerm, degeneracy = _get_sLV_fixing_operations(HNF,pLV,nD,rot,shift,dPerm,eps)
+        fixOp, rotPerm, degeneracy = _get_sLV_fixing_operations(HNF,pLV,rot,shift,dPerm,eps)
         rotPerm_out = _read_RotPermList(gpath+"get_sLV_fixing_operations_rotPerm.out."+str(case))
         degen_out = _read_int(gpath+"get_sLV_fixing_operations_degeneracy.out."+str(case))
         fixOp_out = _read_fixOp(gpath+"get_sLV_fixing_operations_fixOp.out."+str(case))
@@ -1039,7 +1039,7 @@ class TestGetSLVFixingOperations(ut.TestCase):
         shift = list(map(list,zip(*_read_float_2D(gpath+"get_sLV_fixing_operations_shift.in."+str(case)))))
         eps = _read_float(gpath+"get_sLV_fixing_operations_eps.in."+str(case))
         dPerm = _read_RotPermList(gpath+"get_sLV_fixing_operations_dPerm.in."+str(case))
-        fixOp, rotPerm, degeneracy = _get_sLV_fixing_operations(HNF,pLV,nD,rot,shift,dPerm,eps)
+        fixOp, rotPerm, degeneracy = _get_sLV_fixing_operations(HNF,pLV,rot,shift,dPerm,eps)
         rotPerm_out = _read_RotPermList(gpath+"get_sLV_fixing_operations_rotPerm.out."+str(case))
         degen_out = _read_int(gpath+"get_sLV_fixing_operations_degeneracy.out."+str(case))
         fixOp_out = _read_fixOp(gpath+"get_sLV_fixing_operations_fixOp.out."+str(case))
@@ -1056,7 +1056,7 @@ class TestGetSLVFixingOperations(ut.TestCase):
         shift = list(map(list,zip(*_read_float_2D(gpath+"get_sLV_fixing_operations_shift.in."+str(case)))))
         eps = _read_float(gpath+"get_sLV_fixing_operations_eps.in."+str(case))
         dPerm = _read_RotPermList(gpath+"get_sLV_fixing_operations_dPerm.in."+str(case))
-        fixOp, rotPerm, degeneracy = _get_sLV_fixing_operations(HNF,pLV,nD,rot,shift,dPerm,eps)
+        fixOp, rotPerm, degeneracy = _get_sLV_fixing_operations(HNF,pLV,rot,shift,dPerm,eps)
         rotPerm_out = _read_RotPermList(gpath+"get_sLV_fixing_operations_rotPerm.out."+str(case))
         degen_out = _read_int(gpath+"get_sLV_fixing_operations_degeneracy.out."+str(case))
         fixOp_out = _read_fixOp(gpath+"get_sLV_fixing_operations_fixOp.out."+str(case))
@@ -1073,7 +1073,7 @@ class TestGetSLVFixingOperations(ut.TestCase):
         shift = list(map(list,zip(*_read_float_2D(gpath+"get_sLV_fixing_operations_shift.in."+str(case)))))
         eps = _read_float(gpath+"get_sLV_fixing_operations_eps.in."+str(case))
         dPerm = _read_RotPermList(gpath+"get_sLV_fixing_operations_dPerm.in."+str(case))
-        fixOp, rotPerm, degeneracy = _get_sLV_fixing_operations(HNF,pLV,nD,rot,shift,dPerm,eps)
+        fixOp, rotPerm, degeneracy = _get_sLV_fixing_operations(HNF,pLV,rot,shift,dPerm,eps)
         rotPerm_out = _read_RotPermList(gpath+"get_sLV_fixing_operations_rotPerm.out."+str(case))
         degen_out = _read_int(gpath+"get_sLV_fixing_operations_degeneracy.out."+str(case))
         fixOp_out = _read_fixOp(gpath+"get_sLV_fixing_operations_fixOp.out."+str(case))
@@ -1090,7 +1090,7 @@ class TestGetSLVFixingOperations(ut.TestCase):
         shift = list(map(list,zip(*_read_float_2D(gpath+"get_sLV_fixing_operations_shift.in."+str(case)))))
         eps = _read_float(gpath+"get_sLV_fixing_operations_eps.in."+str(case))
         dPerm = _read_RotPermList(gpath+"get_sLV_fixing_operations_dPerm.in."+str(case))
-        fixOp, rotPerm, degeneracy = _get_sLV_fixing_operations(HNF,pLV,nD,rot,shift,dPerm,eps)
+        fixOp, rotPerm, degeneracy = _get_sLV_fixing_operations(HNF,pLV,rot,shift,dPerm,eps)
         rotPerm_out = _read_RotPermList(gpath+"get_sLV_fixing_operations_rotPerm.out."+str(case))
         degen_out = _read_int(gpath+"get_sLV_fixing_operations_degeneracy.out."+str(case))
         fixOp_out = _read_fixOp(gpath+"get_sLV_fixing_operations_fixOp.out."+str(case))
@@ -1107,7 +1107,7 @@ class TestGetSLVFixingOperations(ut.TestCase):
         shift = list(map(list,zip(*_read_float_2D(gpath+"get_sLV_fixing_operations_shift.in."+str(case)))))
         eps = _read_float(gpath+"get_sLV_fixing_operations_eps.in."+str(case))
         dPerm = _read_RotPermList(gpath+"get_sLV_fixing_operations_dPerm.in."+str(case))
-        fixOp, rotPerm, degeneracy = _get_sLV_fixing_operations(HNF,pLV,nD,rot,shift,dPerm,eps)
+        fixOp, rotPerm, degeneracy = _get_sLV_fixing_operations(HNF,pLV,rot,shift,dPerm,eps)
         rotPerm_out = _read_RotPermList(gpath+"get_sLV_fixing_operations_rotPerm.out."+str(case))
         degen_out = _read_int(gpath+"get_sLV_fixing_operations_degeneracy.out."+str(case))
         fixOp_out = _read_fixOp(gpath+"get_sLV_fixing_operations_fixOp.out."+str(case))
@@ -1124,7 +1124,7 @@ class TestGetSLVFixingOperations(ut.TestCase):
         shift = list(map(list,zip(*_read_float_2D(gpath+"get_sLV_fixing_operations_shift.in."+str(case)))))
         eps = _read_float(gpath+"get_sLV_fixing_operations_eps.in."+str(case))
         dPerm = _read_RotPermList(gpath+"get_sLV_fixing_operations_dPerm.in."+str(case))
-        fixOp, rotPerm, degeneracy = _get_sLV_fixing_operations(HNF,pLV,nD,rot,shift,dPerm,eps)
+        fixOp, rotPerm, degeneracy = _get_sLV_fixing_operations(HNF,pLV,rot,shift,dPerm,eps)
         rotPerm_out = _read_RotPermList(gpath+"get_sLV_fixing_operations_rotPerm.out."+str(case))
         degen_out = _read_int(gpath+"get_sLV_fixing_operations_degeneracy.out."+str(case))
         fixOp_out = _read_fixOp(gpath+"get_sLV_fixing_operations_fixOp.out."+str(case))
@@ -1141,7 +1141,7 @@ class TestGetSLVFixingOperations(ut.TestCase):
         shift = list(map(list,zip(*_read_float_2D(gpath+"get_sLV_fixing_operations_shift.in."+str(case)))))
         eps = _read_float(gpath+"get_sLV_fixing_operations_eps.in."+str(case))
         dPerm = _read_RotPermList(gpath+"get_sLV_fixing_operations_dPerm.in."+str(case))
-        fixOp, rotPerm, degeneracy = _get_sLV_fixing_operations(HNF,pLV,nD,rot,shift,dPerm,eps)
+        fixOp, rotPerm, degeneracy = _get_sLV_fixing_operations(HNF,pLV,rot,shift,dPerm,eps)
         rotPerm_out = _read_RotPermList(gpath+"get_sLV_fixing_operations_rotPerm.out."+str(case))
         degen_out = _read_int(gpath+"get_sLV_fixing_operations_degeneracy.out."+str(case))
         fixOp_out = _read_fixOp(gpath+"get_sLV_fixing_operations_fixOp.out."+str(case))
@@ -1158,7 +1158,7 @@ class TestGetSLVFixingOperations(ut.TestCase):
         shift = list(map(list,zip(*_read_float_2D(gpath+"get_sLV_fixing_operations_shift.in."+str(case)))))
         eps = _read_float(gpath+"get_sLV_fixing_operations_eps.in."+str(case))
         dPerm = _read_RotPermList(gpath+"get_sLV_fixing_operations_dPerm.in."+str(case))
-        fixOp, rotPerm, degeneracy = _get_sLV_fixing_operations(HNF,pLV,nD,rot,shift,dPerm,eps)
+        fixOp, rotPerm, degeneracy = _get_sLV_fixing_operations(HNF,pLV,rot,shift,dPerm,eps)
         rotPerm_out = _read_RotPermList(gpath+"get_sLV_fixing_operations_rotPerm.out."+str(case))
         degen_out = _read_int(gpath+"get_sLV_fixing_operations_degeneracy.out."+str(case))
         fixOp_out = _read_fixOp(gpath+"get_sLV_fixing_operations_fixOp.out."+str(case))
@@ -1175,7 +1175,7 @@ class TestGetSLVFixingOperations(ut.TestCase):
         shift = list(map(list,zip(*_read_float_2D(gpath+"get_sLV_fixing_operations_shift.in."+str(case)))))
         eps = _read_float(gpath+"get_sLV_fixing_operations_eps.in."+str(case))
         dPerm = _read_RotPermList(gpath+"get_sLV_fixing_operations_dPerm.in."+str(case))
-        fixOp, rotPerm, degeneracy = _get_sLV_fixing_operations(HNF,pLV,nD,rot,shift,dPerm,eps)
+        fixOp, rotPerm, degeneracy = _get_sLV_fixing_operations(HNF,pLV,rot,shift,dPerm,eps)
         rotPerm_out = _read_RotPermList(gpath+"get_sLV_fixing_operations_rotPerm.out."+str(case))
         degen_out = _read_int(gpath+"get_sLV_fixing_operations_degeneracy.out."+str(case))
         fixOp_out = _read_fixOp(gpath+"get_sLV_fixing_operations_fixOp.out."+str(case))
@@ -1191,7 +1191,7 @@ class TestGetSLVFixingOperations(ut.TestCase):
         shift = list(map(list,zip(*_read_float_2D(gpath+"get_sLV_fixing_operations_shift.in."+str(case)))))
         eps = _read_float(gpath+"get_sLV_fixing_operations_eps.in."+str(case))
         dPerm = _read_RotPermList(gpath+"get_sLV_fixing_operations_dPerm.in."+str(case))
-        fixOp, rotPerm, degeneracy = _get_sLV_fixing_operations(HNF,pLV,nD,rot,shift,dPerm,eps)
+        fixOp, rotPerm, degeneracy = _get_sLV_fixing_operations(HNF,pLV,rot,shift,dPerm,eps)
         rotPerm_out = _read_RotPermList(gpath+"get_sLV_fixing_operations_rotPerm.out."+str(case))
         degen_out = _read_int(gpath+"get_sLV_fixing_operations_degeneracy.out."+str(case))
         fixOp_out = _read_fixOp(gpath+"get_sLV_fixing_operations_fixOp.out."+str(case))
@@ -1208,7 +1208,7 @@ class TestGetSLVFixingOperations(ut.TestCase):
         shift = list(map(list,zip(*_read_float_2D(gpath+"get_sLV_fixing_operations_shift.in."+str(case)))))
         eps = _read_float(gpath+"get_sLV_fixing_operations_eps.in."+str(case))
         dPerm = _read_RotPermList(gpath+"get_sLV_fixing_operations_dPerm.in."+str(case))
-        fixOp, rotPerm, degeneracy = _get_sLV_fixing_operations(HNF,pLV,nD,rot,shift,dPerm,eps)
+        fixOp, rotPerm, degeneracy = _get_sLV_fixing_operations(HNF,pLV,rot,shift,dPerm,eps)
         rotPerm_out = _read_RotPermList(gpath+"get_sLV_fixing_operations_rotPerm.out."+str(case))
         degen_out = _read_int(gpath+"get_sLV_fixing_operations_degeneracy.out."+str(case))
         fixOp_out = _read_fixOp(gpath+"get_sLV_fixing_operations_fixOp.out."+str(case))
@@ -1225,7 +1225,7 @@ class TestGetSLVFixingOperations(ut.TestCase):
         shift = list(map(list,zip(*_read_float_2D(gpath+"get_sLV_fixing_operations_shift.in."+str(case)))))
         eps = _read_float(gpath+"get_sLV_fixing_operations_eps.in."+str(case))
         dPerm = _read_RotPermList(gpath+"get_sLV_fixing_operations_dPerm.in."+str(case))
-        fixOp, rotPerm, degeneracy = _get_sLV_fixing_operations(HNF,pLV,nD,rot,shift,dPerm,eps)
+        fixOp, rotPerm, degeneracy = _get_sLV_fixing_operations(HNF,pLV,rot,shift,dPerm,eps)
         rotPerm_out = _read_RotPermList(gpath+"get_sLV_fixing_operations_rotPerm.out."+str(case))
         degen_out = _read_int(gpath+"get_sLV_fixing_operations_degeneracy.out."+str(case))
         fixOp_out = _read_fixOp(gpath+"get_sLV_fixing_operations_fixOp.out."+str(case))
@@ -1242,7 +1242,7 @@ class TestGetSLVFixingOperations(ut.TestCase):
         shift = list(map(list,zip(*_read_float_2D(gpath+"get_sLV_fixing_operations_shift.in."+str(case)))))
         eps = _read_float(gpath+"get_sLV_fixing_operations_eps.in."+str(case))
         dPerm = _read_RotPermList(gpath+"get_sLV_fixing_operations_dPerm.in."+str(case))
-        fixOp, rotPerm, degeneracy = _get_sLV_fixing_operations(HNF,pLV,nD,rot,shift,dPerm,eps)
+        fixOp, rotPerm, degeneracy = _get_sLV_fixing_operations(HNF,pLV,rot,shift,dPerm,eps)
         rotPerm_out = _read_RotPermList(gpath+"get_sLV_fixing_operations_rotPerm.out."+str(case))
         degen_out = _read_int(gpath+"get_sLV_fixing_operations_degeneracy.out."+str(case))
         fixOp_out = _read_fixOp(gpath+"get_sLV_fixing_operations_fixOp.out."+str(case))
@@ -1259,7 +1259,7 @@ class TestGetSLVFixingOperations(ut.TestCase):
         shift = list(map(list,zip(*_read_float_2D(gpath+"get_sLV_fixing_operations_shift.in."+str(case)))))
         eps = _read_float(gpath+"get_sLV_fixing_operations_eps.in."+str(case))
         dPerm = _read_RotPermList(gpath+"get_sLV_fixing_operations_dPerm.in."+str(case))
-        fixOp, rotPerm, degeneracy = _get_sLV_fixing_operations(HNF,pLV,nD,rot,shift,dPerm,eps)
+        fixOp, rotPerm, degeneracy = _get_sLV_fixing_operations(HNF,pLV,rot,shift,dPerm,eps)
         rotPerm_out = _read_RotPermList(gpath+"get_sLV_fixing_operations_rotPerm.out."+str(case))
         degen_out = _read_int(gpath+"get_sLV_fixing_operations_degeneracy.out."+str(case))
         fixOp_out = _read_fixOp(gpath+"get_sLV_fixing_operations_fixOp.out."+str(case))
@@ -1276,7 +1276,7 @@ class TestGetSLVFixingOperations(ut.TestCase):
         shift = list(map(list,zip(*_read_float_2D(gpath+"get_sLV_fixing_operations_shift.in."+str(case)))))
         eps = _read_float(gpath+"get_sLV_fixing_operations_eps.in."+str(case))
         dPerm = _read_RotPermList(gpath+"get_sLV_fixing_operations_dPerm.in."+str(case))
-        fixOp, rotPerm, degeneracy = _get_sLV_fixing_operations(HNF,pLV,nD,rot,shift,dPerm,eps)
+        fixOp, rotPerm, degeneracy = _get_sLV_fixing_operations(HNF,pLV,rot,shift,dPerm,eps)
         rotPerm_out = _read_RotPermList(gpath+"get_sLV_fixing_operations_rotPerm.out."+str(case))
         degen_out = _read_int(gpath+"get_sLV_fixing_operations_degeneracy.out."+str(case))
         fixOp_out = _read_fixOp(gpath+"get_sLV_fixing_operations_fixOp.out."+str(case))
@@ -1303,7 +1303,7 @@ class TestMapDvectorPermutation(ut.TestCase):
         out = _read_int_1D(gpath+"map_dvector_permutation_RP.out."+str(case))
         out = [i-1 for i in out]
 
-        self._compare_outputs(_map_dvector_permutation(rd,d,eps,n),out)
+        self._compare_outputs(_map_dvector_permutation(rd,d,eps),out)
         
     def test_2(self):
         from phenum.grouptheory import _map_dvector_permutation
@@ -1315,7 +1315,7 @@ class TestMapDvectorPermutation(ut.TestCase):
         out = _read_int_1D(gpath+"map_dvector_permutation_RP.out."+str(case))
         out = [i-1 for i in out]
 
-        self._compare_outputs(_map_dvector_permutation(rd,d,eps,n),out)
+        self._compare_outputs(_map_dvector_permutation(rd,d,eps),out)
         
     def test_3(self):
         from phenum.grouptheory import _map_dvector_permutation
@@ -1327,7 +1327,7 @@ class TestMapDvectorPermutation(ut.TestCase):
         out = _read_int_1D(gpath+"map_dvector_permutation_RP.out."+str(case))
         out = [i-1 for i in out]
 
-        self._compare_outputs(_map_dvector_permutation(rd,d,eps,n),out)
+        self._compare_outputs(_map_dvector_permutation(rd,d,eps),out)
         
     def test_4(self):
         from phenum.grouptheory import _map_dvector_permutation
@@ -1339,7 +1339,7 @@ class TestMapDvectorPermutation(ut.TestCase):
         out = _read_int_1D(gpath+"map_dvector_permutation_RP.out."+str(case))
         out = [i-1 for i in out]
 
-        self._compare_outputs(_map_dvector_permutation(rd,d,eps,n),out)
+        self._compare_outputs(_map_dvector_permutation(rd,d,eps),out)
         
     def test_5(self):
         from phenum.grouptheory import _map_dvector_permutation
@@ -1351,7 +1351,7 @@ class TestMapDvectorPermutation(ut.TestCase):
         out = _read_int_1D(gpath+"map_dvector_permutation_RP.out."+str(case))
         out = [i-1 for i in out]
 
-        self._compare_outputs(_map_dvector_permutation(rd,d,eps,n),out)
+        self._compare_outputs(_map_dvector_permutation(rd,d,eps),out)
         
     def test_6(self):
         from phenum.grouptheory import _map_dvector_permutation
@@ -1363,7 +1363,7 @@ class TestMapDvectorPermutation(ut.TestCase):
         out = _read_int_1D(gpath+"map_dvector_permutation_RP.out."+str(case))
         out = [i-1 for i in out]
 
-        self._compare_outputs(_map_dvector_permutation(rd,d,eps,n),out)
+        self._compare_outputs(_map_dvector_permutation(rd,d,eps),out)
         
     def test_7(self):
         from phenum.grouptheory import _map_dvector_permutation
@@ -1375,7 +1375,7 @@ class TestMapDvectorPermutation(ut.TestCase):
         out = _read_int_1D(gpath+"map_dvector_permutation_RP.out."+str(case))
         out = [i-1 for i in out]
 
-        self._compare_outputs(_map_dvector_permutation(rd,d,eps,n),out)
+        self._compare_outputs(_map_dvector_permutation(rd,d,eps),out)
         
     def test_8(self):
         from phenum.grouptheory import _map_dvector_permutation
@@ -1387,7 +1387,7 @@ class TestMapDvectorPermutation(ut.TestCase):
         out = _read_int_1D(gpath+"map_dvector_permutation_RP.out."+str(case))
         out = [i-1 for i in out]
 
-        self._compare_outputs(_map_dvector_permutation(rd,d,eps,n),out)
+        self._compare_outputs(_map_dvector_permutation(rd,d,eps),out)
         
     def test_9(self):
         from phenum.grouptheory import _map_dvector_permutation
@@ -1399,7 +1399,7 @@ class TestMapDvectorPermutation(ut.TestCase):
         out = _read_int_1D(gpath+"map_dvector_permutation_RP.out."+str(case))
         out = [i-1 for i in out]
 
-        self._compare_outputs(_map_dvector_permutation(rd,d,eps,n),out)
+        self._compare_outputs(_map_dvector_permutation(rd,d,eps),out)
         
     def test_10(self):
         from phenum.grouptheory import _map_dvector_permutation
@@ -1411,7 +1411,7 @@ class TestMapDvectorPermutation(ut.TestCase):
         out = _read_int_1D(gpath+"map_dvector_permutation_RP.out."+str(case))
         out = [i-1 for i in out]
 
-        self._compare_outputs(_map_dvector_permutation(rd,d,eps,n),out)
+        self._compare_outputs(_map_dvector_permutation(rd,d,eps),out)
         
     def test_11(self):
         from phenum.grouptheory import _map_dvector_permutation
@@ -1423,7 +1423,7 @@ class TestMapDvectorPermutation(ut.TestCase):
         out = _read_int_1D(gpath+"map_dvector_permutation_RP.out."+str(case))
         out = [i-1 for i in out]
 
-        self._compare_outputs(_map_dvector_permutation(rd,d,eps,n),out)
+        self._compare_outputs(_map_dvector_permutation(rd,d,eps),out)
         
     def test_12(self):
         from phenum.grouptheory import _map_dvector_permutation
@@ -1435,7 +1435,7 @@ class TestMapDvectorPermutation(ut.TestCase):
         out = _read_int_1D(gpath+"map_dvector_permutation_RP.out."+str(case))
         out = [i-1 for i in out]
 
-        self._compare_outputs(_map_dvector_permutation(rd,d,eps,n),out)
+        self._compare_outputs(_map_dvector_permutation(rd,d,eps),out)
         
     def test_13(self):
         from phenum.grouptheory import _map_dvector_permutation
@@ -1447,7 +1447,7 @@ class TestMapDvectorPermutation(ut.TestCase):
         out = _read_int_1D(gpath+"map_dvector_permutation_RP.out."+str(case))
         out = [i-1 for i in out]
 
-        self._compare_outputs(_map_dvector_permutation(rd,d,eps,n),out)
+        self._compare_outputs(_map_dvector_permutation(rd,d,eps),out)
         
     def test_14(self):
         from phenum.grouptheory import _map_dvector_permutation
@@ -1459,7 +1459,7 @@ class TestMapDvectorPermutation(ut.TestCase):
         out = _read_int_1D(gpath+"map_dvector_permutation_RP.out."+str(case))
         out = [i-1 for i in out]
 
-        self._compare_outputs(_map_dvector_permutation(rd,d,eps,n),out)
+        self._compare_outputs(_map_dvector_permutation(rd,d,eps),out)
         
     def test_15(self):
         from phenum.grouptheory import _map_dvector_permutation
@@ -1471,7 +1471,7 @@ class TestMapDvectorPermutation(ut.TestCase):
         out = _read_int_1D(gpath+"map_dvector_permutation_RP.out."+str(case))
         out = [i-1 for i in out]
 
-        self._compare_outputs(_map_dvector_permutation(rd,d,eps,n),out)
+        self._compare_outputs(_map_dvector_permutation(rd,d,eps),out)
         
     def test_16(self):
         from phenum.grouptheory import _map_dvector_permutation
@@ -1483,7 +1483,7 @@ class TestMapDvectorPermutation(ut.TestCase):
         out = _read_int_1D(gpath+"map_dvector_permutation_RP.out."+str(case))
         out = [i-1 for i in out]
 
-        self._compare_outputs(_map_dvector_permutation(rd,d,eps,n),out)
+        self._compare_outputs(_map_dvector_permutation(rd,d,eps),out)
         
     def test_17(self):
         from phenum.grouptheory import _map_dvector_permutation
@@ -1495,7 +1495,7 @@ class TestMapDvectorPermutation(ut.TestCase):
         out = _read_int_1D(gpath+"map_dvector_permutation_RP.out."+str(case))
         out = [i-1 for i in out]
 
-        self._compare_outputs(_map_dvector_permutation(rd,d,eps,n),out)
+        self._compare_outputs(_map_dvector_permutation(rd,d,eps),out)
         
     def test_18(self):
         from phenum.grouptheory import _map_dvector_permutation
@@ -1507,7 +1507,7 @@ class TestMapDvectorPermutation(ut.TestCase):
         out = _read_int_1D(gpath+"map_dvector_permutation_RP.out."+str(case))
         out = [i-1 for i in out]
 
-        self._compare_outputs(_map_dvector_permutation(rd,d,eps,n),out)
+        self._compare_outputs(_map_dvector_permutation(rd,d,eps),out)
         
     def test_19(self):
         from phenum.grouptheory import _map_dvector_permutation
@@ -1519,7 +1519,7 @@ class TestMapDvectorPermutation(ut.TestCase):
         out = _read_int_1D(gpath+"map_dvector_permutation_RP.out."+str(case))
         out = [i-1 for i in out]
 
-        self._compare_outputs(_map_dvector_permutation(rd,d,eps,n),out)
+        self._compare_outputs(_map_dvector_permutation(rd,d,eps),out)
         
     def test_20(self):
         from phenum.grouptheory import _map_dvector_permutation
@@ -1531,7 +1531,7 @@ class TestMapDvectorPermutation(ut.TestCase):
         out = _read_int_1D(gpath+"map_dvector_permutation_RP.out."+str(case))
         out = [i-1 for i in out]
 
-        self._compare_outputs(_map_dvector_permutation(rd,d,eps,n),out)
+        self._compare_outputs(_map_dvector_permutation(rd,d,eps),out)
         
     def test_21(self):
         from phenum.grouptheory import _map_dvector_permutation
@@ -1543,7 +1543,7 @@ class TestMapDvectorPermutation(ut.TestCase):
         out = _read_int_1D(gpath+"map_dvector_permutation_RP.out."+str(case))
         out = [i-1 for i in out]
 
-        self._compare_outputs(_map_dvector_permutation(rd,d,eps,n),out)
+        self._compare_outputs(_map_dvector_permutation(rd,d,eps),out)
                 
 class TestFindMinmaxIndices(ut.TestCase):
     """Tests of the _find_minmax_indices subroutine."""

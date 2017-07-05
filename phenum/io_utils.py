@@ -389,7 +389,6 @@ def write_POSCAR(system_data,space_data,structure_data,args):
     labeling = structure_data["labeling"]            
     g_indx = space_data["gIndx"]
     arrows = structure_data["directions"]
-    struct_n = structure_data["strN"]
 
     arrow_directions = [[0,0,0],[0,0,-1],[0,-1,0],[-1,0,0],[1,0,0],[0,1,0],[0,0,1]]
     directions = []

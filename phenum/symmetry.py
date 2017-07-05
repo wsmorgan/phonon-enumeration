@@ -55,7 +55,6 @@ def get_concs_for_size(size,nspecies,res_concs,nB,concs):
 
         a = [label[i][0] for i in range(len(label))]
         
-        cc = 0
         c_list = []
         done = False
         while done == False:
@@ -123,7 +122,7 @@ def _does_mapping_exist(v,this_type,atom_pos,atomType,eps):
             # if the coordinates are the same, 
             # their difference will be zero for every component
             this_position = atom_pos[i]
-            if(numpy.allclose(numpy.array(v), numpy.array(this_position), rtol=0,atol=eps)):
+            if(numpy.allclose(v, this_position, rtol=0,atol=eps)):
                 mapped = True
                 break
     return mapped
@@ -146,8 +145,8 @@ def _get_transformations(par_lat):
           lattice coordinates.
     """
 
-    prim_to_cart = deepcopy(par_lat)
-    cart_to_prim = numpy.linalg.inv(numpy.array(prim_to_cart)).tolist()
+    prim_to_cart = numpy.transpose(deepcopy(par_lat))
+    cart_to_prim = numpy.linalg.inv(numpy.array(prim_to_cart))
 
     return(prim_to_cart,cart_to_prim)
 
@@ -171,9 +170,9 @@ def bring_into_cell(vec,cart_to_latt,latt_to_cart,eps):
         vec (list of float): The vector brought back into the cell.
     """
 
-    from numpy import matmul, transpose
+    from numpy import matmul
     # Put the representation of the point into lattice coordinates
-    vec = matmul(transpose(cart_to_latt),vec).tolist()
+    vec = matmul(cart_to_latt,vec).tolist()
     # counter to catch compiler bug
     c = 0
     maxc = max(math.ceil(abs(max(vec))),math.ceil(abs(min(vec))))*2
@@ -183,16 +182,16 @@ def bring_into_cell(vec,cart_to_latt,latt_to_cart,eps):
     while any(i > 1.0-eps for i in vec) or any(i < 0.0-eps for i in vec):
         c = c +1
         for i, v in enumerate(vec):
-            if v >= 1-eps:
+            if v >= 1.0-eps:
                 vec[i] -= 1
-            elif v < 0-eps:
+            elif v < 0.0-eps:
                 vec[i] += 1
         if (c>maxc): #pragma: no cover
             print("ERROR: loop does not end in bring_into_cell. Probably compiler bug.")
             exit()
 
     # Put the point back into cartesion coordinate representation
-    vec = matmul(transpose(latt_to_cart),vec).tolist()
+    vec = matmul(latt_to_cart,vec).tolist()
     return vec
 
 def get_lattice_pointGroup(a_vecs, eps=1E-10):
@@ -210,7 +209,7 @@ def get_lattice_pointGroup(a_vecs, eps=1E-10):
         cartesian coordinates.
     """
 
-    inverse_avecs = numpy.linalg.inv(numpy.array(a_vecs)).tolist()
+    inverse_avecs = numpy.linalg.inv(numpy.array(a_vecs))
     # Store the norms of the three lattice vectors
     norm_avecs = []
     for i in range(3):
@@ -260,12 +259,12 @@ def get_lattice_pointGroup(a_vecs, eps=1E-10):
         new_vectors = [r_vecs[i],r_vecs[j],r_vecs[k]]
         # If the transformation matrix that takes the original set to the new set is
         # an orthogonal matrix then this rotation is a point symmetry of the lattice.
-        rotation_matrix = numpy.matmul(inverse_avecs,new_vectors).tolist()
+        rotation_matrix = numpy.matmul(inverse_avecs,new_vectors)
         # Check orthogonality of rotation matrix by [R][R]^T = [1]
-        test_matrix = numpy.matmul(rotation_matrix,numpy.transpose(rotation_matrix)).tolist()
+        test_matrix = numpy.matmul(rotation_matrix,numpy.transpose(rotation_matrix))
         if (numpy.allclose(test_matrix, [[1,0,0],[0,1,0],[0,0,1]], rtol=0,atol=eps)): # Found valid rotation
             num_ops +=  1 # Count number of rotations
-            lattpg_op.append(rotation_matrix)
+            lattpg_op.append(rotation_matrix.tolist())
 
     return(lattpg_op)
     
@@ -285,7 +284,7 @@ def get_spaceGroup(par_lat,atomType,bas_vecs,eps=1E-10,lattcoords = False):
 
     Returns:
         (sg_ops, sg_fracts) (array-like, array-like): The rotation and mirror operations of 
-        the space group, and the translation operations of the space group.
+            the space group, and the translation operations of the space group.
     """
     # Get number of atoms in the basis    
     n_atoms = len(atomType)
@@ -348,5 +347,5 @@ def get_spaceGroup(par_lat,atomType,bas_vecs,eps=1E-10,lattcoords = False):
                 # loop over fractional translations and try next op
                 # By removing the preceding exit, we include fractional translations
                 # for non-primitive lattices. (GLWH 10/26/2009)
-
+                
     return(sg_ops,sg_fracts)

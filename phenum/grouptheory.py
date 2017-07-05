@@ -147,7 +147,7 @@ def _is_equiv_lattice(lat1,lat2,eps):
         is_equiv_lattice = True
     return is_equiv_lattice
         
-def _get_sLV_fixing_operations(HNF,pLV,nD,rot,shift,dPerm,eps):
+def _get_sLV_fixing_operations(HNF,pLV,rot,shift,dPerm,eps):
     """This subroutine deteremines which operations of the parent cell
     don't change the supercell. These operations are the symmetry
     operations of the supercell.
@@ -155,7 +155,6 @@ def _get_sLV_fixing_operations(HNF,pLV,nD,rot,shift,dPerm,eps):
     Args:
         HNF (list): A 2D integer list containing the hermite normal form matrix.
         pLV (array-like): A 2D array containing the parent lattice vectors.
-        nD (int): The number of atoms in the cell.
         rot (array-like): A 3D array containing all the rotation matrices.
         shift (array-like): A 2D array containing the translations. 
         dPerm (list): List of basis vector permutations.
@@ -210,19 +209,17 @@ def _get_sLV_fixing_operations(HNF,pLV,nD,rot,shift,dPerm,eps):
     
     return(fix_op,rot_perm,degeneracy)
 
-def _map_dvector_permutation(rd,d,eps,n):
+def _map_dvector_permutation(rd,d,eps):
     """Maps the basis vectors to a permutation.
     
     Args:
         rd (array-like): 2D array of the rotated basis vectors.
         d (array-like): 2D array of the original basis vectors.
         eps (float): Finite precision tolerance.
-        n (int): The number of basis vectors.
 
     Returns:
        RP (list): The permutation of the basis vectors.
     """
-
     n_d = len(rd) # of d-vectors
     found = [False]*n_d
     RP = []
@@ -438,9 +435,7 @@ def _get_dvector_permutations(par_lat,bas_vecs,LatDim,eps):
         (rot,shift) = _rm_3D_operations(par_lat,rot,shift,eps)
 
     n_op = len(rot)
-    
-    inv_par_lat = np.linalg.inv(par_lat).tolist()
-    
+    inv_par_lat = np.linalg.inv(np.transpose(par_lat))
     nl_temp= n_op  # Number of operations that fix the parent
 
     # lattice (but may permute the d-vectors)
@@ -465,10 +460,9 @@ def _get_dvector_permutations(par_lat,bas_vecs,LatDim,eps):
         trd = list(rd)
         if n_d > 1:
             for iD in range(n_d):
-                inv_par_lat = inv_par_lat
-                rd[iD] = bring_into_cell(rd[iD],inv_par_lat,par_lat,eps)
+                rd[iD] = bring_into_cell(rd[iD],inv_par_lat,np.transpose(par_lat),eps)
         else:
-            rd = bring_into_cell(rd,inv_par_lat,par_lat,eps)
+            rd = bring_into_cell(rd,inv_par_lat,np.transpose(par_lat),eps)
             
         # The v vector is the vector that must be added (it's a lattice
         # vector) to move a rotated d-vector back into the parent cell.
@@ -478,9 +472,9 @@ def _get_dvector_permutations(par_lat,bas_vecs,LatDim,eps):
         else:
             v_temp.append([[rd[i] - trd[i] for i in range(len(rd))]])
         if n_d > 1:
-            perm_temp.append(_map_dvector_permutation(rd,bas_vecs,eps,n_d))
+            perm_temp.append(_map_dvector_permutation(rd,bas_vecs,eps))
         else:
-            perm_temp.append(_map_dvector_permutation([rd],[bas_vecs],eps,n_d))
+            perm_temp.append(_map_dvector_permutation([rd],[bas_vecs],eps))
 
     drp_list = RotPermList(nL=nl_temp,v=v_temp,perm=perm_temp)
 
@@ -559,8 +553,7 @@ def _get_rotation_perms_lists(A,HNF,L,SNF,Op,RPlist,dperms,eps, arrows=False):
             dgp = []
             for i in range(n):
                 tt = []
-                for j in range(n_d):
-                    tt.append(0)
+                tt = np.zeros(n_d).tolist()
                 dgp.append(tt)
 
             for iD in range(n_d): # Loop over each row in the (d,g) table
@@ -675,7 +668,7 @@ def _get_rotation_perms_lists(A,HNF,L,SNF,Op,RPlist,dperms,eps, arrows=False):
             # bring it back to the "primitive" representation
             perm = _find_permutation_of_group(np.transpose(g),np.transpose(tg))
             temp_ident = []
-            trans_ident = np.transpose(ident)
+
             len_ident = len(ident)
             for il in range(len_ident):
                 temp_ident.append([ident[il][i] for i in perm])
@@ -735,11 +728,11 @@ def get_sym_group(par_lat,bas_vecs,HNF,LatDim,arrows=True):
     eps = 1E-10
     # map any atoms in the basis that aren't within the cell to be in
     # the cell
-    par_lat_inv = linalg.inv(par_lat)
+    par_lat_inv = np.transpose(linalg.inv(par_lat))
     temp_basis = deepcopy(bas_vecs)
     for i, b_vecs in enumerate(bas_vecs):
         # par_lat_inv = linalg.inv(np.transpose(par_lat))
-        bas_vecs[i] = bring_into_cell(b_vecs,par_lat_inv,par_lat,eps)
+        bas_vecs[i] = bring_into_cell(b_vecs,par_lat_inv,np.transpose(par_lat),eps)
         if not allclose(b_vecs, temp_basis[i], rtol=0, atol=eps): # pragma: no cover
             from phenum.msg import warn
             warn("An atomic basis vector was not inside the unit cell. It has been "
@@ -752,8 +745,8 @@ def get_sym_group(par_lat,bas_vecs,HNF,LatDim,arrows=True):
     a_type = [1]*len(bas_vecs)
     
     (sgrots,sgshifts) = get_spaceGroup(par_lat,a_type,bas_vecs,eps)
-    (fixing_ops,RPList,degeneracy) = _get_sLV_fixing_operations(HNF,par_lat,len(bas_vecs),sgrots,
-                                                    sgshifts,par_rp_list,eps)
+    (fixing_ops,RPList,degeneracy) = _get_sLV_fixing_operations(HNF,par_lat,sgrots,sgshifts,
+                                                                par_rp_list,eps)
 
     (SNF,L,R) = SmithNormalForm(deepcopy(HNF))
     sym_group = _get_rotation_perms_lists(par_lat,[HNF],[L],[SNF],[fixing_ops],[RPList],

@@ -1,7 +1,7 @@
 """Methods needed for the enumeration of arrows."""
 
 #import neede modules
-from numpy import array, dot
+from numpy import array, zeros
 #Find concentration takes a 1D array, col, and returns a 1D array, 
 #Concs, containing the number of times each element in col appears 
 #in the array.
@@ -365,8 +365,8 @@ def get_arrow_concs(params):
             else:
                 a_concs.append(0)
     else:
-        for i in range(params["nspecies"]):
-            a_concs.append(0)
+        a_concs = zeros(params["nspecies"]).tolist()
+        
     return a_concs
 
 def enum_sys(groupfile, concs, a_concs, num_wanted, HNF, params, supers, accept=None):
@@ -439,7 +439,7 @@ def enum_sys(groupfile, concs, a_concs, num_wanted, HNF, params, supers, accept=
         # generate the random subset to be used. WARNING! for phonon enumerations
         #we have seen values that are *50* digits long! If the number exceeds
         #1e9, we change the approach to randomization.
-        from phenum.msg import warn, err
+        from phenum.msg import warn
         if num_wanted < total:
             if total < 1e6:
                 from random import shuffle
@@ -456,11 +456,9 @@ def enum_sys(groupfile, concs, a_concs, num_wanted, HNF, params, supers, accept=
                  "unique configurations available.")
             subset = []
 
-    n_stabs = []
     # if we're doing a purely arrow enumeration then we don't need to
     # do the tree search but instead perform the final step of the
     # algorithm to find the possible unique displacements of the atoms
-    from random import random
     if len(concs) == 1 and all(decorations) >=0:
         configs = []
         if float(num_wanted)/total < 0.001 and accept is None:

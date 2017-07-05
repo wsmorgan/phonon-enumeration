@@ -103,7 +103,7 @@ def _polya_out(args):
                     (n_arrows,arrow_types,concs_w_arrows) = pb.how_many_arrows(decorations)
 
                     # now find the number of unique arrangements using Polya.
-                    if arrow_types != 0:
+                    if arrow_types != 0 or n_arrows !=0:
                         total_num = polya(concs_w_arrows,agroup,arrowings=arrow_types)
                     else:
                         total_num = polya(conc, agroup)
@@ -132,7 +132,6 @@ def _enum_out(args):
 
     import phenum.io_utils as io
     import phenum.phonons as pb
-    from numpy import unique
     from random import seed
     from phenum.grouptheory import get_full_HNF, SmithNormalForm
     from os.path import isfile
@@ -292,7 +291,8 @@ script_options = {
                            "vprof`). Argument is a combination of 'c', 'm' and 'h'. See "
                            "vprof docs.")),
     "-seed": dict(default=None, type=int,
-                  help=("The integer seed for the random number generator.")),    
+                  help=("The integer seed for the random number generator.")),
+   
     "-super": dict(action="store_true",
                    help=("Overrides the exclusion of the superperiodic cells from the output.")),
     "-filter": dict(default=None, nargs = 2,

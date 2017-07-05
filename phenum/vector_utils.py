@@ -66,10 +66,7 @@ def map_enumStr_to_real_space(system_data,structure_data,minkowskiReduce):
 
             "x": A list of the concentrations of each atom type.
     """
-    # print("in system_data",system_data)
-    # print("in structure_data",structure_data)
-    # print("in minkReduce",minkowskiReduce)
-    from numpy import matmul, allclose, matrix, array
+    from numpy import matmul, allclose, matrix
     
     n_d = system_data["nD"]
     n = structure_data["n"]
