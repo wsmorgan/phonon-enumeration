@@ -368,8 +368,7 @@ class TestSmithNormalForm(ut.TestCase):
     def test_15(self):
         from phenum.grouptheory import SmithNormalForm
         HNF =  [[1, 2.5, 0], [0, 1.5, 1.66], [1.5, 1.25, 1.3]]
-        out =  ([[0.5, 0.0, 0.0], [0.0, 0.5, 0.0], [0.0, 0.0, 16.5]], [[-1.0, 0.0, 1.0], [3.0, -3.0, -2.0], [-9.0, 10.0, 6.0]], [[1, 2.5, 23.25], [0, 1.0, 10.5], [0, 0.0, 1.0]])
-        with pytest.raises(RuntimeError):
+        with pytest.raises(ValueError):
             SmithNormalForm(HNF)
 
     def test_16(self):
@@ -384,6 +383,13 @@ class TestSmithNormalForm(ut.TestCase):
         HNF = [[1,2,4],[3,3,4],[3,4,2]]
         S, L, R = SmithNormalForm(HNF)
         self.assertTrue(np.allclose(list(np.dot(np.dot(L,HNF),R)),S))
+
+    def test_17(self):
+        """Test of the bug reported in issue #61."""
+        from phenum.grouptheory import SmithNormalForm
+        HNF = [[41,0,0],[0,21,0],[0,0,41]]
+        out = ([[1, 0, 0], [0, 41, 0], [0, 0, 861]], [[1, 1, 0], [-42, -41, 1], [42, 41, 0]], [[-1, 0, 21], [2, 0, -41], [0, 1, 21]])
+        self.assertEqual(SmithNormalForm(HNF),out)
 
 class TestAGroup(ut.TestCase):
     """ Tests of the a_group subroutine."""

@@ -193,7 +193,6 @@ def _minkowski_reduce_basis(IN,eps):
             idx = norms.index(max(norms))
             temp[i] = OUT[idx]
             norms[idx] = 0
-
         OUT = deepcopy(temp) # Copy the sorted vectors back to OUT
         (OUT[0], OUT[1], OUT[2]) = _reduce_C_in_ABC(OUT[0],OUT[1],OUT[2],eps)
         if linalg.norm(OUT[2]) >= (linalg.norm(OUT[1])-eps):
@@ -310,7 +309,6 @@ def _reduce_C_in_ABC(A,B,C,eps):
     from math import floor
     
     old_abc = deepcopy([A,B,C])
-    
     # Use Gaussian reduction to reduce the A,B 2D basis so that it is
     # itself Minkowski reduced. If this is done, then the closest
     # lattice point (in A,B plane) to the projection of C (into the
@@ -415,7 +413,7 @@ def _gaussian_reduce_two_vectors(U,V,eps):
             from .msg import err
             err("gaussian_reduce_two_vectors failed to converge in 10 iterations")
             exit()
-        R = [V[i]-int(round(dot(U,V)/dot(U,U)+1E-10))*U[i] for i in range(3)] #Shorten V as much as possible
+        R = [V[i]-int(round(dot(U,V)/float(dot(U,U))+1E-10))*U[i] for i in range(3)] #Shorten V as much as possible
         V = U # Swap U and V (so U remains the shortest)
         U = R
         if norm(U) >= (norm(V) - eps):
@@ -426,6 +424,7 @@ def _gaussian_reduce_two_vectors(U,V,eps):
     temp = U
     U = V
     V = temp
+
     return U, V
 
 def cartesian2direct(sLV,aBas, eps):

@@ -287,9 +287,13 @@ def SmithNormalForm(HNF):
                          "determinant less than 1.")
 
     A = [[0,0,0],[0,0,0],[0,0,0]]
-    M = deepcopy(list(HNF))
+    Mpre = deepcopy(list(HNF))
+    M = [[int(x) for x in i] for i in Mpre]
     B = [[0,0,0],[0,0,0],[0,0,0]]
 
+    if not np.allclose(M,Mpre):
+        raise ValueError("The input matrix to SmithNormalForm was not integer.")
+    
     for i in range(3):
         A[i][i] = 1
         B[i][i] = 1
@@ -300,7 +304,7 @@ def SmithNormalForm(HNF):
     stop_loop = False
     while not stop_loop:
         it_cnt += 1
-        if (it_cnt >=100): 
+        if (it_cnt >=100): #pragma: no cover
             raise RuntimeError("Bad programming in SmithNormalForm")
         
         while (3-[M[0][j],M[1][j],M[2][j]].count(0)) > 1:
@@ -330,7 +334,7 @@ def SmithNormalForm(HNF):
             (minidx,maxidx) = _find_minmax_indices(M[j])
 
             minm = M[j][minidx]
-            mult = M[j][maxidx]/M[j][minidx]
+            mult = M[j][maxidx]//M[j][minidx]
             for i in range(3):
                 M[i][maxidx] = M[i][maxidx]-mult * M[i][minidx]
                 B[i][maxidx] = B[i][maxidx]-mult * B[i][minidx]

@@ -1,7 +1,18 @@
 # Revision History for "phonon-enumeration"
 
+## Revision 2.0.7
+- Fixed the bug reported in [issue
+  #62](https://github.com/wsmorgan/phonon-enumeration/issues/62).
+
+## Revision 2.0.6
+- Fixed the issue reported in [issue
+  #61](https://github.com/wsmorgan/phonon-enumeration/issues/61).
+- Added a check to SmithNormalForm to ensure that the input matrix is
+  integer.
+
 ## Revision 2.0.5
-- Fixed the issue reported in [issue #58](https://github.com/wsmorgan/phonon-enumeration/issues/58).
+- Fixed the issue reported in [issue
+  #58](https://github.com/wsmorgan/phonon-enumeration/issues/58).
 - Removed a lot of unused variables.
 
 ## Revision 2.0.4
