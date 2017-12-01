@@ -155,7 +155,10 @@ def _enum_out(args):
         temp_args = deepcopy(args)
         temp_args["input"] = "polya.out"
         temp_args["outfile"] = args["input"]
-        temp_args["distribution"] = ["all","all"]
+        if args["distribution"] is None:
+            temp_args["distribution"] = ["all","all"]
+        else:
+            temp_args["distribution"] = args["distribution"]
         _enum_in(temp_args)
             
     systems = io.read_enum(args["input"])
@@ -373,9 +376,9 @@ def _script_enum(args, testmode=False):
 
     if args["polya"]:
         _polya_out(args)
-    if args["enum"]:
+    if args["enum"] or (args["enum"] and args["distribution"]):
         _enum_out(args)
-    if args["distribution"]:
+    if args["distribution"] and not args["enum"]:
         _enum_in(args)
     if args["visualize"]:
         _plot_HNFs(args,testmode=testmode)
