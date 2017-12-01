@@ -1,5 +1,11 @@
 # Revision History for "phonon-enumeration"
 
+## Revision 2.0.8
+- Added the option to create subsets straight from the command line
+  using `-enum -distribution all #`. This allows for the enumeration
+  of subsets without having to run polya and distribution seperately
+  first.
+
 ## Revision 2.0.7
 - Fixed the bug reported in [issue
   #62](https://github.com/wsmorgan/phonon-enumeration/issues/62).
