@@ -433,6 +433,26 @@ class TestEnumOut(ut.TestCase):
             self._compare_files("enum.out","tests/enumeration/enum_out/enum.out_hcp_p3")
         system("rm enum.in polya.out.2 polya.out.1")
 
+    def test_enum_out1_2(self):
+        from phenum.enumeration import _script_enum
+        import sys
+        from os import system
+
+        args = {'profile': None, 'savedist': False, 'verbose': None,
+                'outfile': "enum.out", 'enum': True,
+                'lattice': 'tests/enumeration/enum_out/lattice.in_hcp', 'acceptrate': None,
+                'examples': False, 'sizes': None, 'debug': False,
+                'input': None,
+                'polya': False, 'super': False, 'distribution': ['all','all'],'seed':None,
+                'filter':None,'visualize':False,'shapes':False,'show':False}
+
+        _script_enum(args)
+        if sys.version_info[0] < 3:
+            self._compare_files("enum.out","tests/enumeration/enum_out/enum.out_hcp_p2")
+        else:
+            self._compare_files("enum.out","tests/enumeration/enum_out/enum.out_hcp_p3")
+        system("rm enum.in polya.out.2 polya.out.1")
+
     def test_enum_out2(self):
         from phenum.enumeration import _script_enum
         from os import system
