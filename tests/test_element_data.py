@@ -10,7 +10,7 @@ def test_get_lattice_parameter():
     
     (a,title) = get_lattice_parameter(["Al","Ni"],[1,1],"test")
     assert a == 3.785
-    assert title == " Al  Ni test\n"
+    assert title == " Al  Ni  test\n"
 
     (a,title) = get_lattice_parameter(None,[2,2],"test")
     assert a == 1.0
