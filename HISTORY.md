@@ -1,5 +1,11 @@
 # Revision History for "phonon-enumeration"
 
+## Revision 2.0.9
+- Reversed the order of the tite written to the VASP style POSCARS by
+  makeStr.py so that the atomic species get written first then the
+  system title as given in enum.out. This is so that the POSCARS can
+  be easily be read in by the quippy Atoms object.
+
 ## Revision 2.0.8
 - Added the option to create subsets straight from the command line
   using `-enum -distribution all #`. This allows for the enumeration
