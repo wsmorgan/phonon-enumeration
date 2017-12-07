@@ -399,7 +399,9 @@ def write_POSCAR(system_data,space_data,structure_data,args):
         
     def_title = "{} str #: {}\n".format(str(system_data["title"]),str(structure_data["strN"]))
 
-    lattice_parameter, title = get_lattice_parameter(args["species"],concs,def_title)
+    lattice_parameter, title = get_lattice_parameter(args["species"],concs,
+                                                     system_data["plattice"],system_data["nD"],
+                                                     def_title)
 
     for arrow in arrows:
         directions.append(array(arrow_directions[int(arrow)]))

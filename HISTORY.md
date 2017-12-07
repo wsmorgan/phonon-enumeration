@@ -1,5 +1,10 @@
 # Revision History for "phonon-enumeration"
 
+## Revision 2.0.10
+-Fixed the calculation of the lattice parameter so that the lattice
+ parameter for each atom will be determined by it's atomic volume with
+ respect to the volume per atom of the parent cell.
+
 ## Revision 2.0.9
 - Reversed the order of the tite written to the VASP style POSCARS by
   makeStr.py so that the atomic species get written first then the
