@@ -16,28 +16,37 @@ def RepresentsInt(s):
     except ValueError:
         return False
 
-def _make_structures(args):
+def _make_structures(args, return_euids = False):
     """Makes a VASP POSCAR file for the desired structures.
 
     Args:
         args (dict): The user input.
+        return_euid (bool): a unique identifier for the structures in the
+            POSCARS created.
     """
     from phenum.io_utils import read_enum_out, write_POSCAR
     from phenum.vector_utils import map_enumStr_to_real_space, cartesian2direct
 
     (system, structure_data) = read_enum_out(args)
 
+    euids = []
     # for each structure write the vasp POSCAR
     for structure in structure_data:
         # space_data is a dictionary containing the spacial data for
         # the structure
+        euid = "".join((str(i) for i in system["plattice"]))
+        euid += "".join(str(i) for i in structure["HNF"])
+        euid += structure["labeling"]
+        euid = (euid,structure["directions"],str(args["rattle"]),str(args["displace"]))
+        euids.append(hash(euid))
         space_data = map_enumStr_to_real_space(system,structure,args["mink"])
 
         space_data["aBas"] = cartesian2direct(space_data["sLV"],
                                               space_data["aBas"],system["eps"])
 
         write_POSCAR(system,space_data,structure,args)
-        
+    if return_euids:
+        return euids
 
 def examples():
     """Print some examples on how to use this python version of makeStr."""
