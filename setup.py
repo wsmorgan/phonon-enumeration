@@ -21,7 +21,7 @@ except ImportError:
         return open(f, 'r').read()
 
 setup(name='phenum',
-      version='2.0.9',
+      version='2.0.10',
       description='Enumeration of symmetrically unique derivative superstructures of crystals.',
       long_description=read_md('README.md'),
       author='Wiley S Morgan',
