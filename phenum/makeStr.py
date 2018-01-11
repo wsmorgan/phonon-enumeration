@@ -45,7 +45,7 @@ def _make_structures(args, return_euids = False):
                                               space_data["aBas"],system["eps"])
 
         write_POSCAR(system,space_data,structure,args)
-    if return_euids:
+    if return_euids: #pragma: no cover
         return euids
 
 def examples():
