@@ -339,7 +339,7 @@ def read_enum_out(args):
                 system["k"] = int(temp.split('-')[0].strip())
             if line_count == 9 + system["nD"]:
                 system["eps"] = float(temp.strip())
-            if line_count - (14 + system["nD"]) in structures:
+            if line_count - (14 + system["nD"]) in structures and system["nD"] !=0:
                 data = temp.split()
                 this_struct = {}
                 this_struct["strN"] = int(data[0])

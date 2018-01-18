@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+t#!/usr/bin/env python
 try:
     from setuptools import setup
     args = {}
@@ -21,7 +22,7 @@ except ImportError:
         return open(f, 'r').read()
 
 setup(name='phenum',
-      version='2.0.10',
+      version='2.0.11',
       description='Enumeration of symmetrically unique derivative superstructures of crystals.',
       long_description=read_md('README.md'),
       author='Wiley S Morgan',
