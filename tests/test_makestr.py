@@ -17,7 +17,6 @@ def test_examples():
     argv = ["py.test", "-examples"]
     assert get_sargs(argv) is None
 
-
 class TestMakeStructures(ut.TestCase):
     """Tests of the _make_structures subroutine."""
 
@@ -44,7 +43,9 @@ class TestMakeStructures(ut.TestCase):
                 "species":None,
                 "verbose":None,
                 "outfile":"vasp.{}",
-                "rattle":0.0
+                "rattle":0.0,
+                "species_mapping":None,
+                "config":"f"
                 }
         _make_structures(args)
         self._compare_files("vasp.{}".format(args["structures"][0]),"tests/enumeration/sc_1/vasp.000010")
@@ -62,7 +63,9 @@ class TestMakeStructures(ut.TestCase):
                 "species":None,
                 "verbose":None,
                 "outfile":"vasp.{}",
-                "rattle":0.0
+                "rattle":0.0,
+                "species_mapping":None,
+                "config":"f"
                 }
         _make_structures(args)
         self._compare_files("vasp.{}".format(args["structures"][0]),"tests/enumeration/sc_1/vasp.000020")
@@ -80,7 +83,9 @@ class TestMakeStructures(ut.TestCase):
                 "species":None,
                 "verbose":None,
                 "outfile":"vasp.{}",
-                "rattle":0.0
+                "rattle":0.0,
+                "species_mapping":None,
+                "config":"f"
                 }
         _make_structures(args)
         self._compare_files("vasp.{}".format(args["structures"][0]),"tests/enumeration/sc_1/vasp.000033")
@@ -98,7 +103,9 @@ class TestMakeStructures(ut.TestCase):
                 "species":None,
                 "verbose":None,
                 "outfile":"vasp.{}",
-                "rattle":0.0
+                "rattle":0.0,
+                "species_mapping":None,
+                "config":"f"
                 }
         _make_structures(args)
         self._compare_files("vasp.{}".format(args["structures"][0]),"tests/enumeration/fcc_1/vasp.000001")
@@ -116,7 +123,9 @@ class TestMakeStructures(ut.TestCase):
                 "species":None,
                 "verbose":None,
                 "outfile":"vasp.{}",
-                "rattle":0.0
+                "rattle":0.0,
+                "species_mapping":None,
+                "config":"f"
                 }
         _make_structures(args)
         self._compare_files("vasp.{}".format(args["structures"][0]),"tests/enumeration/fcc_1/vasp.000055")
@@ -134,7 +143,9 @@ class TestMakeStructures(ut.TestCase):
                 "species":None,
                 "verbose":None,
                 "outfile":"vasp.{}",
-                "rattle":0.0
+                "rattle":0.0,
+                "species_mapping":None,
+                "config":"f"
                 }
         _make_structures(args)
         self._compare_files("vasp.{}".format(args["structures"][0]),"tests/enumeration/fcc_1/vasp.000050")
@@ -152,7 +163,9 @@ class TestMakeStructures(ut.TestCase):
                 "species":None,
                 "verbose":None,
                 "outfile":"vasp.{}",
-                "rattle":0.0
+                "rattle":0.0,
+                "species_mapping":None,
+                "config":"f"
                 }
         _make_structures(args)
         self._compare_files("vasp.{}".format(args["structures"][0]),"tests/enumeration/fcc_1/vasp.000088")
@@ -170,7 +183,9 @@ class TestMakeStructures(ut.TestCase):
                 "species":None,
                 "verbose":None,
                 "outfile":"vasp.{}",
-                "rattle":0.0
+                "rattle":0.0,
+                "species_mapping":None,
+                "config":"f"
                 }
         _make_structures(args)
         self._compare_files("vasp.{}".format(args["structures"][0]),"tests/enumeration/fcc_2/vasp.000001")
@@ -188,7 +203,9 @@ class TestMakeStructures(ut.TestCase):
                 "species":None,
                 "verbose":None,
                 "outfile":"vasp.{}",
-                "rattle":0.0
+                "rattle":0.0,
+                "species_mapping":None,
+                "config":"f"
                 }
         _make_structures(args)
         self._compare_files("vasp.{}".format(args["structures"][0]),"tests/enumeration/fcc_2/vasp.000002")
@@ -206,7 +223,9 @@ class TestMakeStructures(ut.TestCase):
                 "species":None,
                 "verbose":None,
                 "outfile":"vasp.{}",
-                "rattle":0.0
+                "rattle":0.0,
+                "species_mapping":None,
+                "config":"f"
                 }
         _make_structures(args)
         self._compare_files("vasp.{}".format(args["structures"][0]),"tests/enumeration/fcc_2/vasp.000003")
@@ -224,7 +243,9 @@ class TestMakeStructures(ut.TestCase):
                 "species":['Ni','Al','Cu'],
                 "verbose":None,
                 "outfile":"vasp.{}",
-                "rattle":0.0
+                "rattle":0.0,
+                "species_mapping":None,
+                "config":"f"
                 }
         _make_structures(args)
         self._compare_files("vasp.{}".format(args["structures"][0]),"tests/enumeration/fcc_2/vasp.3.NiAlCu")
@@ -242,7 +263,9 @@ class TestMakeStructures(ut.TestCase):
                 "species":['Co','W','V'],
                 "verbose":None,
                 "outfile":"vasp.{}",
-                "rattle":0.0
+                "rattle":0.0,
+                "species_mapping":None,
+                "config":"f"
                 }
         _make_structures(args)
         self._compare_files("vasp.{}".format(args["structures"][0]),"tests/enumeration/fcc_2/vasp.3.CoWV")
@@ -260,7 +283,9 @@ class TestMakeStructures(ut.TestCase):
                 "species":['Ti','S'],
                 "verbose":None,
                 "outfile":"vasp.{}",
-                "rattle":0.0
+                "rattle":0.0,
+                "species_mapping":None,
+                "config":"f"
                 }
         _make_structures(args)
         self._compare_files("vasp.{}".format(args["structures"][0]),"tests/enumeration/fcc_1/vasp.3.TiS")
@@ -278,7 +303,9 @@ class TestMakeStructures(ut.TestCase):
                 "species":['H','Pt'],
                 "verbose":None,
                 "outfile":"vasp.{}",
-                "rattle":0.0
+                "rattle":0.0,
+                "species_mapping":None,
+                "config":"f"
                 }
         _make_structures(args)
         self._compare_files("vasp.{}".format(args["structures"][0]),"tests/enumeration/fcc_1/vasp.3.HPt")
@@ -296,7 +323,9 @@ class TestMakeStructures(ut.TestCase):
                 "species":['H','Pt'],
                 "verbose":None,
                 "outfile":"vasp.{}",
-                "rattle":0.0
+                "rattle":0.0,
+                "species_mapping":None,
+                "config":"f"
                 }
         run(args)
         self._compare_files("vasp.{}".format(args["structures"][0]),"tests/enumeration/fcc_1/vasp.3.HPt")
@@ -314,7 +343,9 @@ class TestMakeStructures(ut.TestCase):
                 "species":['H','Pt'],
                 "verbose":None,
                 "outfile":"vasp.{}",
-                "rattle":0.0
+                "rattle":0.0,
+                "species_mapping":None,
+                "config":"f"
                 }
         with pytest.raises(ValueError):
             run(args)
@@ -332,7 +363,9 @@ class TestMakeStructures(ut.TestCase):
                 "species":['H','Pt'],
                 "verbose":None,
                 "outfile":"vasp.{}",
-                "rattle":0.0
+                "rattle":0.0,
+                "species_mapping":None,
+                "config":"f"
                 }
         with pytest.raises(ValueError):
             run(args)
@@ -349,7 +382,9 @@ class TestMakeStructures(ut.TestCase):
                 "species":['H','Pt'],
                 "verbose":None,
                 "outfile":"vasp.{}",
-                "rattle":0.0
+                "rattle":0.0,
+                "species_mapping":None,
+                "config":"f"
                 }
         with pytest.raises(ValueError):
             run(args)
@@ -366,7 +401,9 @@ class TestMakeStructures(ut.TestCase):
                 "species":['H','Pt'],
                 "verbose":None,
                 "outfile":"vasp.{}",
-                "rattle":0.0
+                "rattle":0.0,
+                "species_mapping":None,
+                "config":"f"
                 }
         run(args)
         system("rm vasp*")
@@ -383,7 +420,9 @@ class TestMakeStructures(ut.TestCase):
                 "species":['H','Pt'],
                 "verbose":None,
                 "outfile":"vasp.{}",
-                "rattle":0.0
+                "rattle":0.0,
+                "species_mapping":None,
+                "config":"f"
                 }
         run(args)
         system("rm vasp*")
@@ -400,7 +439,9 @@ class TestMakeStructures(ut.TestCase):
                 "species":None,
                 "verbose":None,
                 "outfile":"vasp.{}",
-                "rattle":0.0
+                "rattle":0.0,
+                "species_mapping":None,
+                "config":"f"
                 }
         run(args)
         for i in [1,45,90,175]:
@@ -413,5 +454,63 @@ class TestMakeStructures(ut.TestCase):
         from os import system
         args = None
         with pytest.raises(ValueError):
-            run(args)
-        
+            run(args)       
+
+class TestMakeConfig(ut.TestCase):
+    """Tests of the _make_structures subroutine make Config files."""
+
+    def _compare_files(self,file1,file2):
+        out1 = []
+        out2 = []
+        with open(file1,"r") as o1:
+            for line in o1:
+                out1.append(line.strip().split())
+        with open(file2,"r") as o2:
+            for line in o2:
+                out2.append(line.strip().split())
+        self.assertEqual(out1,out2)
+                
+    def test_str1(self):
+        from phenum.makeStr import _make_structures
+        from os import system
+
+        if os.path.isfile("to-relax.cfg"):
+            system("rm to-relax.cfg")
+        args = {"structures":[1,2],
+                "debug":False,
+                "examples":False,
+                "displace":0.0,
+                "input":"tests/enumeration/sc_1/enum.out_100",
+                "mink":True,
+                "species":None,
+                "verbose":None,
+                "outfile":"to-relax.cfg",
+                "rattle":0.0,
+                "mapping":None,
+                "config":"t"
+                }
+        _make_structures(args)
+        self._compare_files("to-relax.cfg","tests/enumeration/sc_1/to-relax.cfg_1")
+        system("rm to-relax.cfg")
+                
+    def test_str2(self):
+        from phenum.makeStr import run
+        from os import system
+        if os.path.isfile("to-relax.cfg"):
+            system("rm to-relax.cfg")
+        args = {"structures":[1,2],
+                "debug":False,
+                "examples":False,
+                "displace":0.0,
+                "input":"tests/enumeration/sc_1/enum.out_100",
+                "mink":True,
+                "species":["Al","Cu","Ni"],
+                "verbose":None,
+                "outfile":"to-relax.cfg",
+                "rattle":0.0,
+                "species_mapping":{0:1,1:2},
+                "config":"t"
+                }
+        run(args)
+        self._compare_files("to-relax.cfg","tests/enumeration/sc_1/to-relax.cfg_2")
+        system("rm to-relax.cfg")

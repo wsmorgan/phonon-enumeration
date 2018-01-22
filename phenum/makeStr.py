@@ -24,7 +24,7 @@ def _make_structures(args, return_euids = False):
         return_euid (bool): a unique identifier for the structures in the
             POSCARS created.
     """
-    from phenum.io_utils import read_enum_out, write_POSCAR
+    from phenum.io_utils import read_enum_out, write_POSCAR, write_config
     from phenum.vector_utils import map_enumStr_to_real_space, cartesian2direct
 
     (system, structure_data) = read_enum_out(args)
@@ -44,7 +44,11 @@ def _make_structures(args, return_euids = False):
         space_data["aBas"] = cartesian2direct(space_data["sLV"],
                                               space_data["aBas"],system["eps"])
 
-        write_POSCAR(system,space_data,structure,args)
+        if args["config"]=="f":
+            write_POSCAR(system,space_data,structure,args)
+        elif args["config"]=="t":
+            write_config(system,space_data,structure,args,args["mapping"])
+            
     if return_euids: #pragma: no cover
         return euids
 
@@ -83,7 +87,17 @@ def examples():
              "by the user as a fraction of the displacement given. So if a displacement of "
              "0.5 was given and the \n displacements were to be randomized by 1/4 of that total "
              "displacement the the command would be:",
-             "makeStr.py 10 -displace 0.5 -rattle 0.25")]
+             "makeStr.py 10 -displace 0.5 -rattle 0.25"),
+            ("Make an MTP config file for a ternary endge from a binary enumeration",
+             "MTP is an excellent interatomic potential capable of quickly relaxing "
+             "a cell as such we would like to be able to output the structures we've "
+             "selected to an MTP compatible config file rather than a VASP POSCAR. "
+             "There are also times when a binary enumeration is desired to form the edges "
+             "of a ternary phase diagram, to do so the species present have to be able to "
+             "be mapped to other species in use. To make a binary edge of a ternary phase "
+             "diagram for an MTP config file use:",
+             "makeStr.py 10 -config t -species Al Cu Ni -outfile=to-relax.cfg "
+             "-species_mapping 1 2 (or 0 2)")]
     required = ("REQUIRED: A `enum.out` file.")
     output = ("RETURNS: A vasp style POSCAR labeled vasp.* where the `*` is replaced "
               "with the structure number for the `enum.out` file.")
@@ -107,12 +121,19 @@ script_options = {
                               " Default is True.")),
     "-species": dict(default=None, nargs="+",type=str,
                         help=("Specify the atomic species present in the system.")),
+    "-species_mapping": dict(default=None, nargs="+",type=int,
+                        help=("Specify the atomic species numbers for the system. This option "
+                              "is only used for making MTP config files.")),
     "-outfile": dict(default="vasp.{}",type=str,
                         help=("Override the default output file names: 'vasp.{structure#}'" 
                               "for the structures.")),
     "-rattle": dict(default=0.0, type=float,
                         help=("Randomizes the positions of the atoms in the POSCAR by no "
-                              "more than the fraction of the displacement provided."))
+                              "more than the fraction of the displacement provided.")),
+    "-config" : dict(default="f",choices=["t","f"],
+                   help=("make an MTP config file instead of a VASP POSCAR. If the "
+                         "MTP config file already exists it will be appended to, not "
+                         "overwritten."))    
 }
 """dict: default command-line arguments and their
     :meth:`argparse.ArgumentParser.add_argument` keyword arguments.
@@ -163,6 +184,13 @@ def run(args):
                          "indicate the first and last structure to be used in the input "
                          "file, or all. The values {} don't match this "
                          "format.".format(args["structures"]))
+
+    if args["species_mapping"] is not None:
+        args["mapping"] = {}
+        for i in range(len(args["species_mapping"])):
+            args["mapping"][i] = args["species_mapping"][i]
+    else:
+        args["mapping"] = None
 
     _make_structures(args)
         
