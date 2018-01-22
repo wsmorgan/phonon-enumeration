@@ -3,11 +3,6 @@ try:
     from setuptools import setup
     args = {}
 except ImportError:
-    from distutils.cor#!/usr/bin/env python
-try:
-    from setuptools import setup
-    args = {}
-except ImportError:
     from distutils.core import setup
     print("""\
 *** WARNING: setuptools is not found.  Using distutils...
@@ -26,7 +21,7 @@ except ImportError:
         return open(f, 'r').read()
 
 setup(name='phenum',
-      version="2.1.0"
+      version="2.1.0",
       description='Enumeration of symmetrically unique derivative superstructures of crystals.',
       long_description=read_md('README.md'),
       author='Wiley S Morgan',
