@@ -49,7 +49,7 @@ def _make_structures(args, return_euids = False):
         elif args["config"]=="t":
             write_config(system,space_data,structure,args,args["mapping"])
             
-    if return_euids:
+    if return_euids: #pragma: no cover
         return euids
 
 def examples():

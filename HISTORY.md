@@ -7,6 +7,11 @@
   edge of a ternary phase diagram for any edge of the ternary system
   by alternating the species_mapping.
 
+## Revision 2.0.11
+-Fixed a bug found by feifzhou in
+ https://github.com/msg-byu/enumlib/issues/54 in which the code tries
+ to read in the structures before `system["nD"]` has been set.
+
 ## Revision 2.0.10
 -Fixed the calculation of the lattice parameter so that the lattice
  parameter for each atom will be determined by it's atomic volume with
