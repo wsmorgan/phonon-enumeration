@@ -431,3 +431,97 @@ def write_POSCAR(system_data,space_data,structure_data,args):
                 out_array = array(space_data["aBas"][iAt]) + displace
                 poscar.write(" {}\n".format(
                     "  ".join(["{0: .8f}".format(i) for i in out_array.tolist()])))
+
+
+def write_config(system_data,space_data,structure_data,args,mapping=None):
+    """Writes a MTP config style file for the input structure and system
+    data.
+
+    :arg system_data: a dictionary of the system_data
+    :arg space_data: a dictionary containing the spacial data
+    :arg structure_data: a dictionary of the data for this structure
+    :arg args: Dictionary of user supplied input.
+    :arg mapping: A dictionary of the species mappings if to be used.
+    """
+
+    from phenum.element_data import get_lattice_parameter
+    from numpy import array, dot, transpose
+    from random import uniform
+    from numpy.random import randint
+    
+    filename = args["outfile"]
+
+    # Get the labeling, group index, structure number and arrow labels
+    # from the input data structure.
+    labeling = structure_data["labeling"]            
+    gIndx = space_data["gIndx"]
+    arrows = structure_data["directions"]
+    struct_n = structure_data["strN"]
+
+    # The arrow basis.
+    arrow_directions = [[1,0,0],[-1,0,0],[0,1,0],[0,-1,0],[0,0,1],[0,0,-1]]
+    directions = []
+
+    # Construct the concentrations of the atoms from the labeling by
+    # counting the number of each type of atom present in the
+    # labeling.
+    concs = []
+    for i in range(system_data["k"]):
+        this_conc = 0
+        for atom in range(structure_data["n"]*system_data["nD"]):
+            if labeling[gIndx[atom]] == str(i):
+                this_conc += 1
+        concs.append(this_conc)
+    def_title = "{}{}\n".format(str(system_data["title"]),str(structure_data["strN"]))
+
+    # Get the lattice parameter for the atomic species provided by the
+    # user.
+    if mapping is not None and len(args["species"]) != len(mapping):
+        species = [args["species"][i] for i in mapping.values()]
+    else:
+        species = args["species"]
+    
+    lattice_parameter, title = get_lattice_parameter(species,concs,
+                                                     system_data["plattice"],system_data["nD"],
+                                                     def_title)
+
+    # Find out the directions for each arrow.
+    for arrow in arrows:
+        directions.append(array(arrow_directions[int(arrow)]))
+
+    sLV = list(lattice_parameter*array(space_data["sLV"]))
+
+    # Start writing the data to the file.
+    with open(filename,"a+") as poscar:
+        # First write the title and the lattice parameter.
+        poscar.write("BEGIN_CFG\n Size\n")
+        poscar.write("    {}\n".format(structure_data["n"]*system_data["nD"]))
+        poscar.write(" SuperCell\n")
+        # Then write out the lattice vectors.
+        for i in range(3):
+            poscar.write("   {}\n".format("      ".join(
+                ["{0: .6f}".format(j) for j in sLV[i]])))
+        
+        poscar.write("  ")
+
+        poscar.write(" AtomData:  id type       cartes_x      cartes_y      cartes_z\n")
+        for ilab in range(system_data["k"]):
+            for iAt in range(structure_data["n"]*system_data["nD"]):
+                rattle = uniform(-args["rattle"],args["rattle"])
+                displace = directions[iAt]*args["displace"]*lattice_parameter
+                # If the displacement is non zero and we're `rattling`
+                # the system then we need to modify the displacement
+                # by the amount being rattled.
+                displace += displace*rattle
+                if labeling[gIndx[iAt]] == str(ilab):
+                    # The final atomic position is the position from
+                    # the basis plus the total displacement.
+                    out_array = list(array(dot(transpose(sLV),space_data["aBas"][iAt])) + displace)
+                    if mapping is None:
+                        out_lab = ilab
+                    else:
+                        out_lab = mapping[ilab]
+                    poscar.write("             {0}    {1}       {2}\n".format(iAt+1, out_lab, "  ".join(["{0: .8f}".format(i) for i in out_array])))
+        poscar.write(" Feature   conf_id  {}\n".format(title.split()[0]))
+        poscar.write("END_CFG\n\n")
+                

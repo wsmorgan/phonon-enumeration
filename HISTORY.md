@@ -1,5 +1,12 @@
 # Revision History for "phonon-enumeration"
 
+## Revision 2.1.0
+- Changed makeStr.py so that it can optionally output on MTP config
+  file instead of VASP POSCAR files. Also added a 'species_mapping'
+  option to makeStr.py so that a binary enumeration can get used the
+  edge of a ternary phase diagram for any edge of the ternary system
+  by alternating the species_mapping.
+
 ## Revision 2.0.10
 -Fixed the calculation of the lattice parameter so that the lattice
  parameter for each atom will be determined by it's atomic volume with
