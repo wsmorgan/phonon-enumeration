@@ -413,7 +413,11 @@ def write_POSCAR(system_data,space_data,structure_data,args):
             poscar.write(" {}\n".format(" ".join(
                 ["{0: .8f}".format(j) for j in slv[i]])))
         poscar.write("  ")
-        if args["species"] == None:
+        # If the species strings were passed in by the user and the
+        # user requests there be no zeros in the concentration string
+        # then we should remove them from the file. Otherwise we
+        # default to leaving them in.
+        if not (args["remove_zeros"] and args["species"] is not None):
             for ic in concs:
                 poscar.write("{}   ".format(str(ic)))
         else:

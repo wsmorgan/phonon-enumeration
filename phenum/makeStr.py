@@ -133,7 +133,9 @@ script_options = {
     "-config" : dict(default="f",choices=["t","f"],
                    help=("make an MTP config file instead of a VASP POSCAR. If the "
                          "MTP config file already exists it will be appended to, not "
-                         "overwritten."))    
+                         "overwritten.")),
+    "-remove_zeros" : dict(default="f",choices=["t","f"],
+                   help=("Remove the zeros from the concentrations string in the 'POSCAR'."))    
 }
 """dict: default command-line arguments and their
     :meth:`argparse.ArgumentParser.add_argument` keyword arguments.
@@ -191,6 +193,11 @@ def run(args):
             args["mapping"][i] = args["species_mapping"][i]
     else:
         args["mapping"] = None
+        
+    if args["remove_zeros"] == "t":
+        args["remove_zeros"] = True
+    else:
+        args["remove_zeors"] = False
 
     _make_structures(args)
         
