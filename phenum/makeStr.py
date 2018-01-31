@@ -190,6 +190,11 @@ def run(args):
             args["mapping"][i] = args["species_mapping"][i]
     else:
         args["mapping"] = None
+        
+    if args["remove_zeros"] == "t":
+        args["remove_zeros"] = True
+    else:
+        args["remove_zeors"] = False
 
     if args["remove_zeros"] == "t":
         args["remove_zeros"] = True
