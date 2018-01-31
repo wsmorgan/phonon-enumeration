@@ -501,14 +501,14 @@ class TestMakeStructures(ut.TestCase):
                 "mink":True,
                 "species":['H','Pt'],
                 "verbose":None,
-                "outfile":"vasp.{}",
+                "outfile":"vas1p.{}",
                 "rattle":0.0,
                 "species_mapping":None,
                 "config":"f",
                 "remove_zeros":"t"
                 }
         run(args)
-        self._compare_files("vasp.{}".format(args["structures"][0]),"tests/enumeration/sc_1/vasp.rm_zeros")
+        self._compare_files("vas1p.{}".format(args["structures"][0]),"tests/enumeration/sc_1/vasp.rm_zeros")
         system("rm vasp*")
 
     def test_str22(self):

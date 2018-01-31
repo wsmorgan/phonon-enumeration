@@ -194,11 +194,6 @@ def run(args):
     if args["remove_zeros"] == "t":
         args["remove_zeros"] = True
     else:
-        args["remove_zeors"] = False
-
-    if args["remove_zeros"] == "t":
-        args["remove_zeros"] = True
-    else:
         args["remove_zeros"] = False
 
     _make_structures(args)

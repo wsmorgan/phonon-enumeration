@@ -357,7 +357,7 @@ def write_POSCAR(system_data,space_data,structure_data,args):
 
     lattice_parameter, title = get_lattice_parameter(args["species"],concs,
                                                      system_data["plattice"],system_data["nD"],
-                                                     def_title)
+                                                     def_title,remove_zeros=args["remove_zeros"])
 
     for arrow in arrows:
         directions.append(array(arrow_directions[int(arrow)]))
@@ -442,7 +442,7 @@ def write_config(system_data,space_data,structure_data,args,mapping=None):
     
     lattice_parameter, title = get_lattice_parameter(species,concs,
                                                      system_data["plattice"],system_data["nD"],
-                                                     def_title)
+                                                     def_title,remove_zeros=True)
 
     # Find out the directions for each arrow.
     for arrow in arrows:

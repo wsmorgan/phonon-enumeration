@@ -1,5 +1,10 @@
 # Revision History for "phonon-enumeration"
 
+## Revision 2.1.2
+- Fixed bugs in `write_POSCAR` and `write_config` that were introduced
+  by the merge and by the need to maintain element names in the first
+  line of the file.
+
 ## Revision 2.1.1
 - Fixed `makeStr.py` so that when making a config file output so that
   it always puts the atoms in order of number and not in order of
