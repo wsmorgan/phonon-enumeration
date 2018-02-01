@@ -1,5 +1,20 @@
 # Revision History for "phonon-enumeration"
 
+## Revision 2.1.2
+- Fixed bugs in `write_POSCAR` and `write_config` that were introduced
+  by the merge and by the need to maintain element names in the first
+  line of the file.
+
+## Revision 2.1.1
+- Fixed `makeStr.py` so that when making a config file output so that
+  it always puts the atoms in order of number and not in order of
+  species. If the atom numbers are out of order MTP can't read the
+  config file.
+
+- Fixed `makeStr.py` so that the default behavior is for it not to
+  remove zeros from the concentration string. To remove zeros the
+  `-remove_zero=t` flag must be used.
+
 ## Revision 2.1.0
 - Changed makeStr.py so that it can optionally output on MTP config
   file instead of VASP POSCAR files. Also added a 'species_mapping'
