@@ -501,17 +501,17 @@ class TestMakeStructures(ut.TestCase):
                 "mink":True,
                 "species":['H','Pt'],
                 "verbose":None,
-                "outfile":"vas1p.{}",
+                "outfile":"vasp.{}",
                 "rattle":0.0,
                 "species_mapping":None,
                 "config":"f",
                 "remove_zeros":"t"
                 }
         run(args)
-        self._compare_files("vas1p.{}".format(args["structures"][0]),"tests/enumeration/sc_1/vasp.rm_zeros")
+        self._compare_files("vasp.{}".format(args["structures"][0]),"tests/enumeration/sc_1/vasp.rm_zeros")
         system("rm vasp*")
 
-    def test_str22(self):
+    def test_str24(self):
         from phenum.makeStr import run
         from os import system
         args = None
