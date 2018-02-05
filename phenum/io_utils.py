@@ -2,10 +2,8 @@
 def read_group(fname):
     """Reads the symmetry group in from the 'rot_perms' styled group
     output by enum.x.
-
     Args:
         fname (str): Path to the file to read the group from.
-
     Returns:
         group (numpy ndarray): The symmetry group.
     """
@@ -24,25 +22,16 @@ def read_group(fname):
 
 def read_lattice(filename='lattice.in'):
     """Reads the lattice.in file.
-
     Args:
         filename (str, optional): The filename to be read in. Default is 'lattice.in'.
-
     Returns: 
         result (dict): A dictionary with the following fields:
-
             "sizes": the range of cell sizes,
-
             "lat_vecs": lattice vectors of the parent cell,
-
             "nspecies": the number of atomic species in the enumeration,
-
             "basis_vecs": basis vectors of the parent cell,
-
             "is_crestricted": logical that indicates if the concentrations will be restricted,
-
             "arrows": logical that indicates if arrows are present,
-
             "concs": array of the concentrations in format [1,3].
     """
     from .msg import info
@@ -88,15 +77,11 @@ def read_lattice(filename='lattice.in'):
 def read_enum(filename="enum.in"):
     """Reads the list of structures and the number of random candidates to enumerate
     from the 'enum.in' styled file. It should contain only integers and have:
-
        HNF concs num_wanted
-
     where,
-
     HNF: the list of 6 independent entries in the HNF matrix;
     concs: list of integer species concentrations;
     num_wanted: number of random structures to draw from the enumerated list.
-
     Args:
         filename (str, optional): The filename and path. Default 'enum.in'.
     
@@ -116,7 +101,6 @@ def read_enum(filename="enum.in"):
 def write_enum(params, outfile="enum.out"):
     """Writes a 'struct_enum.out' style preamble to the specified output file
     using the enumeration parameters gleaned from a 'lattice.in' styled file.
-
     Args:
         params (dict): values returned from method:read_lattice().
         outfile (str, optional): path to desired output file. Default is 'enum.out'.
@@ -146,7 +130,6 @@ def write_enum(params, outfile="enum.out"):
 
 def write_struct_enum(params):
     """Writes a 'struct_enum.in' file for the executable enum.x.
-
     Args:
         params (dict): values returned from method:read_lattice().
     """
@@ -198,10 +181,8 @@ def write_struct_enum(params):
 def which(program):
     """Determines if and where an executable exists on the users path.
     This code was contributed by Jay at http://stackoverflow.com/a/377028
-
     Args:
         program (str): The name, or path for the program.
-
     Returns:
         The program or executable.
     """
@@ -224,11 +205,9 @@ def which(program):
 def create_labeling(config):
     """This routine takes a string of atomic locations as a vector and the
     atomic concentrations and returns a unique labeling.
-
     Args:
         config (list of int): A list of integers describing the arrangement of atoms on
           the lattice.
-
     Returns:
         label (str): The atomic labeling for the arrangement.
         arrow (str): The arrow directions for the arrangement.
@@ -252,51 +231,29 @@ def read_enum_out(args):
     
     Args:
         args (dict): The makeStr.py input arguments.
-
     Returns:
         system (dict): A dictionary with the keys:
-
             "plattice": The parrent lattice vectors.
-
             "dvecs": The atomic basis vectors.
-
             "title": The name of the system.
-
             "bulksurf": 'bulk' or 'surface'.
-
             "nD": The number of atomic basis vectors.
-
             "k": The number of atomic species.
-
             "eps": Finite precision tolerance.
-
         structure_data (list of dict): A list of dictionaries for each desired structure. Each
             dictionary contains:
-
                 "strN": The structure number.
-
                 "hnfN": The HNFs number.
-
                 "hnf_degen": The HNFs degeneracy.
-
                 "lab_degen": The label degeneracy.
-
                 "tot_degen": The total degeneracy for the structure.
-
                 "sizeN": The system size.
-
                 "n": Number of structure within this size.
-
                 "pgOps": The number of point group operations.
-
                 "diag": The diagonal of the SNF.
-
                 "HNF": The HNF matrix.
-
                 "L": The left transform matrix.
-
                 "labeling": The atomic labeling for the structure.
-
                 "directions": The arrow labeling for the structure.
      """
     from numpy import transpose
@@ -368,7 +325,6 @@ def read_enum_out(args):
 def write_POSCAR(system_data,space_data,structure_data,args):
     """Writes a vasp POSCAR style file for the input structure and system
     data.
-
     Args:
         system_data (dict): A dictionary of the system_data.
         space_data (dict): A dictionary containing the spacial data
@@ -401,7 +357,7 @@ def write_POSCAR(system_data,space_data,structure_data,args):
 
     lattice_parameter, title = get_lattice_parameter(args["species"],concs,
                                                      system_data["plattice"],system_data["nD"],
-                                                     def_title)
+                                                     def_title,remove_zeros=args["remove_zeros"])
 
     for arrow in arrows:
         directions.append(array(arrow_directions[int(arrow)]))
@@ -417,13 +373,13 @@ def write_POSCAR(system_data,space_data,structure_data,args):
         # user requests there be no zeros in the concentration string
         # then we should remove them from the file. Otherwise we
         # default to leaving them in.
-        if not (args["remove_zeros"] and args["species"] is not None):
-            for ic in concs:
-                poscar.write("{}   ".format(str(ic)))
-        else:
+        if (args["remove_zeros"] and args["species"] is not None):
             for ic in concs:
                 if ic != 0:
-                    poscar.write("{}   ".format(str(ic)))                    
+                    poscar.write("{}   ".format(str(ic)))
+        else:
+            for ic in concs:
+                poscar.write("{}   ".format(str(ic)))                    
 
         poscar.write("\n")
         poscar.write("D\n")
@@ -440,7 +396,6 @@ def write_POSCAR(system_data,space_data,structure_data,args):
 def write_config(system_data,space_data,structure_data,args,mapping=None):
     """Writes a MTP config style file for the input structure and system
     data.
-
     :arg system_data: a dictionary of the system_data
     :arg space_data: a dictionary containing the spacial data
     :arg structure_data: a dictionary of the data for this structure
@@ -487,7 +442,7 @@ def write_config(system_data,space_data,structure_data,args,mapping=None):
     
     lattice_parameter, title = get_lattice_parameter(species,concs,
                                                      system_data["plattice"],system_data["nD"],
-                                                     def_title)
+                                                     def_title,remove_zeros=True)
 
     # Find out the directions for each arrow.
     for arrow in arrows:
@@ -509,8 +464,8 @@ def write_config(system_data,space_data,structure_data,args,mapping=None):
         poscar.write("  ")
 
         poscar.write(" AtomData:  id type       cartes_x      cartes_y      cartes_z\n")
-        for ilab in range(system_data["k"]):
-            for iAt in range(structure_data["n"]*system_data["nD"]):
+        for iAt in range(structure_data["n"]*system_data["nD"]):
+            for ilab in range(system_data["k"]):
                 rattle = uniform(-args["rattle"],args["rattle"])
                 displace = directions[iAt]*args["displace"]*lattice_parameter
                 # If the displacement is non zero and we're `rattling`
@@ -528,4 +483,4 @@ def write_config(system_data,space_data,structure_data,args,mapping=None):
                     poscar.write("             {0}    {1}       {2}\n".format(iAt+1, out_lab, "  ".join(["{0: .8f}".format(i) for i in out_array])))
         poscar.write(" Feature   conf_id  {}\n".format(title.split()[0]))
         poscar.write("END_CFG\n\n")
-                
+        

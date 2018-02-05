@@ -3,7 +3,6 @@ from phenum import msg
 
 def RepresentsInt(s):
     """Determines if a stri could be an int.
-
     Args:
         s (str): The string to be tested.
     
@@ -18,7 +17,6 @@ def RepresentsInt(s):
 
 def _make_structures(args, return_euids = False):
     """Makes a VASP POSCAR file for the desired structures.
-
     Args:
         args (dict): The user input.
         return_euid (bool): a unique identifier for the structures in the
@@ -160,7 +158,6 @@ def _parser_options():
 
 def run(args):
     """Generates the vasp output file for the desired structure.
-
     Args:
         args (dict): The user input.
     """
@@ -198,7 +195,7 @@ def run(args):
     if args["remove_zeros"] == "t":
         args["remove_zeros"] = True
     else:
-        args["remove_zeors"] = False
+        args["remove_zeros"] = False
 
     _make_structures(args)
         
