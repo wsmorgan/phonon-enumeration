@@ -38,7 +38,8 @@ def _make_structures(args, return_euids = False):
         euid += "".join(str(i) for i in structure["HNF"])
         euid += structure["labeling"]
         euid = (euid,structure["directions"],str(args["rattle"]),str(args["displace"]))
-        euids.append(hash(euid))
+        from hashlib import sha1 
+        euids.append(sha1(euid))
         space_data = map_enumStr_to_real_space(system,structure,args["mink"])
 
         space_data["aBas"] = cartesian2direct(space_data["sLV"],
