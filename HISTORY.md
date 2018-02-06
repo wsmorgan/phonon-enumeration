@@ -1,5 +1,8 @@
 # Revision History for "phonon-enumeration"
 
+## Revision 2.1.3
+- Fixed the hash function in `makeStr.py`.
+
 ## Revision 2.1.2
 - Fixed bugs in `write_POSCAR` and `write_config` that were introduced
   by the merge and by the need to maintain element names in the first
