@@ -3,6 +3,7 @@ from phenum import msg
 
 def RepresentsInt(s):
     """Determines if a stri could be an int.
+
     Args:
         s (str): The string to be tested.
     
@@ -17,6 +18,7 @@ def RepresentsInt(s):
 
 def _make_structures(args, return_euids = False):
     """Makes a VASP POSCAR file for the desired structures.
+
     Args:
         args (dict): The user input.
         return_euid (bool): a unique identifier for the structures in the
@@ -36,7 +38,8 @@ def _make_structures(args, return_euids = False):
         euid += "".join(str(i) for i in structure["HNF"])
         euid += structure["labeling"]
         euid = (euid,structure["directions"],str(args["rattle"]),str(args["displace"]))
-        euids.append(hash(euid))
+        from hashlib import sha1 
+        euids.append(sha1(''.join(euid).encode('utf-8')))
         space_data = map_enumStr_to_real_space(system,structure,args["mink"])
 
         space_data["aBas"] = cartesian2direct(space_data["sLV"],
@@ -157,6 +160,7 @@ def _parser_options():
 
 def run(args):
     """Generates the vasp output file for the desired structure.
+
     Args:
         args (dict): The user input.
     """
@@ -194,7 +198,7 @@ def run(args):
     if args["remove_zeros"] == "t":
         args["remove_zeros"] = True
     else:
-        args["remove_zeros"] = False
+        args["remove_zeors"] = False
 
     _make_structures(args)
         
