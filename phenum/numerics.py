@@ -1,5 +1,6 @@
 """Numerical methods for mathematical functions neede for the program"""
 
+import numpy as np
 #This method finds the factorial of a given number(num).
 #The method calls for an integer input num
 #The method returns the factorial(represented as fact in the method)
