@@ -2,6 +2,7 @@
 
 #import neede modules
 from numpy import array, zeros
+from phenum.numerics import multinomial
 #Find concentration takes a 1D array, col, and returns a 1D array, 
 #Concs, containing the number of times each element in col appears 
 #in the array.
