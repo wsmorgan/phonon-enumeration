@@ -426,7 +426,7 @@ def enum_sys(groupfile, concs, a_concs, num_wanted, HNF, params, supers, accept=
     # if we're enumerating a relatively large system (n>=10) but only
     # want a relatively small number of unique configurations (n<=100)
     # then we don't need to run the polya algorithm.
-    if sum(concs) >=10 and num_wanted <= 100:
+    if multinomial(concs) > 100000 and num_wanted <= 100:
         total = 1e10
     else:
         # now find the number of unique arrangements using
@@ -478,7 +478,7 @@ def enum_sys(groupfile, concs, a_concs, num_wanted, HNF, params, supers, accept=
                 configs.append(config)
             count += 1
     else:
-        if sum(concs) >= 10 and num_wanted <= 100:
+        if multinomial(concs) > 100000 and num_wanted <= 100 and num_wanted < total:
             configs = guess_and_check_brancher(sorted_concs, agroup, decorations, 6, supers, cellsize, num_wanted)
         else:
             configs = brancher(sorted_concs, agroup, decorations, 6, supers, cellsize, total, subset, accept)

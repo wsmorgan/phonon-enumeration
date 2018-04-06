@@ -1,5 +1,12 @@
 # Revision History for "phonon-enumeration"
 
+## Revision 2.1.4
+- Fixed a bug in which the enumeration was freezing because it wrongl
+  entering the guess and check method when it shouldn't by changing
+  the checks and implementing the multinomial.
+- Fixed a bug in which makestry wasn't parsing the all string
+  properly.
+
 ## Revision 2.1.3
 - Fixed the hash function in `makeStr.py`.
 

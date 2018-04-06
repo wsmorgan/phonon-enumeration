@@ -132,6 +132,7 @@ def _enum_out(args):
 
     import phenum.io_utils as io
     import phenum.phonons as pb
+    from phenum.msg import verbosity
     from random import seed
     from phenum.grouptheory import get_full_HNF, SmithNormalForm
     from os.path import isfile
@@ -176,6 +177,9 @@ def _enum_out(args):
     with open(args["outfile"], 'a') as f:
         enumlist = []    
         for hnf, conc, num_wanted in systems:
+        if verbosity is not None and verbosity >= 1: #pragma: no cover
+            from tqdm import tqdm 
+            pbar = tqdm(total=len(systems))
             (SNF,L,R) = SmithNormalForm(get_full_HNF(hnf))
             SNF = [SNF[0][0],SNF[1][1],SNF[2][2]]
             LT = [item for row in L for item in row]
@@ -189,6 +193,8 @@ def _enum_out(args):
             sortenum = sorted(enumlist, key=itemgetter(0, 4))
             if len(sortenum) > 0:
                 last_sz = sortenum[0][0]
+            if verbosity is not None and verbosity >= 1: #pragma: no cover
+                pbar.update(1)
 
         for (size, hnf, SNF, LT, labeling, arrowing) in sortenum:
             if size != last_sz:
