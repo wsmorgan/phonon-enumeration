@@ -177,9 +177,9 @@ def _enum_out(args):
     with open(args["outfile"], 'a') as f:
         enumlist = []    
         for hnf, conc, num_wanted in systems:
-        if verbosity is not None and verbosity >= 1: #pragma: no cover
-            from tqdm import tqdm 
-            pbar = tqdm(total=len(systems))
+            if verbosity is not None and verbosity >= 1: #pragma: no cover
+                from tqdm import tqdm 
+                pbar = tqdm(total=len(systems))
             (SNF,L,R) = SmithNormalForm(get_full_HNF(hnf))
             SNF = [SNF[0][0],SNF[1][1],SNF[2][2]]
             LT = [item for row in L for item in row]
