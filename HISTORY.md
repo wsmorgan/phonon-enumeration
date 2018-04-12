@@ -1,7 +1,7 @@
 # Revision History for "phonon-enumeration"
 
 ## Revision 2.1.4
-- Fixed a bug in which the enumeration was freezing because it wrongl
+- Fixed a bug in which the enumeration was freezing because it wrongly
   entering the guess and check method when it shouldn't by changing
   the checks and implementing the multinomial.
 - Fixed a bug in which makestry wasn't parsing the all string
