@@ -165,3 +165,24 @@ class TestBinomialCoefficient(ut.TestCase):
         r = 10
         out = 0 
         self.assertEqual(binomial_coefficient(n,r),out)
+
+class TestMultinomial(ut.TestCase):
+    """ Tests of the multinomial subroutine."""
+
+    def test_1(self):
+        from phenum.numerics import multinomial
+        n = [2,2,2]
+        out = 90
+        self.assertEqual(multinomial(n),out)
+
+    def test_2(self):
+        from phenum.numerics import multinomial
+        n = [0]
+        out = 1
+        self.assertEqual(multinomial(n),out)
+
+    def test_1(self):
+        from phenum.numerics import multinomial
+        n = [2,0,2]
+        out = 6
+        self.assertEqual(multinomial(n),out)

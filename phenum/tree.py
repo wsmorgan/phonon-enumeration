@@ -604,6 +604,7 @@ def guess_and_check_brancher(concs, group, colors_w_arrows, dim, supers, cellsiz
 
         while candidate in visited:#pragma: no cover
             #This happens rarely and so it's really hard to access in tests.
+            candidate = []
             for c_i in C:
                 candidate.append(randint(0,c_i-1))
 

@@ -1,5 +1,6 @@
 """Numerical methods for mathematical functions neede for the program"""
 
+import numpy as np
 #This method finds the factorial of a given number(num).
 #The method calls for an integer input num
 #The method returns the factorial(represented as fact in the method)
@@ -50,3 +51,21 @@ def binomial_coefficient(n, k):
             t = t*i//(n-i+1)
 
     return t
+
+
+def multinomial(n):
+    """Finds the multinomial coefficient for a given array of numbers.
+    
+    Args:
+        n (list): the interegs to be used.
+    """
+    binomials = [[np.sum(n),n[0]]]
+    for i in range(1,len(n)):
+        new_sum = binomials[i-1][0]-binomials[i-1][1]
+        binomials.append([new_sum,n[i]])
+        
+    bins = []
+    for b in binomials:
+        bins.append(binomial_coefficient(b[0],b[1]))
+    
+    return np.prod(bins)
