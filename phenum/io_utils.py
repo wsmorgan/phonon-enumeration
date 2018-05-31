@@ -437,7 +437,6 @@ def write_config(system_data,space_data,structure_data,args,mapping=None):
                 this_conc += 1
         concs.append(this_conc)
     def_title = "{}{}\n".format(str(system_data["title"]),str(structure_data["strN"]))
-
     # Get the lattice parameter for the atomic species provided by the
     # user.
     if mapping is not None and len(args["species"]) != len(mapping):
@@ -448,6 +447,10 @@ def write_config(system_data,space_data,structure_data,args,mapping=None):
     lattice_parameter, title = get_lattice_parameter(species,concs,
                                                      system_data["plattice"],system_data["nD"],
                                                      def_title,remove_zeros=True)
+    # Rewrite the title to be something shorter and more useful for
+    # mtp, i.e., the elements and the enumerated structure number.
+    title = "{0} struct {1}".format(title.split(def_title)[0].strip(),
+                                           struct_n)
 
     # Find out the directions for each arrow.
     for arrow in arrows:
@@ -486,6 +489,5 @@ def write_config(system_data,space_data,structure_data,args,mapping=None):
                     else:
                         out_lab = mapping[ilab]
                     poscar.write("             {0}    {1}       {2}\n".format(iAt+1, out_lab, "  ".join(["{0: .8f}".format(i) for i in out_array])))
-        poscar.write(" Feature   conf_id  {}\n".format(title.split()[0]))
+        poscar.write(" Feature   conf_id  {}\n".format(title))
         poscar.write("END_CFG\n\n")
-        
