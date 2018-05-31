@@ -1,5 +1,8 @@
 # Revision History for "phonon-enumeration"
 
+## Revision 2.1.5
+- Fixed the config_id in the `cfg` files.
+
 ## Revision 2.1.4
 - Fixed a bug in which the enumeration was freezing because it wrongly
   entering the guess and check method when it shouldn't by changing
