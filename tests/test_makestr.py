@@ -578,3 +578,26 @@ class TestMakeConfig(ut.TestCase):
         run(args)
         self._compare_files("to-relax.cfg","tests/enumeration/sc_1/to-relax.cfg_2")
         system("rm to-relax.cfg")
+
+    def test_str3(self):
+        from phenum.makeStr import run
+        from os import system
+        if os.path.isfile("to-relax.cfg"):
+            system("rm to-relax.cfg")
+        args = {"structures":[1,2],
+                "debug":False,
+                "examples":False,
+                "displace":0.0,
+                "input":"tests/enumeration/sc_1/enum.out_sc_config",
+                "mink":True,
+                "species":["Al","Cu","Ni"],
+                "verbose":None,
+                "outfile":"to-relax.cfg",
+                "rattle":0.0,
+                "species_mapping":{0:1,1:2},
+                "config":"t",
+                "remove_zeros":True
+                }
+        run(args)
+        self._compare_files("to-relax.cfg","tests/enumeration/sc_1/to-relax.cfg_3")
+        system("rm to-relax.cfg")

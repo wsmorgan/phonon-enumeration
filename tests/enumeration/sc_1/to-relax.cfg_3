@@ -7,7 +7,7 @@ BEGIN_CFG
     2.274159       0.000000       0.000000
    AtomData:  id type       cartes_x      cartes_y      cartes_z
              1    1        0.00000000   0.00000000   0.00000000
- Feature   conf_id  Cu_random_1
+ Feature   conf_id  Cu_sc_1
 END_CFG
 
 BEGIN_CFG
@@ -19,6 +19,6 @@ BEGIN_CFG
     2.217464       0.000000       0.000000
    AtomData:  id type       cartes_x      cartes_y      cartes_z
              1    2        0.00000000   0.00000000   0.00000000
- Feature   conf_id  Ni_random_2
+ Feature   conf_id  Ni_sc_2
 END_CFG
 

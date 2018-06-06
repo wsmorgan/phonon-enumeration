@@ -449,9 +449,18 @@ def write_config(system_data,space_data,structure_data,args,mapping=None):
                                                      def_title,remove_zeros=True)
     # Rewrite the title to be something shorter and more useful for
     # mtp, i.e., the elements and the enumerated structure number.
-    title = "{0} struct {1}".format(title.split(def_title)[0].strip(),
+    print(title)
+    print(def_title)
+    if "Random" in title:
+        title = "{0}_random_{1}".format(title.split(def_title)[0].strip(),
                                            struct_n)
-
+        if title[0] == "_":
+            title = title[1:]
+    else:
+        title = title.split(":")[0]
+        title = "_".join(title.strip().split())
+        title = "{0}_{1}".format(title, struct_n)
+        
     # Find out the directions for each arrow.
     for arrow in arrows:
         directions.append(array(arrow_directions[int(arrow)]))
