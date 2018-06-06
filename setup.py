@@ -35,7 +35,7 @@ setup(name='phenum',
           "matplotlib",
       ],
       packages=['phenum'],
-      scripts=['phenum/scripts/enumeration.py','phenum/scripts/phenumStr.py'],
+      scripts=['phenum/enumeration.py','phenum/phenumStr.py'],
       classifiers=[
           'Development Status :: 5 - Production/Stable',
           'Intended Audience :: Science/Research',

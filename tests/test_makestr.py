@@ -8,7 +8,7 @@ def get_sargs(args):
     """
     import sys
     sys.argv = args
-    from phenum.makeStr import _parser_options
+    from phenum.phenumStr import _parser_options
     return _parser_options()    
 
 def test_examples():
@@ -32,7 +32,7 @@ class TestMakeStructures(ut.TestCase):
         self.assertEqual(out1,out2)
                 
     def test_str1(self):
-        from phenum.makeStr import _make_structures
+        from phenum.phenumStr import _make_structures
         from os import system
         args = {"structures":[10],
                 "debug":False,
@@ -53,7 +53,7 @@ class TestMakeStructures(ut.TestCase):
         system("rm vasp*")
                 
     def test_str2(self):
-        from phenum.makeStr import _make_structures
+        from phenum.phenumStr import _make_structures
         from os import system
         args = {"structures":[20],
                 "debug":False,
@@ -74,7 +74,7 @@ class TestMakeStructures(ut.TestCase):
         system("rm vasp*")
                 
     def test_str3(self):
-        from phenum.makeStr import _make_structures
+        from phenum.phenumStr import _make_structures
         from os import system
         args = {"structures":[33],
                 "debug":False,
@@ -95,7 +95,7 @@ class TestMakeStructures(ut.TestCase):
         system("rm vasp*")
 
     def test_str4(self):
-        from phenum.makeStr import _make_structures
+        from phenum.phenumStr import _make_structures
         from os import system
         args = {"structures":[1],
                 "debug":False,
@@ -116,7 +116,7 @@ class TestMakeStructures(ut.TestCase):
         system("rm vasp*")
                 
     def test_str5(self):
-        from phenum.makeStr import _make_structures
+        from phenum.phenumStr import _make_structures
         from os import system
         args = {"structures":[55],
                 "debug":False,
@@ -137,7 +137,7 @@ class TestMakeStructures(ut.TestCase):
         system("rm vasp*")
                 
     def test_str6(self):
-        from phenum.makeStr import _make_structures
+        from phenum.phenumStr import _make_structures
         from os import system
         args = {"structures":[50],
                 "debug":False,
@@ -158,7 +158,7 @@ class TestMakeStructures(ut.TestCase):
         system("rm vasp*")
                 
     def test_str7(self):
-        from phenum.makeStr import _make_structures
+        from phenum.phenumStr import _make_structures
         from os import system
         args = {"structures":[88],
                 "debug":False,
@@ -179,7 +179,7 @@ class TestMakeStructures(ut.TestCase):
         system("rm vasp*")
                 
     def test_str8(self):
-        from phenum.makeStr import _make_structures
+        from phenum.phenumStr import _make_structures
         from os import system
         args = {"structures":[1],
                 "debug":False,
@@ -200,7 +200,7 @@ class TestMakeStructures(ut.TestCase):
         system("rm vasp*")
                 
     def test_str9(self):
-        from phenum.makeStr import _make_structures
+        from phenum.phenumStr import _make_structures
         from os import system
         args = {"structures":[2],
                 "debug":False,
@@ -221,7 +221,7 @@ class TestMakeStructures(ut.TestCase):
         system("rm vasp*")
                 
     def test_str10(self):
-        from phenum.makeStr import _make_structures
+        from phenum.phenumStr import _make_structures
         from os import system
         args = {"structures":[3],
                 "debug":False,
@@ -242,7 +242,7 @@ class TestMakeStructures(ut.TestCase):
         system("rm vasp*")
 
     def test_str11(self):
-        from phenum.makeStr import _make_structures
+        from phenum.phenumStr import _make_structures
         from os import system
         args = {"structures":[3],
                 "debug":False,
@@ -263,7 +263,7 @@ class TestMakeStructures(ut.TestCase):
         system("rm vasp*")
 
     def test_str12(self):
-        from phenum.makeStr import _make_structures
+        from phenum.phenumStr import _make_structures
         from os import system
         args = {"structures":[3],
                 "debug":False,
@@ -284,7 +284,7 @@ class TestMakeStructures(ut.TestCase):
         system("rm vasp*")
 
     def test_str13(self):
-        from phenum.makeStr import _make_structures
+        from phenum.phenumStr import _make_structures
         from os import system
         args = {"structures":[3],
                 "debug":False,
@@ -305,7 +305,7 @@ class TestMakeStructures(ut.TestCase):
         system("rm vasp*")
 
     def test_str14(self):
-        from phenum.makeStr import _make_structures
+        from phenum.phenumStr import _make_structures
         from os import system
         args = {"structures":[3],
                 "debug":False,
@@ -326,7 +326,7 @@ class TestMakeStructures(ut.TestCase):
         system("rm vasp*")
 
     def test_str15(self):
-        from phenum.makeStr import run
+        from phenum.phenumStr import run
         from os import system
         args = {"structures":[3],
                 "debug":False,
@@ -347,7 +347,7 @@ class TestMakeStructures(ut.TestCase):
         system("rm vasp*")
 
     def test_str16(self):
-        from phenum.makeStr import run
+        from phenum.phenumStr import run
         from os import system
         args = {"structures": None,
                 "debug":False,
@@ -368,7 +368,7 @@ class TestMakeStructures(ut.TestCase):
         
 
     def test_str17(self):
-        from phenum.makeStr import run
+        from phenum.phenumStr import run
         from os import system
         args = {"structures": ['bite'],
                 "debug":False,
@@ -388,7 +388,7 @@ class TestMakeStructures(ut.TestCase):
             run(args)
 
     def test_str18(self):
-        from phenum.makeStr import run
+        from phenum.phenumStr import run
         from os import system
         args = {"structures": None,
                 "debug":False,
@@ -408,7 +408,7 @@ class TestMakeStructures(ut.TestCase):
             run(args)
 
     def test_str19(self):
-        from phenum.makeStr import run
+        from phenum.phenumStr import run
         from os import system
         args = {"structures":['all'],
                 "debug":False,
@@ -428,7 +428,7 @@ class TestMakeStructures(ut.TestCase):
         system("rm vasp*")
 
     def test_str20(self):
-        from phenum.makeStr import run
+        from phenum.phenumStr import run
         from os import system
         args = {"structures":['1','3'],
                 "debug":False,
@@ -448,7 +448,7 @@ class TestMakeStructures(ut.TestCase):
         system("rm vasp*")
 
     def test_str21(self):
-        from phenum.makeStr import run
+        from phenum.phenumStr import run
         from os import system
         args = {"structures":['1','175'],
                 "debug":False,
@@ -470,7 +470,7 @@ class TestMakeStructures(ut.TestCase):
         system("rm vasp*")
 
     def test_str22(self):
-        from phenum.makeStr import run
+        from phenum.phenumStr import run
         from os import system
         args = {"structures":[1],
                 "debug":False,
@@ -491,7 +491,7 @@ class TestMakeStructures(ut.TestCase):
         system("rm vasp*")
 
     def test_str23(self):
-        from phenum.makeStr import run
+        from phenum.phenumStr import run
         from os import system
         args = {"structures":[1],
                 "debug":False,
@@ -512,7 +512,7 @@ class TestMakeStructures(ut.TestCase):
         system("rm vasp*")
 
     def test_str24(self):
-        from phenum.makeStr import run
+        from phenum.phenumStr import run
         from os import system
         args = None
         with pytest.raises(ValueError):
@@ -533,7 +533,7 @@ class TestMakeConfig(ut.TestCase):
         self.assertEqual(out1,out2)
                 
     def test_str1(self):
-        from phenum.makeStr import _make_structures
+        from phenum.phenumStr import _make_structures
         from os import system
 
         if os.path.isfile("to-relax.cfg"):
@@ -557,7 +557,7 @@ class TestMakeConfig(ut.TestCase):
         system("rm to-relax.cfg")
                 
     def test_str2(self):
-        from phenum.makeStr import run
+        from phenum.phenumStr import run
         from os import system
         if os.path.isfile("to-relax.cfg"):
             system("rm to-relax.cfg")
@@ -580,7 +580,7 @@ class TestMakeConfig(ut.TestCase):
         system("rm to-relax.cfg")
 
     def test_str3(self):
-        from phenum.makeStr import run
+        from phenum.phenumStr import run
         from os import system
         if os.path.isfile("to-relax.cfg"):
             system("rm to-relax.cfg")

@@ -2,7 +2,6 @@
 
 ## Revision 2.2.0
 - Changed the config_id convention for the `cfg` again.
-- Moved the scripts to the a scripts folder.
 - Moved `makeStr.py` to `phenumStr.py`.
 
 ## Revision 2.1.5
